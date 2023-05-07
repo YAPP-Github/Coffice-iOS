@@ -1,0 +1,13 @@
+
+# Default Rules에서 비활성화할 규칙
+disabled_rules:
+
+# Default Rules에 없지만 활성화하고 싶은 규칙
+opt_in_rules:
+# .count == 0 보다는 .isEmpty를 사용하는 것이 좋습니다.
+# - ref : https://realm.github.io/SwiftLint/empty_count.html
+- empty_count
+
+# 컨벤션 체크하지 않을 파일을 지정합니다.
+# ex) - YappProject/AppView.swift
+excluded:
