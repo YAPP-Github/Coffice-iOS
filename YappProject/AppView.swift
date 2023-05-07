@@ -35,7 +35,7 @@ struct AppView: View {
               .frame(maxWidth: .infinity)
               .padding(.horizontal, 16.0)
           }
-          
+
           Spacer()
         }
         .navigationTitle(viewStore.title)
@@ -59,7 +59,7 @@ struct AppView: View {
       }
     }
   }
-  
+
   var emptyNavigationLink: some View {
     WithViewStore(store) { viewStore in
       NavigationLink(

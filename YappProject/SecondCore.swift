@@ -11,13 +11,13 @@ struct Second: ReducerProtocol {
   struct State: Equatable {
     let title: String = "This is SecondView"
   }
-  
+
   enum Action: Equatable {
     case onAppear
   }
-  
+
   var body: some ReducerProtocol<State, Action> {
-    Reduce { state, action in
+    Reduce { _, action in
       switch action {
       case .onAppear:
         debugPrint("SecondView onAppear Event")

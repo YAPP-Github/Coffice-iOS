@@ -15,13 +15,13 @@ struct YappProject: ReducerProtocol {
     var isSecondActive: Bool {
       secondState != nil
     }
-    
+
     var thirdState: Third.State?
     var isThirdPresented: Bool {
       thirdState != nil
     }
   }
-  
+
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<YappProject.State>)
     case onAppear
@@ -30,7 +30,7 @@ struct YappProject: ReducerProtocol {
     case second(Second.Action)
     case third(Third.Action)
   }
-  
+
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {
@@ -67,7 +67,7 @@ struct YappProject: ReducerProtocol {
         switch action {
         case .onAppear:
           break
-          
+
         case .dismiss:
           return EffectTask(value: .thirdPresented(false))
         }
