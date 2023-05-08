@@ -27,7 +27,7 @@ struct AppView: View {
 
           Button {
             debugPrint("Present Modal View")
-            viewStore.send(.thirdPresented(true))
+            viewStore.send(.modalPresented(true))
           } label: {
             Text("😀 Present Modal View")
               .foregroundColor(.blue)
@@ -42,16 +42,16 @@ struct AppView: View {
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(
           isPresented: viewStore.binding(
-            get: \.isThirdPresented,
-            send: YappProject.Action.thirdPresented
+            get: \.isModalPresented,
+            send: YappProject.Action.modalPresented
           ),
           content: {
             IfLetStore(
               store.scope(
-                state: \.thirdState,
-                action: YappProject.Action.third
+                state: \.modalState,
+                action: YappProject.Action.modal
               ),
-              then: ThirdView.init
+              then: ModalView.init
             )
           }
         )
@@ -72,7 +72,8 @@ struct AppView: View {
         ),
         isActive: viewStore.binding(
           get: \.isSecondActive,
-          send: YappProject.Action.secondActive),
+          send: YappProject.Action.secondActive
+        ),
         label: {
           EmptyView()
         }

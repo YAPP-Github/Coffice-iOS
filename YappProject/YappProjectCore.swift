@@ -16,9 +16,9 @@ struct YappProject: ReducerProtocol {
       secondState != nil
     }
 
-    var thirdState: Third.State?
-    var isThirdPresented: Bool {
-      thirdState != nil
+    var modalState: Modal.State?
+    var isModalPresented: Bool {
+      modalState != nil
     }
   }
 
@@ -26,9 +26,9 @@ struct YappProject: ReducerProtocol {
     case binding(BindingAction<YappProject.State>)
     case onAppear
     case secondActive(Bool)
-    case thirdPresented(Bool)
+    case modalPresented(Bool)
     case second(Second.Action)
-    case third(Third.Action)
+    case modal(Modal.Action)
   }
 
   var body: some ReducerProtocol<State, Action> {
@@ -48,37 +48,36 @@ struct YappProject: ReducerProtocol {
         }
         return .none
 
-      case .second(let action):
-        switch action {
-        case .onAppear:
-          break
-        }
+      case .second(.onAppear):
         return .none
 
-      case .thirdPresented(let isPresented):
+      case .modalPresented(let isPresented):
         if isPresented {
-          state.thirdState = .init()
+          state.modalState = .init()
         } else {
-          state.thirdState = nil
+          state.modalState = nil
         }
         return .none
 
-      case .third(let action):
+      case .modal(let action):
         switch action {
         case .onAppear:
           break
 
         case .dismiss:
-          return EffectTask(value: .thirdPresented(false))
+          return EffectTask(value: .modalPresented(false))
         }
+        return .none
+
+      default:
         return .none
       }
     }
     .ifLet(\.secondState, action: /Action.second) {
       Second()
     }
-    .ifLet(\.thirdState, action: /Action.third) {
-      Third()
+    .ifLet(\.modalState, action: /Action.modal) {
+      Modal()
     }
   }
 }
