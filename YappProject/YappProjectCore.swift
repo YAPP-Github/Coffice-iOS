@@ -11,19 +11,9 @@ struct YappProject: ReducerProtocol {
   struct State: Equatable {
     let title = "YappProject"
     var isSplashView = false
-    var secondState: Second.State?
-    var isSecondActive: Bool {
-      secondState != nil
-    }
-
-    var modalState: Modal.State?
-    var isModalPresented: Bool {
-      modalState != nil
-    }
   }
 
-  enum Action: Equatable, BindableAction {
-    case binding(BindingAction<YappProject.State>)
+  enum Action: Equatable {
     case onAppear
     case secondActive(Bool)
     case modalPresented(Bool)
@@ -32,31 +22,12 @@ struct YappProject: ReducerProtocol {
   }
 
   var body: some ReducerProtocol<State, Action> {
-    Reduce { state, action in
+    Reduce { _, action in
       switch action {
-      case .binding:
-        return .none
-
       case .onAppear:
         return .none
 
-      case .secondActive(let isActive):
-        if isActive {
-          state.secondState = .init()
-        } else {
-          state.secondState = nil
-        }
-        return .none
-
       case .second(.onAppear):
-        return .none
-
-      case .modalPresented(let isPresented):
-        if isPresented {
-          state.modalState = .init()
-        } else {
-          state.modalState = nil
-        }
         return .none
 
       case .modal(let action):
@@ -72,12 +43,6 @@ struct YappProject: ReducerProtocol {
       default:
         return .none
       }
-    }
-    .ifLet(\.secondState, action: /Action.second) {
-      Second()
-    }
-    .ifLet(\.modalState, action: /Action.modal) {
-      Modal()
     }
   }
 }

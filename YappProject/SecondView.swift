@@ -28,28 +28,6 @@ struct SecondView: View {
       .onAppear {
         viewStore.send(.onAppear)
       }
-      .background(emptyNavigationLink)
-    }
-  }
-
-  var emptyNavigationLink: some View {
-    WithViewStore(store) { viewStore in
-      NavigationLink(
-        destination: IfLetStore(
-          store.scope(
-            state: \.thirdState,
-            action: Second.Action.third
-          ),
-          then: ThirdView.init
-        ),
-        isActive: viewStore.binding(
-          get: \.isThirdActive,
-          send: Second.Action.thirdActive
-        ),
-        label: {
-          EmptyView()
-        }
-      )
     }
   }
 }

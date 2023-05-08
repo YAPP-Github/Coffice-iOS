@@ -12,72 +12,35 @@ struct AppView: View {
   let store: StoreOf<YappProject>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
-      NavigationView {
-        VStack {
-          Button {
-            viewStore.send(.secondActive(true))
-          } label: {
-            Text("😀 Push Navigation View")
-              .foregroundColor(.blue)
-              .frame(height: 50.0)
-              .frame(maxWidth: .infinity)
-              .padding(.horizontal, 16.0)
-          }
-
-          Button {
-            debugPrint("Present Modal View")
-            viewStore.send(.modalPresented(true))
-          } label: {
-            Text("😀 Present Modal View")
-              .foregroundColor(.blue)
-              .frame(height: 50.0)
-              .frame(maxWidth: .infinity)
-              .padding(.horizontal, 16.0)
-          }
-
-          Spacer()
-        }
-        .navigationTitle(viewStore.title)
-        .navigationBarTitleDisplayMode(.inline)
-        .fullScreenCover(
-          isPresented: viewStore.binding(
-            get: \.isModalPresented,
-            send: YappProject.Action.modalPresented
-          ),
-          content: {
-            IfLetStore(
-              store.scope(
-                state: \.modalState,
-                action: YappProject.Action.modal
-              ),
-              then: ModalView.init
-            )
-          }
-        )
-        .background(emptyNavigationLink)
-      }
-    }
+    mainView
   }
 
-  var emptyNavigationLink: some View {
+  var mainView: some View {
     WithViewStore(store) { viewStore in
-      NavigationLink(
-        destination: IfLetStore(
-          store.scope(
-            state: \.secondState,
-            action: YappProject.Action.second
-          ),
-          then: SecondView.init
-        ),
-        isActive: viewStore.binding(
-          get: \.isSecondActive,
-          send: YappProject.Action.secondActive
-        ),
-        label: {
-          EmptyView()
+      VStack {
+        Button {
+          viewStore.send(.secondActive(true))
+        } label: {
+          Text("😀 Push Navigation View")
+            .foregroundColor(.blue)
+            .frame(height: 50.0)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16.0)
         }
-      )
+        Button {
+          debugPrint("Present Modal View")
+          viewStore.send(.modalPresented(true))
+        } label: {
+          Text("😀 Present Modal View")
+            .foregroundColor(.blue)
+            .frame(height: 50.0)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16.0)
+        }
+        Spacer()
+      }
+      .navigationTitle(viewStore.title)
+      .navigationBarTitleDisplayMode(.inline)
     }
   }
 }

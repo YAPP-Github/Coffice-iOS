@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/johnpatrickmorgan/TCACoordinators.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "006bd9277fae20444143d8961a1aa55f7a1f82d1"
+        "revision" : "006bd9277fae20444143d8961a1aa55f7a1f82d1",
+        "version" : "0.4.3"
       }
     },
     {
