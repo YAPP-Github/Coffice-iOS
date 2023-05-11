@@ -12,71 +12,38 @@ struct AppView: View {
   let store: StoreOf<YappProject>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
-      NavigationView {
-        VStack {
-          Button {
-            viewStore.send(.secondActive(true))
-          } label: {
-            Text("😀 Push Navigation View")
-              .foregroundColor(.blue)
-              .frame(height: 50.0)
-              .frame(maxWidth: .infinity)
-              .padding(.horizontal, 16.0)
-          }
-
-          Button {
-            debugPrint("Present Modal View")
-            viewStore.send(.thirdPresented(true))
-          } label: {
-            Text("😀 Present Modal View")
-              .foregroundColor(.blue)
-              .frame(height: 50.0)
-              .frame(maxWidth: .infinity)
-              .padding(.horizontal, 16.0)
-          }
-
-          Spacer()
-        }
-        .navigationTitle(viewStore.title)
-        .navigationBarTitleDisplayMode(.inline)
-        .fullScreenCover(
-          isPresented: viewStore.binding(
-            get: \.isThirdPresented,
-            send: YappProject.Action.thirdPresented
-          ),
-          content: {
-            IfLetStore(
-              store.scope(
-                state: \.thirdState,
-                action: YappProject.Action.third
-              ),
-              then: ThirdView.init
-            )
-          }
-        )
-        .background(emptyNavigationLink)
-      }
-    }
+    mainView
   }
 
-  var emptyNavigationLink: some View {
+  var mainView: some View {
     WithViewStore(store) { viewStore in
-      NavigationLink(
-        destination: IfLetStore(
-          store.scope(
-            state: \.secondState,
-            action: YappProject.Action.second
-          ),
-          then: SecondView.init
-        ),
-        isActive: viewStore.binding(
-          get: \.isSecondActive,
-          send: YappProject.Action.secondActive),
-        label: {
-          EmptyView()
+      VStack {
+        // TODO: Navigation 화면 전환 테스트용 코드, 추후 제거 필요
+        Button {
+          viewStore.send(.secondActive(true))
+        } label: {
+          Text("😀 Push Navigation View")
+            .foregroundColor(.blue)
+            .frame(height: 50.0)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16.0)
         }
-      )
+
+        // TODO: Modal 화면 전환 테스트용 코드, 추후 제거 필요
+        Button {
+          debugPrint("Present Modal View")
+          viewStore.send(.modalPresented(true))
+        } label: {
+          Text("😀 Present Modal View")
+            .foregroundColor(.blue)
+            .frame(height: 50.0)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16.0)
+        }
+        Spacer()
+      }
+      .navigationTitle(viewStore.title)
+      .navigationBarTitleDisplayMode(.inline)
     }
   }
 }

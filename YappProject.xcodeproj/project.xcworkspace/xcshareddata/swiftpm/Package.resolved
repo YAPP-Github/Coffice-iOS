@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "flowstacks",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/johnpatrickmorgan/FlowStacks",
+      "state" : {
+        "revision" : "8d1bc577fcab0c09d599f1f2f6747db2d15f84f4",
+        "version" : "0.3.0"
+      }
+    },
+    {
       "identity" : "swift-case-paths",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-case-paths",
@@ -79,6 +88,15 @@
       "state" : {
         "revision" : "47dd574b900ba5ba679f56ea00d4d282fc7305a6",
         "version" : "0.7.1"
+      }
+    },
+    {
+      "identity" : "tcacoordinators",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/johnpatrickmorgan/TCACoordinators.git",
+      "state" : {
+        "revision" : "006bd9277fae20444143d8961a1aa55f7a1f82d1",
+        "version" : "0.4.3"
       }
     },
     {

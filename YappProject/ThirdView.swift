@@ -15,13 +15,19 @@ struct ThirdView: View {
     WithViewStore(store) { viewStore in
       VStack {
         Text(viewStore.title)
+
         Button {
-          viewStore.send(.dismiss)
+          debugPrint("Pop to root View")
+          viewStore.send(.popToRootView)
         } label: {
-          Text("Dismiss The View")
+          Text("😢 Pop to root View")
+            .foregroundColor(.blue)
+            .frame(height: 50.0)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16.0)
         }
-        Spacer()
       }
+      .navigationTitle(viewStore.title)
       .onAppear {
         viewStore.send(.onAppear)
       }

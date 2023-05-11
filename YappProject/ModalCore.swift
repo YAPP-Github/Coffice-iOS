@@ -1,5 +1,5 @@
 //
-//  ThirdCore.swift
+//  ModalCore.swift
 //  YappProject
 //
 //  Created by Min Min on 2023/05/07.
@@ -7,24 +7,24 @@
 
 import ComposableArchitecture
 
-struct Third: ReducerProtocol {
+struct Modal: ReducerProtocol {
   struct State: Equatable {
-    let title: String = "This is ThirdView"
+    let title: String = "This is ModalView"
   }
 
   enum Action: Equatable {
     case onAppear
-    case popToRootView
+    case dismiss
   }
 
   var body: some ReducerProtocol<State, Action> {
     Reduce { _, action in
       switch action {
       case .onAppear:
-        debugPrint("ThirdView onAppear Event")
+        debugPrint("ModalView onAppear Event")
         return .none
 
-      case .popToRootView:
+      case .dismiss:
         return .none
       }
     }

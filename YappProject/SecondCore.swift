@@ -14,6 +14,8 @@ struct Second: ReducerProtocol {
 
   enum Action: Equatable {
     case onAppear
+    case thirdActive(Bool)
+    case third(Third.Action)
   }
 
   var body: some ReducerProtocol<State, Action> {
@@ -21,6 +23,9 @@ struct Second: ReducerProtocol {
       switch action {
       case .onAppear:
         debugPrint("SecondView onAppear Event")
+        return .none
+
+      default:
         return .none
       }
     }

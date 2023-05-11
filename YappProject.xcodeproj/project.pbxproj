@@ -7,7 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		071E23C72A09617500AEF7AC /* TCACoordinators in Frameworks */ = {isa = PBXBuildFile; productRef = 071E23C62A09617500AEF7AC /* TCACoordinators */; };
+		071E23C92A0961CA00AEF7AC /* MainCoordinatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */; };
+		071E23CB2A09641900AEF7AC /* MainPageScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E23CA2A09641900AEF7AC /* MainPageScreen.swift */; };
 		884C8FBF2A080143001A0878 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 884C8FBE2A080143001A0878 /* .swiftlint.yml */; };
+		8881DE022A093CC4003154C5 /* ModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8881DE002A093CC4003154C5 /* ModalView.swift */; };
+		8881DE032A093CC4003154C5 /* ModalCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8881DE012A093CC4003154C5 /* ModalCore.swift */; };
 		88AB58D42A06164100D44F06 /* YappProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AB58D32A06164100D44F06 /* YappProjectApp.swift */; };
 		88AB58D62A06164100D44F06 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AB58D52A06164100D44F06 /* AppView.swift */; };
 		88AB58D82A06164200D44F06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 88AB58D72A06164200D44F06 /* Assets.xcassets */; };
@@ -42,7 +47,11 @@
 
 /* Begin PBXFileReference section */
 		071E23C42A08139600AEF7AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinatorView.swift; sourceTree = "<group>"; };
+		071E23CA2A09641900AEF7AC /* MainPageScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageScreen.swift; sourceTree = "<group>"; };
 		884C8FBE2A080143001A0878 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		8881DE002A093CC4003154C5 /* ModalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalView.swift; sourceTree = "<group>"; };
+		8881DE012A093CC4003154C5 /* ModalCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalCore.swift; sourceTree = "<group>"; };
 		88AB58D02A06164100D44F06 /* YappProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YappProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88AB58D32A06164100D44F06 /* YappProjectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YappProjectApp.swift; sourceTree = "<group>"; };
 		88AB58D52A06164100D44F06 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
@@ -65,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				071E23C72A09617500AEF7AC /* TCACoordinators in Frameworks */,
 				88AB58FF2A07D8FB00D44F06 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -114,10 +124,14 @@
 				88AB58D32A06164100D44F06 /* YappProjectApp.swift */,
 				88AB59002A07DA6E00D44F06 /* YappProjectCore.swift */,
 				88AB58D52A06164100D44F06 /* AppView.swift */,
+				071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */,
+				071E23CA2A09641900AEF7AC /* MainPageScreen.swift */,
 				88AB59042A07E98F00D44F06 /* SecondCore.swift */,
 				88AB59022A07DDD000D44F06 /* SecondView.swift */,
 				88AB59072A07E9C200D44F06 /* ThirdCore.swift */,
 				88AB59062A07E9C200D44F06 /* ThirdView.swift */,
+				8881DE012A093CC4003154C5 /* ModalCore.swift */,
+				8881DE002A093CC4003154C5 /* ModalView.swift */,
 				88AB58D72A06164200D44F06 /* Assets.xcassets */,
 				88AB58D92A06164200D44F06 /* Preview Content */,
 			);
@@ -168,6 +182,7 @@
 			name = YappProject;
 			packageProductDependencies = (
 				88AB58FE2A07D8FB00D44F06 /* ComposableArchitecture */,
+				071E23C62A09617500AEF7AC /* TCACoordinators */,
 			);
 			productName = YappProject;
 			productReference = 88AB58D02A06164100D44F06 /* YappProject.app */;
@@ -243,6 +258,7 @@
 			mainGroup = 88AB58C72A06164100D44F06;
 			packageReferences = (
 				88AB58FD2A07D8FB00D44F06 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				071E23C52A09617500AEF7AC /* XCRemoteSwiftPackageReference "TCACoordinators" */,
 			);
 			productRefGroup = 88AB58D12A06164100D44F06 /* Products */;
 			projectDirPath = "";
@@ -310,12 +326,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				88AB58D62A06164100D44F06 /* AppView.swift in Sources */,
+				071E23CB2A09641900AEF7AC /* MainPageScreen.swift in Sources */,
 				88AB59052A07E98F00D44F06 /* SecondCore.swift in Sources */,
+				8881DE022A093CC4003154C5 /* ModalView.swift in Sources */,
 				88AB58D42A06164100D44F06 /* YappProjectApp.swift in Sources */,
 				88AB59032A07DDD000D44F06 /* SecondView.swift in Sources */,
 				88AB59082A07E9C200D44F06 /* ThirdView.swift in Sources */,
+				071E23C92A0961CA00AEF7AC /* MainCoordinatorView.swift in Sources */,
 				88AB59012A07DA6E00D44F06 /* YappProjectCore.swift in Sources */,
 				88AB59092A07E9C200D44F06 /* ThirdCore.swift in Sources */,
+				8881DE032A093CC4003154C5 /* ModalCore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -636,6 +656,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		071E23C52A09617500AEF7AC /* XCRemoteSwiftPackageReference "TCACoordinators" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnpatrickmorgan/TCACoordinators.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
 		88AB58FD2A07D8FB00D44F06 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
@@ -647,6 +675,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		071E23C62A09617500AEF7AC /* TCACoordinators */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 071E23C52A09617500AEF7AC /* XCRemoteSwiftPackageReference "TCACoordinators" */;
+			productName = TCACoordinators;
+		};
 		88AB58FE2A07D8FB00D44F06 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 88AB58FD2A07D8FB00D44F06 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;

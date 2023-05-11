@@ -14,7 +14,15 @@ struct SecondView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack {
-        Text(viewStore.title)
+        Button {
+          viewStore.send(.thirdActive(true))
+        } label: {
+          Text("😀 Push Navigation View")
+            .foregroundColor(.blue)
+            .frame(height: 50.0)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16.0)
+        }
       }
       .navigationTitle(viewStore.title)
       .onAppear {
