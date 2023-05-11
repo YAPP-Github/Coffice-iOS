@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		071E23C72A09617500AEF7AC /* TCACoordinators in Frameworks */ = {isa = PBXBuildFile; productRef = 071E23C62A09617500AEF7AC /* TCACoordinators */; };
 		071E23C92A0961CA00AEF7AC /* MainCoordinatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */; };
-		071E23CB2A09641900AEF7AC /* MainPageScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E23CA2A09641900AEF7AC /* MainPageScreen.swift */; };
+		071E23CB2A09641900AEF7AC /* MainScreenCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E23CA2A09641900AEF7AC /* MainScreenCore.swift */; };
 		884C8FBF2A080143001A0878 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 884C8FBE2A080143001A0878 /* .swiftlint.yml */; };
 		8881DE022A093CC4003154C5 /* ModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8881DE002A093CC4003154C5 /* ModalView.swift */; };
 		8881DE032A093CC4003154C5 /* ModalCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8881DE012A093CC4003154C5 /* ModalCore.swift */; };
@@ -48,7 +48,7 @@
 /* Begin PBXFileReference section */
 		071E23C42A08139600AEF7AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinatorView.swift; sourceTree = "<group>"; };
-		071E23CA2A09641900AEF7AC /* MainPageScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageScreen.swift; sourceTree = "<group>"; };
+		071E23CA2A09641900AEF7AC /* MainScreenCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenCore.swift; sourceTree = "<group>"; };
 		884C8FBE2A080143001A0878 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		8881DE002A093CC4003154C5 /* ModalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalView.swift; sourceTree = "<group>"; };
 		8881DE012A093CC4003154C5 /* ModalCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalCore.swift; sourceTree = "<group>"; };
@@ -125,7 +125,7 @@
 				88AB59002A07DA6E00D44F06 /* YappProjectCore.swift */,
 				88AB58D52A06164100D44F06 /* AppView.swift */,
 				071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */,
-				071E23CA2A09641900AEF7AC /* MainPageScreen.swift */,
+				071E23CA2A09641900AEF7AC /* MainScreenCore.swift */,
 				88AB59042A07E98F00D44F06 /* SecondCore.swift */,
 				88AB59022A07DDD000D44F06 /* SecondView.swift */,
 				88AB59072A07E9C200D44F06 /* ThirdCore.swift */,
@@ -326,7 +326,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				88AB58D62A06164100D44F06 /* AppView.swift in Sources */,
-				071E23CB2A09641900AEF7AC /* MainPageScreen.swift in Sources */,
+				071E23CB2A09641900AEF7AC /* MainScreenCore.swift in Sources */,
 				88AB59052A07E98F00D44F06 /* SecondCore.swift in Sources */,
 				8881DE022A093CC4003154C5 /* ModalView.swift in Sources */,
 				88AB58D42A06164100D44F06 /* YappProjectApp.swift in Sources */,
