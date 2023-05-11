@@ -9,6 +9,7 @@ import SwiftUI
 import TCACoordinators
 import ComposableArchitecture
 
+/// Main Tab 화면 CoordinatorView
 struct MainCoordinatorView: View {
   let store: StoreOf<MainCoordinator>
 
@@ -43,6 +44,7 @@ struct MainCoordinatorView: View {
   }
 }
 
+/// Main Tab 화면 전환, 이벤트를 관리
 struct MainCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
     static let initialState: MainCoordinator.State = .init(

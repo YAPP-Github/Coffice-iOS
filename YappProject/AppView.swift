@@ -18,6 +18,7 @@ struct AppView: View {
   var mainView: some View {
     WithViewStore(store) { viewStore in
       VStack {
+        // TODO: Navigation 화면 전환 테스트용 코드, 추후 제거 필요
         Button {
           viewStore.send(.secondActive(true))
         } label: {
@@ -27,6 +28,8 @@ struct AppView: View {
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 16.0)
         }
+
+        // TODO: Modal 화면 전환 테스트용 코드, 추후 제거 필요
         Button {
           debugPrint("Present Modal View")
           viewStore.send(.modalPresented(true))
