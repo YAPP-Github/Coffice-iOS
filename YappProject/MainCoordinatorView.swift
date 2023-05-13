@@ -5,9 +5,9 @@
 //  Created by MinKyeongTae on 2023/05/09.
 //
 
+import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
-import ComposableArchitecture
 
 /// Main Tab 화면 CoordinatorView
 struct MainCoordinatorView: View {
@@ -40,54 +40,6 @@ struct MainCoordinatorView: View {
           then: ModalView.init
         )
       }
-    }
-  }
-}
-
-/// Main Tab 화면 전환, 이벤트를 관리
-struct MainCoordinator: ReducerProtocol {
-  struct State: Equatable, IndexedRouterState {
-    static let initialState: MainCoordinator.State = .init(
-      routes: [.root(.main(.init()), embedInNavigationView: true)]
-    )
-
-    var routes: [Route<MainScreen.State>]
-  }
-
-  enum Action: IndexedRouterAction {
-    case routeAction(Int, action: MainScreen.Action)
-    case updateRoutes([Route<MainScreen.State>])
-  }
-
-  var body: some ReducerProtocol<State, Action> {
-    Reduce<State, Action> { state, action in
-      switch action {
-      case .routeAction(_, .main(.secondActive(true))
-      ):
-        state.routes.push(.second(.init()))
-
-      case .routeAction(_, .second(.thirdActive(true))
-      ):
-        state.routes.push(.third(.init()))
-
-      case .routeAction(_, .main(.modalPresented(true))
-      ):
-        state.routes.presentCover(.modal(.init()))
-
-      case .routeAction(_, .modal(.dismiss)):
-        state.routes.dismiss()
-
-      case .routeAction(_, .third(.popToRootView)):
-        state.routes.popToCurrentNavigationRoot()
-
-      default:
-        return .none
-      }
-
-      return .none
-    }
-    .forEachRoute {
-      MainScreen()
     }
   }
 }
