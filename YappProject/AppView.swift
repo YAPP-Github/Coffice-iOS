@@ -40,6 +40,26 @@ struct AppView: View {
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 16.0)
         }
+
+        Button {
+          viewStore.send(.getCoffees)
+        } label: {
+          Text("💻 Get Coffees")
+            .foregroundColor(.blue)
+            .frame(height: 50.0)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16.0)
+        }
+
+        if let coffeeDescription = viewStore.coffeeDescription {
+          ScrollView(.vertical) {
+            VStack(spacing: 0) {
+              Text(coffeeDescription)
+            }
+            .padding(.horizontal, 16.0)
+          }
+        }
+
         Spacer()
       }
       .navigationTitle(viewStore.title)

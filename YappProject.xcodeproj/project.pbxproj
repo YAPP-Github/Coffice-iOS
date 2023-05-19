@@ -11,6 +11,7 @@
 		071E23C92A0961CA00AEF7AC /* MainCoordinatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */; };
 		071E23CB2A09641900AEF7AC /* MainPageScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071E23CA2A09641900AEF7AC /* MainPageScreen.swift */; };
 		884C8FBF2A080143001A0878 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 884C8FBE2A080143001A0878 /* .swiftlint.yml */; };
+		888031F52A0FACC600A9ECF9 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888031F42A0FACC600A9ECF9 /* APIClient.swift */; };
 		8881DE022A093CC4003154C5 /* ModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8881DE002A093CC4003154C5 /* ModalView.swift */; };
 		8881DE032A093CC4003154C5 /* ModalCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8881DE012A093CC4003154C5 /* ModalCore.swift */; };
 		88AB58D42A06164100D44F06 /* YappProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AB58D32A06164100D44F06 /* YappProjectApp.swift */; };
@@ -50,6 +51,7 @@
 		071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinatorView.swift; sourceTree = "<group>"; };
 		071E23CA2A09641900AEF7AC /* MainPageScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageScreen.swift; sourceTree = "<group>"; };
 		884C8FBE2A080143001A0878 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		888031F42A0FACC600A9ECF9 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		8881DE002A093CC4003154C5 /* ModalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalView.swift; sourceTree = "<group>"; };
 		8881DE012A093CC4003154C5 /* ModalCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalCore.swift; sourceTree = "<group>"; };
 		88AB58D02A06164100D44F06 /* YappProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YappProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +124,7 @@
 			children = (
 				071E23C42A08139600AEF7AC /* Info.plist */,
 				88AB58D32A06164100D44F06 /* YappProjectApp.swift */,
+				888031F42A0FACC600A9ECF9 /* APIClient.swift */,
 				88AB59002A07DA6E00D44F06 /* YappProjectCore.swift */,
 				88AB58D52A06164100D44F06 /* AppView.swift */,
 				071E23C82A0961CA00AEF7AC /* MainCoordinatorView.swift */,
@@ -329,6 +332,7 @@
 				071E23CB2A09641900AEF7AC /* MainPageScreen.swift in Sources */,
 				88AB59052A07E98F00D44F06 /* SecondCore.swift in Sources */,
 				8881DE022A093CC4003154C5 /* ModalView.swift in Sources */,
+				888031F52A0FACC600A9ECF9 /* APIClient.swift in Sources */,
 				88AB58D42A06164100D44F06 /* YappProjectApp.swift in Sources */,
 				88AB59032A07DDD000D44F06 /* SecondView.swift in Sources */,
 				88AB59082A07E9C200D44F06 /* ThirdView.swift in Sources */,
