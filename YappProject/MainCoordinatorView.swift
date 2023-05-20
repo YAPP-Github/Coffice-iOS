@@ -21,24 +21,6 @@ struct MainCoordinatorView: View {
           action: MainScreen.Action.main,
           then: AppView.init
         )
-
-        CaseLet(
-          state: /MainScreen.State.second,
-          action: MainScreen.Action.second,
-          then: SecondView.init
-        )
-
-        CaseLet(
-          state: /MainScreen.State.third,
-          action: MainScreen.Action.third,
-          then: ThirdView.init
-        )
-
-        CaseLet(
-          state: /MainScreen.State.modal,
-          action: MainScreen.Action.modal,
-          then: ModalView.init
-        )
       }
     }
   }

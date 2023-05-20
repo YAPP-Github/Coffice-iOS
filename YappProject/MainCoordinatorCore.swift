@@ -27,29 +27,9 @@ struct MainCoordinator: ReducerProtocol {
   var body: some ReducerProtocol<State, Action> {
     Reduce<State, Action> { state, action in
       switch action {
-      case .routeAction(_, .main(.secondActive(true))
-      ):
-        state.routes.push(.second(.init()))
-
-      case .routeAction(_, .second(.thirdActive(true))
-      ):
-        state.routes.push(.third(.init()))
-
-      case .routeAction(_, .main(.modalPresented(true))
-      ):
-        state.routes.presentCover(.modal(.init()))
-
-      case .routeAction(_, .modal(.dismiss)):
-        state.routes.dismiss()
-
-      case .routeAction(_, .third(.popToRootView)):
-        state.routes.popToCurrentNavigationRoot()
-
       default:
         return .none
       }
-
-      return .none
     }
     .forEachRoute {
       MainScreen()
