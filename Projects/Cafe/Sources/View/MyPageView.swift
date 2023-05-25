@@ -1,15 +1,16 @@
 //
-//  HomeView.swift
-//  YappProject
+//  MyPageView.swift
+//  Cafe
 //
-//  Created by Min Min on 2023/05/06.
+//  Created by MinKyeongTae on 2023/05/26.
+//  Copyright © 2023 com.cafe. All rights reserved.
 //
 
 import ComposableArchitecture
 import SwiftUI
 
-struct HomeView: View {
-  let store: StoreOf<Home>
+struct MyPageView: View {
+  let store: StoreOf<MyPage>
 
   var body: some View {
     mainView
@@ -18,20 +19,20 @@ struct HomeView: View {
   var mainView: some View {
     WithViewStore(store) { viewStore in
       VStack {
-        Text("HomeView")
+        Text("MyPageView")
       }
-      .navigationBarTitle(viewStore.title)
+      .navigationTitle(viewStore.title)
       .navigationBarTitleDisplayMode(.inline)
     }
   }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct MyPageView_Previews: PreviewProvider {
   static var previews: some View {
-    HomeView(
+    MyPageView(
       store: .init(
         initialState: .init(),
-        reducer: Home()
+        reducer: MyPage()
       )
     )
   }

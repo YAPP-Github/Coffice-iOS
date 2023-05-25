@@ -11,12 +11,15 @@ import SwiftUI
 import TCACoordinators
 
 enum TabBarItemType: CaseIterable {
-  case main
+  case home
+  case myPage
 
   var title: String {
     switch self {
-    case .main:
+    case .home:
       return "메인"
+    case .myPage:
+      return "마이페이지"
     }
   }
 }
@@ -44,18 +47,20 @@ struct TabBarItemViewModel: Hashable {
 struct MainTabCoordinator: ReducerProtocol {
   struct State: Equatable {
     static let initialState = MainTabCoordinator.State(
-      homeState: .initialState
+      homeState: .initialState,
+      myPageState: .initialState
     )
 
     var homeState: HomeCoordinator.State
+    var myPageState: MyPageCoordinator.State
 
-    private let tabBarItemTypes: [TabBarItemType] = [.main]
-    private(set) var tabBarItemViewModels: [TabBarItemViewModel] = [
-      TabBarItemViewModel(type: .main, isSelected: true)
-    ]
-
+    private let tabBarItemTypes: [TabBarItemType] = [.home, .myPage]
     private(set) var isTabBarViewPresented = true
-    var selectedTab: TabBarItemType = .main {
+    private(set) var tabBarItemViewModels: [TabBarItemViewModel] = [
+      TabBarItemViewModel(type: .home, isSelected: true),
+      TabBarItemViewModel(type: .myPage, isSelected: false)
+    ]
+    var selectedTab: TabBarItemType = .home {
       didSet {
         tabBarItemViewModels = tabBarItemTypes.map {
           TabBarItemViewModel(type: $0, isSelected: selectedTab == $0)
@@ -65,13 +70,14 @@ struct MainTabCoordinator: ReducerProtocol {
   }
 
   enum Action {
-    case main(HomeCoordinator.Action)
+    case home(HomeCoordinator.Action)
+    case myPage(MyPageCoordinator.Action)
     case selectTab(TabBarItemType)
     case tabBarView(isPresented: Bool)
   }
 
   var body: some ReducerProtocol<State, Action> {
-    Scope(state: \State.homeState, action: /Action.main) {
+    Scope(state: \State.homeState, action: /Action.home) {
       HomeCoordinator()
     }
 

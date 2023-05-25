@@ -6,8 +6,5 @@
 //
 
 public final class CafeNetwork {
-
-    public init() {
-        
-    }
+    public init() {}
 }

@@ -1,15 +1,15 @@
 //
-//  YappProjectCore.swift
-//  YappProject
+//  HomeCore.swift
+//  Home
 //
 //  Created by Min Min on 2023/05/07.
 //
 
 import ComposableArchitecture
 
-struct YappProject: ReducerProtocol {
+struct Home: ReducerProtocol {
   struct State: Equatable {
-    let title = "YappProject"
+    let title = "Home"
     var isSplashView = false
     var coffeeResponse: CoffeeResponse?
     var coffeeDescription: String? {
@@ -34,7 +34,7 @@ struct YappProject: ReducerProtocol {
   @Dependency(\.apiClient) private var apiClient
 
   var body: some ReducerProtocol<State, Action> {
-    Reduce { state, action in
+    Reduce { _, action in
       switch action {
       case .onAppear:
         return .none

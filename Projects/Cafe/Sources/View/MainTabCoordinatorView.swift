@@ -18,11 +18,18 @@ struct MainTabCoordinatorView: View {
       VStack {
         Group {
           switch viewStore.selectedTab {
-          case .main:
+          case .home:
             HomeCoordinatorView(
               store: store.scope(
                 state: \.homeState,
-                action: MainTabCoordinator.Action.main
+                action: MainTabCoordinator.Action.home
+              )
+            )
+          case .myPage:
+            MyPageCoordinatorView(
+              store: store.scope(
+                state: \.myPageState,
+                action: MainTabCoordinator.Action.myPage
               )
             )
           }
