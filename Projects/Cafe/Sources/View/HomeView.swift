@@ -18,10 +18,13 @@ struct HomeView: View {
   var mainView: some View {
     WithViewStore(store) { viewStore in
       VStack {
+        Spacer()
         Text("HomeView")
+        Spacer()
       }
-      .navigationBarTitle(viewStore.title)
-      .navigationBarTitleDisplayMode(.inline)
+      .customNavigationBar(centerView: {
+        Text(viewStore.title)
+      })
     }
   }
 }

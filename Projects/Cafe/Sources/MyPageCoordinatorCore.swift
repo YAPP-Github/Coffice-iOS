@@ -25,7 +25,7 @@ struct MyPageCoordinator: ReducerProtocol {
   }
 
   var body: some ReducerProtocol<State, Action> {
-    Reduce<State, Action> { state, action in
+    Reduce<State, Action> { _, action in
       switch action {
       default:
         return .none

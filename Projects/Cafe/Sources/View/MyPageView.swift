@@ -19,10 +19,13 @@ struct MyPageView: View {
   var mainView: some View {
     WithViewStore(store) { viewStore in
       VStack {
+        Spacer()
         Text("MyPageView")
+        Spacer()
       }
-      .navigationTitle(viewStore.title)
-      .navigationBarTitleDisplayMode(.inline)
+      .customNavigationBar(centerView: {
+        Text(viewStore.title)
+      })
     }
   }
 }
