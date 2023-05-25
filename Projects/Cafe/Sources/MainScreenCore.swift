@@ -10,7 +10,7 @@ import TCACoordinators
 
 // MARK: - MainScreenCore
 
-struct MainScreen: ReducerProtocol {
+struct HomeScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지
     case main(YappProject.State)

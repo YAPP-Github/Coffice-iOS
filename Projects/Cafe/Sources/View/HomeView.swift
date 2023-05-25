@@ -8,7 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 
-struct AppView: View {
+struct HomeView: View {
   let store: StoreOf<YappProject>
 
   var body: some View {
@@ -28,7 +28,7 @@ struct AppView: View {
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    AppView(
+    HomeView(
       store: .init(
         initialState: .init(),
         reducer: YappProject()

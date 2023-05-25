@@ -11,10 +11,10 @@ import SwiftUI
 struct YappProjectApp: App {
   var body: some Scene {
     WindowGroup {
-      MainCoordinatorView(
+      MainTabCoordinatorView(
         store: .init(
           initialState: .initialState,
-          reducer: MainCoordinator()
+          reducer: MainTabCoordinator()
         )
       )
     }
