@@ -1,8 +1,8 @@
 ---
-name: ⭐️ Feature
-about: "Feature와 관련된 이슈 템플릿"
+name: ♻️ Refactor
+about: "Refactoring과 관련된 이슈 템플릿"
 title: "issue title"
-labels: "Feature"
+labels: "Refactor"
 assignees: []
 
 ---

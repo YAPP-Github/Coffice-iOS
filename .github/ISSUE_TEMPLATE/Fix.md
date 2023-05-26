@@ -1,9 +1,9 @@
 ---
-name: Bug report
+name: 🚨 Bug
 about: "버그 수정시에 사용할 이슈 템플릿"
 title: "[Bug] issue title"
 labels: "Fix"
-assignees: ''
+assignees: []
 
 ---
 

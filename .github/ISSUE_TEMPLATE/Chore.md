@@ -1,8 +1,8 @@
 ---
-name: ⭐️ Feature
-about: "Feature와 관련된 이슈 템플릿"
+name: 🧹 Chore
+about: "Chore와 관련된 이슈 템플릿"
 title: "issue title"
-labels: "Feature"
+labels: "Chore"
 assignees: []
 
 ---
