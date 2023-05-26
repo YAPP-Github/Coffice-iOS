@@ -1,5 +1,5 @@
 //
-//  MainTabCoordinator.swift
+//  MainCoordinator.swift
 //  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/26.
@@ -42,50 +42,47 @@ struct TabBarItemViewModel: Hashable {
   }
 }
 
-// MARK: - MainTabCoordniatorCore
+// MARK: - MainCoordniatorCore
 
-struct MainTabCoordinator: ReducerProtocol {
+struct MainCoordinator: ReducerProtocol {
   struct State: Equatable {
-    static let initialState = MainTabCoordinator.State(
+    static let initialState = MainCoordinator.State(
       homeState: .initialState,
-      myPageState: .initialState
+      myPageState: .initialState,
+      tabBarState: .init()
     )
 
     var homeState: HomeCoordinator.State
     var myPageState: MyPageCoordinator.State
-
-    private let tabBarItemTypes: [TabBarItemType] = [.home, .myPage]
-    private(set) var isTabBarViewPresented = true
-    private(set) var tabBarItemViewModels: [TabBarItemViewModel] = [
-      TabBarItemViewModel(type: .home, isSelected: true),
-      TabBarItemViewModel(type: .myPage, isSelected: false)
-    ]
-    var selectedTab: TabBarItemType = .home {
-      didSet {
-        tabBarItemViewModels = tabBarItemTypes.map {
-          TabBarItemViewModel(type: $0, isSelected: selectedTab == $0)
-        }
-      }
+    var tabBarState: TabBar.State
+    var selectedTab: TabBarItemType {
+      tabBarState.selectedTab
     }
   }
 
   enum Action {
     case home(HomeCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
-    case selectTab(TabBarItemType)
-    case tabBarView(isPresented: Bool)
+    case tabBar(TabBar.Action)
   }
 
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \State.homeState, action: /Action.home) {
       HomeCoordinator()
     }
+    
+    Scope(state: \State.myPageState, action: /Action.myPage) {
+      MyPageCoordinator()
+    }
+    
+    Scope(state: \State.tabBarState, action: /Action.tabBar) {
+      TabBar()
+    }
 
     Reduce { state, action in
       switch action {
-      case .selectTab(let itemType):
+      case let .tabBar(.selectTab(itemType)):
         debugPrint("selectedTab : \(itemType)")
-        state.selectedTab = itemType
         return .none
 
       default:

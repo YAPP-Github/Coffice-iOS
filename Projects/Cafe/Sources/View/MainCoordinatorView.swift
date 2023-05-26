@@ -10,8 +10,8 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-struct MainTabCoordinatorView: View {
-  let store: StoreOf<MainTabCoordinator>
+struct MainCoordinatorView: View {
+  let store: StoreOf<MainCoordinator>
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -22,21 +22,24 @@ struct MainTabCoordinatorView: View {
             HomeCoordinatorView(
               store: store.scope(
                 state: \.homeState,
-                action: MainTabCoordinator.Action.home
+                action: MainCoordinator.Action.home
               )
             )
           case .myPage:
             MyPageCoordinatorView(
               store: store.scope(
                 state: \.myPageState,
-                action: MainTabCoordinator.Action.myPage
+                action: MainCoordinator.Action.myPage
               )
             )
           }
 
-          if viewStore.isTabBarViewPresented {
-            TabBarView(store: store)
-          }
+          TabBarView(
+            store: store.scope(
+              state: \.tabBarState,
+              action: MainCoordinator.Action.tabBar
+            )
+          )
         }
       }
     }

@@ -10,9 +10,19 @@ import ComposableArchitecture
 import SwiftUI
 
 struct TabBarView: View {
-  let store: StoreOf<MainTabCoordinator>
+  let store: StoreOf<TabBar>
 
   var body: some View {
+    WithViewStore(store) { viewStore in
+      if viewStore.isTabBarViewPresented {
+        mainView
+      } else {
+        EmptyView()
+      }
+    }
+  }
+
+  var mainView: some View {
     WithViewStore(store) { viewStore in
       HStack(spacing: 0) {
         ForEach(viewStore.tabBarItemViewModels, id: \.self) { viewModel in
