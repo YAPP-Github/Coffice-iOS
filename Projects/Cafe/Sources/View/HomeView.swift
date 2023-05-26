@@ -1,15 +1,15 @@
 //
-//  AppView.swift
+//  HomeView.swift
 //  YappProject
 //
 //  Created by Min Min on 2023/05/06.
 //
 
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 
-struct AppView: View {
-  let store: StoreOf<YappProject>
+struct HomeView: View {
+  let store: StoreOf<Home>
 
   var body: some View {
     mainView
@@ -19,19 +19,22 @@ struct AppView: View {
     WithViewStore(store) { viewStore in
       VStack {
         Spacer()
+        Text("HomeView")
+        Spacer()
       }
-      .navigationTitle(viewStore.title)
-      .navigationBarTitleDisplayMode(.inline)
+      .customNavigationBar(centerView: {
+        Text(viewStore.title)
+      })
     }
   }
 }
 
 struct ContentView_Previews: PreviewProvider {
   static var previews: some View {
-    AppView(
+    HomeView(
       store: .init(
         initialState: .init(),
-        reducer: YappProject()
+        reducer: Home()
       )
     )
   }

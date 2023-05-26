@@ -1,5 +1,5 @@
 //
-//  MainScreen.swift
+//  HomeScreen.swift
 //  YappProject
 //
 //  Created by MinKyeongTae on 2023/05/09.
@@ -10,14 +10,14 @@ import TCACoordinators
 
 // MARK: - MainScreenCore
 
-struct MainScreen: ReducerProtocol {
+struct HomeScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지
-    case main(YappProject.State)
+    case main(Home.State)
   }
 
   enum Action {
-    case main(YappProject.Action)
+    case main(Home.Action)
   }
 
   var body: some ReducerProtocol<State, Action> {
@@ -25,7 +25,7 @@ struct MainScreen: ReducerProtocol {
       state: /State.main,
       action: /Action.main
     ) {
-      YappProject()
+      Home()
     }
   }
 }
