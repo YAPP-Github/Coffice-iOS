@@ -60,7 +60,7 @@ struct MainCoordinator: ReducerProtocol {
     }
   }
 
-  enum Action {
+  enum Action: Equatable {
     case home(HomeCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)

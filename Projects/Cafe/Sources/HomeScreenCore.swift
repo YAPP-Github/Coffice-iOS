@@ -16,7 +16,7 @@ struct HomeScreen: ReducerProtocol {
     case main(Home.State)
   }
 
-  enum Action {
+  enum Action: Equatable {
     case main(Home.Action)
   }
 

@@ -16,7 +16,7 @@ struct MyPageScreen: ReducerProtocol {
     case myPage(MyPage.State)
   }
 
-  enum Action {
+  enum Action: Equatable {
     case myPage(MyPage.Action)
   }
 

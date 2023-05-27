@@ -19,7 +19,7 @@ struct HomeCoordinator: ReducerProtocol {
     var routes: [Route<HomeScreen.State>]
   }
 
-  enum Action: IndexedRouterAction {
+  enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: HomeScreen.Action)
     case updateRoutes([Route<HomeScreen.State>])
   }

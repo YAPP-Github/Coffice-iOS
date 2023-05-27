@@ -19,7 +19,7 @@ struct MyPageCoordinator: ReducerProtocol {
     var routes: [Route<MyPageScreen.State>]
   }
 
-  enum Action: IndexedRouterAction {
+  enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: MyPageScreen.Action)
     case updateRoutes([Route<MyPageScreen.State>])
   }
