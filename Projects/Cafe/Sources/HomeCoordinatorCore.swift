@@ -1,6 +1,6 @@
 //
 //  HomeCoordinatorCore.swift
-//  YappProject
+//  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/12.
 //
@@ -13,18 +13,18 @@ import TCACoordinators
 struct HomeCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
-      routes: [.root(.main(.init()), embedInNavigationView: true)]
+      routes: [.root(.home(.init()), embedInNavigationView: true)]
     )
 
     var routes: [Route<HomeScreen.State>]
   }
 
-  enum Action: IndexedRouterAction {
+  enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: HomeScreen.Action)
     case updateRoutes([Route<HomeScreen.State>])
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<HomeCoordinator> {
     Reduce<State, Action> { _, action in
       switch action {
       default:

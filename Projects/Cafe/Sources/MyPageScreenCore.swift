@@ -1,6 +1,6 @@
 //
-//  MyPageScreen.swift
-//  YappProject
+//  MyPageScreenCore.swift
+//  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/09.
 //
@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import TCACoordinators
 
-// MARK: - MainScreenCore
+// MARK: - MyPageScreenCore
 
 struct MyPageScreen: ReducerProtocol {
   enum State: Equatable {
@@ -16,11 +16,11 @@ struct MyPageScreen: ReducerProtocol {
     case myPage(MyPage.State)
   }
 
-  enum Action {
+  enum Action: Equatable {
     case myPage(MyPage.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<MyPageScreen> {
     Scope(
       state: /State.myPage,
       action: /Action.myPage

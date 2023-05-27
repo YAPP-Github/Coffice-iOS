@@ -1,6 +1,6 @@
 //
 //  MyPageCoordinatorCore.swift
-//  YappProject
+//  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/12.
 //
@@ -19,12 +19,12 @@ struct MyPageCoordinator: ReducerProtocol {
     var routes: [Route<MyPageScreen.State>]
   }
 
-  enum Action: IndexedRouterAction {
+  enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: MyPageScreen.Action)
     case updateRoutes([Route<MyPageScreen.State>])
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<MyPageCoordinator> {
     Reduce<State, Action> { _, action in
       switch action {
       default:

@@ -1,5 +1,5 @@
 //
-//  MainTabCoordinatorView.swift
+//  MainCoordinatorView.swift
 //  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/26.
@@ -41,6 +41,9 @@ struct MainCoordinatorView: View {
             )
           )
         }
+      }
+      .onAppear {
+        viewStore.send(.onAppear)
       }
     }
   }

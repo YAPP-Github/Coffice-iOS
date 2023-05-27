@@ -1,5 +1,5 @@
 //
-//  MainCoordinator.swift
+//  MainCoordinatorCore.swift
 //  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/26.
@@ -60,13 +60,14 @@ struct MainCoordinator: ReducerProtocol {
     }
   }
 
-  enum Action {
+  enum Action: Equatable {
     case home(HomeCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
+    case onAppear
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<MainCoordinator> {
     Scope(state: \State.homeState, action: /Action.home) {
       HomeCoordinator()
     }
@@ -81,6 +82,9 @@ struct MainCoordinator: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        return .none
+
       case let .tabBar(.selectTab(itemType)):
         debugPrint("selectedTab : \(itemType)")
         return .none

@@ -1,6 +1,6 @@
 //
-//  YappProjectApp.swift
-//  YappProject
+//  CafeApp.swift
+//  Cafe
 //
 //  Created by Min Min on 2023/05/06.
 //
@@ -8,13 +8,13 @@
 import SwiftUI
 
 @main
-struct YappProjectApp: App {
+struct CafeApp: App {
   var body: some Scene {
     WindowGroup {
-      MainCoordinatorView(
+      AppCoordinatorView(
         store: .init(
           initialState: .initialState,
-          reducer: MainCoordinator()
+          reducer: AppCoordinator()
         )
       )
     }

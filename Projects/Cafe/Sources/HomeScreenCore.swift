@@ -1,6 +1,6 @@
 //
 //  HomeScreen.swift
-//  YappProject
+//  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/09.
 //
@@ -8,22 +8,20 @@
 import ComposableArchitecture
 import TCACoordinators
 
-// MARK: - MainScreenCore
-
 struct HomeScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지
-    case main(Home.State)
+    case home(Home.State)
   }
 
-  enum Action {
-    case main(Home.Action)
+  enum Action: Equatable {
+    case home(Home.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<HomeScreen> {
     Scope(
-      state: /State.main,
-      action: /Action.main
+      state: /State.home,
+      action: /Action.home
     ) {
       Home()
     }

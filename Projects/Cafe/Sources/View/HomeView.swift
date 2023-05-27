@@ -1,6 +1,6 @@
 //
 //  HomeView.swift
-//  YappProject
+//  Cafe
 //
 //  Created by Min Min on 2023/05/06.
 //
@@ -20,6 +20,12 @@ struct HomeView: View {
       VStack {
         Spacer()
         Text("HomeView")
+          .padding(.bottom, 10)
+        Button {
+          viewStore.send(.pushLoginView)
+        } label: {
+          Text("로그인")
+        }
         Spacer()
       }
       .customNavigationBar(centerView: {
