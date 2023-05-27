@@ -17,7 +17,6 @@ struct AppCoordinator: ReducerProtocol {
     )
     
     var routes: [Route<AppScreen.State>]
-    var mainState: MainCoordinator.State = .initialState
     var isLoggedIn = false
   }
 
@@ -26,7 +25,6 @@ struct AppCoordinator: ReducerProtocol {
     case updateRoutes([Route<AppScreen.State>])
     case login
     case useAppAsNonMember
-    case main(MainCoordinator.Action)
   }
 
   var body: some ReducerProtocolOf<AppCoordinator> {
@@ -38,11 +36,23 @@ struct AppCoordinator: ReducerProtocol {
       case .useAppAsNonMember:
         return .none
         
-      case .main(let action):
-        switch action {
-        default:
-          return .none
+      case .routeAction(_, .main(.onAppear)):
+        if !state.isLoggedIn {
+          state.routes.presentCover(.login(.initialState))
         }
+        return .none
+        
+      case .routeAction(_, .main(.home(
+          .routeAction(_, .home(.pushLoginView))
+        ))):
+        state.routes.presentCover(.login(.initialState))
+        return .none
+
+      case .routeAction(_, .login(
+          .routeAction(_, action: .main(.useAppAsNonMember))
+        )):
+        state.routes.dismiss()
+        return .none
 
       default:
         return .none

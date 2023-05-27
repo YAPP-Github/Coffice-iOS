@@ -21,6 +21,12 @@ struct AppCoordinatorView: View {
           action: AppScreen.Action.main,
           then: MainCoordinatorView.init
         )
+
+        CaseLet(
+          state: /AppScreen.State.login,
+          action: AppScreen.Action.login,
+          then: LoginCoordinatorView.init
+        )
       }
     }
   }

@@ -42,6 +42,9 @@ struct MainCoordinatorView: View {
           )
         }
       }
+      .onAppear {
+        viewStore.send(.onAppear)
+      }
     }
   }
 }

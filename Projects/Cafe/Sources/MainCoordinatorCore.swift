@@ -64,6 +64,7 @@ struct MainCoordinator: ReducerProtocol {
     case home(HomeCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
+    case onAppear
   }
 
   var body: some ReducerProtocol<State, Action> {
@@ -81,6 +82,9 @@ struct MainCoordinator: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        return .none
+
       case let .tabBar(.selectTab(itemType)):
         debugPrint("selectedTab : \(itemType)")
         return .none

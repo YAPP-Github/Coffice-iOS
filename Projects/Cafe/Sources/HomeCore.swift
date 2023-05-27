@@ -27,8 +27,9 @@ struct Home: ReducerProtocol {
   }
 
   enum Action: Equatable {
-    case onAppear
+//    case onAppear
     case getCoffees
+    case pushLoginView
   }
 
   @Dependency(\.apiClient) private var apiClient
@@ -36,9 +37,6 @@ struct Home: ReducerProtocol {
   var body: some ReducerProtocol<State, Action> {
     Reduce { _, action in
       switch action {
-      case .onAppear:
-        return .none
-
       default:
         return .none
       }

@@ -1,5 +1,5 @@
 //
-//  MyPageScreen.swift
+//  MyPageScreenCore.swift
 //  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/09.

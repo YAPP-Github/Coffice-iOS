@@ -20,6 +20,12 @@ struct HomeView: View {
       VStack {
         Spacer()
         Text("HomeView")
+          .padding(.bottom, 10)
+        Button {
+          viewStore.send(.pushLoginView)
+        } label: {
+          Text("로그인")
+        }
         Spacer()
       }
       .customNavigationBar(centerView: {
