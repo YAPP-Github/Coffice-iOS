@@ -1,6 +1,6 @@
 //
 //  HomeView.swift
-//  YappProject
+//  Cafe
 //
 //  Created by Min Min on 2023/05/06.
 //

@@ -1,6 +1,6 @@
 //
 //  HomeScreen.swift
-//  YappProject
+//  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/09.
 //
@@ -13,17 +13,17 @@ import TCACoordinators
 struct HomeScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지
-    case main(Home.State)
+    case home(Home.State)
   }
 
   enum Action: Equatable {
-    case main(Home.Action)
+    case home(Home.Action)
   }
 
   var body: some ReducerProtocol<State, Action> {
     Scope(
-      state: /State.main,
-      action: /Action.main
+      state: /State.home,
+      action: /Action.home
     ) {
       Home()
     }

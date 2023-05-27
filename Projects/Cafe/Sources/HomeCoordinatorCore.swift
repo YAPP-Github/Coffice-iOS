@@ -1,6 +1,6 @@
 //
 //  HomeCoordinatorCore.swift
-//  YappProject
+//  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/12.
 //
@@ -13,7 +13,7 @@ import TCACoordinators
 struct HomeCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
-      routes: [.root(.main(.init()), embedInNavigationView: true)]
+      routes: [.root(.home(.init()), embedInNavigationView: true)]
     )
 
     var routes: [Route<HomeScreen.State>]

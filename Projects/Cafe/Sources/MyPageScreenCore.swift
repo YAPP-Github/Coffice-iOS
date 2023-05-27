@@ -1,6 +1,6 @@
 //
 //  MyPageScreen.swift
-//  YappProject
+//  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/09.
 //

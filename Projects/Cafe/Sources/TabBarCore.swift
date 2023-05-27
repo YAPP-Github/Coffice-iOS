@@ -33,7 +33,7 @@ struct TabBar: ReducerProtocol {
     case tabBarView(isPresented: Bool)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<TabBar> {
     Reduce { state, action in
       switch action {
       case .selectTab(let itemType):

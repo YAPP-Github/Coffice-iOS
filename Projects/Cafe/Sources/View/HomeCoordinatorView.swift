@@ -1,6 +1,6 @@
 //
 //  HomeCoordinatorView.swift
-//  YappProject
+//  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/09.
 //
@@ -9,7 +9,6 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-/// Main Tab 화면 CoordinatorView
 struct HomeCoordinatorView: View {
   let store: StoreOf<HomeCoordinator>
 
@@ -17,8 +16,8 @@ struct HomeCoordinatorView: View {
     TCARouter(store) { screen in
       SwitchStore(screen) {
         CaseLet(
-          state: /HomeScreen.State.main,
-          action: HomeScreen.Action.main,
+          state: /HomeScreen.State.home,
+          action: HomeScreen.Action.home,
           then: HomeView.init
         )
       }
