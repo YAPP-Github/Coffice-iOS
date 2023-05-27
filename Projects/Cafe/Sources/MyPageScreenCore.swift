@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import TCACoordinators
 
-// MARK: - MainScreenCore
+// MARK: - MyPageScreenCore
 
 struct MyPageScreen: ReducerProtocol {
   enum State: Equatable {

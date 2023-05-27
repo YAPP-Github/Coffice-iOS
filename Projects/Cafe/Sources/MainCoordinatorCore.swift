@@ -1,5 +1,5 @@
 //
-//  MainCoordinator.swift
+//  MainCoordinatorCore.swift
 //  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/26.

@@ -8,8 +8,6 @@
 import ComposableArchitecture
 import TCACoordinators
 
-// MARK: - MainScreenCore
-
 struct HomeScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지

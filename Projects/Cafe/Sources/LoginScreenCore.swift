@@ -9,8 +9,6 @@
 import ComposableArchitecture
 import TCACoordinators
 
-// MARK: - LoginScreenCore
-
 struct LoginScreen: ReducerProtocol {
   enum State: Equatable {
     /// 로그인 메인 페이지

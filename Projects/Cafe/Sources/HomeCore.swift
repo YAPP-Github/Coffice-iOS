@@ -27,7 +27,6 @@ struct Home: ReducerProtocol {
   }
 
   enum Action: Equatable {
-//    case onAppear
     case getCoffees
     case pushLoginView
   }
