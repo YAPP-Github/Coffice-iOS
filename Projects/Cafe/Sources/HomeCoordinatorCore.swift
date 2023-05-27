@@ -24,7 +24,7 @@ struct HomeCoordinator: ReducerProtocol {
     case updateRoutes([Route<HomeScreen.State>])
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<HomeCoordinator> {
     Reduce<State, Action> { _, action in
       switch action {
       default:

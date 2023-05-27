@@ -34,7 +34,7 @@ struct Home: ReducerProtocol {
 
   @Dependency(\.apiClient) private var apiClient
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<Home> {
     Reduce { _, action in
       switch action {
       default:

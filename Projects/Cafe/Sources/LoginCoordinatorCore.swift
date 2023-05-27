@@ -24,7 +24,7 @@ struct LoginCoordinator: ReducerProtocol {
     case updateRoutes([Route<LoginScreen.State>])
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<LoginCoordinator> {
     Reduce<State, Action> { _, action in
       switch action {
       default:

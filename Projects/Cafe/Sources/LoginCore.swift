@@ -24,10 +24,18 @@ struct Login: ReducerProtocol {
 
   @Dependency(\.apiClient) private var apiClient
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<Login> {
     Reduce { _, action in
       switch action {
       case .onAppear:
+        return .none
+        
+      case .kakaoLoginButtonClicked:
+        debugPrint("kakao login")
+        return .none
+
+      case .appleLoginButtonClicked:
+        debugPrint("apple login")
         return .none
 
       default:

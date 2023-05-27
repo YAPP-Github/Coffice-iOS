@@ -21,7 +21,7 @@ struct LoginScreen: ReducerProtocol {
     case main(Login.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<LoginScreen> {
     Scope(
       state: /State.main,
       action: /Action.main

@@ -20,7 +20,7 @@ struct MyPageScreen: ReducerProtocol {
     case myPage(MyPage.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<MyPageScreen> {
     Scope(
       state: /State.myPage,
       action: /Action.myPage

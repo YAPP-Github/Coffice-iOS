@@ -67,7 +67,7 @@ struct MainCoordinator: ReducerProtocol {
     case onAppear
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<MainCoordinator> {
     Scope(state: \State.homeState, action: /Action.home) {
       HomeCoordinator()
     }

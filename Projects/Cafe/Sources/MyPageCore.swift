@@ -19,7 +19,7 @@ struct MyPage: ReducerProtocol {
 
   @Dependency(\.apiClient) private var apiClient
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<MyPage> {
     Reduce { _, action in
       switch action {
       case .onAppear:

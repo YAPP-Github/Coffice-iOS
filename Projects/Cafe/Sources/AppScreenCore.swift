@@ -24,7 +24,7 @@ struct AppScreen: ReducerProtocol {
     case login(LoginCoordinator.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<AppScreen> {
     Scope(
       state: /State.main,
       action: /Action.main

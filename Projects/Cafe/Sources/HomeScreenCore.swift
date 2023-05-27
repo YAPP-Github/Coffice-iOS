@@ -20,7 +20,7 @@ struct HomeScreen: ReducerProtocol {
     case home(Home.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<HomeScreen> {
     Scope(
       state: /State.home,
       action: /Action.home

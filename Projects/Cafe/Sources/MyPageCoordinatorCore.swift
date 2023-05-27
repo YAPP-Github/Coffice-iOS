@@ -24,7 +24,7 @@ struct MyPageCoordinator: ReducerProtocol {
     case updateRoutes([Route<MyPageScreen.State>])
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<MyPageCoordinator> {
     Reduce<State, Action> { _, action in
       switch action {
       default:
