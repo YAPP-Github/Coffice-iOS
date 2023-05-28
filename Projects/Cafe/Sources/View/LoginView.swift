@@ -26,7 +26,7 @@ struct LoginView: View {
         } label: {
           Text("카카오 로그인")
         }
-        
+
         Button {
           viewStore.send(.appleLoginButtonClicked)
         } label: {

@@ -15,7 +15,7 @@ struct AppCoordinator: ReducerProtocol {
     static let initialState: State = .init(
       routes: [.root(.main(.initialState), embedInNavigationView: true)]
     )
-    
+
     var routes: [Route<AppScreen.State>]
     var isLoggedIn = false
   }
@@ -35,22 +35,22 @@ struct AppCoordinator: ReducerProtocol {
 
       case .useAppAsNonMember:
         return .none
-        
+
       case .routeAction(_, .main(.onAppear)):
         if !state.isLoggedIn {
           state.routes.presentCover(.login(.initialState))
         }
         return .none
-        
+
       case .routeAction(_, .main(.home(
-          .routeAction(_, .home(.pushLoginView))
-        ))):
+        .routeAction(_, .home(.pushLoginView))
+      ))):
         state.routes.presentCover(.login(.initialState))
         return .none
 
       case .routeAction(_, .login(
-          .routeAction(_, action: .main(.useAppAsNonMember))
-        )):
+        .routeAction(_, action: .main(.useAppAsNonMember))
+      )):
         state.routes.dismiss()
         return .none
 

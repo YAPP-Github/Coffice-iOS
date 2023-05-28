@@ -29,7 +29,7 @@ struct Login: ReducerProtocol {
       switch action {
       case .onAppear:
         return .none
-        
+
       case .kakaoLoginButtonClicked:
         debugPrint("kakao login")
         return .none
