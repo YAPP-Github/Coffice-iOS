@@ -71,11 +71,11 @@ struct MainCoordinator: ReducerProtocol {
     Scope(state: \State.homeState, action: /Action.home) {
       HomeCoordinator()
     }
-    
+
     Scope(state: \State.myPageState, action: /Action.myPage) {
       MyPageCoordinator()
     }
-    
+
     Scope(state: \State.tabBarState, action: /Action.tabBar) {
       TabBar()
     }
