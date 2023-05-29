@@ -15,8 +15,10 @@ struct MainCoordinatorView: View {
 
   var body: some View {
     WithViewStore(store) { viewStore in
-      VStack {
-        mainView
+      ZStack {
+        NavigationView {
+          mainView
+        }
         tabBarView
       }
       .onAppear {

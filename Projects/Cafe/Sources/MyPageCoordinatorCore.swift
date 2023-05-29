@@ -24,8 +24,16 @@ struct MyPageCoordinator: ReducerProtocol {
   }
 
   var body: some ReducerProtocolOf<MyPageCoordinator> {
-    Reduce<State, Action> { _, action in
+    Reduce<State, Action> { state, action in
       switch action {
+      case .routeAction(_, action: .myPage(.pushToServiceTermsView)):
+        state.routes.push(.serviceTerms(.initialState))
+        return .none
+
+      case .routeAction(_, action: .serviceTerms(.popView)):
+        state.routes.pop()
+        return .none
+
       default:
         return .none
       }

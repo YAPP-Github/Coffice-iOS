@@ -21,6 +21,12 @@ struct MyPageView: View {
       VStack {
         Spacer()
         Text("MyPageView")
+
+        Button {
+          viewStore.send(.pushToServiceTermsView)
+        } label: {
+          Text("서비스 이용 약관")
+        }
         Spacer()
       }
       .customNavigationBar(centerView: {

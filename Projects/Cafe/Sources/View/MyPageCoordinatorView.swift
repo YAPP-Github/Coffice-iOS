@@ -21,6 +21,12 @@ struct MyPageCoordinatorView: View {
           action: MyPageScreen.Action.myPage,
           then: MyPageView.init
         )
+
+        CaseLet(
+          state: /MyPageScreen.State.serviceTerms,
+          action: MyPageScreen.Action.serviceTerms,
+          then: ServiceTermsView.init
+        )
       }
     }
   }
