@@ -12,11 +12,13 @@ import TCACoordinators
 
 struct TabBar: ReducerProtocol {
   struct State: Equatable {
-    private let tabBarItemTypes: [TabBarItemType] = [.home, .myPage]
+    private let tabBarItemTypes: [TabBarItemType] = [.home, .search, .savedList, .myPage]
     private(set) var isTabBarViewPresented = true
     private(set) var tabBarItemViewModels: [TabBarItemViewModel] = [
-      TabBarItemViewModel(type: .home, isSelected: true),
-      TabBarItemViewModel(type: .myPage, isSelected: false)
+      .init(type: .home, isSelected: true),
+      .init(type: .search, isSelected: false),
+      .init(type: .savedList, isSelected: false),
+      .init(type: .myPage, isSelected: false)
     ]
 
     var selectedTab: TabBarItemType = .home {

@@ -13,7 +13,20 @@ struct LoginView: View {
   let store: StoreOf<Login>
 
   var body: some View {
-    mainView
+    WithViewStore(store) { viewStore in
+      mainView
+        .customNavigationBar {
+          Text(viewStore.title)
+        } leftView: {
+          Button {
+            viewStore.send(.useAppAsNonMember)
+          } label: {
+            Text("둘러보기")
+          }
+        } rightView: {
+          EmptyView()
+        }
+    }
   }
 
   var mainView: some View {
@@ -34,17 +47,6 @@ struct LoginView: View {
         }
 
         Spacer()
-      }
-      .customNavigationBar {
-        Text(viewStore.title)
-      } leftView: {
-        Button {
-          viewStore.send(.useAppAsNonMember)
-        } label: {
-          Text("둘러보기")
-        }
-      } rightView: {
-        EmptyView()
       }
     }
   }

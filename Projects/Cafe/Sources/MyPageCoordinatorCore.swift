@@ -9,11 +9,10 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-/// Main Tab 화면 전환, 이벤트 관리
 struct MyPageCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
-      routes: [.root(.myPage(.init()), embedInNavigationView: true)]
+      routes: [.root(.myPage(.init()), embedInNavigationView: false)]
     )
 
     var routes: [Route<MyPageScreen.State>]

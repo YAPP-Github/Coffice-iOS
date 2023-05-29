@@ -13,7 +13,7 @@ import TCACoordinators
 struct HomeCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
-      routes: [.root(.home(.init()), embedInNavigationView: true)]
+      routes: [.root(.home(.init()), embedInNavigationView: false)]
     )
 
     var routes: [Route<HomeScreen.State>]
