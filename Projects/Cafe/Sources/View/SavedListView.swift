@@ -1,16 +1,16 @@
 //
-//  MyPageView.swift
+//  SavedListView.swift
 //  Cafe
 //
-//  Created by MinKyeongTae on 2023/05/26.
+//  Created by MinKyeongTae on 2023/05/29.
 //  Copyright © 2023 com.cafe. All rights reserved.
 //
 
 import ComposableArchitecture
 import SwiftUI
 
-struct MyPageView: View {
-  let store: StoreOf<MyPage>
+struct SavedListView: View {
+  let store: StoreOf<SavedList>
 
   var body: some View {
     mainView
@@ -20,13 +20,7 @@ struct MyPageView: View {
     WithViewStore(store) { viewStore in
       VStack {
         Spacer()
-        Text("MyPageView")
-
-        Button {
-          viewStore.send(.pushToServiceTermsView)
-        } label: {
-          Text("서비스 이용 약관")
-        }
+        Text("SavedListView")
         Spacer()
       }
       .customNavigationBar(centerView: {
@@ -36,12 +30,12 @@ struct MyPageView: View {
   }
 }
 
-struct MyPageView_Previews: PreviewProvider {
+struct SavedListView_Previews: PreviewProvider {
   static var previews: some View {
-    MyPageView(
+    SavedListView(
       store: .init(
         initialState: .init(),
-        reducer: MyPage()
+        reducer: SavedList()
       )
     )
   }

@@ -1,16 +1,16 @@
 //
-//  MyPageView.swift
+//  SearchView.swift
 //  Cafe
 //
-//  Created by MinKyeongTae on 2023/05/26.
+//  Created by MinKyeongTae on 2023/05/29.
 //  Copyright © 2023 com.cafe. All rights reserved.
 //
 
 import ComposableArchitecture
 import SwiftUI
 
-struct MyPageView: View {
-  let store: StoreOf<MyPage>
+struct SearchView: View {
+  let store: StoreOf<Search>
 
   var body: some View {
     mainView
@@ -20,13 +20,7 @@ struct MyPageView: View {
     WithViewStore(store) { viewStore in
       VStack {
         Spacer()
-        Text("MyPageView")
-
-        Button {
-          viewStore.send(.pushToServiceTermsView)
-        } label: {
-          Text("서비스 이용 약관")
-        }
+        Text("SearchView")
         Spacer()
       }
       .customNavigationBar(centerView: {
@@ -36,12 +30,12 @@ struct MyPageView: View {
   }
 }
 
-struct MyPageView_Previews: PreviewProvider {
+struct SearchView_Previews: PreviewProvider {
   static var previews: some View {
-    MyPageView(
+    SearchView(
       store: .init(
         initialState: .init(),
-        reducer: MyPage()
+        reducer: Search()
       )
     )
   }

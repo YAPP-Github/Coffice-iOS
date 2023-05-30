@@ -15,35 +15,65 @@ struct MainCoordinatorView: View {
 
   var body: some View {
     WithViewStore(store) { viewStore in
-      VStack {
-        Group {
-          switch viewStore.selectedTab {
-          case .home:
-            HomeCoordinatorView(
-              store: store.scope(
-                state: \.homeState,
-                action: MainCoordinator.Action.home
-              )
-            )
-          case .myPage:
-            MyPageCoordinatorView(
-              store: store.scope(
-                state: \.myPageState,
-                action: MainCoordinator.Action.myPage
-              )
-            )
-          }
+      ZStack {
+        NavigationView {
+          mainView
+        }
+        tabBarView
+      }
+      .onAppear {
+        viewStore.send(.onAppear)
+      }
+    }
+  }
 
-          TabBarView(
+  var mainView: some View {
+    WithViewStore(store) { viewStore in
+      Group {
+        switch viewStore.selectedTab {
+        case .home:
+          HomeCoordinatorView(
             store: store.scope(
-              state: \.tabBarState,
-              action: MainCoordinator.Action.tabBar
+              state: \.homeState,
+              action: MainCoordinator.Action.home
+            )
+          )
+        case .search:
+          SearchCoordinatorView(
+            store: store.scope(
+              state: \.searchState,
+              action: MainCoordinator.Action.search
+            )
+          )
+        case .savedList:
+          SavedListCoordinatorView(
+            store: store.scope(
+              state: \.savedListState,
+              action: MainCoordinator.Action.savedList
+            )
+          )
+        case .myPage:
+          MyPageCoordinatorView(
+            store: store.scope(
+              state: \.myPageState,
+              action: MainCoordinator.Action.myPage
             )
           )
         }
       }
-      .onAppear {
-        viewStore.send(.onAppear)
+    }
+  }
+
+  var tabBarView: some View {
+    WithViewStore(store) { viewStore in
+      VStack {
+        Spacer()
+        TabBarView(
+          store: store.scope(
+            state: \.tabBarState,
+            action: MainCoordinator.Action.tabBar
+          )
+        )
       }
     }
   }

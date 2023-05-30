@@ -1,32 +1,34 @@
 //
-//  MyPageCore.swift
+//  ServiceTermsCore.swift
 //  Cafe
 //
-//  Created by MinKyeongTae on 2023/05/26.
+//  Created by MinKyeongTae on 2023/05/29.
 //  Copyright © 2023 com.cafe. All rights reserved.
 //
 
 import ComposableArchitecture
 
-struct MyPage: ReducerProtocol {
+struct ServiceTerms: ReducerProtocol {
   struct State: Equatable {
-    let title = "MyPage"
+    static let initialState: State = .init()
+
+    let title = "서비스 이용 약관"
   }
 
   enum Action: Equatable {
     case onAppear
-    case pushToServiceTermsView
+    case popView
   }
 
   @Dependency(\.apiClient) private var apiClient
 
-  var body: some ReducerProtocolOf<MyPage> {
+  var body: some ReducerProtocolOf<ServiceTerms> {
     Reduce { _, action in
       switch action {
       case .onAppear:
         return .none
 
-      case .pushToServiceTermsView:
+      case .popView:
         return .none
       }
     }
