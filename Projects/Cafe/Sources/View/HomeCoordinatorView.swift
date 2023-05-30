@@ -24,3 +24,14 @@ struct HomeCoordinatorView: View {
     }
   }
 }
+
+struct HomeCoordinatorView_Previews: PreviewProvider {
+  static var previews: some View {
+    HomeCoordinatorView(
+      store: .init(
+        initialState: .initialState,
+        reducer: HomeCoordinator()
+      )
+    )
+  }
+}

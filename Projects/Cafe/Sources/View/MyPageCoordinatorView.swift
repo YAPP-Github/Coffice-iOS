@@ -31,3 +31,14 @@ struct MyPageCoordinatorView: View {
     }
   }
 }
+
+struct MyPageCoordinatorView_Previews: PreviewProvider {
+  static var previews: some View {
+    MyPageCoordinatorView(
+      store: .init(
+        initialState: .initialState,
+        reducer: MyPageCoordinator()
+      )
+    )
+  }
+}

@@ -78,3 +78,14 @@ struct MainCoordinatorView: View {
     }
   }
 }
+
+struct MainCoordinatorView_Previews: PreviewProvider {
+  static var previews: some View {
+    MainCoordinatorView(
+      store: .init(
+        initialState: .initialState,
+        reducer: MainCoordinator()
+      )
+    )
+  }
+}

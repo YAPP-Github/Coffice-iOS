@@ -25,3 +25,14 @@ struct SavedListCoordinatorView: View {
     }
   }
 }
+
+struct SavedListCoordinatorView_Previews: PreviewProvider {
+  static var previews: some View {
+    SavedListCoordinatorView(
+      store: .init(
+        initialState: .initialState,
+        reducer: SavedListCoordinator()
+      )
+    )
+  }
+}
