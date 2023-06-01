@@ -25,3 +25,14 @@ struct SearchCoordinatorView: View {
     }
   }
 }
+
+struct SearchCoordinatorView_Previews: PreviewProvider {
+  static var previews: some View {
+    SearchCoordinatorView(
+      store: .init(
+        initialState: .initialState,
+        reducer: SearchCoordinator()
+      )
+    )
+  }
+}

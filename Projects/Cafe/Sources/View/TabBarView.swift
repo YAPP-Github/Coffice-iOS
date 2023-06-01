@@ -41,3 +41,14 @@ struct TabBarView: View {
     }
   }
 }
+
+struct TabBarView_Previews: PreviewProvider {
+  static var previews: some View {
+    TabBarView(
+      store: .init(
+        initialState: .initialState,
+        reducer: TabBar()
+      )
+    )
+  }
+}

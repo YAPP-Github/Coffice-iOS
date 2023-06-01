@@ -25,3 +25,14 @@ struct LoginCoordinatorView: View {
     }
   }
 }
+
+struct LoginCoordinatorView_Previews: PreviewProvider {
+  static var previews: some View {
+    LoginCoordinatorView(
+      store: .init(
+        initialState: .initialState,
+        reducer: LoginCoordinator()
+      )
+    )
+  }
+}
