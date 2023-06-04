@@ -21,6 +21,7 @@ let project = Project.app(
     .external(name: "TCACoordinators"),
     .external(name: "ComposableArchitecture"),
     .external(name: "NMapsMap"),
+    .external(name: "FirebaseAnalytics"),
     .project(target: "Network", path: .relativeToRoot("Projects/Network"))
   ]
 )
