@@ -15,6 +15,7 @@ let project = Project.app(
     "CFBundleDisplayName": "Cafe",
     "UILaunchStoryboardName": "LaunchScreen",
     "UIInterfaceOrientation": ["UIInterfaceOrientationPortrait"],
+    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
     "UIUserInterfaceStyle": "Light"
   ],
   dependencies: [
