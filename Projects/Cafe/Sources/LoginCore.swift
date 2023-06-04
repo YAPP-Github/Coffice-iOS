@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import FirebaseAnalytics
 
 struct Login: ReducerProtocol {
   struct State: Equatable {
@@ -38,7 +39,18 @@ struct Login: ReducerProtocol {
         debugPrint("apple login")
         return .none
 
-      default:
+      case .useAppAsNonMember:
+        // TODO: GALogger 구현 필요
+        let event = "didTapUseAppAsNonMemberButton"
+        let parameters = [
+          "file": #file,
+          "function": #function
+        ]
+
+        Analytics.setUserID("userID = \(1234)")
+        Analytics.setUserProperty("ko", forName: "country")
+        Analytics.logEvent(AnalyticsEventSelectItem, parameters: nil)
+        Analytics.logEvent(event, parameters: parameters)
         return .none
       }
     }

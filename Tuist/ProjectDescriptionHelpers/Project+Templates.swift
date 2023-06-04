@@ -61,7 +61,7 @@ private extension Project {
                          sources: ["Sources/**"],
                          resources: shouldIncludeResources ? ["Resources/**"] : nil,
                          scripts: [
-                           .SwiftLintString
+                          .SwiftLintString
                          ],
                          dependencies: dependencies)
     let tests = Target(name: "\(name)Tests",
@@ -80,6 +80,10 @@ private extension Project {
   }
 
   static func makeAppTargets(name: String, platform: Platform, iOSTargetVersion: String, infoPlist: [String: InfoPlist.Value] = [:], dependencies: [TargetDependency] = []) -> [Target] {
+    func baseSettingsDictionary() -> SettingsDictionary {
+      .init().otherLinkerFlags(["-ObjC"])
+    }
+
     let platform: Platform = platform
 
     let mainTarget = Target(
@@ -94,7 +98,16 @@ private extension Project {
       scripts: [
         .SwiftLintString
       ],
-      dependencies: dependencies
+      dependencies: dependencies,
+      settings: .settings(
+        base: baseSettingsDictionary(), configurations: [
+          .debug(name: .debug),
+          .release(name: .release)
+        ]
+      ),
+      launchArguments: [
+        .init(name: "-FIRAnalyticsDebugEnabled", isEnabled: true)
+      ]
     )
 
     let testTarget = Target(
