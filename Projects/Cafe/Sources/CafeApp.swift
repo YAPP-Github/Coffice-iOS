@@ -6,13 +6,21 @@
 //
 
 import SwiftUI
-
+import ComposableArchitecture
 @main
 struct CafeApp: App {
   @UIApplicationDelegateAdaptor var delegate: AppDelegate
 
   var body: some Scene {
     WindowGroup {
+//      CafeMapView(
+//        store: Store(
+//          initialState: CafeMapCore.State(),
+//          reducer: {
+//            CafeMapCore()
+//          }
+//        )
+//      )
       AppCoordinatorView(
         store: .init(
           initialState: .initialState,
