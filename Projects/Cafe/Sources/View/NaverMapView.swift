@@ -10,6 +10,7 @@ import NMapsMap
 import ComposableArchitecture
 
 struct NaverMapView: UIViewRepresentable {
+  @ObservedObject var viewStore: ViewStore<CafeMapCore.State, CafeMapCore.Action>
   let view = NMFNaverMapView()
   func makeUIView(context: Context) -> NMFNaverMapView {
     mapSetting(view)
@@ -17,6 +18,7 @@ struct NaverMapView: UIViewRepresentable {
     return view
   }
   func updateUIView(_ uiView: UIViewType, context: Context) {
+    moveCamreaToPoistion(viewStore.region, uiView)
   }
   func makeCoordinator() -> Coordinator {
     return Coordinator(target: self)
@@ -36,6 +38,7 @@ extension NaverMapView {
     view.mapView.locationOverlay.hidden = false
     view.mapView.maxZoomLevel = 50
     view.mapView.minZoomLevel = 0
+    moveCamreaToPoistion(viewStore.region, view)
     addMarker(view)
   }
   func addMarker(_ view: NMFNaverMapView) {
