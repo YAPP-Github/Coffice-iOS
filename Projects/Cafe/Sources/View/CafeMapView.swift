@@ -11,32 +11,39 @@ import NMapsMap
 import ComposableArchitecture
 
 struct CafeMapView: View {
+  let store: StoreOf<CafeMapCore>
 
   var body: some View {
-    ZStack {
-      NaverMapView()
-        .ignoresSafeArea()
-      VStack {
-        header
-          .background(.white)
-        Spacer()
-        HStack {
-          Button {
-          } label: {
-            Circle()
-              .foregroundColor(.white)
-              .shadow(color: .gray, radius: 2, x: 0, y: 2)
-              .overlay {
-                Image(systemName: "scope")
-              }
-              .frame(width: 50, height: 50)
-          }
-          .buttonStyle(.plain)
+    WithViewStore(store) { viewStore in
+      ZStack {
+        NaverMapView(viewStore: viewStore)
+          .ignoresSafeArea()
+        VStack {
+          header
+            .background(.white)
           Spacer()
+          HStack {
+            Button {
+              viewStore.send(.currentLocationButton)
+            } label: {
+              Circle()
+                .foregroundColor(.white)
+                .shadow(color: .gray, radius: 2, x: 0, y: 2)
+                .overlay {
+                  Image(systemName: "scope")
+                }
+                .frame(width: 50, height: 50)
+            }
+            .buttonStyle(.plain)
+            Spacer()
+          }
+          .padding()
+          CafePreView()
+            .frame(width: 350, height: 150)
         }
-        .padding()
-        CafePreView()
-          .frame(width: 350, height: 150)
+      }
+      .onAppear {
+        viewStore.send(.requestAuthorization)
       }
     }
   }
