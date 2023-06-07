@@ -7,15 +7,130 @@
 //
 
 import SwiftUI
+import NMapsMap
+import ComposableArchitecture
 
 struct CafeMapView: View {
-    var body: some View {
-        NaverMapView()
+
+  var body: some View {
+    ZStack {
+      NaverMapView()
+        .ignoresSafeArea()
+      VStack {
+        header
+          .background(.white)
+        Spacer()
+        HStack {
+          Button {
+          } label: {
+            Circle()
+              .foregroundColor(.white)
+              .shadow(color: .gray, radius: 2, x: 0, y: 2)
+              .overlay {
+                Image(systemName: "scope")
+              }
+              .frame(width: 50, height: 50)
+          }
+          .buttonStyle(.plain)
+          Spacer()
+        }
+        .padding()
+        CafePreView()
+          .frame(width: 350, height: 150)
+      }
     }
+  }
 }
 
-struct CafeMapView_Previews: PreviewProvider {
-    static var previews: some View {
-        CafeMapView()
+extension CafeMapView {
+  var header: some View {
+    HStack(spacing: 8) {
+      ForEach(["영업중", "혼잡도낮은순", "가까운순", "추천순"], id: \.self) { status in
+        Button {
+        } label: {
+          Text("\(status)")
+            .font(.subheadline)
+            .foregroundColor(.black)
+            .lineLimit(1)
+            .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
+            .overlay {
+              RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.gray, lineWidth: 1)
+            }
+        }
+      }
+      Spacer()
     }
+    .padding()
+  }
 }
+
+// TODO: 추후 UI정해지면 별도 파일 생성 필요.
+struct CafePreView: View {
+  @State var heartButtonTapped: Bool = false
+  var body: some View {
+    RoundedRectangle(cornerRadius: 15)
+      .foregroundColor(.white)
+      .shadow(color: .gray, radius: 2, x: 0, y: 2)
+      .overlay {
+
+        VStack(alignment: .leading, spacing: 15) {
+          Spacer()
+          HStack {
+            Text("학림다방")
+              .font(.headline)
+            Spacer()
+            Button {
+              heartButtonTapped.toggle()
+            } label: {
+              Image(systemName: heartButtonTapped ? "heart.fill" : "heart")
+                .foregroundColor(heartButtonTapped ? .red: .gray)
+            }
+          }
+          .padding(.leading)
+          .padding(.trailing)
+
+          Text("영업중")
+            .font(.caption)
+            .padding(EdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7))
+            .overlay {
+              RoundedRectangle(cornerRadius: 4)
+                .stroke(Color.red, lineWidth: 1)
+            }
+            .padding(.leading)
+            .foregroundColor(.red)
+
+          HStack {
+            HStack(spacing: 3) {
+              Image(systemName: "paperplane.fill")
+              Text("32382m")
+                .font(.caption)
+            }
+            .foregroundColor(.gray)
+            HStack(spacing: 3) {
+              Image(systemName: "hand.thumbsup.fill")
+                .foregroundColor(.red)
+              Text("88%")
+                .font(.caption)
+
+            }
+            HStack(spacing: 3) {
+              Image(systemName: "heart")
+                .foregroundColor(.red)
+              Text("6")
+                .font(.caption)
+            }
+          }
+          .padding(.leading)
+          .padding(.trailing)
+          Spacer()
+        }
+      }
+  }
+}
+
+// struct CafeMapView_Previews: PreviewProvider {
+//  static var previews: some View {
+//    CafeMapView()
+//  }
+// }
