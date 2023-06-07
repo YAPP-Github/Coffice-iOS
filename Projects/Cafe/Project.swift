@@ -16,7 +16,10 @@ let project = Project.app(
     "UILaunchStoryboardName": "LaunchScreen",
     "UIInterfaceOrientation": ["UIInterfaceOrientationPortrait"],
     "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
-    "UIUserInterfaceStyle": "Light"
+    "UIUserInterfaceStyle": "Light",
+    "NSLocationAlwaysAndWhenInUseUsageDescription": "카페 위치 제공을 위해 위치 정보가 필요합니다.",
+    "NSLocationWhenInUseUsageDescription": "카페 위치 제공을 위해 위치 정보가 필요합니다.",
+    "NMFClientId": ""
   ],
   dependencies: [
     .external(name: "TCACoordinators"),
