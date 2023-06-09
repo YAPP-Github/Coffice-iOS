@@ -24,7 +24,7 @@ struct CafeMapView: View {
           Spacer()
           HStack {
             Button {
-              viewStore.send(.currentLocationButton)
+              viewStore.send(.currentLocationButtonTapped)
             } label: {
               Circle()
                 .foregroundColor(.white)
@@ -38,7 +38,7 @@ struct CafeMapView: View {
             Spacer()
           }
           .padding()
-          CafePreView()
+          CafePreview()
             .frame(width: 350, height: 150)
         }
       }
@@ -73,14 +73,14 @@ extension CafeMapView {
 }
 
 // TODO: 추후 UI정해지면 별도 파일 생성 필요.
-struct CafePreView: View {
+struct CafePreview: View {
   @State var heartButtonTapped: Bool = false
+
   var body: some View {
     RoundedRectangle(cornerRadius: 15)
       .foregroundColor(.white)
       .shadow(color: .gray, radius: 2, x: 0, y: 2)
       .overlay {
-
         VStack(alignment: .leading, spacing: 15) {
           Spacer()
           HStack {
@@ -94,8 +94,7 @@ struct CafePreView: View {
                 .foregroundColor(heartButtonTapped ? .red: .gray)
             }
           }
-          .padding(.leading)
-          .padding(.trailing)
+          .padding(.horizontal)
 
           Text("영업중")
             .font(.caption)
@@ -128,16 +127,9 @@ struct CafePreView: View {
                 .font(.caption)
             }
           }
-          .padding(.leading)
-          .padding(.trailing)
+          .padding(.horizontal)
           Spacer()
         }
       }
   }
 }
-
-// struct CafeMapView_Previews: PreviewProvider {
-//  static var previews: some View {
-//    CafeMapView()
-//  }
-// }
