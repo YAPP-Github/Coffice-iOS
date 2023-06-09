@@ -15,12 +15,15 @@ extension CLLocationCoordinate2D: Equatable {
     lhs.latitude == rhs.longitude
   }
 }
+
 struct CafeMapCore: ReducerProtocol {
   struct State: Equatable {
+    // TODO: Default 위치 값 설정 예정.
     var region: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 1, longitude: 1)
   }
+
   enum Action: Equatable {
-    case currentLocationButton
+    case currentLocationButtonTapped
     case requestAuthorization
     case currentLocationResponse(CLLocationCoordinate2D)
   }
@@ -32,18 +35,20 @@ struct CafeMapCore: ReducerProtocol {
     case let .currentLocationResponse(currentLocation):
       state.region = currentLocation
       return .none
-    case .currentLocationButton:
+    case .currentLocationButtonTapped:
+      // TODO: Logger제작 시, Logging 예정.
       return .run { send in
-        if let region = try? await locationManager.fetchCurrentLocation() {
+        do {
+          let region = try await locationManager.fetchCurrentLocation()
           await send(.currentLocationResponse(region))
-        } else {
-          print("Error")
+        } catch {
+          debugPrint(error)
         }
       }
     case .requestAuthorization:
       locationManager.requestAuthorization()
       return .run { send in
-        await send(.currentLocationButton)
+        await send(.currentLocationButtonTapped)
       }
     }
   }
