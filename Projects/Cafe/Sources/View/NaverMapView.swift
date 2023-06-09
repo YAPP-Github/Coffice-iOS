@@ -5,6 +5,7 @@
 //  Created by sehooon on 2023/05/29.
 //  Copyright © 2023 com.cafe. All rights reserved.
 //
+
 import SwiftUI
 import NMapsMap
 import ComposableArchitecture
@@ -12,14 +13,17 @@ import ComposableArchitecture
 struct NaverMapView: UIViewRepresentable {
   @ObservedObject var viewStore: ViewStore<CafeMapCore.State, CafeMapCore.Action>
   let view = NMFNaverMapView()
+
   func makeUIView(context: Context) -> NMFNaverMapView {
     mapSetting(view)
     view.mapView.addCameraDelegate(delegate: context.coordinator)
     return view
   }
+
   func updateUIView(_ uiView: UIViewType, context: Context) {
-    moveCamreaToPoistion(viewStore.region, uiView)
+    moveCameraToPoistion(viewStore.region, uiView)
   }
+
   func makeCoordinator() -> Coordinator {
     return Coordinator(target: self)
   }
@@ -38,9 +42,10 @@ extension NaverMapView {
     view.mapView.locationOverlay.hidden = false
     view.mapView.maxZoomLevel = 50
     view.mapView.minZoomLevel = 0
-    moveCamreaToPoistion(viewStore.region, view)
+    moveCameraToPoistion(viewStore.region, view)
     addMarker(view)
   }
+
   func addMarker(_ view: NMFNaverMapView) {
     let marker = NMFMarker()
     marker.position = NMGLatLng(lat: 37.5819, lng: 127.0017)
@@ -61,14 +66,15 @@ extension NaverMapView {
     }
     marker.mapView = view.mapView
     marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-      moveCamreaToPoistion(CLLocationCoordinate2D.init(latitude: 37.5819, longitude: 127.0017), view)
+      moveCameraToPoistion(CLLocationCoordinate2D.init(latitude: 37.5819, longitude: 127.0017), view)
       return true
     }
   }
-  func moveCamreaToPoistion(_ coordinate: CLLocationCoordinate2D, _ view: NMFNaverMapView) {
-    let lat = coordinate.latitude
-    let lng = coordinate.longitude
-    let cameraUpdate = NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat, lng: lng), zoomTo: 15)
+
+  func moveCameraToPoistion(_ coordinate: CLLocationCoordinate2D, _ view: NMFNaverMapView) {
+    let latitude = coordinate.latitude
+    let longitude = coordinate.longitude
+    let cameraUpdate = NMFCameraUpdate(scrollTo: NMGLatLng(lat: latitude, lng: longitude), zoomTo: 15)
     view.mapView.moveCamera(cameraUpdate)
   }
 }
