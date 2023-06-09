@@ -19,7 +19,7 @@ let project = Project.app(
     "UIUserInterfaceStyle": "Light",
     "NSLocationAlwaysAndWhenInUseUsageDescription": "카페 위치 제공을 위해 위치 정보가 필요합니다.",
     "NSLocationWhenInUseUsageDescription": "카페 위치 제공을 위해 위치 정보가 필요합니다.",
-    "NMFClientId": ""
+    "NMFClientId": "$(NMF_CLIENT_ID)"
   ],
   dependencies: [
     .external(name: "TCACoordinators"),
@@ -27,5 +27,11 @@ let project = Project.app(
     .external(name: "NMapsMap"),
     .external(name: "FirebaseAnalytics"),
     .project(target: "Network", path: .relativeToRoot("Projects/Network"))
-  ]
+  ],
+  settings: .settings(
+    base: .init().otherLinkerFlags(["-ObjC"]), configurations: [
+      .debug(name: .debug, xcconfig: .relativeToRoot("Xcconfig/Secrets.xcconfig")),
+      .release(name: .release, xcconfig: .relativeToRoot("Xcconfig/Secrets.xcconfig"))
+    ]
+  )
 )
