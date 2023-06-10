@@ -11,7 +11,7 @@ import NMapsMap
 import ComposableArchitecture
 
 struct NaverMapView: UIViewRepresentable {
-  @ObservedObject var viewStore: ViewStore<CafeMapCore.State, CafeMapCore.Action>
+  @ObservedObject var viewStore: ViewStoreOf<CafeMapCore>
   let view = NMFNaverMapView()
 
   func makeUIView(context: Context) -> NMFNaverMapView {
@@ -81,6 +81,7 @@ extension NaverMapView {
 
 class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate {
   var target: NaverMapView
+
   init(target: NaverMapView) {
     self.target = target
   }
