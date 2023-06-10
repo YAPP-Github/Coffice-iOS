@@ -20,35 +20,52 @@ struct CafeMapCore: ReducerProtocol {
   struct State: Equatable {
     // TODO: Default 위치 값 설정 예정.
     var region: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 1, longitude: 1)
+    var isCurrentButtonTapped: Bool = false
   }
 
   enum Action: Equatable {
     case currentLocationButtonTapped
     case requestAuthorization
-    case currentLocationResponse(CLLocationCoordinate2D)
+    case currentLocationResponse(TaskResult<CLLocationCoordinate2D>)
+    case fetchCurrentLocation
+    case currentButtonToFalse
   }
 
   @Dependency(\.locationManager) private var locationManager
 
   func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
     switch action {
-    case let .currentLocationResponse(currentLocation):
+    case .currentButtonToFalse:
+          state.isCurrentButtonTapped = false
+          return .none
+
+    case .fetchCurrentLocation:
+      return .run { send in
+        await send(
+          .currentLocationResponse(
+            TaskResult { try await locationManager.fetchCurrentLocation() }
+          )
+        )
+      }
+
+    case let .currentLocationResponse(.success(currentLocation)):
       state.region = currentLocation
       return .none
+
+    case let .currentLocationResponse(.failure(error)):
+      debugPrint(error)
+      return .none
+
     case .currentLocationButtonTapped:
-      // TODO: Logger제작 시, Logging 예정.
+      state.isCurrentButtonTapped = true
       return .run { send in
-        do {
-          let region = try await locationManager.fetchCurrentLocation()
-          await send(.currentLocationResponse(region))
-        } catch {
-          debugPrint(error)
-        }
+        await send(.fetchCurrentLocation)
       }
+
     case .requestAuthorization:
       locationManager.requestAuthorization()
       return .run { send in
-        await send(.currentLocationButtonTapped)
+        await send(.fetchCurrentLocation)
       }
     }
   }
