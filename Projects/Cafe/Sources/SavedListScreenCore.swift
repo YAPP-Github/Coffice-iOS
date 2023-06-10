@@ -12,19 +12,19 @@ import TCACoordinators
 struct SearchScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지
-    case search(Search.State)
+    case cafeMap(CafeMapCore.State)
   }
 
   enum Action: Equatable {
-    case search(Search.Action)
+    case cafeMap(CafeMapCore.Action)
   }
 
   var body: some ReducerProtocolOf<SearchScreen> {
     Scope(
-      state: /State.search,
-      action: /Action.search
+      state: /State.cafeMap,
+      action: /Action.cafeMap
     ) {
-      Search()
+      CafeMapCore()
     }
   }
 }

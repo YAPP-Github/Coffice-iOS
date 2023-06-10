@@ -13,7 +13,7 @@ import TCACoordinators
 struct SearchCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
-      routes: [.root(.search(.init()), embedInNavigationView: false)]
+      routes: [.root(.cafeMap(.init()), embedInNavigationView: false)]
     )
 
     var routes: [Route<SearchScreen.State>]

@@ -17,9 +17,9 @@ struct SearchCoordinatorView: View {
     TCARouter(store) { screen in
       SwitchStore(screen) {
         CaseLet(
-          state: /SearchScreen.State.search,
-          action: SearchScreen.Action.search,
-          then: SearchView.init
+          state: /SearchScreen.State.cafeMap,
+          action: SearchScreen.Action.cafeMap,
+          then: CafeMapView.init
         )
       }
     }
