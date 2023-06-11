@@ -7,12 +7,14 @@ extension Project {
                          platform: Platform,
                          iOSTargetVersion: String,
                          infoPlist: [String: InfoPlist.Value],
-                         dependencies: [TargetDependency] = []) -> Project {
+                         dependencies: [TargetDependency] = [],
+                         settings: Settings? = nil) -> Project {
     let targets = makeAppTargets(name: name,
                                  platform: platform,
                                  iOSTargetVersion: iOSTargetVersion,
                                  infoPlist: infoPlist,
-                                 dependencies: dependencies)
+                                 dependencies: dependencies,
+                                 settings: settings)
     return Project(name: name,
                    organizationName: organizationName,
                    targets: targets)
@@ -79,11 +81,7 @@ private extension Project {
     return shouldIncludeTest ? [sources, tests] : [sources]
   }
 
-  static func makeAppTargets(name: String, platform: Platform, iOSTargetVersion: String, infoPlist: [String: InfoPlist.Value] = [:], dependencies: [TargetDependency] = []) -> [Target] {
-    func baseSettingsDictionary() -> SettingsDictionary {
-      .init().otherLinkerFlags(["-ObjC"])
-    }
-
+  static func makeAppTargets(name: String, platform: Platform, iOSTargetVersion: String, infoPlist: [String: InfoPlist.Value] = [:], dependencies: [TargetDependency] = [], settings: Settings? = nil) -> [Target] {
     let platform: Platform = platform
 
     let mainTarget = Target(
@@ -99,12 +97,7 @@ private extension Project {
         .SwiftLintString
       ],
       dependencies: dependencies,
-      settings: .settings(
-        base: baseSettingsDictionary(), configurations: [
-          .debug(name: .debug),
-          .release(name: .release)
-        ]
-      ),
+      settings: settings,
       launchArguments: [
         .init(name: "-FIRAnalyticsDebugEnabled", isEnabled: true)
       ]
