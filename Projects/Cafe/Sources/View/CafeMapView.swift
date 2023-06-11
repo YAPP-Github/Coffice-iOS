@@ -12,38 +12,43 @@ import ComposableArchitecture
 
 struct CafeMapView: View {
   let store: StoreOf<CafeMapCore>
-
   var body: some View {
     WithViewStore(store) { viewStore in
-      ZStack {
-        NaverMapView(viewStore: viewStore)
-          .ignoresSafeArea()
-        VStack {
-          header
-            .background(.white)
-          Spacer()
-          HStack {
-            Button {
-              viewStore.send(.currentLocationButtonTapped)
-            } label: {
-              Circle()
-                .foregroundColor(.white)
-                .shadow(color: .gray, radius: 2, x: 0, y: 2)
-                .overlay {
-                  Image(systemName: "scope")
-                }
-                .frame(width: 50, height: 50)
-            }
-            .buttonStyle(.plain)
+      GeometryReader { geometry in
+        ZStack {
+          NaverMapView(viewStore: viewStore)
+            .ignoresSafeArea()
+          VStack {
+            header
+              .background(.white)
             Spacer()
+            HStack {
+              Button {
+                viewStore.send(.currentLocationButtonTapped)
+              } label: {
+                Circle()
+                  .foregroundColor(.white)
+                  .shadow(color: .gray, radius: 2, x: 0, y: 2)
+                  .overlay {
+                    Image(systemName: "scope")
+                  }
+                  .frame(width: 50, height: 50)
+              }
+              .buttonStyle(.plain)
+              Spacer()
+            }
+            .padding()
+            CafePreview()
+              .frame(width: 350, height: 150)
+              .position(
+                x: geometry.size.width/2,
+                y: geometry.size.height/1.7
+              )
           }
-          .padding()
-          CafePreview()
-            .frame(width: 350, height: 150)
         }
-      }
-      .onAppear {
-        viewStore.send(.requestAuthorization)
+        .onAppear {
+          viewStore.send(.requestAuthorization)
+        }
       }
     }
   }
