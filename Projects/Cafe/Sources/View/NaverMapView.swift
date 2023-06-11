@@ -22,6 +22,9 @@ struct NaverMapView: UIViewRepresentable {
 
   func updateUIView(_ uiView: UIViewType, context: Context) {
     moveCameraToPoistion(viewStore.region, uiView)
+    if viewStore.isCurrentButtonTapped {
+      DispatchQueue.main.async { viewStore.send(.currentButtonToFalse) }
+    }
   }
 
   func makeCoordinator() -> Coordinator {
@@ -55,14 +58,16 @@ extension NaverMapView {
     let scenes = UIApplication.shared.connectedScenes
     let windowScene = scenes.first as? UIWindowScene
     let window = windowScene?.windows.first
-    if let rootVC = window?.rootViewController {
-      rootVC.view.insertSubview(controller.view, at: 0)
-      let renderer  = UIGraphicsImageRenderer(size: CGSize(width: 240, height: 250))
-      let markerImage = renderer.image { context in
-        controller.view.layer.render(in: context.cgContext)
+    DispatchQueue.main.async {
+      if let rootVC = window?.rootViewController {
+        rootVC.view.insertSubview(controller.view, at: 0)
+        let renderer  = UIGraphicsImageRenderer(size: CGSize(width: 240, height: 250))
+        let markerImage = renderer.image { context in
+          controller.view.layer.render(in: context.cgContext)
+        }
+        controller.view.removeFromSuperview()
+        marker.iconImage = NMFOverlayImage(image: markerImage)
       }
-      controller.view.removeFromSuperview()
-      marker.iconImage = NMFOverlayImage(image: markerImage)
     }
     marker.mapView = view.mapView
     marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
