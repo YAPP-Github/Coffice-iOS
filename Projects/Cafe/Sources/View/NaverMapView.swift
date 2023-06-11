@@ -15,7 +15,7 @@ struct NaverMapView: UIViewRepresentable {
   let view = NMFNaverMapView()
 
   func makeUIView(context: Context) -> NMFNaverMapView {
-    mapSetting(view)
+    setupMap(view)
     view.mapView.addCameraDelegate(delegate: context.coordinator)
     return view
   }
@@ -37,7 +37,7 @@ struct NaverMapView: UIViewRepresentable {
 // [2] 현재 cameraPosition에서 반경 계산
 // [3] 카메라 이동 이벤트 추가
 extension NaverMapView {
-  func mapSetting(_ view: NMFNaverMapView) {
+  func setupMap(_ view: NMFNaverMapView) {
     view.showScaleBar = false
     view.showZoomControls = false
     view.showLocationButton = false
