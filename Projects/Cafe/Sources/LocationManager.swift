@@ -1,5 +1,5 @@
 //
-//  Cllocai.swift
+//  LocationManager.swift
 //  Cafe
 //
 //  Created by sehooon on 2023/06/01.
