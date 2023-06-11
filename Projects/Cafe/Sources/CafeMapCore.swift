@@ -47,7 +47,7 @@ struct CafeMapCore: ReducerProtocol {
           )
         )
       }
-
+      
     case let .currentLocationResponse(.success(currentLocation)):
       state.region = currentLocation
       return .none
