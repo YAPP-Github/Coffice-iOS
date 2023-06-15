@@ -13,11 +13,17 @@ struct MyPageScreen: ReducerProtocol {
     /// 메인 페이지
     case myPage(MyPage.State)
     case serviceTerms(ServiceTerms.State)
+    case privacyPolicy(PrivacyPolicy.State)
+    case openSources(OpenSources.State)
+    case devTest(DevTest.State)
   }
 
   enum Action: Equatable {
     case myPage(MyPage.Action)
     case serviceTerms(ServiceTerms.Action)
+    case privacyPolicy(PrivacyPolicy.Action)
+    case openSources(OpenSources.Action)
+    case devTest(DevTest.Action)
   }
 
   var body: some ReducerProtocolOf<MyPageScreen> {
@@ -33,6 +39,27 @@ struct MyPageScreen: ReducerProtocol {
       action: /Action.serviceTerms
     ) {
       ServiceTerms()
+    }
+
+    Scope(
+      state: /State.privacyPolicy,
+      action: /Action.privacyPolicy
+    ) {
+      PrivacyPolicy()
+    }
+
+    Scope(
+      state: /State.openSources,
+      action: /Action.openSources
+    ) {
+      OpenSources()
+    }
+
+    Scope(
+      state: /State.devTest,
+      action: /Action.devTest
+    ) {
+      DevTest()
     }
   }
 }

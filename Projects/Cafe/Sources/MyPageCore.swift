@@ -18,6 +18,8 @@ struct MyPage: ReducerProtocol {
       switch menuType {
       case .serviceTerms:
         return "서비스 이용 약관"
+      case .privacyPolicy:
+        return "개인정보 처리방침"
       case .openSources:
         return "오픈소스 라이브러리"
       case .devTest:
@@ -26,15 +28,16 @@ struct MyPage: ReducerProtocol {
     }
   }
 
-  enum MenuType {
+  enum MenuType: CaseIterable {
     case serviceTerms
+    case privacyPolicy
     case openSources
     case devTest
   }
 
   struct State: Equatable {
     let title = "MyPage"
-    let menuTypes: [MenuType] = [.serviceTerms, .openSources, .devTest]
+    let menuTypes: [MenuType] = MenuType.allCases
     let menuItems: [MenuItem]
 
     init() {
@@ -46,6 +49,7 @@ struct MyPage: ReducerProtocol {
     case onAppear
     case menuClicked(MenuItem)
     case pushToServiceTermsView
+    case pushToPrivacyPolicy
     case pushToOpenSourcesView
     case pushToDevTestView
   }
@@ -62,6 +66,8 @@ struct MyPage: ReducerProtocol {
         switch menuItem.menuType {
         case .serviceTerms:
           return EffectTask(value: .pushToServiceTermsView)
+        case .privacyPolicy:
+          return EffectTask(value: .pushToPrivacyPolicy)
         case .openSources:
           return EffectTask(value: .pushToOpenSourcesView)
         case .devTest:
