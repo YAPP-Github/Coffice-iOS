@@ -12,3 +12,7 @@ opt_in_rules:
 # 컨벤션 체크하지 않을 파일을 지정합니다.
 # ex) - YappProject/AppView.swift
 excluded:
+
+line_length:
+ ignores_function_declarations: true
+ ignores_comments: true
