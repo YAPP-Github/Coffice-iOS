@@ -108,8 +108,10 @@ final class KeychainManager: KeychainManagerInterface {
       kSecAttrAccount: "token"
     ]
     let status = SecItemDelete(deleteQuery as CFDictionary)
-    let lookAroundDeleteQuery: [CFString: Any] = [kSecClass: kSecClassGenericPassword,
-                                            kSecAttrAccount: "lookAroundToken"]
+    let lookAroundDeleteQuery: [CFString: Any] = [
+      kSecClass: kSecClassGenericPassword,
+      kSecAttrAccount: "lookAroundToken"
+    ]
     let lookAroundStatus = SecItemDelete(lookAroundDeleteQuery as CFDictionary)
     if status == errSecSuccess || lookAroundStatus == errSecSuccess { return .success(()) }
     return .failure(KeychainError.noData)
