@@ -52,26 +52,26 @@ public final class CoreNetwork: CoreNetworkInterface {
     if let token = token {
       request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     } else {
-      print("There is no jwt token")
+      debugPrint("There is no jwt token")
     }
     let (data, response) = try await URLSession.shared.data(for: request)
-    print("🌐 " + (request.httpMethod ?? "") + " : " + String(request.url?.absoluteString ?? ""))
+    debugPrint("🌐 " + (request.httpMethod ?? "") + " : " + String(request.url?.absoluteString ?? ""))
     guard let httpResponse = response as? HTTPURLResponse else {
       throw CoreNetworkError.sessionError
     }
     guard 200...299 ~= httpResponse.statusCode else {
       guard let exception = try? JSONDecoder().decode(NetworkException.self, from: data) else {
-        print("🚨 data: " + (String(data: data, encoding: .utf8) ?? ""))
+        debugPrint("🚨 data: " + (String(data: data, encoding: .utf8) ?? ""))
         throw CoreNetworkError.exceptionParseFailed
       }
-      print("🚨 status: \(httpResponse.statusCode) \n message: \(exception.message)")
+      debugPrint("🚨 status: \(httpResponse.statusCode) \n message: \(exception.message)")
       throw CoreNetworkError.exception(errorMessage: exception.message)
     }
 
     guard let dto = try? JSONDecoder().decode(NetworkResult<DTO>.self, from: data).data else {
       throw CoreNetworkError.jsonParseFailed
     }
-    print("✅ status: \(httpResponse.statusCode)")
+    debugPrint("✅ status: \(httpResponse.statusCode)")
     return dto
   }
 
@@ -81,20 +81,20 @@ public final class CoreNetwork: CoreNetworkInterface {
     if let token = token {
       request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     } else {
-      print("There is no jwt token")
+      debugPrint("There is no jwt token")
     }
     let (data, response) = try await URLSession.shared.data(for: request)
-    print("🌐 " + (request.httpMethod ?? "") + " : " + String(request.url?.absoluteString ?? ""))
+    debugPrint("🌐 " + (request.httpMethod ?? "") + " : " + String(request.url?.absoluteString ?? ""))
     guard let httpResponse = response as? HTTPURLResponse else { throw CoreNetworkError.sessionError }
     guard 200...299 ~= httpResponse.statusCode else {
       guard let exception = try? JSONDecoder().decode(NetworkException.self, from: data) else {
-        print("🚨 data: " + (String(data: data, encoding: .utf8) ?? ""))
+        debugPrint("🚨 data: " + (String(data: data, encoding: .utf8) ?? ""))
         throw CoreNetworkError.exceptionParseFailed
       }
-      print("🚨 status: \(httpResponse.statusCode) \n message: \(exception.message)")
+      debugPrint("🚨 status: \(httpResponse.statusCode) \n message: \(exception.message)")
       throw CoreNetworkError.exception(errorMessage: exception.message)
     }
-    print("✅ status: \(httpResponse.statusCode)")
+    debugPrint("✅ status: \(httpResponse.statusCode)")
     return httpResponse
   }
 }

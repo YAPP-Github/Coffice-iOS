@@ -9,9 +9,9 @@
 import Foundation
 
 protocol KeychainManagerInterface {
-  func addItem(key: Any, value: Any) -> Bool
-  func getItem(key: Any) -> Any?
-  func updateItem(key: Any, value: Any) -> Bool
+  func addItem(key: String, value: String) -> Bool
+  func getItem(key: String) -> String?
+  func updateItem(key: String, value: String) -> Bool
   func deleteItem(key: String) -> Bool
   func deleteUserToken() -> Result<Void, Error>
 }
@@ -26,7 +26,7 @@ final class KeychainManager: KeychainManagerInterface {
 
   private init() {}
 
-  func addItem(key: Any, value: Any) -> Bool {
+  func addItem(key: String, value: String) -> Bool {
     let addQuery: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrAccount: key,
@@ -41,14 +41,14 @@ final class KeychainManager: KeychainManagerInterface {
         return updateItem(key: key, value: value)
       }
 
-      print("addItem Error : \(key))")
+      debugPrint("addItem Error : \(key))")
       return false
     }()
 
     return result
   }
 
-  func getItem(key: Any) -> Any? {
+  func getItem(key: String) -> String? {
     let getQuery: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrAccount: key,
@@ -66,11 +66,11 @@ final class KeychainManager: KeychainManagerInterface {
       }
     }
 
-    print("getItem Error : \(key)")
+    debugPrint("getItem Error : \(key)")
     return nil
   }
 
-  func updateItem(key: Any, value: Any) -> Bool {
+  func updateItem(key: String, value: String) -> Bool {
     let prevQuery: [CFString: Any] = [kSecClass: kSecClassGenericPassword,
                                 kSecAttrAccount: key]
     let updateQuery: [CFString: Any] = [
@@ -81,7 +81,7 @@ final class KeychainManager: KeychainManagerInterface {
       let status = SecItemUpdate(prevQuery as CFDictionary, updateQuery as CFDictionary)
       if status == errSecSuccess { return true }
 
-      print("updateItem Error : \(key)")
+      debugPrint("updateItem Error : \(key)")
       return false
     }()
 
@@ -89,18 +89,22 @@ final class KeychainManager: KeychainManagerInterface {
   }
 
   func deleteItem(key: String) -> Bool {
-    let deleteQuery: [CFString: Any] = [kSecClass: kSecClassGenericPassword,
-                                  kSecAttrAccount: key]
+    let deleteQuery: [CFString: Any] = [
+      kSecClass: kSecClassGenericPassword,
+      kSecAttrAccount: key
+    ]
     let status = SecItemDelete(deleteQuery as CFDictionary)
     if status == errSecSuccess { return true }
 
-    print("deleteItem Error : \(key)")
+    debugPrint("deleteItem Error : \(key)")
     return false
   }
 
   func deleteUserToken() -> Result<Void, Error> {
-    let deleteQuery: [CFString: Any] = [kSecClass: kSecClassGenericPassword,
-                                  kSecAttrAccount: "token"]
+    let deleteQuery: [CFString: Any] = [
+      kSecClass: kSecClassGenericPassword,
+      kSecAttrAccount: "token"
+    ]
     let status = SecItemDelete(deleteQuery as CFDictionary)
     let lookAroundDeleteQuery: [CFString: Any] = [kSecClass: kSecClassGenericPassword,
                                             kSecAttrAccount: "lookAroundToken"]
