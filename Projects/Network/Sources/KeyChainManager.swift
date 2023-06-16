@@ -71,8 +71,10 @@ final class KeychainManager: KeychainManagerInterface {
   }
 
   func updateItem(key: String, value: String) -> Bool {
-    let prevQuery: [CFString: Any] = [kSecClass: kSecClassGenericPassword,
-                                kSecAttrAccount: key]
+    let prevQuery: [CFString: Any] = [
+      kSecClass: kSecClassGenericPassword,
+      kSecAttrAccount: key
+    ]
     let updateQuery: [CFString: Any] = [
       kSecValueData: (value as AnyObject).data(using: String.Encoding.utf8.rawValue) as Any
     ]
