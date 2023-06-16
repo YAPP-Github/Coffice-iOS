@@ -6,8 +6,8 @@
 //  Copyright © 2023 com.cafe. All rights reserved.
 //
 
-import Foundation
 import Dependencies
+import Foundation
 import Network
 
 struct HealthCheckClient: DependencyKey {
