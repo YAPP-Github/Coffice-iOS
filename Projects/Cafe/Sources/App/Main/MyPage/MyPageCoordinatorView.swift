@@ -27,6 +27,24 @@ struct MyPageCoordinatorView: View {
           action: MyPageScreen.Action.serviceTerms,
           then: ServiceTermsView.init
         )
+
+        CaseLet(
+          state: /MyPageScreen.State.privacyPolicy,
+          action: MyPageScreen.Action.privacyPolicy,
+          then: PrivacyPolicyView.init
+        )
+
+        CaseLet(
+          state: /MyPageScreen.State.openSources,
+          action: MyPageScreen.Action.openSources,
+          then: OpenSourcesView.init
+        )
+
+        CaseLet(
+          state: /MyPageScreen.State.devTest,
+          action: MyPageScreen.Action.devTest,
+          then: DevTestView.init
+        )
       }
     }
   }

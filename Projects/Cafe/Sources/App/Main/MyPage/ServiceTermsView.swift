@@ -34,10 +34,8 @@ struct ServiceTermsView: View {
           } label: {
             Image(systemName: "chevron.left")
           }
-        },
-        rightView: {
-          EmptyView()
-        })
+        }
+      )
     }
   }
 }

@@ -19,19 +19,35 @@ struct MyPageView: View {
   var mainView: some View {
     WithViewStore(store) { viewStore in
       VStack {
-        Spacer()
-        Text("MyPageView")
-
-        Button {
-          viewStore.send(.pushToServiceTermsView)
-        } label: {
-          Text("서비스 이용 약관")
+        VStack(spacing: 0) {
+          ForEach(viewStore.menuItems) { menuItem in
+            menuItemView(menuItem: menuItem)
+          }
         }
+
         Spacer()
       }
       .customNavigationBar(centerView: {
         Text(viewStore.title)
       })
+    }
+  }
+
+  func menuItemView(menuItem: MyPage.MenuItem) -> some View {
+    WithViewStore(store) { viewStore in
+      VStack(alignment: .leading, spacing: 0) {
+        Button {
+          viewStore.send(.menuClicked(menuItem))
+        } label: {
+          Text(menuItem.title)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 50)
+        }
+
+        Divider()
+          .frame(height: 1)
+      }
+      .padding(.horizontal, 16)
     }
   }
 }

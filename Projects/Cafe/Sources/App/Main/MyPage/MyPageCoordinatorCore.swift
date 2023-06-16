@@ -30,7 +30,22 @@ struct MyPageCoordinator: ReducerProtocol {
         state.routes.push(.serviceTerms(.initialState))
         return .none
 
-      case .routeAction(_, action: .serviceTerms(.popView)):
+      case .routeAction(_, action: .myPage(.pushToPrivacyPolicy)):
+        state.routes.push(.privacyPolicy(.initialState))
+        return .none
+
+      case .routeAction(_, action: .myPage(.pushToOpenSourcesView)):
+        state.routes.push(.openSources(.initialState))
+        return .none
+
+      case .routeAction(_, action: .myPage(.pushToDevTestView)):
+        state.routes.push(.devTest(.initialState))
+        return .none
+
+      case .routeAction(_, action: .serviceTerms(.popView)),
+          .routeAction(_, action: .privacyPolicy(.popView)),
+          .routeAction(_, action: .openSources(.popView)),
+          .routeAction(_, action: .devTest(.popView)):
         state.routes.pop()
         return .none
 
