@@ -9,9 +9,6 @@
 import Foundation
 
 struct NetworkException: Decodable {
-  let timestamp: String
-  let status: Int
-  let error: String
+  let code: String
   let message: String
-  let path: String
 }

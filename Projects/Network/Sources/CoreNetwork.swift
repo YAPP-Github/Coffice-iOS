@@ -61,7 +61,7 @@ final class CoreNetwork: CoreNetworkInterface {
         print("🚨 data: " + (String(data: data, encoding: .utf8) ?? ""))
         throw CoreNetworkError.exceptionParseFailed
       }
-      print("🚨 status: \(exception.status) \n message: \(exception.message)")
+        print("🚨 status: \(exception.code) \n message: \(exception.message)")
       throw CoreNetworkError.exception(errorMessage: exception.message)
     }
 

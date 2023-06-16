@@ -9,7 +9,7 @@
 import Foundation
 
 struct NetworkResult<DTO: Decodable>: Decodable {
+  let code: String
   let message: String
-  let status: Int
   let data: DTO
 }
