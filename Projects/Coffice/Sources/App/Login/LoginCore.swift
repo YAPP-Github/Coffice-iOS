@@ -25,7 +25,7 @@ struct Login: ReducerProtocol {
     case appleLoginButtonClicked
   }
 
-  @Dependency(\.apiClient) private var apiClient
+  @Dependency(\.loginClient) private var loginClient
 
   var body: some ReducerProtocolOf<Login> {
     Reduce { _, action in
@@ -34,44 +34,45 @@ struct Login: ReducerProtocol {
         return .none
 
       case .kakaoLoginButtonClicked:
-        if UserApi.isKakaoTalkLoginAvailable() {
-          UserApi.shared.loginWithKakaoTalk { (oauthToken, error) in
-            if let error = error {
-              debugPrint(error)
-            } else {
-              guard let accessToken = oauthToken?.accessToken else { return }
-//              self.requestLogin(oauthType: .kakao, requestValue: accessToken)
-            }
-          }
-        } else {
-          UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
-            if let error = error {
-              debugPrint(error)
-            } else {
-              guard let accessToken = oauthToken?.accessToken else { return }
-//              self.requestLogin(oauthType: .kakao, requestValue: accessToken)
-            }
-          }
+        return .run { send in
+          let accessToken = try await fetchKakaoOAuthToken()
+          let response = try await loginClient.login(loginType: .kakao,
+                                                     accessToken: accessToken)
         }
-        return .none
 
       case .appleLoginButtonClicked:
-        debugPrint("apple login")
-        return .none
+        return .run { send in
+          let response = try await loginClient.login(loginType: .apple,
+                                                     accessToken: nil)
+        }
 
       case .useAppAsNonMember:
-        // TODO: GALogger 구현 필요
-        let event = "didTapUseAppAsNonMemberButton"
-        let parameters = [
-          "file": #file,
-          "function": #function
-        ]
+        return .run { send in
+          let response = try await loginClient.login(loginType: .anonymous,
+                                                     accessToken: nil)
+        }
+      }
+    }
+  }
 
-        Analytics.setUserID("userID = \(1234)")
-        Analytics.setUserProperty("ko", forName: "country")
-        Analytics.logEvent(AnalyticsEventSelectItem, parameters: nil)
-        Analytics.logEvent(event, parameters: parameters)
-        return .none
+  private func fetchKakaoOAuthToken() async throws -> String {
+    return try await withCheckedThrowingContinuation { continuation in
+      let loginCompletion: (OAuthToken?, Error?) -> Void = { (oauthToken, error) in
+        if let error = error {
+          continuation.resume(throwing: error)
+        } else {
+          guard let accessToken = oauthToken?.accessToken else {
+            continuation.resume(throwing: LoginError.emptyAccessToken)
+            return
+          }
+          continuation.resume(returning: accessToken)
+        }
+      }
+
+      if UserApi.isKakaoTalkLoginAvailable() {
+        UserApi.shared.loginWithKakaoTalk(completion: loginCompletion)
+      } else {
+        UserApi.shared.loginWithKakaoAccount(completion: loginCompletion)
       }
     }
   }
