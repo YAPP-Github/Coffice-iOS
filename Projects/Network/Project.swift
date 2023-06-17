@@ -12,5 +12,5 @@ let project = Project.framework(
     dependencies: [
     ],
     shouldIncludeTest: true,
-    shouldIncludeResources: false
+    shouldIncludeResources: true
 )
