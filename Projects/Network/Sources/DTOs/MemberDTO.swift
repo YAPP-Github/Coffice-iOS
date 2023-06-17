@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct MemberDTO: Decodable {
-  let memberId: Int
-  let name: String
+public struct MemberDTO: Decodable {
+  public let memberId: Int
+  public let name: String
 }
