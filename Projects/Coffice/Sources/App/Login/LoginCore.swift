@@ -8,6 +8,8 @@
 
 import ComposableArchitecture
 import FirebaseAnalytics
+import KakaoSDKAuth
+import KakaoSDKUser
 
 struct Login: ReducerProtocol {
   struct State: Equatable {
@@ -32,7 +34,25 @@ struct Login: ReducerProtocol {
         return .none
 
       case .kakaoLoginButtonClicked:
-        debugPrint("kakao login")
+        if UserApi.isKakaoTalkLoginAvailable() {
+          UserApi.shared.loginWithKakaoTalk { (oauthToken, error) in
+            if let error = error {
+              debugPrint(error)
+            } else {
+              guard let accessToken = oauthToken?.accessToken else { return }
+//              self.requestLogin(oauthType: .kakao, requestValue: accessToken)
+            }
+          }
+        } else {
+          UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
+            if let error = error {
+              debugPrint(error)
+            } else {
+              guard let accessToken = oauthToken?.accessToken else { return }
+//              self.requestLogin(oauthType: .kakao, requestValue: accessToken)
+            }
+          }
+        }
         return .none
 
       case .appleLoginButtonClicked:
