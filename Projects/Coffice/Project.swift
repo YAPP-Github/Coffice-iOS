@@ -12,7 +12,7 @@ let project = Project.app(
   infoPlist: [
     "CFBundleShortVersionString": "1.0.0", // 앱의 출시 버전
     "CFBundleVersion": "1",
-    "CFBundleDisplayName": "Cafe",
+    "CFBundleDisplayName": "coffice",
     "UILaunchStoryboardName": "LaunchScreen",
     "UIInterfaceOrientation": ["UIInterfaceOrientationPortrait"],
     "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],

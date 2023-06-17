@@ -97,6 +97,7 @@ private extension Project {
       infoPlist: .extendingDefault(with: infoPlist),
       sources: ["Sources/**"],
       resources: ["Resources/**"],
+      entitlements: "../coffice.entitlements",
       scripts: [
         .SwiftLintString
       ],

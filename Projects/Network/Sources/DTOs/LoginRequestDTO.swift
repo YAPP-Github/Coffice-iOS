@@ -14,6 +14,7 @@ public struct LoginRequestDTO: Encodable {
   let providerUserId: String
 
   public init(accessToken: String, providerType: String, providerUserId: String) {
+    self.accessToken = accessToken
     self.providerType = providerType
     self.providerUserId = providerUserId
   }
