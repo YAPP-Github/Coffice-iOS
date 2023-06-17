@@ -22,7 +22,7 @@ struct Login: ReducerProtocol {
     case onAppear
     case useAppAsNonMember
     case kakaoLoginButtonClicked
-    case appleLoginButtonClicked
+    case appleLoginButtonClicked(token: String)
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -40,10 +40,10 @@ struct Login: ReducerProtocol {
                                                      accessToken: accessToken)
         }
 
-      case .appleLoginButtonClicked:
+      case .appleLoginButtonClicked(let token):
         return .run { send in
           let response = try await loginClient.login(loginType: .apple,
-                                                     accessToken: nil)
+                                                     accessToken: token)
         }
 
       case .useAppAsNonMember:
