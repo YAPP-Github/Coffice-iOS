@@ -34,9 +34,9 @@ public final class CoreNetwork: CoreNetworkInterface {
   }
 
   private var token: String? {
-    if let token = KeychainManager.shared.getItem(key: "token") as? String {
+    if let token = KeychainManager.shared.getItem(key: "token") {
       return token
-    } else if let lookAroundToken = KeychainManager.shared.getItem(key: "lookAroundToken") as? String {
+    } else if let lookAroundToken = KeychainManager.shared.getItem(key: "lookAroundToken") {
       return lookAroundToken
     }
     return nil
