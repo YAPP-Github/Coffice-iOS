@@ -6,9 +6,9 @@
 //  Copyright © 2023 com.cafe. All rights reserved.
 //
 
-import SwiftUI
-import NMapsMap
 import ComposableArchitecture
+import NMapsMap
+import SwiftUI
 
 struct CafeMapView: View {
   let store: StoreOf<CafeMapCore>
@@ -45,35 +45,84 @@ struct CafeMapView: View {
                 y: geometry.size.height/1.7
               )
           }
+          .navigationBarHidden(true)
         }
         .onAppear {
           viewStore.send(.requestAuthorization)
         }
       }
+      .ignoresSafeArea(.keyboard)
     }
   }
 }
 
 extension CafeMapView {
   var header: some View {
-    HStack(spacing: 8) {
-      ForEach(["영업중", "혼잡도낮은순", "가까운순", "추천순"], id: \.self) { status in
-        Button {
-        } label: {
-          Text("\(status)")
-            .font(.subheadline)
-            .foregroundColor(.black)
-            .lineLimit(1)
-            .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
-            .overlay {
-              RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.gray, lineWidth: 1)
-            }
+    WithViewStore(store) { viewStore in
+      VStack(spacing: 0) {
+        searchTextField
+        orderFilterView
+      }
+    }
+  }
+
+  var searchTextField: some View {
+    WithViewStore(store) { viewStore in
+      ZStack {
+        TextField(
+          "🔍  지역, 지하철로 검색",
+          text: viewStore.binding(\.$searchText)
+        )
+        .frame(height: 35)
+        .padding(.leading, 5)
+        .padding(.trailing, 25)
+        .overlay {
+          RoundedRectangle(cornerRadius: 5)
+            .stroke(.gray, lineWidth: 1)
+        }
+        .onSubmit {
+          viewStore.send(.searchTextSubmitted)
+        }
+
+        HStack {
+          Spacer()
+          Button {
+            viewStore.send(.searchTextFieldClearButtonClicked)
+          } label: {
+            Image(systemName: "xmark.circle.fill")
+              .foregroundColor(.gray)
+              .padding(.trailing, 5)
+          }
         }
       }
-      Spacer()
+      .padding(.horizontal, 16)
     }
-    .padding()
+  }
+
+  var orderFilterView: some View {
+    WithViewStore(store) { viewStore in
+      ScrollView(.horizontal) {
+        HStack(spacing: 8) {
+          ForEach(viewStore.filterOrders, id: \.self) { order in
+            Button {
+              viewStore.send(.filterOrderMenuClicked(order))
+            } label: {
+              Text(order.title)
+                .font(.subheadline)
+                .foregroundColor(.black)
+                .lineLimit(1)
+                .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
+                .overlay {
+                  RoundedRectangle(cornerRadius: 20)
+                    .stroke(.gray, lineWidth: 1)
+                }
+                .frame(height: 60)
+            }
+          }
+        }
+        .padding(.horizontal, 16)
+      }
+    }
   }
 }
 
