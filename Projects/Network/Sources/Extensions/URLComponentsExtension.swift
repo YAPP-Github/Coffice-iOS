@@ -14,7 +14,7 @@ public extension URLComponents {
 
     var urlRequest = URLRequest(url: url)
     urlRequest.httpMethod = method.name
-    if let httpBody = httpBody {
+    if let httpBody {
       urlRequest.httpBody = httpBody
       urlRequest.addValue(contentType, forHTTPHeaderField: "Content-Type")
     }
