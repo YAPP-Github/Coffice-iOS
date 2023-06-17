@@ -6,7 +6,7 @@ import MyPlugin
 let iOSTargetVersion = "15.0"
 
 let project = Project.app(
-  name: "Cafe",
+  name: "coffice",
   platform: .iOS,
   iOSTargetVersion: iOSTargetVersion,
   infoPlist: [
@@ -19,13 +19,24 @@ let project = Project.app(
     "UIUserInterfaceStyle": "Light",
     "NSLocationAlwaysAndWhenInUseUsageDescription": "카페 위치 제공을 위해 위치 정보가 필요합니다.",
     "NSLocationWhenInUseUsageDescription": "카페 위치 제공을 위해 위치 정보가 필요합니다.",
-    "NMFClientId": "$(NMF_CLIENT_ID)"
+    "NMFClientId": "$(NMF_CLIENT_ID)",
+    "LSApplicationQueriesSchemes": [
+      "kakaokompassauth"
+    ],
+    "KAKAO_NATIVE_APP_KEY": "$(KAKAO_NATIVE_APP_KEY)",
+    "CFBundleURLTypes": [
+      [
+        "CFBundleTypeRole": "Editor",
+        "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
+      ]
+    ]
   ],
   dependencies: [
     .external(name: "TCACoordinators"),
     .external(name: "ComposableArchitecture"),
     .external(name: "NMapsMap"),
     .external(name: "FirebaseAnalytics"),
+    .external(name: "KakaoSDK"),
     .project(target: "Network", path: .relativeToRoot("Projects/Network"))
   ],
   settings: .settings(
