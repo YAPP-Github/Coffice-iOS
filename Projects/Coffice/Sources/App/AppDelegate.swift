@@ -17,7 +17,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    FirebaseApp.configure()
+    // #36 GA Logging 임시 비활성화
+    // FirebaseApp.configure()
     return true
   }
 }
