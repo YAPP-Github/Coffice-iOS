@@ -21,7 +21,7 @@ struct LoginClient: DependencyKey {
     urlComponents?.path = "/members/login"
     guard let requestBody = try? JSONEncoder()
       .encode(LoginRequestDTO(accessToken: accessToken ?? "",
-                              providerType: LoginType.kakao.name,
+                              providerType: loginType.name,
                               providerUserId: UUID().uuidString)) else {
       throw LoginError.jsonEncodeFailed
     }

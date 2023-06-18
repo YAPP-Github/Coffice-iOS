@@ -21,13 +21,15 @@ let project = Project.app(
     "NSLocationWhenInUseUsageDescription": "카페 위치 제공을 위해 위치 정보가 필요합니다.",
     "NMFClientId": "$(NMF_CLIENT_ID)",
     "LSApplicationQueriesSchemes": [
-      "kakaokompassauth"
+      "kakaokompassauth",
+      "kakaolink",
+      "kakao$(KAKAO_NATIVE_APP_KEY)"
     ],
     "KAKAO_NATIVE_APP_KEY": "$(KAKAO_NATIVE_APP_KEY)",
     "CFBundleURLTypes": [
       [
         "CFBundleTypeRole": "Editor",
-        "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
+        "CFBundleURLSchemes": ["kakao$(KAKAO_NATIVE_APP_KEY)"]
       ]
     ]
   ],
@@ -36,7 +38,9 @@ let project = Project.app(
     .external(name: "ComposableArchitecture"),
     .external(name: "NMapsMap"),
     .external(name: "FirebaseAnalytics"),
-    .external(name: "KakaoSDK"),
+    .external(name: "KakaoSDKCommon"),
+    .external(name: "KakaoSDKUser"),
+    .external(name: "KakaoSDKAuth"),
     .project(target: "Network", path: .relativeToRoot("Projects/Network"))
   ],
   settings: .settings(

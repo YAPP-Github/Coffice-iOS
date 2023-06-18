@@ -69,10 +69,12 @@ struct Login: ReducerProtocol {
         }
       }
 
-      if UserApi.isKakaoTalkLoginAvailable() {
-        UserApi.shared.loginWithKakaoTalk(completion: loginCompletion)
-      } else {
-        UserApi.shared.loginWithKakaoAccount(completion: loginCompletion)
+      DispatchQueue.main.async {
+        if UserApi.isKakaoTalkLoginAvailable() {
+          UserApi.shared.loginWithKakaoTalk(completion: loginCompletion)
+        } else {
+          UserApi.shared.loginWithKakaoAccount(completion: loginCompletion)
+        }
       }
     }
   }
