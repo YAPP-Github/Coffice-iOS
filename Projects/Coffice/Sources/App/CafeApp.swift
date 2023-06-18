@@ -5,18 +5,18 @@
 //  Created by Min Min on 2023/05/06.
 //
 
-import SwiftUI
 import ComposableArchitecture
 import KakaoSDKAuth
 import KakaoSDKCommon
 import KakaoSDKUser
+import SwiftUI
 
 @main
 struct CafeApp: App {
   @UIApplicationDelegateAdaptor var delegate: AppDelegate
 
   init() {
-    setUpKakaoLogin()
+    setupKakaoLogin()
   }
 
   var body: some Scene {
@@ -35,7 +35,7 @@ struct CafeApp: App {
     }
   }
 
-  private func setUpKakaoLogin() {
+  private func setupKakaoLogin() {
     guard let kakaoNativeAppKey = CofficeResources.bundle
       .object(forInfoDictionaryKey: "KAKAO_NATIVE_APP_KEY") as? String else { return }
     KakaoSDK.initSDK(appKey: kakaoNativeAppKey)

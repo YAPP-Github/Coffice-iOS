@@ -36,20 +36,26 @@ struct Login: ReducerProtocol {
       case .kakaoLoginButtonClicked:
         return .run { send in
           let accessToken = try await fetchKakaoOAuthToken()
-          let response = try await loginClient.login(loginType: .kakao,
+          let _ = try await loginClient.login(loginType: .kakao,
                                                      accessToken: accessToken)
+        } catch: { error, send in
+            debugPrint(error)
         }
 
       case .appleLoginButtonClicked(let token):
         return .run { send in
-          let response = try await loginClient.login(loginType: .apple,
+          let _ = try await loginClient.login(loginType: .apple,
                                                      accessToken: token)
+        } catch: { error, send in
+            debugPrint(error)
         }
 
       case .useAppAsNonMember:
         return .run { send in
-          let response = try await loginClient.login(loginType: .anonymous,
+          let _ = try await loginClient.login(loginType: .anonymous,
                                                      accessToken: nil)
+        } catch: { error, send in
+            debugPrint(error)
         }
       }
     }

@@ -34,14 +34,14 @@ let project = Project.app(
     ]
   ],
   dependencies: [
-    .external(name: "TCACoordinators"),
     .external(name: "ComposableArchitecture"),
-    .external(name: "NMapsMap"),
     .external(name: "FirebaseAnalytics"),
+    .external(name: "KakaoSDKAuth"),
     .external(name: "KakaoSDKCommon"),
     .external(name: "KakaoSDKUser"),
-    .external(name: "KakaoSDKAuth"),
-    .project(target: "Network", path: .relativeToRoot("Projects/Network"))
+    .external(name: "NMapsMap"),
+    .project(target: "Network", path: .relativeToRoot("Projects/Network")),
+    .external(name: "TCACoordinators")
   ],
   settings: .settings(
     base: .init().otherLinkerFlags(["-ObjC"]), configurations: [
