@@ -56,10 +56,11 @@ struct LoginView: View {
             debugPrint(error)
           }
         }
-        .frame(width: 100, height: 100, alignment: .center)
+        .frame(height: 50)
 
         Spacer()
       }
+      .padding(20)
     }
   }
 }
