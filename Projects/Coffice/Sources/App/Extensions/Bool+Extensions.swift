@@ -9,5 +9,5 @@
 import Foundation
 
 extension Bool {
-  var isNot: Bool { !self }
+  var isFalse: Bool { !self }
 }
