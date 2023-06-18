@@ -29,6 +29,7 @@ struct AppCoordinatorView: View {
         )
       }
     }
+    .ignoresSafeArea(.keyboard)
   }
 }
 
