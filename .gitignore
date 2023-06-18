@@ -73,3 +73,5 @@ Projects/Cafe/Resources/GoogleService-Info.plist
 ### Xcconfig ###
 Xcconfig/Secrets.xcconfig
 Projects/Network/Resources/SecretAccessKey.plist
+Tuist/Signing
+Tuist/master.key

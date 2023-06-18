@@ -7,6 +7,9 @@
 //
 
 import Firebase
+import KakaoSDKAuth
+import KakaoSDKCommon
+import KakaoSDKUser
 import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {

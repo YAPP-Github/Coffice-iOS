@@ -1,23 +1,27 @@
 import ProjectDescription
 
 extension Project {
-  private static let organizationName = "com.cafe"
+  private static let organizationName = "kr.co.yapp"
 
-  public static func app(name: String,
-                         platform: Platform,
-                         iOSTargetVersion: String,
-                         infoPlist: [String: InfoPlist.Value],
-                         dependencies: [TargetDependency] = [],
-                         settings: Settings? = nil) -> Project {
-    let targets = makeAppTargets(name: name,
-                                 platform: platform,
-                                 iOSTargetVersion: iOSTargetVersion,
+  public static func app(
+    name: String,
+    platform: Platform,
+    iOSTargetVersion: String,
+    infoPlist: [String: InfoPlist.Value],
+    dependencies: [TargetDependency] = [],
+    settings: Settings? = nil,
+    schemes: [Scheme] = []
+  ) -> Project {
+      let targets = makeAppTargets(name: name,
+                                   platform: platform,
+                                   iOSTargetVersion: iOSTargetVersion,
                                  infoPlist: infoPlist,
                                  dependencies: dependencies,
                                  settings: settings)
     return Project(name: name,
                    organizationName: organizationName,
-                   targets: targets)
+                   targets: targets,
+                   schemes: schemes)
   }
 
   public static func framework(
@@ -93,6 +97,7 @@ private extension Project {
       infoPlist: .extendingDefault(with: infoPlist),
       sources: ["Sources/**"],
       resources: ["Resources/**"],
+      entitlements: "../coffice.entitlements",
       scripts: [
         .SwiftLintString
       ],
