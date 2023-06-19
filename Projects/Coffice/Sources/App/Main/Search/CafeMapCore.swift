@@ -107,7 +107,7 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
       case .searchTextSubmitted:
-        guard !state.searchText.trimmingCharacters(in: .whitespaces).isEmpty
+        guard state.searchText.trimmingCharacters(in: .whitespaces).isNotEmpty
         else { return .none }
         // TODO: 카페 검색 요청 필요
         return .none
