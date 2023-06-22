@@ -12,10 +12,12 @@ public enum CoreNetworkError: Error {
   case noAuthToken
   case invalidResponse(statusCode: Int)
   case sessionError
-  case jsonParseFailed
+  case jsonDecodeFailed
+  case jsonEncodeFailed
   case exceptionParseFailed
   case exception(errorMessage: String)
   case responseConvertFailed
+  case requestConvertFailed
 }
 
 public protocol CoreNetworkInterface {
@@ -69,7 +71,7 @@ public final class CoreNetwork: CoreNetworkInterface {
     }
 
     guard let dto = try? JSONDecoder().decode(NetworkResult<DTO>.self, from: data).data else {
-      throw CoreNetworkError.jsonParseFailed
+      throw CoreNetworkError.jsonDecodeFailed
     }
     debugPrint("✅ status: \(httpResponse.statusCode)")
     return dto
