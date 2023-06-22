@@ -12,11 +12,11 @@ public struct SearchPlaceResponseDTO: Decodable {
   public let placeId: Int
   public let name: String
   public let coordinates: Coordinate
-  public let address: Address
+  public let address: Address?
 
   public struct Coordinate: Decodable {
-    public let latitude: Int
-    public let longitude: Int
+    public let latitude: Double
+    public let longitude: Double
   }
 
   public struct Address: Decodable {
