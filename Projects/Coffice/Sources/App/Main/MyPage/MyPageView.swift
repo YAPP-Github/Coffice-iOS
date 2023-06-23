@@ -16,39 +16,74 @@ struct MyPageView: View {
     mainView
   }
 
-  var mainView: some View {
+  private var mainView: some View {
     WithViewStore(store) { viewStore in
-      VStack {
+      VStack(alignment: .leading, spacing: 0) {
+        nickNameView
+        divider
+        linkedAccountTypeView
+        divider
         VStack(spacing: 0) {
           ForEach(viewStore.menuItems) { menuItem in
             menuItemView(menuItem: menuItem)
           }
         }
+        .padding(.vertical, 10)
 
         Spacer()
       }
-      .customNavigationBar(centerView: {
-        Text(viewStore.title)
-      })
+      .padding(.horizontal, 16)
+      .padding(.top, 50)
     }
   }
 
-  func menuItemView(menuItem: MyPage.MenuItem) -> some View {
+  private var nickNameView: some View {
+    HStack(alignment: .center, spacing: 0) {
+      Text("닉네임")
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .font(.title)
+      Button {
+        print("TODO: 닉네임 수정페이지로 이동")
+      } label: {
+        Image(systemName: "chevron.right")
+          .imageScale(.large)
+      }
+      .tint(.black)
+    }
+    .padding(.vertical, 30)
+  }
+
+  private var linkedAccountTypeView: some View {
+    HStack(alignment: .center, spacing: 0) {
+      Text("연결된 계정")
+        .frame(maxWidth: .infinity, alignment: .leading)
+      Text("카카오")
+    }
+    .padding(.vertical, 30)
+  }
+
+  private func menuItemView(menuItem: MyPage.MenuItem) -> some View {
     WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
-        Button {
-          viewStore.send(.menuClicked(menuItem))
-        } label: {
-          Text(menuItem.title)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: 50)
+        HStack {
+          Button {
+            viewStore.send(.menuClicked(menuItem))
+          } label: {
+            Text(menuItem.title)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .frame(height: 50)
+            Image(systemName: "chevron.right")
+          }
         }
-
-        Divider()
-          .frame(height: 1)
+        .tint(.black)
       }
-      .padding(.horizontal, 16)
     }
+  }
+
+  private var divider: some View {
+    Divider()
+      .frame(minHeight: 2)
+      .overlay(Color.black)
   }
 }
 
