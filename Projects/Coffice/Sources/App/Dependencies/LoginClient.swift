@@ -18,7 +18,7 @@ struct LoginClient: DependencyKey {
   func login(loginType: LoginType, accessToken: String?) async throws -> LoginResponseDTO {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
-    urlComponents?.path = "/members/login"
+    urlComponents?.path = "/api/v1/members/login"
     guard let requestBody = try? JSONEncoder()
       .encode(LoginRequestDTO(accessToken: accessToken ?? "",
                               providerType: loginType.name,
@@ -33,6 +33,18 @@ struct LoginClient: DependencyKey {
     }
     let response: LoginResponseDTO = try await coreNetwork.dataTask(request: request)
     return response
+  }
+
+  func fetchUserData() async throws -> User {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/members/me"
+
+    guard let request = urlComponents?.toURLRequest(method: .get)
+    else { throw LoginError.emptyAccessToken }
+
+    let response: MemberResponseDTO = try await coreNetwork.dataTask(request: request)
+    return response.toEntity()
   }
 }
 

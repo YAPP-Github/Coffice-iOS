@@ -20,6 +20,9 @@ struct MyPageView: View {
 
   var body: some View {
     mainView
+      .onAppear {
+        viewStore.send(.onAppear)
+      }
   }
 
   private var mainView: some View {
@@ -61,7 +64,8 @@ struct MyPageView: View {
     HStack(alignment: .center, spacing: 0) {
       Text("연결된 계정")
         .frame(maxWidth: .infinity, alignment: .leading)
-      Text("카카오")
+      Text(viewStore.loginType.displayName)
+        .padding(.trailing, 10)
     }
     .padding(.vertical, 30)
   }
