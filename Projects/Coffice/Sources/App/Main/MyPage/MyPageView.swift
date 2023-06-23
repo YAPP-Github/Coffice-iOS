@@ -10,31 +10,35 @@ import ComposableArchitecture
 import SwiftUI
 
 struct MyPageView: View {
-  let store: StoreOf<MyPage>
+  private let store: StoreOf<MyPage>
+  @ObservedObject private var viewStore: ViewStoreOf<MyPage>
+
+  init(store: StoreOf<MyPage>) {
+    self.store = store
+    viewStore = ViewStore(store, observe: { $0 })
+  }
 
   var body: some View {
     mainView
   }
 
   private var mainView: some View {
-    WithViewStore(store) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
-        nickNameView
-        divider
-        linkedAccountTypeView
-        divider
-        VStack(spacing: 0) {
-          ForEach(viewStore.menuItems) { menuItem in
-            menuItemView(menuItem: menuItem)
-          }
+    VStack(alignment: .leading, spacing: 0) {
+      nickNameView
+      divider
+      linkedAccountTypeView
+      divider
+      VStack(spacing: 0) {
+        ForEach(viewStore.menuItems) { menuItem in
+          menuItemView(menuItem: menuItem)
         }
-        .padding(.vertical, 10)
-
-        Spacer()
       }
-      .padding(.horizontal, 16)
-      .padding(.top, 50)
+      .padding(.vertical, 10)
+
+      Spacer()
     }
+    .padding(.horizontal, 16)
+    .padding(.top, 50)
   }
 
   private var nickNameView: some View {
@@ -63,20 +67,18 @@ struct MyPageView: View {
   }
 
   private func menuItemView(menuItem: MyPage.MenuItem) -> some View {
-    WithViewStore(store) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
-        HStack {
-          Button {
-            viewStore.send(.menuClicked(menuItem))
-          } label: {
-            Text(menuItem.title)
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .frame(height: 50)
-            Image(systemName: "chevron.right")
-          }
+    VStack(alignment: .leading, spacing: 0) {
+      HStack {
+        Button {
+          viewStore.send(.menuClicked(menuItem))
+        } label: {
+          Text(menuItem.title)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 50)
+          Image(systemName: "chevron.right")
         }
-        .tint(.black)
       }
+      .tint(.black)
     }
   }
 
