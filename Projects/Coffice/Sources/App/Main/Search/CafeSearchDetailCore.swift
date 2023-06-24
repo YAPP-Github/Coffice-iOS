@@ -28,14 +28,24 @@ struct CafeSearchDetail: ReducerProtocol {
     let title = "CafeSearchDetail"
     let subMenus = SubMenuType.allCases
     var selectedSubMenuType: SubMenuType = .home
-    var homeMenuViewHeight: CGFloat = 300.0
+    let homeMenuViewHeight: CGFloat = 100.0
+    let openTimeDescription = """
+                      월 09:00 - 21:00
+                      화 09:00 - 21:00
+                      수 09:00 - 21:00
+                      목 09:00 - 21:00
+                      금 정기휴무 (매주 금요일)
+                      일 09:00 - 21:00
+                      """
+    var textForTest = ""
+    var needToPresentTextForTest = false
   }
 
   enum Action: Equatable {
     case onAppear
     case popView
     case subMenuTapped(SubMenuType)
-    case updateHomeMenuViewHeight
+    case toggleToPresentTextForTest
   }
 
   @Dependency(\.apiClient) private var apiClient
@@ -50,8 +60,14 @@ struct CafeSearchDetail: ReducerProtocol {
         state.selectedSubMenuType = menuType
         return .none
 
-      case .updateHomeMenuViewHeight:
-        state.homeMenuViewHeight = 500
+      case .toggleToPresentTextForTest:
+        state.needToPresentTextForTest.toggle()
+
+        if state.needToPresentTextForTest {
+          state.textForTest = state.openTimeDescription
+        } else {
+          state.textForTest = ""
+        }
         return .none
 
       default:

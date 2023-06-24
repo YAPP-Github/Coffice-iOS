@@ -134,30 +134,40 @@ struct CafeSearchDetailView: View {
   private var homeMenuView: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
-        Color.red
-          .frame(height: 200)
-        Color.black
-          .frame(height: viewStore.homeMenuViewHeight)
-          .onTapGesture {
-            viewStore.send(.updateHomeMenuViewHeight)
+        Button {
+          viewStore.send(.toggleToPresentTextForTest)
+        } label: {
+          HStack {
+            Text("토 09:00 - 21:00")
+              .foregroundColor(.black)
+              .frame(maxWidth: .infinity)
+
+            if viewStore.needToPresentTextForTest {
+              Image(systemName: "chevron.up")
+                .tint(Color.black)
+            } else {
+              Image(systemName: "chevron.down")
+                .tint(Color.black)
+            }
           }
-        Color.green
-          .frame(height: 500)
+          .padding(.horizontal, 16)
+        }
+
+        Text(viewStore.textForTest)
       }
+      .padding(.top, 10)
     }
   }
 
   private var detailInfoMenuView: some View {
     VStack(spacing: 0) {
-      Color.black
-        .frame(height: CGFloat.random(in: 300...2000))
+      EmptyView()
     }
   }
 
   private var reviewMenuView: some View {
     VStack(spacing: 0) {
-      Color.black
-        .frame(height: CGFloat.random(in: 500...1000))
+      EmptyView()
     }
   }
 }
