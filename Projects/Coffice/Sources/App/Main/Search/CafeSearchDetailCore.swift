@@ -33,6 +33,7 @@ struct CafeSearchDetail: ReducerProtocol {
 
   enum Action: Equatable {
     case onAppear
+    case popView
     case subMenuTapped(SubMenuType)
     case updateHomeMenuViewHeight
   }
@@ -51,6 +52,9 @@ struct CafeSearchDetail: ReducerProtocol {
 
       case .updateHomeMenuViewHeight:
         state.homeMenuViewHeight = 500
+        return .none
+
+      default:
         return .none
       }
     }

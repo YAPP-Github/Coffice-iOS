@@ -30,9 +30,18 @@ struct CafeSearchDetailView: View {
           }
         }
       }
-      .customNavigationBar(centerView: {
-        Text(viewStore.title)
-      })
+      .customNavigationBar(
+        centerView: {
+          Text(viewStore.title)
+        },
+        leftView: {
+          Button {
+            viewStore.send(.popView)
+          } label: {
+            Image(systemName: "chevron.left")
+          }
+        }
+      )
     }
   }
 
