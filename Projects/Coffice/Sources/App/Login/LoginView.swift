@@ -19,10 +19,14 @@ struct LoginView: View {
         .customNavigationBar {
           Text(viewStore.title)
         } leftView: {
-          Button {
-            viewStore.send(.useAppAsNonMember)
-          } label: {
-            Text("둘러보기")
+          Group {
+            if viewStore.state.isOnboarding.isFalse {
+              Button {
+                viewStore.send(.dismissLoginPage)
+              } label: {
+                Image(systemName: "xmark")
+              }
+            }
           }
         } rightView: {
           EmptyView()
@@ -35,11 +39,17 @@ struct LoginView: View {
       VStack(spacing: 10) {
         Spacer()
 
-        Button {
+        Button(action: {
           viewStore.send(.kakaoLoginButtonClicked)
-        } label: {
+        }, label: {
           Text("카카오 로그인")
-        }
+            .tint(.black)
+            .frame(minHeight: 50)
+            .font(.system(size: 18, weight: .bold, design: .default))
+        })
+        .frame(maxWidth: .infinity)
+        .background(Color.yellow)
+        .cornerRadius(10)
 
         SignInWithAppleButton { request in
           request.requestedScopes = []
@@ -57,6 +67,18 @@ struct LoginView: View {
           }
         }
         .frame(height: 50)
+
+        Button(action: {
+          viewStore.send(.useAppAsNonMember)
+        }, label: {
+          Text("익명으로 시작하기")
+            .tint(.black)
+            .frame(minHeight: 50)
+            .font(.system(size: 18, weight: .bold, design: .default))
+        })
+        .frame(maxWidth: .infinity)
+        .background(Color.pink.opacity(0.8))
+        .cornerRadius(10)
 
         Spacer()
       }

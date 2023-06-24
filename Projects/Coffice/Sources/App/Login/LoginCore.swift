@@ -13,9 +13,16 @@ import KakaoSDKUser
 
 struct Login: ReducerProtocol {
   struct State: Equatable {
-    static let initialState: State = .init()
+    static let initialState: State = .init(isOnboarding: false)
 
+    var isOnboarding = false
     let title = "Login"
+
+    init() { }
+
+    init(isOnboarding: Bool) {
+      self.isOnboarding = isOnboarding
+    }
   }
 
   enum Action: Equatable {
@@ -23,6 +30,7 @@ struct Login: ReducerProtocol {
     case useAppAsNonMember
     case kakaoLoginButtonClicked
     case appleLoginButtonClicked(token: String)
+    case dismissLoginPage
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -37,26 +45,29 @@ struct Login: ReducerProtocol {
         return .run { send in
           let accessToken = try await fetchKakaoOAuthToken()
           let _ = try await loginClient.login(loginType: .kakao,
-                                                     accessToken: accessToken)
+                                              accessToken: accessToken)
         } catch: { error, send in
-            debugPrint(error)
+          debugPrint(error)
         }
 
       case .appleLoginButtonClicked(let token):
         return .run { send in
           let _ = try await loginClient.login(loginType: .apple,
-                                                     accessToken: token)
+                                              accessToken: token)
         } catch: { error, send in
-            debugPrint(error)
+          debugPrint(error)
         }
 
       case .useAppAsNonMember:
         return .run { send in
           let _ = try await loginClient.login(loginType: .anonymous,
-                                                     accessToken: nil)
+                                              accessToken: nil)
         } catch: { error, send in
-            debugPrint(error)
+          debugPrint(error)
         }
+
+      case .dismissLoginPage:
+        return .none
       }
     }
   }

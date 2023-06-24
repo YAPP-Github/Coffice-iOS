@@ -55,6 +55,7 @@ struct MyPage: ReducerProtocol {
     case pushToPrivacyPolicy
     case pushToOpenSourcesView
     case pushToDevTestView
+    case presentLoginPage
   }
 
   @Dependency(\.loginClient) private var loginClient

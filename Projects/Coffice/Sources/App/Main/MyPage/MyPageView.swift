@@ -50,7 +50,7 @@ struct MyPageView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .font(.title)
       Button {
-        print("TODO: 닉네임 수정페이지로 이동")
+        viewStore.send(.presentLoginPage)
       } label: {
         Image(systemName: "chevron.right")
           .imageScale(.large)

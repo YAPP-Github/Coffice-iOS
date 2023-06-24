@@ -37,9 +37,19 @@ struct AppCoordinator: ReducerProtocol {
         return .none
 
       case .routeAction(_, .main(.onAppear)):
-        if !state.isLoggedIn {
+        if state.isLoggedIn.isFalse {
           state.routes.presentCover(.login(.initialState))
         }
+        return .none
+
+      case .routeAction(_, action: .main(
+        .myPage(.routeAction(_, action: .myPage(.presentLoginPage))))
+      ):
+        state.routes.presentCover(.login(.init(isOnboarding: false)))
+        return .none
+
+      case .routeAction(_, action: .login(.routeAction(_, action: .main(.dismissLoginPage)))):
+        state.routes.dismiss()
         return .none
 
       case .routeAction(_, .main(.home(
