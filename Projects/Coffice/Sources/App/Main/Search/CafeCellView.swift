@@ -13,7 +13,7 @@ struct DefaultCafeCellData {
   var location: String = "서울 마포구"
   var isOpened: String = "영업중"
   var cafeSize: String = "대형"
-  var outlet: String = "콘센트 넉넉"
+  var outletState: String = "콘센트 넉넉"
   var cafeThumbnail: [String] = ["cafeimage", "few", "fd", "cve"]
 }
 
@@ -65,9 +65,9 @@ extension CafeCellView {
 
   var cafeStatusBar: some View {
     HStack {
-      Text(defaultCafe.isOpend)
+      Text(defaultCafe.isOpened)
         .cafeCellViewModifier(fontColor: .red)
-      Text(defaultCafe.outlet)
+      Text(defaultCafe.outletState)
         .cafeCellViewModifier(fontColor: .red)
       Text(defaultCafe.cafeSize)
         .cafeCellViewModifier(fontColor: .red)
