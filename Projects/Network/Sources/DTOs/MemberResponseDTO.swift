@@ -11,5 +11,5 @@ import Foundation
 public struct MemberResponseDTO: Decodable {
   public let memberId: Int
   public let name: String
-  public let loginType: String?
+  public let authProviderType: String?
 }

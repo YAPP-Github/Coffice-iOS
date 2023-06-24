@@ -17,6 +17,6 @@ struct User: Hashable {
 
 extension MemberResponseDTO {
   func toEntity() -> User {
-    return User(id: memberId, loginType: LoginType.type(of: loginType ?? ""), name: name)
+    return User(id: memberId, loginType: LoginType.type(of: authProviderType ?? ""), name: name)
   }
 }
