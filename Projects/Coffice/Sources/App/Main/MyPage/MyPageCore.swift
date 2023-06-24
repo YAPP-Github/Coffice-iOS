@@ -65,12 +65,10 @@ struct MyPage: ReducerProtocol {
       switch action {
       case .onAppear:
         return .run { send in
-          do {
-            let userData = try await loginClient.fetchUserData()
-            await send(.userInfoFetched(userData))
-          } catch {
-            debugPrint(error)
-          }
+          let userData = try await loginClient.fetchUserData()
+          await send(.userInfoFetched(userData))
+        } catch: { error, send in
+          debugPrint(error)
         }
 
       case .userInfoFetched(let user):
