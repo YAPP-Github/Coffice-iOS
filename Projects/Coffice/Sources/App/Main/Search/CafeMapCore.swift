@@ -32,12 +32,29 @@ struct CafeMapCore: ReducerProtocol {
       }
     }
   }
+  enum FloatingButton: CaseIterable {
+    case currentLocationButton
+    case refreshButton
+    case bookmarkButton
+
+    var image: String {
+      switch self {
+      case .currentLocationButton:
+        return "scope"
+      case .bookmarkButton:
+        return "bookmark"
+      case .refreshButton:
+        return "arrow.triangle.2.circlepath"
+      }
+    }
+  }
 
   struct State: Equatable {
     // TODO: Default 위치 값 설정 예정.
     var region: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 1, longitude: 1)
     var isCurrentButtonTapped: Bool = false
     let filterOrders = FilterOrder.allCases
+    let floatingButtons = FloatingButton.allCases
     @BindingState var searchText = ""
   }
 
@@ -46,6 +63,7 @@ struct CafeMapCore: ReducerProtocol {
     case currentLocationButtonTapped
     case requestAuthorization
     case currentLocationResponse(TaskResult<CLLocationCoordinate2D>)
+    case floatingButtonTapped(FloatingButton)
     case fetchCurrentLocation
     case currentButtonToFalse
     case filterOrderMenuClicked(FilterOrder)
@@ -82,6 +100,16 @@ struct CafeMapCore: ReducerProtocol {
         debugPrint(error)
         return .none
 
+      case .floatingButtonTapped(let tapped):
+        switch tapped {
+        case .currentLocationButton:
+          return .none
+        case .refreshButton:
+          return .none
+        case .bookmarkButton:
+          return .none
+        }
+        
       case .currentLocationButtonTapped:
         state.isCurrentButtonTapped = true
         return .run { send in

@@ -18,31 +18,16 @@ struct CafeMapView: View {
         ZStack {
           NaverMapView(viewStore: viewStore)
             .ignoresSafeArea()
-          VStack {
+          VStack(alignment: .trailing) {
             header
               .background(.white)
-            Spacer()
-            HStack {
-              Button {
-                viewStore.send(.currentLocationButtonTapped)
-              } label: {
-                Circle()
-                  .foregroundColor(.white)
-                  .shadow(color: .gray, radius: 2, x: 0, y: 2)
-                  .overlay {
-                    Image(systemName: "scope")
-                  }
-                  .frame(width: 50, height: 50)
-              }
-              .buttonStyle(.plain)
-              Spacer()
-            }
+            floatingButtonView
             .padding()
             CafePreview()
               .frame(width: 350, height: 150)
               .position(
-                x: geometry.size.width/2,
-                y: geometry.size.height/1.7
+                x: geometry.size.width / 2,
+                y: geometry.size.height / 2.7
               )
           }
           .navigationBarHidden(true)
@@ -57,6 +42,27 @@ struct CafeMapView: View {
 }
 
 extension CafeMapView {
+  var floatingButtonView: some View {
+    WithViewStore(store) { viewStore in
+      VStack(spacing: 10) {
+        ForEach(viewStore.floatingButtons, id: \.self) { floatingButton in
+          Button {
+            viewStore.send(.floatingButtonTapped(floatingButton))
+          } label: {
+            Circle()
+              .foregroundColor(.white)
+              .shadow(color: .gray, radius: 2, x: 0, y: 2)
+              .overlay {
+                Image(systemName: floatingButton.image)
+              }
+              .frame(width: 50, height: 50)
+          }
+          .buttonStyle(.plain)
+        }
+      }
+    }
+  }
+
   var header: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
