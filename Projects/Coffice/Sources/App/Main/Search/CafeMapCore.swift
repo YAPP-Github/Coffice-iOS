@@ -34,7 +34,7 @@ struct CafeMapCore: ReducerProtocol {
   }
   enum FloatingButton: CaseIterable {
     case currentLocationButton
-    case refereshButton
+    case refreshButton
     case bookmarkButton
 
     var image: String {
@@ -43,7 +43,7 @@ struct CafeMapCore: ReducerProtocol {
         return "scope"
       case .bookmarkButton:
         return "bookmark"
-      case .refereshButton:
+      case .refreshButton:
         return "arrow.triangle.2.circlepath"
       }
     }
@@ -104,7 +104,7 @@ struct CafeMapCore: ReducerProtocol {
         switch tapped {
         case .currentLocationButton:
           return .none
-        case .refereshButton:
+        case .refreshButton:
           return .none
         case .bookmarkButton:
           return .none
