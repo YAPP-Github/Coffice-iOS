@@ -8,10 +8,10 @@
 
 import SwiftUI
 
-struct DefaultCafeCell {
+struct DefaultCafeCellData {
   var cafeTitle: String = "카페이름"
   var location: String = "서울 마포구"
-  var isOpend: String = "영업중"
+  var isOpened: String = "영업중"
   var cafeSize: String = "대형"
   var outlet: String = "콘센트 넉넉"
   var cafeThumbnail: [String] = ["cafeimage", "few", "fd", "cve"]
@@ -19,7 +19,7 @@ struct DefaultCafeCell {
 
 struct CafeCellView: View {
   // TODO: ViewState 연동 필요
-  @State var defaultCafe = DefaultCafeCell()
+  @State var defaultCafe = DefaultCafeCellData()
   @State var isBookMarkButtonTapped =  false
   var body: some View {
     VStack(alignment: .leading) {
