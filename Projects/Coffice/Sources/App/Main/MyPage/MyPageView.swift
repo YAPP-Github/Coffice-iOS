@@ -45,19 +45,40 @@ struct MyPageView: View {
   }
 
   private var nickNameView: some View {
-    HStack(alignment: .center, spacing: 0) {
-      Text("닉네임")
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .font(.title)
-      Button {
-        viewStore.send(.presentLoginPage)
-      } label: {
-        Image(systemName: "chevron.right")
-          .imageScale(.large)
+    Group {
+      if viewStore.state.loginType == .anonymous {
+        Button {
+          viewStore.send(.presentLoginPage)
+        } label: {
+          HStack(alignment: .center, spacing: 0) {
+            Text(viewStore.state.nickName)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .font(.title)
+            Button {
+              viewStore.send(.presentLoginPage)
+            } label: {
+              Image(systemName: "chevron.right")
+                .imageScale(.large)
+            }
+          }
+        }
+      } else {
+        HStack(alignment: .center, spacing: 0) {
+          Text(viewStore.state.nickName)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.title)
+          Button {
+            viewStore.send(.presentLoginPage)
+          } label: {
+            Image(systemName: "chevron.right")
+              .imageScale(.large)
+          }
+          .tint(.black)
+        }
       }
-      .tint(.black)
     }
     .padding(.vertical, 30)
+    .tint(.black)
   }
 
   private var linkedAccountTypeView: some View {
