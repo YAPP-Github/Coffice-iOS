@@ -11,8 +11,8 @@ let project = Project.app(
   iOSTargetVersion: iOSTargetVersion,
   infoPlist: [
     "CFBundleShortVersionString": "1.0.0", // 앱의 출시 버전
-    "CFBundleVersion": "1",
-    "CFBundleDisplayName": "coffice",
+    "CFBundleVersion": "2", // 앱의 빌드 버전 (테스트 플라이트 배포시 빌드 버전 up 필요)
+    "CFBundleDisplayName": "coffice", // 사용자에게 보여질 앱의 이름
     "UILaunchStoryboardName": "LaunchScreen",
     "UIInterfaceOrientation": ["UIInterfaceOrientationPortrait"],
     "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
