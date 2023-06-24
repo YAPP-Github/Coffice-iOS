@@ -9,6 +9,10 @@
 import SwiftUI
 
 extension View {
+  func cafeCellViewModifier(fontColor: Color) -> some View {
+    modifier(CafeCellViewModifier(fontColor: fontColor))
+  }
+
   func customNavigationBar<C, L, R>(
     centerView: @escaping (() -> C),
     leftView: @escaping (() -> L),

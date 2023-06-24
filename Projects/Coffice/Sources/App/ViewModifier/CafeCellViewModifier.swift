@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 
-struct CafeCellViewModifier: ViewModifier   {
+struct CafeCellViewModifier: ViewModifier {
   let fontColor: Color
 
   init(fontColor: Color) {

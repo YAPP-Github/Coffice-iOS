@@ -66,11 +66,11 @@ extension CafeCellView {
   var cafeStatusBar: some View {
     HStack {
       Text("\(defaultCafe.isOpend)")
-        .modifier(CafeCellViewModifier(fontColor: .red))
+        .cafeCellViewModifier(fontColor: .red)
       Text("\(defaultCafe.outlet)")
-        .modifier(CafeCellViewModifier(fontColor: .red))
+        .cafeCellViewModifier(fontColor: .red)
       Text("\(defaultCafe.cafeSize)")
-        .modifier(CafeCellViewModifier(fontColor: .red))
+        .cafeCellViewModifier(fontColor: .red)
     }
   }
 }
