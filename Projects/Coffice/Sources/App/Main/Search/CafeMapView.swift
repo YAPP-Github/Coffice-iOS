@@ -26,8 +26,8 @@ struct CafeMapView: View {
             CafePreview()
               .frame(width: 350, height: 150)
               .position(
-                x: geometry.size.width/2,
-                y: geometry.size.height/2.7
+                x: geometry.size.width / 2,
+                y: geometry.size.height / 2.7
               )
           }
           .navigationBarHidden(true)
