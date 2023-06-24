@@ -22,6 +22,8 @@ struct CafeMapCore: ReducerProtocol {
     case outlet
     case spaceSize
     case personnel
+    // TODO: 테스트용 코드로 제거 예정
+    case searchDetail
 
     var title: String {
       switch self {
@@ -29,6 +31,8 @@ struct CafeMapCore: ReducerProtocol {
       case .outlet: return "콘센트"
       case .spaceSize: return "공간크기"
       case .personnel: return "인원"
+      // TODO: 테스트용 코드로 제거 예정
+      case .searchDetail: return "검색상세"
       }
     }
   }
@@ -70,6 +74,8 @@ struct CafeMapCore: ReducerProtocol {
     case searchTextFieldTyped(text: String)
     case searchTextFieldClearButtonClicked
     case searchTextSubmitted
+    // TODO: 임시 테스트 코드 작성
+    case pushToSearchDetailForTest
   }
 
   @Dependency(\.locationManager) private var locationManager
@@ -122,9 +128,14 @@ struct CafeMapCore: ReducerProtocol {
           await send(.fetchCurrentLocation)
         }
 
-      case .filterOrderMenuClicked:
+      case .filterOrderMenuClicked(let filterOrder):
         // TODO: 필터 메뉴에 따른 이벤트 처리 필요
-        return .none
+        switch filterOrder {
+        case .searchDetail:
+          return EffectTask(value: .pushToSearchDetailForTest)
+        default:
+          return .none
+        }
 
       case .searchTextFieldTyped(let text):
         state.searchText = text
