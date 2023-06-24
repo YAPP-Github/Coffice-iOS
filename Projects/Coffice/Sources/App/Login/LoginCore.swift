@@ -10,6 +10,7 @@ import ComposableArchitecture
 import FirebaseAnalytics
 import KakaoSDKAuth
 import KakaoSDKUser
+import Network
 
 struct Login: ReducerProtocol {
   struct State: Equatable {
@@ -44,7 +45,7 @@ struct Login: ReducerProtocol {
       case .kakaoLoginButtonClicked:
         return .run { send in
           let accessToken = try await fetchKakaoOAuthToken()
-          let _ = try await loginClient.login(loginType: .kakao,
+          _ = try await loginClient.login(loginType: .kakao,
                                               accessToken: accessToken)
         } catch: { error, send in
           debugPrint(error)
@@ -52,7 +53,7 @@ struct Login: ReducerProtocol {
 
       case .appleLoginButtonClicked(let token):
         return .run { send in
-          let _ = try await loginClient.login(loginType: .apple,
+          _ = try await loginClient.login(loginType: .apple,
                                               accessToken: token)
         } catch: { error, send in
           debugPrint(error)
@@ -60,8 +61,10 @@ struct Login: ReducerProtocol {
 
       case .useAppAsNonMember:
         return .run { send in
-          let _ = try await loginClient.login(loginType: .anonymous,
-                                              accessToken: nil)
+          let response = try await loginClient.login(loginType: .anonymous,
+                                                     accessToken: nil)
+          KeychainManager.shared.addItem(key: "anonymousToken",
+                                         value: response.accessToken)
         } catch: { error, send in
           debugPrint(error)
         }
