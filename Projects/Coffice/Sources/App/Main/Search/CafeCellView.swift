@@ -26,7 +26,7 @@ struct CafeCellView: View {
       cafeThumbnailView
         .padding(.vertical)
       cafeTitleBar
-      Text("\(defaultCafe.location)")
+      Text(defaultCafe.location)
         .padding(.bottom, 5)
       cafeStatusBar
     }
@@ -48,7 +48,7 @@ extension CafeCellView {
 
   var cafeTitleBar: some View {
     HStack {
-      Text("\(defaultCafe.cafeTitle)")
+      Text(defaultCafe.cafeTitle)
         .font(.headline)
       Spacer()
       Button {
@@ -65,11 +65,11 @@ extension CafeCellView {
 
   var cafeStatusBar: some View {
     HStack {
-      Text("\(defaultCafe.isOpend)")
+      Text(defaultCafe.isOpend)
         .cafeCellViewModifier(fontColor: .red)
-      Text("\(defaultCafe.outlet)")
+      Text(defaultCafe.outlet)
         .cafeCellViewModifier(fontColor: .red)
-      Text("\(defaultCafe.cafeSize)")
+      Text(defaultCafe.cafeSize)
         .cafeCellViewModifier(fontColor: .red)
     }
   }
