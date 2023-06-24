@@ -8,7 +8,8 @@
 
 import Foundation
 
-public struct MemberDTO: Decodable {
+public struct MemberResponseDTO: Decodable {
   public let memberId: Int
   public let name: String
+  public let authProviderType: String?
 }

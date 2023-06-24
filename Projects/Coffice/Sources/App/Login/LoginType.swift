@@ -23,4 +23,26 @@ enum LoginType {
       return "ANONYMOUS"
     }
   }
+
+  var displayName: String {
+    switch self {
+    case .kakao:
+      return "카카오"
+    case .apple:
+      return "애플"
+    case .anonymous:
+      return "없음"
+    }
+  }
+
+  static func type(of typeName: String) -> LoginType {
+    switch typeName {
+    case "KAKAO":
+      return .kakao
+    case "APPLE":
+      return .apple
+    default:
+      return .anonymous
+    }
+  }
 }

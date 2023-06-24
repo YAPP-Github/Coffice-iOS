@@ -10,45 +10,119 @@ import ComposableArchitecture
 import SwiftUI
 
 struct MyPageView: View {
-  let store: StoreOf<MyPage>
+  private let store: StoreOf<MyPage>
 
-  var body: some View {
-    mainView
+  init(store: StoreOf<MyPage>) {
+    self.store = store
   }
 
-  var mainView: some View {
+  var body: some View {
     WithViewStore(store) { viewStore in
-      VStack {
+      mainView
+        .onAppear {
+          viewStore.send(.onAppear)
+        }
+    }
+  }
+
+  private var mainView: some View {
+    WithViewStore(store) { viewStore in
+
+      VStack(alignment: .leading, spacing: 0) {
+        nickNameView
+        divider
+        linkedAccountTypeView
+        divider
         VStack(spacing: 0) {
           ForEach(viewStore.menuItems) { menuItem in
             menuItemView(menuItem: menuItem)
           }
         }
+        .padding(.vertical, 10)
 
         Spacer()
       }
-      .customNavigationBar(centerView: {
-        Text(viewStore.title)
-      })
+      .padding(.horizontal, 16)
+      .padding(.top, 50)
     }
   }
 
-  func menuItemView(menuItem: MyPage.MenuItem) -> some View {
+  private var nickNameView: some View {
     WithViewStore(store) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
-        Button {
-          viewStore.send(.menuClicked(menuItem))
-        } label: {
-          Text(menuItem.title)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: 50)
-        }
 
-        Divider()
-          .frame(height: 1)
+      Group {
+        if viewStore.state.loginType == .anonymous {
+          Button {
+            viewStore.send(.presentLoginPage)
+          } label: {
+            HStack(alignment: .center, spacing: 0) {
+              Text(viewStore.state.nickName)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.title)
+              Button {
+                viewStore.send(.presentLoginPage)
+              } label: {
+                Image(systemName: "chevron.right")
+                  .imageScale(.large)
+              }
+            }
+          }
+        } else {
+          HStack(alignment: .center, spacing: 0) {
+            Text(viewStore.state.nickName)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .font(.title)
+            Button {
+              viewStore.send(.presentLoginPage)
+            } label: {
+              Image(systemName: "chevron.right")
+                .imageScale(.large)
+            }
+            .tint(.black)
+          }
+        }
       }
-      .padding(.horizontal, 16)
+      .padding(.vertical, 30)
+      .tint(.black)
     }
+  }
+
+  private var linkedAccountTypeView: some View {
+    WithViewStore(store) { viewStore in
+
+      HStack(alignment: .center, spacing: 0) {
+        Text("연결된 계정")
+          .frame(maxWidth: .infinity, alignment: .leading)
+        Text(viewStore.loginType.displayName)
+          .padding(.trailing, 10)
+      }
+      .padding(.vertical, 30)
+    }
+  }
+
+  private func menuItemView(menuItem: MyPage.MenuItem) -> some View {
+    WithViewStore(store) { viewStore in
+
+      VStack(alignment: .leading, spacing: 0) {
+        HStack {
+          Button {
+            viewStore.send(.menuClicked(menuItem))
+          } label: {
+            Text(menuItem.title)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .frame(height: 50)
+            Image(systemName: "chevron.right")
+          }
+        }
+        .tint(.black)
+      }
+    }
+  }
+
+  private var divider: some View {
+    Divider()
+      .frame(minHeight: 2)
+      .overlay(Color.black)
   }
 }
 

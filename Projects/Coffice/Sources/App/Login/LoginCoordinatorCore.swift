@@ -13,10 +13,21 @@ import TCACoordinators
 struct LoginCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
-      routes: [.root(.main(.initialState), embedInNavigationView: false)]
+      routes: [.root(.main(.init(isOnboarding: true)), embedInNavigationView: true)]
     )
 
     var routes: [Route<LoginScreen.State>]
+
+    init(routes: [Route<LoginScreen.State>]) {
+      self.routes = routes
+    }
+
+    init(isOnboarding: Bool) {
+      self.routes = [
+        .root(.main(.init(isOnboarding: isOnboarding)),
+              embedInNavigationView: true)
+      ]
+    }
   }
 
   enum Action: IndexedRouterAction, Equatable {

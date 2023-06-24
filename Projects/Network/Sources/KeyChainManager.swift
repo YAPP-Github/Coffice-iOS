@@ -16,17 +16,18 @@ protocol KeychainManagerInterface {
   func deleteUserToken() -> Result<Void, Error>
 }
 
-final class KeychainManager: KeychainManagerInterface {
+public final class KeychainManager: KeychainManagerInterface {
 
-  enum KeychainError: Error {
+  public enum KeychainError: Error {
     case noData
   }
 
-  static let shared = KeychainManager()
+  public static let shared = KeychainManager()
 
   private init() {}
 
-  func addItem(key: String, value: String) -> Bool {
+  @discardableResult
+  public func addItem(key: String, value: String) -> Bool {
     let addQuery: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrAccount: key,
@@ -48,7 +49,8 @@ final class KeychainManager: KeychainManagerInterface {
     return result
   }
 
-  func getItem(key: String) -> String? {
+  @discardableResult
+  public func getItem(key: String) -> String? {
     let getQuery: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrAccount: key,
@@ -70,7 +72,8 @@ final class KeychainManager: KeychainManagerInterface {
     return nil
   }
 
-  func updateItem(key: String, value: String) -> Bool {
+  @discardableResult
+  public func updateItem(key: String, value: String) -> Bool {
     let prevQuery: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrAccount: key
@@ -90,7 +93,8 @@ final class KeychainManager: KeychainManagerInterface {
     return result
   }
 
-  func deleteItem(key: String) -> Bool {
+  @discardableResult
+  public func deleteItem(key: String) -> Bool {
     let deleteQuery: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrAccount: key
@@ -102,18 +106,19 @@ final class KeychainManager: KeychainManagerInterface {
     return false
   }
 
-  func deleteUserToken() -> Result<Void, Error> {
+  @discardableResult
+  public func deleteUserToken() -> Result<Void, Error> {
     let deleteQuery: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrAccount: "token"
     ]
     let status = SecItemDelete(deleteQuery as CFDictionary)
-    let lookAroundDeleteQuery: [CFString: Any] = [
+    let anonymousDeleteQuery: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
-      kSecAttrAccount: "lookAroundToken"
+      kSecAttrAccount: "anonymousToken"
     ]
-    let lookAroundStatus = SecItemDelete(lookAroundDeleteQuery as CFDictionary)
-    if status == errSecSuccess || lookAroundStatus == errSecSuccess { return .success(()) }
+    let anonymousStatus = SecItemDelete(anonymousDeleteQuery as CFDictionary)
+    if status == errSecSuccess || anonymousStatus == errSecSuccess { return .success(()) }
     return .failure(KeychainError.noData)
   }
 }
