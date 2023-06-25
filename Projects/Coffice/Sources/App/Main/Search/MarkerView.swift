@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-//
 struct CafeMarkerData: Equatable {
   var cafeName: String
   var latitude: Double
@@ -23,21 +22,21 @@ struct MarkerView: View {
 
   var body: some View {
     VStack {
-        VStack(alignment: .leading) {
-          Text(DefaultText.cafeName)
-            .font(.headline)
-          Text(DefaultText.subTitle)
-            .font(.subheadline)
-            .foregroundColor(.gray)
-          Divider()
-          Text(DefaultText.description)
-          Text("평점: 5.0, 공부하기 좋은 카페")
-        }
-        .padding(.top, 10)
-        .padding(.bottom, 17)
-        .padding(.horizontal, 17)
-        .background(AddressBubbleView())
-        .padding(.bottom, 3)
+      VStack(alignment: .leading) {
+        Text(DefaultText.cafeName)
+          .font(.headline)
+        Text(DefaultText.subTitle)
+          .font(.subheadline)
+          .foregroundColor(.gray)
+        Divider()
+        Text(DefaultText.description)
+        Text("평점: 5.0, 공부하기 좋은 카페")
+      }
+      .padding(.top, 10)
+      .padding(.bottom, 17)
+      .padding(.horizontal, 17)
+      .background(AddressBubbleView())
+      .padding(.bottom, 3)
 
       Image(systemName: "mappin")
         .resizable()
