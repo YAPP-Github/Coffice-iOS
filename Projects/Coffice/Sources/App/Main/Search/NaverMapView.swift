@@ -13,7 +13,7 @@ import ComposableArchitecture
 struct NaverMapView: UIViewRepresentable {
   @ObservedObject var viewStore: ViewStoreOf<CafeMapCore>
   let view = NMFNaverMapView()
-
+  
   func makeUIView(context: Context) -> NMFNaverMapView {
     setupMap(view)
     view.mapView.addCameraDelegate(delegate: context.coordinator)
@@ -21,7 +21,11 @@ struct NaverMapView: UIViewRepresentable {
   }
 
   func updateUIView(_ uiView: UIViewType, context: Context) {
-    moveCameraToPoistion(viewStore.region, uiView)
+    if viewStore.refreshComplete {
+      addMarker(uiView, viewStore.cafeList, coordinator: context.coordinator)
+      DispatchQueue.main.async { viewStore.send(.refreshCompleteToFalse) }
+    }
+
     if viewStore.isCurrentButtonTapped {
       DispatchQueue.main.async { viewStore.send(.currentButtonToFalse) }
     }
@@ -31,7 +35,6 @@ struct NaverMapView: UIViewRepresentable {
     return Coordinator(target: self)
   }
 }
-
 // TODOs:
 // [1] 화면 MaxZoom, MinZoom 정하기
 // [2] 현재 cameraPosition에서 반경 계산
@@ -44,50 +47,64 @@ extension NaverMapView {
     view.mapView.positionMode = .direction
     view.mapView.locationOverlay.hidden = false
     view.mapView.maxZoomLevel = 50
-    view.mapView.minZoomLevel = 0
+    view.mapView.minZoomLevel = 30
     moveCameraToPoistion(viewStore.region, view)
-    addMarker(view)
   }
 
-  func addMarker(_ view: NMFNaverMapView) {
-    let marker = NMFMarker()
-    marker.position = NMGLatLng(lat: 37.5819, lng: 127.0017)
-    let controller = UIHostingController(rootView: MarkerView())
-    controller.view.frame = CGRect(origin: .zero, size: CGSize(width: 240, height: 250))
-    controller.view.backgroundColor = .clear
-    let scenes = UIApplication.shared.connectedScenes
-    let windowScene = scenes.first as? UIWindowScene
-    let window = windowScene?.windows.first
-    DispatchQueue.main.async {
-      if let rootVC = window?.rootViewController {
-        rootVC.view.insertSubview(controller.view, at: 0)
-        let renderer  = UIGraphicsImageRenderer(size: CGSize(width: 240, height: 250))
-        let markerImage = renderer.image { context in
-          controller.view.layer.render(in: context.cgContext)
-        }
-        controller.view.removeFromSuperview()
-        marker.iconImage = NMFOverlayImage(image: markerImage)
-      }
+  func removeAllMarker() {
+    for marker in viewStore.markerList {
+      marker.mapView = nil
+      marker.touchHandler = nil
     }
-    marker.mapView = view.mapView
-    marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-      moveCameraToPoistion(CLLocationCoordinate2D.init(latitude: 37.5819, longitude: 127.0017), view)
-      return true
+    viewStore.send(.markerListClear)
+  }
+  
+  func addMarker(_ view: NMFNaverMapView, _ cafeList: [CafeMarkerData], coordinator: Coordinator) {
+    removeAllMarker()
+    for cafe in cafeList {
+      let marker = NMFMarker()
+      let infoWindow = NMFInfoWindow()
+      let dataSource = NMFInfoWindowDefaultTextSource.data()
+      marker.position = NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
+      marker.mapView = view.mapView
+      marker.iconImage = NMFOverlayImage(image: UIImage(systemName: "person")!)
+      infoWindow.position = NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
+      dataSource.title = "정보 창 내용"
+      infoWindow.dataSource = coordinator
+      marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
+        if infoWindow.marker == nil {
+          infoWindow.open(with: marker)
+          print("infowindow Open")
+        } else {
+          infoWindow.close()
+          print("infoWindow Close")
+        }
+        let location = CLLocationCoordinate2D(latitude: cafe.latitude, longitude: cafe.longitude)
+        moveCameraToPoistion(location, view)
+        return true
+      }
     }
   }
 
   func moveCameraToPoistion(_ coordinate: CLLocationCoordinate2D, _ view: NMFNaverMapView) {
     let latitude = coordinate.latitude
     let longitude = coordinate.longitude
+    let nowCameraPosition = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     let cameraUpdate = NMFCameraUpdate(scrollTo: NMGLatLng(lat: latitude, lng: longitude), zoomTo: 15)
     view.mapView.moveCamera(cameraUpdate)
+    DispatchQueue.main.async { viewStore.send(.cameraPositionUpdate(nowCameraPosition)) }
   }
 }
 
-class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate {
+class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate, NMFOverlayImageDataSource {
   var target: NaverMapView
-
   init(target: NaverMapView) {
     self.target = target
+  }
+
+  func view(with overlay: NMFOverlay) -> UIView {
+    let view = CustomInfoWindowView(frame: CGRect(origin: .zero, size: CGSize(width: 50, height: 50)))
+    view.backgroundColor = .red
+    return view
   }
 }
