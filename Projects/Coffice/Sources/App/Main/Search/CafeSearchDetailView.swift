@@ -457,10 +457,153 @@ extension CafeSearchDetailView {
     .padding(.top, 10)
     .padding(.horizontal, 20)
   }
+}
 
+// MARK: Review Menu View
+
+extension CafeSearchDetailView {
   private var reviewMenuView: some View {
-    VStack(spacing: 0) {
-      EmptyView()
+    WithViewStore(store) { _ in
+      VStack(alignment: .leading, spacing: 0) {
+        reviewHeaderView
+        userReviewListView
+      }
+      .padding(.horizontal, 20)
+    }
+  }
+
+  private var reviewHeaderView: some View {
+    WithViewStore(store) { _ in
+      HStack {
+        Text("리뷰 10")
+          .foregroundColor(.black)
+          .font(.system(size: 16, weight: .bold))
+          .frame(height: 52)
+
+        Spacer()
+
+        Button {
+          // TODO: 리뷰쓰기 이벤트 구현 필요
+        } label: {
+          HStack(spacing: 5) {
+            Text("리뷰 쓰기")
+              .foregroundColor(.brown)
+              .font(.system(size: 12))
+              .padding(.vertical, 10)
+              .padding(.leading, 10)
+            Image(systemName: "pencil")
+              .resizable()
+              .frame(width: 10.5, height: 10.5)
+              .padding(.trailing, 10)
+              .tint(.brown)
+          }
+          .overlay(
+            RoundedRectangle(cornerRadius: 4)
+              .stroke(.gray, lineWidth: 1)
+          )
+        }
+      }
+      .frame(height: 50)
+    }
+  }
+
+  private var userReviewListView: some View {
+    WithViewStore(store) { _ in
+      VStack(spacing: 0) {
+        ForEach(0..<10) { _ in
+          userReviewCell
+        }
+      }
+    }
+  }
+
+  private var userReviewCell: some View {
+    WithViewStore(store) { _ in
+      VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
+          HStack {
+            VStack {
+              Image(systemName: "person.crop.circle")
+                .resizable()
+                .frame(width: 36, height: 36)
+              Spacer()
+            }
+
+            VStack(spacing: 4) {
+              Text("수민")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity, alignment: .leading)
+              Text("5.24 토")
+                .font(.system(size: 12))
+                .foregroundColor(.gray)
+                .frame(maxWidth: .infinity, alignment: .leading)
+              Spacer()
+            }
+
+            Spacer()
+
+            VStack {
+              Button {
+                // TODO: 수정/삭제 & 신고하기 이벤트 구현 필요
+              } label: {
+                if Int.random(in: 0...1) == 0 {
+                  Image(systemName: "ellipsis")
+                    .resizable()
+                    .scaledToFit()
+                    .rotationEffect(.degrees(90))
+                    .frame(width: 18)
+                    .tint(.black)
+                } else {
+                  Text("수정/삭제")
+                    .foregroundColor(.gray)
+                    .font(.system(size: 12))
+                }
+              }
+              Spacer()
+            }
+          }
+        }
+        .frame(height: 42)
+        .padding(.top, 20)
+
+        Text(
+          """
+          카페 공부 하기에 넘 좋았어요! 라떼, 버터바가 특히 맛있어요.
+          오후엔 사람이 꽉차니 일찍오는 것 추천!
+          """
+        )
+        .foregroundColor(.gray)
+        .font(.system(size: 14))
+        .multilineTextAlignment(.leading)
+        .padding(.top, 20)
+
+        // TODO: Tag기 한줄 넘어갈 경우 표출 사양 확인 필요
+        HStack(spacing: 8) {
+          ForEach(CafeSearchDetail.State.ReviewTagType.allCases, id: \.self) { tagType in
+            HStack(spacing: 4) {
+              Image(systemName: tagType.iconName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 12)
+                .padding(.leading, 8)
+              Text(tagType.title)
+                .foregroundColor(.gray)
+                .font(.system(size: 12))
+                .frame(height: 18)
+                .padding(.vertical, 4)
+                .padding(.trailing, 8)
+            }
+            .overlay(
+              RoundedRectangle(cornerRadius: 4).stroke(.gray, lineWidth: 1)
+            )
+          }
+        }
+        .padding(.top, 20)
+
+        Divider()
+          .padding(.top, 16)
+      }
     }
   }
 }
