@@ -18,6 +18,17 @@ extension CLLocationCoordinate2D: Equatable {
 }
 
 struct CafeMapCore: ReducerProtocol {
+
+  enum ExecuteCategory {
+    case moveCurrentLocation
+    case refreshMarker
+  }
+
+  enum ExecuteState {
+    case on
+    case off
+  }
+
   enum FilterOrder: CaseIterable {
     case runningTime
     case outlet
@@ -57,22 +68,22 @@ struct CafeMapCore: ReducerProtocol {
     var currentCameraPosition: CLLocationCoordinate2D?
     var cafeList: [CafeMarkerData] = []
     var markerList: [NMFMarker] = []
-    var isCurrentButtonTapped: Bool = false
-    var isRefreshCompleted: Bool = false
+
     let filterOrders = FilterOrder.allCases
     let floatingButtons = FloatingButton.allCases
+    var executeMoveCurrentLocation: ExecuteState = .off
+    var executeRefreshMarker: ExecuteState = .off
     @BindingState var searchText = ""
   }
 
   enum Action: Equatable, BindableAction {
+    case updateExecuteState(ExecuteCategory, ExecuteState)
     case binding(BindingAction<State>)
     case currentLocationButtonTapped
     case requestLocationAuthorization
     case clearMarkerList
-    case currentLocationResponse(TaskResult<CLLocationCoordinate2D>)
     case floatingButtonTapped(FloatingButton)
     case fetchCurrentLocation
-    case offCurrentButtonTapped
     case filterOrderMenuClicked(FilterOrder)
     case searchTextDidChanged(text: String)
     case searchTextFieldClearButtonClicked
@@ -80,7 +91,6 @@ struct CafeMapCore: ReducerProtocol {
     case updateCameraPosition(CLLocationCoordinate2D)
     case cafeListResponse(TaskResult<[CafeMarkerData]>)
     case fetchCafeList
-    case offRefreshCompleted
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -91,31 +101,24 @@ struct CafeMapCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      case .clearMarkerList:
-        state.markerList.removeAll()
-        return .none
-
-      case .fetchCurrentLocation:
-        return .run { send in
-          await send(
-            .currentLocationResponse(
-              TaskResult { try await locationManager.fetchCurrentLocation() }
-            )
-          )
+      case .updateExecuteState(let category, let executeState):
+        switch category {
+        case .moveCurrentLocation:
+          state.executeMoveCurrentLocation = executeState
+          return .none
+        case .refreshMarker:
+          state.executeRefreshMarker = executeState
+          return .none
         }
 
-      case let .currentLocationResponse(.success(currentLocation)):
-        state.region = currentLocation
-        return .none
-
-      case let .currentLocationResponse(.failure(error)):
-        debugPrint(error)
+      case .clearMarkerList:
+        state.markerList.removeAll()
         return .none
 
       case .floatingButtonTapped(let tapped):
         switch tapped {
         case .currentLocationButton:
-          return .none
+          return .send(.currentLocationButtonTapped)
         case .refreshButton:
           return .send(.fetchCafeList)
         case .bookmarkButton:
@@ -129,7 +132,7 @@ struct CafeMapCore: ReducerProtocol {
               TaskResult {
                 var cafeLocation: [CafeMarkerData] = []
                 let cafeListData = try await placeAPIClient.fetchDefaultPlaces(page: 1, size: 20, sort: .ascending)
-                  cafeListData.forEach { data in
+                cafeListData.forEach { data in
                   let longitude = data.coordinates.longitude
                   let latitude = data.coordinates.latitude
                   let cafeName = data.name
@@ -142,34 +145,21 @@ struct CafeMapCore: ReducerProtocol {
           )
         }
 
-      case .offCurrentButtonTapped:
-        state.isCurrentButtonTapped = false
-        return .none
-
-      case .offRefreshCompleted:
-        state.isRefreshCompleted = false
-        return .none
-
       case .cafeListResponse(.failure(let error)):
         debugPrint(error)
         return .none
 
       case .cafeListResponse(.success(let cafeList)):
         state.cafeList = cafeList
-        state.isRefreshCompleted = true
-        return .none
+        return .send(.updateExecuteState(.refreshMarker, .on))
 
       case .currentLocationButtonTapped:
-        state.isCurrentButtonTapped = true
-        return .run { send in
-          await send(.fetchCurrentLocation)
-        }
+        state.region = locationManager.fetchCurrentLocation()
+        return .send(.updateExecuteState(.moveCurrentLocation, .on))
 
       case .requestLocationAuthorization:
         locationManager.requestAuthorization()
-        return .run { send in
-          await send(.fetchCurrentLocation)
-        }
+        return .none
 
       case .filterOrderMenuClicked:
         // TODO: 필터 메뉴에 따른 이벤트 처리 필요
