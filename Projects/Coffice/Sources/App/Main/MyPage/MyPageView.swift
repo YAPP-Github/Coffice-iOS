@@ -62,8 +62,9 @@ struct MyPageView: View {
               Button {
                 viewStore.send(.presentLoginPage)
               } label: {
-                Image(systemName: "chevron.right")
-                  .imageScale(.large)
+                CofficeAsset.Asset.arrowRightSLine40px.swiftUIImage
+                  .resizable()
+                  .frame(width: 50, height: 50)
               }
             }
           }

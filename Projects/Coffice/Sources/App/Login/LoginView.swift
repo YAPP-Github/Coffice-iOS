@@ -44,10 +44,9 @@ struct LoginView: View {
         }, label: {
           Text("카카오 로그인")
             .tint(.black)
-            .frame(minHeight: 50)
-            .font(.system(size: 18, weight: .bold, design: .default))
+            .frame(maxWidth: .infinity, minHeight: 50)
+            .applyCofficeFont(font: .header0)
         })
-        .frame(maxWidth: .infinity)
         .background(Color.yellow)
         .cornerRadius(10)
 
@@ -72,11 +71,10 @@ struct LoginView: View {
           viewStore.send(.useAppAsNonMember)
         }, label: {
           Text("익명으로 시작하기")
-            .tint(.black)
-            .frame(minHeight: 50)
+            .tint(CofficeAsset.Colors.red.swiftUIColor)
+            .frame(maxWidth: .infinity, minHeight: 50)
             .font(.system(size: 18, weight: .bold, design: .default))
         })
-        .frame(maxWidth: .infinity)
         .background(Color.pink.opacity(0.8))
         .cornerRadius(10)
 
