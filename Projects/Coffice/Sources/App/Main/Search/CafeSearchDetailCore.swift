@@ -24,10 +24,32 @@ struct CafeSearchDetail: ReducerProtocol {
     }
   }
 
+  struct SubMenusViewState: Identifiable, Equatable {
+    let id = UUID()
+    let subMenuType: SubMenuType
+    let isSelected: Bool
+
+    init(subMenuType: SubMenuType, isSelected: Bool) {
+      self.subMenuType = subMenuType
+      self.isSelected = isSelected
+    }
+  }
+
   struct State: Equatable {
     let title = "CafeSearchDetail"
-    let subMenus = SubMenuType.allCases
-    var selectedSubMenuType: SubMenuType = .home
+    let subMenuTypes = SubMenuType.allCases
+    var subMenuViewStates: [SubMenusViewState] = []
+    var selectedSubMenuType: SubMenuType = .home {
+      didSet {
+        subMenuViewStates = SubMenuType.allCases.map { subMenuType in
+          SubMenusViewState(
+            subMenuType: subMenuType,
+            isSelected: subMenuType == selectedSubMenuType
+          )
+        }
+      }
+    }
+
     let homeMenuViewHeight: CGFloat = 100.0
     let openTimeDescription = """
                       월 09:00 - 21:00
@@ -37,8 +59,8 @@ struct CafeSearchDetail: ReducerProtocol {
                       금 정기휴무 (매주 금요일)
                       일 09:00 - 21:00
                       """
-    var textForTest = ""
-    var needToPresentTextForTest = false
+    var runningTimeDetailInfo = ""
+    var needToPresentRunningTimeDetailInfo = false
   }
 
   enum Action: Equatable {
@@ -54,6 +76,7 @@ struct CafeSearchDetail: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        state.selectedSubMenuType = .home
         return .none
 
       case .subMenuTapped(let menuType):
@@ -61,12 +84,12 @@ struct CafeSearchDetail: ReducerProtocol {
         return .none
 
       case .toggleToPresentTextForTest:
-        state.needToPresentTextForTest.toggle()
+        state.needToPresentRunningTimeDetailInfo.toggle()
 
-        if state.needToPresentTextForTest {
-          state.textForTest = state.openTimeDescription
+        if state.needToPresentRunningTimeDetailInfo {
+          state.runningTimeDetailInfo = state.openTimeDescription
         } else {
-          state.textForTest = ""
+          state.runningTimeDetailInfo = ""
         }
         return .none
 
