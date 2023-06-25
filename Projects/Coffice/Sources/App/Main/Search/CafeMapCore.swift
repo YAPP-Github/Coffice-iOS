@@ -67,6 +67,7 @@ struct CafeMapCore: ReducerProtocol {
     case binding(BindingAction<State>)
     case currentLocationButtonTapped
     case requestLocationAuthorization
+    case clearMarkerList
     case currentLocationResponse(TaskResult<CLLocationCoordinate2D>)
     case floatingButtonTapped(FloatingButton)
     case fetchCurrentLocation
