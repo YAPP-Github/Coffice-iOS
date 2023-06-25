@@ -32,18 +32,25 @@ struct CafeSearchDetailView: View {
           .padding(.bottom, 50)
         }
       }
-      .customNavigationBar(
-        centerView: {
-          Text(viewStore.title)
-        },
-        leftView: {
-          Button {
-            viewStore.send(.popView)
-          } label: {
+      .navigationBarHidden(true)
+      .ignoresSafeArea(.all, edges: .top)
+      .overlay(alignment: .topLeading, content: {
+        Button {
+          viewStore.send(.popView)
+        } label: {
+          ZStack(alignment: .center) {
+            Color.clear
+              .frame(width: 40, height: 40)
             Image(systemName: "chevron.left")
+              .resizable()
+              .scaledToFit()
+              .frame(height: 21)
+              .tint(.white)
           }
+          .padding(.top, 4)
+          .padding(.leading, 8)
         }
-      )
+      })
       .onAppear {
         viewStore.send(.onAppear)
       }
@@ -59,7 +66,7 @@ extension CafeSearchDetailView {
       VStack(spacing: 0) {
         Image("cafeImage")
           .resizable()
-          .frame(height: 200)
+          .frame(height: 200 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0))
           .scaledToFit()
 
         VStack(spacing: 0) {
