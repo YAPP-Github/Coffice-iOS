@@ -68,7 +68,6 @@ struct CafeMapCore: ReducerProtocol {
     var currentCameraPosition: CLLocationCoordinate2D?
     var cafeList: [CafeMarkerData] = []
     var markerList: [NMFMarker] = []
-
     let filterOrders = FilterOrder.allCases
     let floatingButtons = FloatingButton.allCases
     var executeMoveCurrentLocation: ExecuteState = .off
