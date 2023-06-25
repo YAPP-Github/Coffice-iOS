@@ -33,6 +33,7 @@ struct CafeMapCore: ReducerProtocol {
       }
     }
   }
+  
   enum FloatingButton: CaseIterable {
     case currentLocationButton
     case refreshButton
