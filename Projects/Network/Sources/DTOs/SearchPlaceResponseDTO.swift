@@ -20,7 +20,7 @@ public struct SearchPlaceResponseDTO: Decodable {
   }
 
   public struct Address: Decodable {
-    public let value: String
-    public let postalCode: String
+    public let value: String?
+    public let postalCode: String?
   }
 }
