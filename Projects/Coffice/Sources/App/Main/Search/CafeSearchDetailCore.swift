@@ -10,36 +10,18 @@ import ComposableArchitecture
 import Foundation
 
 struct CafeSearchDetail: ReducerProtocol {
-  enum SubMenuType: CaseIterable {
-    case home
-    case detailInfo
-    case review
-
-    var title: String {
-      switch self {
-      case .home: return "홈"
-      case .detailInfo: return "세부정보"
-      case .review: return "리뷰"
-      }
-    }
-  }
-
-  struct SubMenusViewState: Identifiable, Equatable {
-    let id = UUID()
-    let subMenuType: SubMenuType
-    let isSelected: Bool
-
-    init(subMenuType: SubMenuType, isSelected: Bool) {
-      self.subMenuType = subMenuType
-      self.isSelected = isSelected
-    }
-  }
-
   struct State: Equatable {
     let title = "CafeSearchDetail"
+
     let subMenuTypes = SubMenuType.allCases
-    var subMenuViewStates: [SubMenusViewState] = []
-    var selectedSubMenuType: SubMenuType = .home {
+    var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
+      .map { SubMenusViewState.init(subMenuType: $0, isSelected: $0 == .detailInfo) }
+    var subPrimaryInfoViewStates: [SubPrimaryInfoViewState] = SubPrimaryInfoType.allCases
+      .map(SubPrimaryInfoViewState.init)
+    var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = SubSecondaryInfoType.allCases
+      .map(SubSecondaryInfoViewState.init)
+
+    var selectedSubMenuType: SubMenuType = .detailInfo {
       didSet {
         subMenuViewStates = SubMenuType.allCases.map { subMenuType in
           SubMenusViewState(
@@ -52,13 +34,13 @@ struct CafeSearchDetail: ReducerProtocol {
 
     let homeMenuViewHeight: CGFloat = 100.0
     let openTimeDescription = """
-                      월 09:00 - 21:00
-                      화 09:00 - 21:00
-                      수 09:00 - 21:00
-                      목 09:00 - 21:00
-                      금 정기휴무 (매주 금요일)
-                      일 09:00 - 21:00
-                      """
+                              화 09:00 - 21:00
+                              수 09:00 - 21:00
+                              목 09:00 - 21:00
+                              금 정기휴무 (매주 금요일)
+                              토 09:00 - 21:00
+                              일 09:00 - 21:00
+                              """
     var runningTimeDetailInfo = ""
     var needToPresentRunningTimeDetailInfo = false
   }
@@ -66,7 +48,7 @@ struct CafeSearchDetail: ReducerProtocol {
   enum Action: Equatable {
     case onAppear
     case popView
-    case subMenuTapped(SubMenuType)
+    case subMenuTapped(State.SubMenuType)
     case toggleToPresentTextForTest
   }
 
@@ -76,7 +58,6 @@ struct CafeSearchDetail: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        state.selectedSubMenuType = .home
         return .none
 
       case .subMenuTapped(let menuType):
@@ -95,6 +76,133 @@ struct CafeSearchDetail: ReducerProtocol {
 
       default:
         return .none
+      }
+    }
+  }
+}
+
+extension CafeSearchDetail.State {
+  enum SubMenuType: CaseIterable {
+    case detailInfo
+    case review
+  }
+
+  enum SubPrimaryInfoType: CaseIterable {
+    case outletState
+    case spaceSize
+    case groupSeat
+  }
+
+  enum SubSecondaryInfoType: CaseIterable {
+    case food
+    case toilet
+    case beverage
+    case price
+    case congestion
+  }
+
+  enum CongestionLevel {
+    case low
+    case middle
+    case high
+  }
+
+  struct SubPrimaryInfoViewState: Identifiable, Equatable {
+    let id = UUID()
+    let type: SubPrimaryInfoType
+    var description = "-"
+
+    init(type: SubPrimaryInfoType) {
+      self.type = type
+
+      description = "-"
+
+      switch type {
+      case .outletState:
+        description = "넉넉"
+      case .spaceSize:
+        description = "대형"
+      case .groupSeat:
+        description = "있음"
+      }
+    }
+
+    var title: String {
+      switch type {
+      case .outletState: return "콘센트"
+      case .spaceSize: return "공간 크기"
+      case .groupSeat: return "단체석"
+      }
+    }
+
+    var iconName: String {
+      switch type {
+      case .outletState: return "power"
+      case .spaceSize: return "house"
+      case .groupSeat: return "person"
+      }
+    }
+  }
+
+  struct SubSecondaryInfoViewState: Identifiable, Equatable {
+    let id = UUID()
+    let type: SubSecondaryInfoType
+    var description = "-"
+    var congestionLevel: CongestionLevel
+
+    init(type: SubSecondaryInfoType) {
+      self.type = type
+
+      congestionLevel = .high
+      description = "-"
+
+      switch type {
+      case .food:
+        description = "디저트 / 식사가능"
+      case .toilet:
+        description = "실내 / 남녀개별"
+      case .beverage:
+        description = "디카페인 / 두유"
+      case .price:
+        description = "아메리카노 4000원~"
+      case .congestion:
+        description = "평일 오후"
+      }
+    }
+
+    var title: String {
+      switch type {
+      case .food: return "푸드"
+      case .toilet: return "화장실"
+      case .beverage: return "음료"
+      case .price: return "가격대"
+      case .congestion: return "혼잡도"
+      }
+    }
+
+    var congestionDescription: String {
+      switch congestionLevel {
+      case .low: return "여유"
+      case .middle: return "보통"
+      case .high: return "혼잡"
+      }
+    }
+  }
+
+  struct SubMenusViewState: Identifiable, Equatable {
+    let id = UUID()
+    let type: SubMenuType
+    let isSelected: Bool
+
+    init(subMenuType: SubMenuType, isSelected: Bool = false) {
+      self.type = subMenuType
+      self.isSelected = isSelected
+    }
+
+    var title: String {
+      switch type {
+      case .detailInfo: return "세부정보"
+      case .review: return "리뷰"
       }
     }
   }

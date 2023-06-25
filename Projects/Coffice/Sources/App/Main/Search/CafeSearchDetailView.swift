@@ -26,7 +26,8 @@ struct CafeSearchDetailView: View {
         ScrollView(.vertical) {
           VStack(spacing: 0) {
             headerView
-            menuContainerView
+            cafeSubInfoView
+            cafeSubMenuView
           }
           .padding(.bottom, 50)
         }
@@ -54,7 +55,7 @@ struct CafeSearchDetailView: View {
 
 extension CafeSearchDetailView {
   private var headerView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store) { _ in
       VStack(spacing: 0) {
         Image("cafeImage")
           .resizable()
@@ -62,173 +63,316 @@ extension CafeSearchDetailView {
           .scaledToFit()
 
         VStack(spacing: 0) {
-          Text("카페 이름")
-            .font(.title)
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-          Text("서울 용산구 ~")
-            .font(.subheadline)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 5)
-
           HStack {
+            VStack(spacing: 0) {
+              Text("카페")
+                .foregroundColor(.black)
+                .font(.system(size: 14, weight: .bold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 20)
+              Text("훅스턴")
+                .foregroundColor(.black)
+                .font(.system(size: 26, weight: .bold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 36)
+                .padding(.top, 8)
+              Text("서울 서대문구 연희로 91 2층")
+                .foregroundColor(.gray)
+                .font(.system(size: 14))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 4)
+            }
+
+            VStack {
+              Image(systemName: "bookmark")
+                .resizable()
+                .frame(width: 20, height: 24)
+                .padding(.top, 10)
+              Spacer()
+            }
+          }
+
+          HStack(spacing: 8) {
             Text("영업중")
-              .padding(.all, 3)
-              .font(.subheadline)
-              .foregroundColor(.white)
-              .background(.black)
-              .cornerRadius(5)
-              .padding(.top, 5)
+              .foregroundColor(.brown)
+              .font(.system(size: 14, weight: .bold))
+              .frame(alignment: .leading)
             Text("목 09:00 ~ 21:00")
-              .font(.subheadline)
-              .padding(.top, 5)
+              .foregroundColor(.gray)
+              .font(.system(size: 14))
             Spacer()
           }
+          .padding(.top, 16)
 
           Divider()
-            .padding(.top, 5)
-
-          HStack(spacing: 0) {
-            Button {
-              // TODO: 저장하기 이벤트 구현 필요
-            } label: {
-              Text("저장하기")
-                .frame(height: 50)
-                .frame(maxWidth: .infinity)
-            }
-
-            Button {
-              // TODO: 공유하기 이벤트 구현 필요
-            } label: {
-              Text("공유하기")
-                .frame(height: 50)
-                .frame(maxWidth: .infinity)
-            }
-          }
-          .frame(maxWidth: .infinity)
-
-          Divider()
+            .padding(.top, 20)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 20)
         .padding(.vertical, 10)
       }
     }
   }
 }
 
-// MARK: Menu View
+// MARK: Sub Info View
 
 extension CafeSearchDetailView {
-  private var menuContainerView: some View {
-    WithViewStore(store) { viewStore in
+  private var cafeSubInfoView: some View {
+    WithViewStore(store) { _ in
       VStack(spacing: 0) {
-        HStack(spacing: 0) {
-          ForEach(viewStore.subMenuViewStates) { viewState in
-            Button {
-              viewStore.send(.subMenuTapped(viewState.subMenuType))
-            } label: {
-              Text(viewState.subMenuType.title)
-                .frame(height: 50)
-                .frame(maxWidth: .infinity)
-                .foregroundColor(viewState.isSelected ? .white : .black)
-                .background(viewState.isSelected ? .black : .white)
+        VStack(spacing: 0) {
+          cafeSubPrimaryInfoView
+          cafeSecondaryInfoView
+        }
+        .padding(.horizontal, 20)
+
+        Color(UIColor.lightGray)
+          .frame(height: 4)
+          .padding(.top, 20)
+      }
+    }
+  }
+
+  private var cafeSubPrimaryInfoView: some View {
+    WithViewStore(store, observe: \.subPrimaryInfoViewStates) { viewStore in
+      VStack(alignment: .leading, spacing: 0) {
+        Text("카페정보")
+          .foregroundColor(.black)
+          .font(.system(size: 16, weight: .bold))
+          .frame(width: .infinity, alignment: .leading)
+          .frame(height: 20)
+          .padding(.top, 16)
+
+        HStack {
+          ForEach(viewStore.state) { viewState in
+            VStack(alignment: .center, spacing: 12) {
+              Image(systemName: viewState.iconName)
+                .resizable()
+                .frame(width: 30, height: 30)
+              HStack(spacing: 8) {
+                Text(viewState.title)
+                  .foregroundColor(.black)
+                  .font(.system(size: 14))
+                  .frame(height: 20)
+                Text(viewState.description)
+                  .foregroundColor(.gray)
+                  .font(.system(size: 14))
+                  .frame(height: 20)
+              }
+              .fixedSize(horizontal: true, vertical: true)
+            }
+
+            if viewState.type != .groupSeat {
+              Spacer()
             }
           }
+          .padding(.top, 16)
         }
 
         Divider()
-          .padding(.horizontal, 16)
+          .padding(.top, 20)
+      }
+    }
+  }
 
-        switch viewStore.selectedSubMenuType {
-        case .home:
-          homeMenuView
+  private var cafeSecondaryInfoView: some View {
+    WithViewStore(store, observe: \.subSecondaryInfoViewStates) { viewStore in
+      VStack(alignment: .leading, spacing: 0) {
+        HStack {
+          VStack(spacing: 0) {
+            ForEach(viewStore.state) { viewState in
+              Text(viewState.title)
+                .foregroundColor(.black)
+                .font(.system(size: 14, weight: .semibold))
+                .frame(height: 20)
+                .frame(maxWidth: 50, alignment: .leading)
+                .padding(.bottom, 16)
+            }
+          }
+
+          VStack(alignment: .leading, spacing: 0) {
+            ForEach(viewStore.state) { viewState in
+              HStack {
+                Text(viewState.description)
+                  .foregroundColor(.gray)
+                  .font(.system(size: 14))
+                  .frame(alignment: .leading)
+
+                if viewState.type == .congestion {
+                  Text(viewState.congestionDescription)
+                    .foregroundColor(viewState.congestionLevel == .high ? .red : .black)
+                    .font(.system(size: 14))
+
+                  Spacer()
+
+                  Text("6월 22일 16:00 기준")
+                    .foregroundColor(.gray)
+                    .font(.system(size: 12))
+                    .frame(alignment: .trailing)
+                }
+              }
+              .frame(height: 20)
+              .padding(.bottom, 16)
+            }
+          }
+        }
+      }
+      .padding(.top, 20)
+    }
+  }
+
+  private var cafeSubMenuView: some View {
+    WithViewStore(store, observe: \.selectedSubMenuType) { viewStore in
+      VStack(spacing: 0) {
+        cafeSubMenuButtonView
+
+        switch viewStore.state {
         case .detailInfo:
           detailInfoMenuView
         case .review:
           reviewMenuView
         }
       }
+      .padding(.top, 32)
     }
   }
 
-  private var homeMenuView: some View {
-    WithViewStore(store) { viewStore in
-      VStack(spacing: 0) {
-        homeMenuMapView
-        homeMenuRunningTimeView
-        homeMenuContactInfoView
-        homeMenuSnsInfoView
-      }
-      .padding(.top, 10)
-      .padding(.horizontal, 16)
-    }
-  }
-
-  private var homeMenuMapView: some View {
-    WithViewStore(store) { viewStore in
-      Color.black
-        .frame(height: 200)
-    }
-  }
-
-  private var homeMenuRunningTimeView: some View {
-    WithViewStore(store) { viewStore in
-      VStack(spacing: 0) {
-        HStack {
-          Image(systemName: "mappin")
-          Text("서울시 용산구 이태원로 ~ ")
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: 30)
+  private var cafeSubMenuButtonView: some View {
+    WithViewStore(store, observe: \.subMenuViewStates) { viewStore in
+      HStack(spacing: 0) {
+        ForEach(viewStore.state) { viewState in
           Button {
-            // TODO: 좌측 텍스트 복사 이벤트
+            viewStore.send(.subMenuTapped(viewState.type))
           } label: {
-            Text("복사")
-              .frame(height: 30)
+            VStack(spacing: 0) {
+              Text(viewState.title)
+                .foregroundColor(viewState.isSelected ? .black : .gray)
+                .font(.system(size: 16, weight: .bold))
+                .frame(height: 52, alignment: .center)
+                .background(.white)
+                .padding(.horizontal, 20)
+                .overlay(alignment: .bottom) {
+                  Color.clear
+                    .background(viewState.isSelected ? .black : .white)
+                    .frame(height: 4)
+                }
+            }
           }
         }
-        .padding(.top, 5)
 
+        Spacer()
+      }
+    }
+  }
+
+  private var detailInfoHeaderView: some View {
+    Text("상세정보")
+      .foregroundColor(.black)
+      .font(.system(size: 16, weight: .bold))
+      .frame(width: .infinity, alignment: .leading)
+      .frame(height: 52)
+  }
+
+  private var mapInfoView: some View {
+    WithViewStore(store) { _ in
+      Color.black
+        .frame(height: 126)
+    }
+  }
+
+  private var locationInfoView: some View {
+    VStack(spacing: 0) {
+      HStack {
+        Image(systemName: "mappin")
+          .frame(width: 18, height: 18)
+
+        Text("서울 서대문구 연희로 91 2층")
+          .foregroundColor(.gray)
+          .font(.system(size: 14))
+          .frame(alignment: .leading)
+          .frame(height: 20)
+
+        Button {
+          // TODO: 좌측 텍스트 복사 이벤트
+        } label: {
+          Image(systemName: "doc.on.doc")
+            .resizable()
+            .frame(width: 18, height: 18)
+            .tint(.black)
+        }
+
+        Spacer()
+      }
+    }
+    .frame(height: 28)
+    .padding(.top, 20)
+  }
+
+  private var contactInfoView: some View {
+    HStack {
+      Image(systemName: "phone")
+        .resizable()
+        .frame(width: 18, height: 18)
+      Text("02) 123-4567")
+        .foregroundColor(.brown)
+        .font(.system(size: 14))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: 20)
+    }
+    .frame(height: 28)
+    .padding(.top, 4)
+  }
+
+  private var runningTimeView: some View {
+    WithViewStore(store) { viewStore in
+      VStack(spacing: 0) {
         HStack {
           VStack {
-            Text("L")
-              .frame(width: 24, height: 24)
+            Image(systemName: "clock")
+              .resizable()
+              .frame(width: 18, height: 18)
+              .tint(.black)
               .background(
                 Circle().strokeBorder(.black, lineWidth: 1)
               )
-              .padding(.top, 3)
             Spacer()
           }
 
-          VStack(spacing: 0) {
+          VStack(alignment: .leading, spacing: 0) {
             Button {
               viewStore.send(.toggleToPresentTextForTest)
             } label: {
               HStack {
-                Text("토 09:00 - 21:00")
-                  .foregroundColor(.black)
-                  .frame(height: 30)
-                  .frame(maxWidth: .infinity, alignment: .leading)
+                Text("월 09:00 - 21:00")
+                  .foregroundColor(.gray)
+                  .font(.system(size: 14))
+                  .frame(height: 20)
+                  .frame(alignment: .leading)
 
-                if viewStore.needToPresentRunningTimeDetailInfo {
-                  Image(systemName: "chevron.up")
-                    .tint(Color.black)
-                } else {
-                  Image(systemName: "chevron.down")
-                    .tint(Color.black)
-                }
+                Image(systemName: viewStore.needToPresentRunningTimeDetailInfo ? "chevron.down" : "chevron.up")
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: 9.5)
+                  .tint(.gray)
               }
             }
 
+            // TODO: 실제 API 연동 시에 운영시간 정보 관련 뷰 모델 구성 예정
             if viewStore.needToPresentRunningTimeDetailInfo {
               Text(viewStore.runningTimeDetailInfo)
+                .foregroundColor(.gray)
+                .font(.system(size: 14))
+                .lineSpacing(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 4)
             }
 
             HStack {
               VStack(spacing: 0) {
                 Text("- 브레이크 타임 :")
-                  .font(.caption)
+                  .foregroundColor(.gray)
+                  .font(.system(size: 14))
                 Spacer()
               }
 
@@ -239,7 +383,8 @@ extension CafeSearchDetailView {
                   주말) 15:00 ~ 16:00
                   """
                 )
-                .font(.caption)
+                .foregroundColor(.gray)
+                .font(.system(size: 14))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
                 Spacer()
@@ -250,7 +395,8 @@ extension CafeSearchDetailView {
             HStack {
               VStack {
                 Text("- 주문마감 :")
-                  .font(.caption)
+                  .foregroundColor(.gray)
+                  .font(.system(size: 14))
                 Spacer()
               }
 
@@ -261,7 +407,8 @@ extension CafeSearchDetailView {
                   주말) 마감 30분 전
                   """
                 )
-                .font(.caption)
+                .foregroundColor(.gray)
+                .font(.system(size: 14))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
                 Spacer()
@@ -270,25 +417,21 @@ extension CafeSearchDetailView {
           }
         }
       }
+      .padding(.top, 10)
     }
   }
 
-  private var homeMenuContactInfoView: some View {
-    HStack {
-      Image(systemName: "phone")
-      Text("02) 123-4567")
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 30)
-    }
-  }
-
-  private var homeMenuSnsInfoView: some View {
+  private var snsInfoView: some View {
     HStack {
       Image(systemName: "network")
+        .resizable()
+        .frame(width: 18, height: 18)
       Button {
         // TODO: SNS Link Action 구현 필요
       } label: {
-        Text("sns nickname")
+        Text("https://www.instagram.com/hoxton_seoul최대...")
+          .foregroundColor(.brown)
+          .font(.system(size: 14))
           .frame(maxWidth: .infinity, alignment: .leading)
           .frame(height: 30)
       }
@@ -296,9 +439,16 @@ extension CafeSearchDetailView {
   }
 
   private var detailInfoMenuView: some View {
-    VStack(spacing: 0) {
-      EmptyView()
+    VStack(alignment: .leading, spacing: 0) {
+      detailInfoHeaderView
+      mapInfoView
+      locationInfoView
+      contactInfoView
+      runningTimeView
+      snsInfoView
     }
+    .padding(.top, 10)
+    .padding(.horizontal, 20)
   }
 
   private var reviewMenuView: some View {
