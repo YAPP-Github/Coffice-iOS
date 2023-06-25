@@ -6,13 +6,6 @@
 
 import SwiftUI
 
-struct CafeMarkerData: Equatable {
-  var cafeName: String
-  var latitude: Double
-  var longitude: Double
-  var isSelected: Bool = false
-}
-
 struct MarkerView: View {
   enum DefaultText {
     static let cafeName = "학림 다방"
