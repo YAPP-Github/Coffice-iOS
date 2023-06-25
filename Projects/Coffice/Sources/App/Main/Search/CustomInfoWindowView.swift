@@ -7,8 +7,8 @@
 //
 
 import UIKit
+
 class CustomInfoWindowView: UIView {
-  
   override init(frame: CGRect) {
     super.init(frame: frame)
     setupView()
