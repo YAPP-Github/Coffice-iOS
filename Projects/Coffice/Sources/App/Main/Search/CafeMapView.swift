@@ -33,7 +33,7 @@ struct CafeMapView: View {
           .navigationBarHidden(true)
         }
         .onAppear {
-          viewStore.send(.requestAuthorization)
+          viewStore.send(.requestLocationAuthorization)
         }
       }
       .ignoresSafeArea(.keyboard)
