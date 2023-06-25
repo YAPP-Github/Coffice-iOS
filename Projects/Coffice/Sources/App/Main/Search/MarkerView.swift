@@ -6,6 +6,14 @@
 
 import SwiftUI
 
+//
+struct CafeMarkerData: Equatable {
+  var cafeName: String
+  var latitude: Double
+  var longitude: Double
+  var isSelected: Bool = false
+}
+
 struct MarkerView: View {
   enum DefaultText {
     static let cafeName = "학림 다방"
@@ -15,23 +23,23 @@ struct MarkerView: View {
 
   var body: some View {
     VStack {
-      VStack(alignment: .leading) {
-        Text(DefaultText.cafeName)
-          .font(.headline)
-        Text(DefaultText.subTitle)
-          .font(.subheadline)
-          .foregroundColor(.gray)
-        Divider()
-        Text(DefaultText.description)
-        Text("평점: 5.0, 공부하기 좋은 카페")
-      }
-      .padding(.top, 10)
-      .padding(.bottom, 17)
-      .padding(.horizontal, 17)
-      .background(AddressBubbleView())
-      .padding(.bottom, 3)
+        VStack(alignment: .leading) {
+          Text(DefaultText.cafeName)
+            .font(.headline)
+          Text(DefaultText.subTitle)
+            .font(.subheadline)
+            .foregroundColor(.gray)
+          Divider()
+          Text(DefaultText.description)
+          Text("평점: 5.0, 공부하기 좋은 카페")
+        }
+        .padding(.top, 10)
+        .padding(.bottom, 17)
+        .padding(.horizontal, 17)
+        .background(AddressBubbleView())
+        .padding(.bottom, 3)
 
-      Image("coffee")
+      Image(systemName: "mappin")
         .resizable()
         .scaledToFit()
         .frame(width: 20)
@@ -72,11 +80,5 @@ struct AddressBubbleView: View {
       path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
       return path
     }
-  }
-}
-
-struct MarkerView_Previews: PreviewProvider {
-  static var previews: some View {
-    MarkerView()
   }
 }
