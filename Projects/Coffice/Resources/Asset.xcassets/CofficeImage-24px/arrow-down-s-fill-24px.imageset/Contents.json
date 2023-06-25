@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "arrow-down-s-fill-24px.pdf",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "arrow-down-s-fill@2x-24px.pdf",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "arrow-down-s-fill@3x-24px.pdf",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
