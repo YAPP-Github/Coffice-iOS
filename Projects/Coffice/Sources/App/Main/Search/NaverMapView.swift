@@ -21,13 +21,14 @@ struct NaverMapView: UIViewRepresentable {
   }
 
   func updateUIView(_ uiView: UIViewType, context: Context) {
-    if viewStore.isRefreshCompleted {
+    if viewStore.executeRefreshMarker == .on {
       addMarker(uiView, viewStore.cafeList, coordinator: context.coordinator)
-      DispatchQueue.main.async { viewStore.send(.offRefreshCompleted) }
+      DispatchQueue.main.async { viewStore.send(.updateExecuteState(.refreshMarker, .off)) }
     }
 
-    if viewStore.isCurrentButtonTapped {
-      DispatchQueue.main.async { viewStore.send(.offCurrentButtonTapped) }
+    if viewStore.executeMoveCurrentLocation == .on {
+      moveCameraToLocation(viewStore.region, uiView)
+      DispatchQueue.main.async { viewStore.send(.updateExecuteState(.moveCurrentLocation, .off)) }
     }
   }
 
@@ -48,7 +49,7 @@ extension NaverMapView {
     view.mapView.locationOverlay.hidden = false
     view.mapView.maxZoomLevel = 50
     view.mapView.minZoomLevel = 30
-    moveCameraToPoistion(viewStore.region, view)
+    moveCameraToLocation(viewStore.region, view)
   }
 
   func removeAllMarker() {
@@ -78,13 +79,13 @@ extension NaverMapView {
           debugPrint("infoWindow Close")
         }
         let location = CLLocationCoordinate2D(latitude: cafe.latitude, longitude: cafe.longitude)
-        moveCameraToPoistion(location, view)
+        moveCameraToLocation(location, view)
         return true
       }
     }
   }
 
-  func moveCameraToPoistion(_ coordinate: CLLocationCoordinate2D, _ view: NMFNaverMapView) {
+  func moveCameraToLocation(_ coordinate: CLLocationCoordinate2D, _ view: NMFNaverMapView) {
     let latitude = coordinate.latitude
     let longitude = coordinate.longitude
     let nowCameraPosition = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
