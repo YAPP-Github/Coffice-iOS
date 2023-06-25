@@ -13,12 +13,34 @@ import Network
 struct BookmarkAPIClient: DependencyKey {
   static var liveValue: BookmarkAPIClient = .liveValue
 
-  func checkServerHealth() async throws -> HTTPURLResponse {
+  func fetchMyPlaces() async throws -> [SearchPlaceResponseDTO] {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
-    urlComponents?.path = "/hello"
+    urlComponents?.path = "/api/v1/members/me/places"
     guard let request = urlComponents?.toURLRequest(method: .get) else {
-      return .init()
+      throw CoreNetworkError.requestConvertFailed
+    }
+    let response: [SearchPlaceResponseDTO] = try await coreNetwork.dataTask(request: request)
+    return response
+  }
+
+  func addMyPlace(placeId: Int) async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/members/me/places/\(placeId)"
+    guard let request = urlComponents?.toURLRequest(method: .post) else {
+      throw CoreNetworkError.requestConvertFailed
+    }
+    let response = try await coreNetwork.dataTask(request: request)
+    return response
+  }
+
+  func deleteMyPlace(placeId: Int) async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/members/me/places/\(placeId)"
+    guard let request = urlComponents?.toURLRequest(method: .delete) else {
+      throw CoreNetworkError.requestConvertFailed
     }
     let response = try await coreNetwork.dataTask(request: request)
     return response
