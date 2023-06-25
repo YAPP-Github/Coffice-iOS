@@ -23,11 +23,11 @@ struct NaverMapView: UIViewRepresentable {
   func updateUIView(_ uiView: UIViewType, context: Context) {
     if viewStore.isRefreshCompleted {
       addMarker(uiView, viewStore.cafeList, coordinator: context.coordinator)
-      DispatchQueue.main.async { viewStore.send(.refreshCompleteToFalse) }
+      DispatchQueue.main.async { viewStore.send(.offRefreshCompleted) }
     }
 
     if viewStore.isCurrentButtonTapped {
-      DispatchQueue.main.async { viewStore.send(.currentButtonToFalse) }
+      DispatchQueue.main.async { viewStore.send(.offCurrentButtonTapped) }
     }
   }
 
@@ -58,7 +58,7 @@ extension NaverMapView {
     }
     viewStore.send(.clearMarkerList)
   }
-  
+
   func addMarker(_ view: NMFNaverMapView, _ cafeList: [CafeMarkerData], coordinator: Coordinator) {
     removeAllMarker()
     for cafe in cafeList {

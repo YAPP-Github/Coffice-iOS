@@ -33,6 +33,7 @@ struct CafeMapCore: ReducerProtocol {
       }
     }
   }
+
   enum FloatingButton: CaseIterable {
     case currentLocationButton
     case refreshButton
@@ -71,7 +72,7 @@ struct CafeMapCore: ReducerProtocol {
     case currentLocationResponse(TaskResult<CLLocationCoordinate2D>)
     case floatingButtonTapped(FloatingButton)
     case fetchCurrentLocation
-    case currentButtonToFalse
+    case offCurrentButtonTapped
     case filterOrderMenuClicked(FilterOrder)
     case searchTextDidChanged(text: String)
     case searchTextFieldClearButtonClicked
@@ -79,7 +80,7 @@ struct CafeMapCore: ReducerProtocol {
     case updateCameraPosition(CLLocationCoordinate2D)
     case cafeListResponse(TaskResult<[CafeMarkerData]>)
     case fetchCafeList
-    case refreshCompleteToFalse
+    case offRefreshCompleted
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -141,11 +142,11 @@ struct CafeMapCore: ReducerProtocol {
           )
         }
 
-      case .currentButtonToFalse:
+      case .offCurrentButtonTapped:
         state.isCurrentButtonTapped = false
         return .none
 
-      case .refreshCompleteToFalse:
+      case .offRefreshCompleted:
         state.isRefreshCompleted = false
         return .none
 
