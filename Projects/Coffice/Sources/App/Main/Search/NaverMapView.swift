@@ -72,10 +72,10 @@ extension NaverMapView {
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if infoWindow.marker == nil {
           infoWindow.open(with: marker)
-          print("infowindow Open")
+          debugPrint("infowindow Open")
         } else {
           infoWindow.close()
-          print("infoWindow Close")
+          debugPrint("infoWindow Close")
         }
         let location = CLLocationCoordinate2D(latitude: cafe.latitude, longitude: cafe.longitude)
         moveCameraToPoistion(location, view)
