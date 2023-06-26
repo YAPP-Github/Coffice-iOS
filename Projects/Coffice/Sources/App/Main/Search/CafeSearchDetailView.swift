@@ -146,7 +146,7 @@ extension CafeSearchDetailView {
         Text("카페정보")
           .foregroundColor(.black)
           .font(.system(size: 16, weight: .bold))
-          .frame(width: .infinity, alignment: .leading)
+          .frame(alignment: .leading)
           .frame(height: 20)
           .padding(.top, 16)
 
@@ -276,7 +276,7 @@ extension CafeSearchDetailView {
     Text("상세정보")
       .foregroundColor(.black)
       .font(.system(size: 16, weight: .bold))
-      .frame(width: .infinity, alignment: .leading)
+      .frame(alignment: .leading)
       .frame(height: 52)
   }
 
@@ -323,7 +323,7 @@ extension CafeSearchDetailView {
       Text("02) 123-4567")
         .foregroundColor(.brown)
         .font(.system(size: 14))
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(alignment: .leading)
         .frame(height: 20)
     }
     .frame(height: 28)
@@ -439,7 +439,7 @@ extension CafeSearchDetailView {
         Text("https://www.instagram.com/hoxton_seoul최대...")
           .foregroundColor(.brown)
           .font(.system(size: 14))
-          .frame(maxWidth: .infinity, alignment: .leading)
+          .frame(alignment: .leading)
           .frame(height: 30)
       }
     }
@@ -533,11 +533,11 @@ extension CafeSearchDetailView {
               Text("수민")
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.black)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(alignment: .leading)
               Text("5.24 토")
                 .font(.system(size: 12))
                 .foregroundColor(.gray)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(alignment: .leading)
               Spacer()
             }
 
