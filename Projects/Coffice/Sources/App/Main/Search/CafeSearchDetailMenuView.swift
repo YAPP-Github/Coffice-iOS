@@ -403,3 +403,14 @@ extension CafeSearchDetailMenuView {
     }
   }
 }
+
+struct CafeSearchDetailMenuView_Previews: PreviewProvider {
+  static var previews: some View {
+    CafeSearchDetailMenuView(
+      store: .init(
+        initialState: .init(),
+        reducer: CafeSearchDetail()
+      )
+    )
+  }
+}

@@ -122,3 +122,14 @@ extension CafeSearchDetailSubInfoView {
     }
   }
 }
+
+struct CafeSearchDetailSubInfoView_Previews: PreviewProvider {
+  static var previews: some View {
+    CafeSearchDetailSubInfoView(
+      store: .init(
+        initialState: .init(),
+        reducer: CafeSearchDetail()
+      )
+    )
+  }
+}
