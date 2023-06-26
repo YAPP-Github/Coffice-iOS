@@ -31,10 +31,7 @@ struct MainCoordinator: ReducerProtocol {
       tabBarState.selectedTab
     }
 
-    var bubbleMessageViewState: BubbleMessageViewState?
-    var isBubbleMessageViewPresented: Bool {
-      return bubbleMessageViewState != nil
-    }
+    var bubbleMessageState: BubbleMessage.State?
   }
 
   enum Action: Equatable {
@@ -43,6 +40,7 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
+    case bubbleMessage(BubbleMessage.Action)
     case dismissBubbleMessageView
     case onAppear
   }
@@ -77,32 +75,19 @@ struct MainCoordinator: ReducerProtocol {
         debugPrint("selectedTab : \(itemType)")
         return .none
 
-      case .search(.routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let viewState)))):
-        state.bubbleMessageViewState = viewState
+      case .search(
+        .routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))
+      ):
+        state.bubbleMessageState = bubbleMessageState
         return .none
 
       case .dismissBubbleMessageView:
-        state.bubbleMessageViewState = nil
+        state.bubbleMessageState = nil
         return .none
 
       default:
         return .none
       }
     }
-  }
-}
-
-extension MainCoordinator.State {
-  struct BubbleMessageViewState: Equatable {
-    let title: String
-    let subTitle: String
-    let subInfoViewStates: [BubbleMessageSubInfoViewState]
-  }
-
-  struct BubbleMessageSubInfoViewState: Equatable, Identifiable {
-    let id = UUID()
-    let iconImage: CofficeImages
-    let title: String
-    let description: String
   }
 }
