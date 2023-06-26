@@ -50,6 +50,8 @@ struct CafeSearchDetail: ReducerProtocol {
     case popView
     case subMenuTapped(State.SubMenuType)
     case toggleToPresentTextForTest
+    case infoGuideButtonTapped
+    case presentBubbleMessageView(MainCoordinator.State.BubbleMessageViewState)
   }
 
   @Dependency(\.apiClient) private var apiClient
@@ -74,12 +76,30 @@ struct CafeSearchDetail: ReducerProtocol {
         }
         return .none
 
+      case .infoGuideButtonTapped:
+        // TODO: 선택한 버튼에 맞게 맞춤형 정보가 있는 말풍선 표출 필요
+        return EffectTask(
+          value: .presentBubbleMessageView(
+            .init(
+              title: "콘센트",
+              subTitle: "좌석대비 콘센트 비율",
+              subInfoViewStates: [
+                .init(iconImage: CofficeAsset.Asset.close40px, title: "넉넉:", description: "80% 이상"),
+                .init(iconImage: CofficeAsset.Asset.close40px, title: "보통:", description: "30% ~ 80%"),
+                .init(iconImage: CofficeAsset.Asset.close40px, title: "부족:", description: "30% 미만")
+              ]
+            )
+          )
+        )
+
       default:
         return .none
       }
     }
   }
 }
+
+// MARK: - Sub Views State
 
 extension CafeSearchDetail.State {
   enum SubMenuType: CaseIterable {
