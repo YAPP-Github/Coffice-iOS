@@ -115,7 +115,7 @@ struct CafeMapCore: ReducerProtocol {
         case .bookmarkButton:
           return .none
         }
-        
+
       case .currentLocationButtonTapped:
         state.isCurrentButtonTapped = true
         return .run { send in
