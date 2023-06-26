@@ -23,19 +23,31 @@ struct TabBarView: View {
   }
 
   var mainView: some View {
-    WithViewStore(store) { viewStore in
-      HStack(spacing: 0) {
-        ForEach(viewStore.tabBarItemViewModels, id: \.self) { viewModel in
-          Button {
-            viewStore.send(.selectTab(viewModel.type))
-          } label: {
-            Text(viewModel.type.title)
-              .foregroundColor(viewModel.foregroundColor)
-              .frame(maxWidth: .infinity)
+    WithViewStore(store, observe: \.tabBarItemViewStates) { viewStore in
+      VStack(spacing: 0) {
+        Color(asset: CofficeAsset.Colors.grayScale3)
+          .frame(height: 1)
+
+        HStack(spacing: 0) {
+          ForEach(viewStore.state, id: \.self) { viewState in
+            Button {
+              viewStore.send(.selectTab(viewState.type))
+            } label: {
+              VStack(alignment: .center, spacing: 0) {
+                Image(asset: viewState.image)
+                  .resizable()
+                  .frame(width: 44, height: 44)
+
+                Text(viewState.title)
+                  .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+                  .font(.system(size: 10))
+                  .frame(maxWidth: .infinity)
+              }
+            }
+            .frame(height: 64)
+            .background(Color(asset: CofficeAsset.Colors.grayScale1))
+            .frame(maxWidth: .infinity)
           }
-          .frame(height: 40)
-          .background(viewModel.backgroundColor)
-          .frame(maxWidth: .infinity)
         }
       }
     }
