@@ -182,7 +182,7 @@ extension CafeSearchDetailMenuView {
                   .frame(height: 20)
                   .frame(alignment: .leading)
 
-                Image(systemName: viewStore.needToPresentRunningTimeDetailInfo ? "chevron.down" : "chevron.up")
+                Image(systemName: viewStore.needToPresentRunningTimeDetailInfo ? "chevron.up" : "chevron.down")
                   .resizable()
                   .scaledToFit()
                   .frame(width: 9.5)
