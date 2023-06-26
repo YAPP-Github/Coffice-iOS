@@ -37,8 +37,10 @@ struct MyPage: ReducerProtocol {
 
   struct State: Equatable {
     let title = "MyPage"
+    var nickName = "닉네임"
     let menuTypes: [MenuType] = MenuType.allCases
     let menuItems: [MenuItem]
+    var loginType: LoginType = .anonymous
 
     init() {
       menuItems = menuTypes.map(MenuItem.init)
@@ -48,18 +50,30 @@ struct MyPage: ReducerProtocol {
   enum Action: Equatable {
     case onAppear
     case menuClicked(MenuItem)
+    case userInfoFetched(User)
     case pushToServiceTermsView
     case pushToPrivacyPolicy
     case pushToOpenSourcesView
     case pushToDevTestView
+    case presentLoginPage
   }
 
-  @Dependency(\.apiClient) private var apiClient
+  @Dependency(\.loginClient) private var loginClient
 
   var body: some ReducerProtocolOf<MyPage> {
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
       case .onAppear:
+        return .run { send in
+          let userData = try await loginClient.fetchUserData()
+          await send(.userInfoFetched(userData))
+        } catch: { error, send in
+          debugPrint(error)
+        }
+
+      case .userInfoFetched(let user):
+        state.loginType = user.loginType
+        state.nickName = user.loginType == .anonymous ? "로그인 하러가기" : user.name
         return .none
 
       case .menuClicked(let menuItem):

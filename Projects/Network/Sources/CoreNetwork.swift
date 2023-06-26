@@ -38,10 +38,10 @@ public final class CoreNetwork: CoreNetworkInterface {
   private var token: String? {
     if let token = KeychainManager.shared.getItem(key: "token") {
       return token
-    } else if let lookAroundToken = KeychainManager.shared.getItem(key: "lookAroundToken") {
-      return lookAroundToken
+    } else if let anonymousToken = KeychainManager.shared.getItem(key: "anonymousToken") {
+      return anonymousToken
     }
-    return nil
+    return "accessToken"
   }
 
   private init() { }

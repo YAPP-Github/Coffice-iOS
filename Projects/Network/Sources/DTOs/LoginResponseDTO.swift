@@ -10,5 +10,5 @@ import Foundation
 
 public struct LoginResponseDTO: Decodable {
   public let accessToken: String
-  public let member: MemberDTO
+  public let member: MemberResponseDTO
 }
