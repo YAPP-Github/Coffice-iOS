@@ -6,9 +6,10 @@
 //  Copyright © 2023 com.cafe. All rights reserved.
 //
 
-import SwiftUI
 import ComposableArchitecture
 import CoreLocation
+import NMapsMap
+import SwiftUI
 
 extension CLLocationCoordinate2D: Equatable {
   public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
@@ -17,6 +18,17 @@ extension CLLocationCoordinate2D: Equatable {
 }
 
 struct CafeMapCore: ReducerProtocol {
+
+  enum ExecuteCategory {
+    case moveCurrentLocation
+    case refreshMarker
+  }
+
+  enum ExecuteState {
+    case on
+    case off
+  }
+
   enum FilterOrder: CaseIterable {
     case runningTime
     case outlet
@@ -36,6 +48,7 @@ struct CafeMapCore: ReducerProtocol {
       }
     }
   }
+
   enum FloatingButton: CaseIterable {
     case currentLocationButton
     case refreshButton
@@ -55,29 +68,37 @@ struct CafeMapCore: ReducerProtocol {
 
   struct State: Equatable {
     // TODO: Default 위치 값 설정 예정.
-    var region: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 1, longitude: 1)
-    var isCurrentButtonTapped: Bool = false
+    var region: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
+    var currentCameraPosition: CLLocationCoordinate2D?
+    var cafeList: [CafeMarkerData] = []
+    var markerList: [NMFMarker] = []
     let filterOrders = FilterOrder.allCases
     let floatingButtons = FloatingButton.allCases
+    var executeMoveCurrentLocation: ExecuteState = .off
+    var executeRefreshMarker: ExecuteState = .off
     @BindingState var searchText = ""
   }
 
   enum Action: Equatable, BindableAction {
+    case updateExecuteState(ExecuteCategory, ExecuteState)
     case binding(BindingAction<State>)
     case currentLocationButtonTapped
-    case requestAuthorization
-    case currentLocationResponse(TaskResult<CLLocationCoordinate2D>)
+    case requestLocationAuthorization
+    case clearMarkerList
     case floatingButtonTapped(FloatingButton)
     case fetchCurrentLocation
-    case currentButtonToFalse
     case filterOrderMenuClicked(FilterOrder)
-    case searchTextFieldTyped(text: String)
+    case searchTextDidChanged(text: String)
     case searchTextFieldClearButtonClicked
     case searchTextSubmitted
+    case updateCameraPosition(CLLocationCoordinate2D)
+    case cafeListResponse(TaskResult<[CafeMarkerData]>)
+    case fetchCafeList
     // TODO: 임시 테스트 코드 작성
     case pushToSearchDetailForTest
   }
 
+  @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.locationManager) private var locationManager
 
   var body: some ReducerProtocolOf<Self> {
@@ -85,48 +106,65 @@ struct CafeMapCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      case .currentButtonToFalse:
-        state.isCurrentButtonTapped = false
-        return .none
-
-      case .fetchCurrentLocation:
-        return .run { send in
-          await send(
-            .currentLocationResponse(
-              TaskResult { try await locationManager.fetchCurrentLocation() }
-            )
-          )
+      case .updateExecuteState(let category, let executeState):
+        switch category {
+        case .moveCurrentLocation:
+          state.executeMoveCurrentLocation = executeState
+          return .none
+        case .refreshMarker:
+          state.executeRefreshMarker = executeState
+          return .none
         }
 
-      case let .currentLocationResponse(.success(currentLocation)):
-        state.region = currentLocation
-        return .none
-
-      case let .currentLocationResponse(.failure(error)):
-        debugPrint(error)
+      case .clearMarkerList:
+        state.markerList.removeAll()
         return .none
 
       case .floatingButtonTapped(let tapped):
         switch tapped {
         case .currentLocationButton:
-          return .none
+          return .send(.currentLocationButtonTapped)
         case .refreshButton:
-          return .none
+          return .send(.fetchCafeList)
         case .bookmarkButton:
           return .none
         }
 
-      case .currentLocationButtonTapped:
-        state.isCurrentButtonTapped = true
+      case .fetchCafeList:
         return .run { send in
-          await send(.fetchCurrentLocation)
+          await send(
+            .cafeListResponse(
+              TaskResult {
+                var cafeLocation: [CafeMarkerData] = []
+                let cafeListData = try await placeAPIClient.fetchDefaultPlaces(page: 1, size: 20, sort: .ascending)
+                cafeListData.forEach { data in
+                  let longitude = data.coordinates.longitude
+                  let latitude = data.coordinates.latitude
+                  let cafeName = data.name
+                  let marker = CafeMarkerData(cafeName: cafeName, latitude: latitude, longitude: longitude)
+                  cafeLocation.append(marker)
+                }
+                return cafeLocation
+              }
+            )
+          )
         }
 
-      case .requestAuthorization:
+      case .cafeListResponse(.failure(let error)):
+        debugPrint(error)
+        return .none
+
+      case .cafeListResponse(.success(let cafeList)):
+        state.cafeList = cafeList
+        return .send(.updateExecuteState(.refreshMarker, .on))
+
+      case .currentLocationButtonTapped:
+        state.region = locationManager.fetchCurrentLocation()
+        return .send(.updateExecuteState(.moveCurrentLocation, .on))
+
+      case .requestLocationAuthorization:
         locationManager.requestAuthorization()
-        return .run { send in
-          await send(.fetchCurrentLocation)
-        }
+        return .none
 
       case .filterOrderMenuClicked(let filterOrder):
         // TODO: 필터 메뉴에 따른 이벤트 처리 필요
@@ -137,7 +175,7 @@ struct CafeMapCore: ReducerProtocol {
           return .none
         }
 
-      case .searchTextFieldTyped(let text):
+      case .searchTextDidChanged(let text):
         state.searchText = text
         return .none
 
@@ -149,6 +187,10 @@ struct CafeMapCore: ReducerProtocol {
         guard state.searchText.trimmingCharacters(in: .whitespaces).isNotEmpty
         else { return .none }
         // TODO: 카페 검색 요청 필요
+        return .none
+
+      case .updateCameraPosition(let newPosition):
+        state.currentCameraPosition = newPosition
         return .none
 
       default:

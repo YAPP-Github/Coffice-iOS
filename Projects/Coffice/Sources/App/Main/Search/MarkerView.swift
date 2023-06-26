@@ -31,7 +31,7 @@ struct MarkerView: View {
       .background(AddressBubbleView())
       .padding(.bottom, 3)
 
-      Image("coffee")
+      Image(systemName: "mappin")
         .resizable()
         .scaledToFit()
         .frame(width: 20)
@@ -72,11 +72,5 @@ struct AddressBubbleView: View {
       path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
       return path
     }
-  }
-}
-
-struct MarkerView_Previews: PreviewProvider {
-  static var previews: some View {
-    MarkerView()
   }
 }
