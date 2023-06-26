@@ -11,16 +11,16 @@ import Foundation
 public struct SearchPlaceResponseDTO: Decodable {
   public let placeId: Int
   public let name: String
-  public let coordinates: Coordinate
-  public let address: Address?
+  public let coordinates: CoordinateDTO
+  public let address: AddressDTO?
+}
 
-  public struct Coordinate: Decodable {
-    public let latitude: Double
-    public let longitude: Double
-  }
+public struct CoordinateDTO: Decodable {
+  public let latitude: Double
+  public let longitude: Double
+}
 
-  public struct Address: Decodable {
-    public let value: String?
-    public let postalCode: String?
-  }
+public struct AddressDTO: Decodable {
+  public let value: String?
+  public let postalCode: String?
 }

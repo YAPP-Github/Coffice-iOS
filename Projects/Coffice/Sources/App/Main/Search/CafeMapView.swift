@@ -23,8 +23,8 @@ struct CafeMapView: View {
               .background(.white)
             floatingButtonView
             .padding()
-            CafePreview()
-              .frame(width: 350, height: 150)
+            CafeCardView()
+              .frame(width: 360, height: 180)
               .position(
                 x: geometry.size.width / 2,
                 y: geometry.size.height / 2.7
@@ -129,67 +129,5 @@ extension CafeMapView {
         .padding(.horizontal, 16)
       }
     }
-  }
-}
-
-// TODO: 추후 UI정해지면 별도 파일 생성 필요.
-struct CafePreview: View {
-  @State var heartButtonTapped: Bool = false
-
-  var body: some View {
-    RoundedRectangle(cornerRadius: 15)
-      .foregroundColor(.white)
-      .shadow(color: .gray, radius: 2, x: 0, y: 2)
-      .overlay {
-        VStack(alignment: .leading, spacing: 15) {
-          Spacer()
-          HStack {
-            Text("학림다방")
-              .font(.headline)
-            Spacer()
-            Button {
-              heartButtonTapped.toggle()
-            } label: {
-              Image(systemName: heartButtonTapped ? "heart.fill" : "heart")
-                .foregroundColor(heartButtonTapped ? .red: .gray)
-            }
-          }
-          .padding(.horizontal)
-
-          Text("영업중")
-            .font(.caption)
-            .padding(EdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7))
-            .overlay {
-              RoundedRectangle(cornerRadius: 4)
-                .stroke(Color.red, lineWidth: 1)
-            }
-            .padding(.leading)
-            .foregroundColor(.red)
-
-          HStack {
-            HStack(spacing: 3) {
-              Image(systemName: "paperplane.fill")
-              Text("32382m")
-                .font(.caption)
-            }
-            .foregroundColor(.gray)
-            HStack(spacing: 3) {
-              Image(systemName: "hand.thumbsup.fill")
-                .foregroundColor(.red)
-              Text("88%")
-                .font(.caption)
-
-            }
-            HStack(spacing: 3) {
-              Image(systemName: "heart")
-                .foregroundColor(.red)
-              Text("6")
-                .font(.caption)
-            }
-          }
-          .padding(.horizontal)
-          Spacer()
-        }
-      }
   }
 }
