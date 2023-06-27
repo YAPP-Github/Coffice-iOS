@@ -12,7 +12,7 @@ import ComposableArchitecture
 
 struct NaverMapView {
   @ObservedObject var viewStore: ViewStoreOf<CafeMapCore>
-  private let storage = NaverMapViewStorage()
+  static let storage = NaverMapViewStorage()
 
   init(viewStore: ViewStoreOf<CafeMapCore>) {
     self.viewStore = viewStore
@@ -23,6 +23,7 @@ final class NaverMapViewStorage {
   var location = CLLocationCoordinate2D(latitude: 0, longitude: 0)
   var markers: [NMFMarker] = []
   var cafes: [CafeMarkerData] = []
+  let iconImage = CofficeAsset.Asset.mapPinFill24px.image
 }
 
 extension NaverMapView: UIViewRepresentable {
@@ -40,7 +41,7 @@ extension NaverMapView: UIViewRepresentable {
   }
 
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if storage.location != viewStore.state.region {
+    if NaverMapView.storage.location != viewStore.state.region {
       let nmgLocation = NMGLatLng(lat: viewStore.state.region.latitude, lng: viewStore.state.region.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: 15)
       DispatchQueue.main.async {
@@ -48,8 +49,8 @@ extension NaverMapView: UIViewRepresentable {
       }
     }
 
-    if storage.cafes != viewStore.state.cafeList {
-      storage.cafes = viewStore.state.cafeList
+    if NaverMapView.storage.cafes != viewStore.state.cafeList {
+      NaverMapView.storage.cafes = viewStore.state.cafeList
       DispatchQueue.main.async {
         addMarker(naverMapView: uiView, cafeList: viewStore.cafeList, coordinator: context.coordinator)
       }
@@ -63,20 +64,19 @@ extension NaverMapView: UIViewRepresentable {
 
 extension NaverMapView {
   func removeAllMarkers() {
-    storage.markers.forEach {
-      $0.touchHandler = nil
-      $0.mapView = nil
+    for marker in NaverMapView.storage.markers {
+      marker.touchHandler = nil
+      marker.mapView = nil
     }
-    storage.markers.removeAll()
+    NaverMapView.storage.markers.removeAll()
   }
 
   func addMarker(naverMapView: NMFNaverMapView, cafeList: [CafeMarkerData], coordinator: Coordinator) {
     removeAllMarkers()
-    let iconImage = NMFOverlayImage(image: CofficeAsset.Asset.mapPinFill24px.image)
     for cafe in cafeList {
       let marker = NMFMarker()
       marker.position = NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
-      marker.iconImage = iconImage
+      marker.iconImage = NMFOverlayImage(image: CofficeAsset.Asset.mapPinFill24px.image)
       marker.width = 20
       marker.height = 20
 
@@ -98,7 +98,7 @@ extension NaverMapView {
         return true
       }
       marker.mapView = naverMapView.mapView
-      storage.markers.append(marker)
+      NaverMapView.storage.markers.append(marker)
     }
   }
 
