@@ -17,6 +17,12 @@ extension View {
     modifier(CafeCellViewModifier(fontColor: fontColor))
   }
 
+  func customSheet<ViewContent>(
+    viewContent: @escaping () -> ViewContent
+  ) -> some View where ViewContent: View {
+    modifier(CustomBottomSheetViewModifier(viewContent: viewContent))
+  }
+
   func customNavigationBar<C, L, R>(
     centerView: @escaping (() -> C),
     leftView: @escaping (() -> L),
