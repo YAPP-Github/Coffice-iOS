@@ -93,7 +93,7 @@ extension CafeMapView {
         HStack {
           Spacer()
           Button {
-            viewStore.send(.searchTextFieldClearButtonClicked)
+            viewStore.send(.searchTextFieldClearButtonTapped)
           } label: {
             Image(systemName: "xmark.circle.fill")
               .foregroundColor(.gray)
