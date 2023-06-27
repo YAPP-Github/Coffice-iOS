@@ -30,6 +30,8 @@ struct MainCoordinator: ReducerProtocol {
     var selectedTab: TabBar.State.TabBarItemType {
       tabBarState.selectedTab
     }
+
+    var filterSheetState: FilterSheetCore.State?
   }
 
   enum Action: Equatable {
@@ -39,6 +41,8 @@ struct MainCoordinator: ReducerProtocol {
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
     case onAppear
+    case filterSheetViewAction(FilterSheetCore.Action)
+    case dismissFilterSheetView
   }
 
   var body: some ReducerProtocolOf<MainCoordinator> {
@@ -69,6 +73,12 @@ struct MainCoordinator: ReducerProtocol {
 
       case let .tabBar(.selectTab(itemType)):
         debugPrint("selectedTab : \(itemType)")
+        return .none
+
+      case .search(
+        .routeAction(_, .cafeMap(.presentFilterSheetView(let filterSheetState)))
+      ):
+        state.filterSheetState = filterSheetState
         return .none
 
       default:
