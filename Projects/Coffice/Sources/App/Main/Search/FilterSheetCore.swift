@@ -48,6 +48,7 @@ struct FilterSheetCore: ReducerProtocol {
           return .none
 
         case .cafeDetailFilter:
+          state.filterType = .cafeDetailFilter
           return .none
 
         default:
