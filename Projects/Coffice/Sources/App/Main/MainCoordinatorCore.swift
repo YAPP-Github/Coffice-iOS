@@ -10,44 +10,6 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-enum TabBarItemType: CaseIterable {
-  case home
-  case search
-  case savedList
-  case myPage
-
-  var title: String {
-    switch self {
-    case .home:
-      return "홈"
-    case .search:
-      return "검색"
-    case .savedList:
-      return "저장리스트"
-    case .myPage:
-      return "마이페이지"
-    }
-  }
-}
-
-struct TabBarItemViewModel: Hashable {
-  let type: TabBarItemType
-  let isSelected: Bool
-
-  init(type: TabBarItemType, isSelected: Bool = false) {
-    self.type = type
-    self.isSelected = isSelected
-  }
-
-  var foregroundColor: Color {
-    return isSelected ? .white : .gray
-  }
-
-  var backgroundColor: Color {
-    return isSelected ? .black : Color(UIColor.lightGray)
-  }
-}
-
 // MARK: - MainCoordniatorCore
 
 struct MainCoordinator: ReducerProtocol {
@@ -65,7 +27,7 @@ struct MainCoordinator: ReducerProtocol {
     var savedListState: SavedListCoordinator.State
     var myPageState: MyPageCoordinator.State
     var tabBarState: TabBar.State
-    var selectedTab: TabBarItemType {
+    var selectedTab: TabBar.State.TabBarItemType {
       tabBarState.selectedTab
     }
   }

@@ -28,16 +28,9 @@ struct MainCoordinatorView: View {
   }
 
   var mainView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: \.selectedTab) { viewStore in
       Group {
-        switch viewStore.selectedTab {
-        case .home:
-          HomeCoordinatorView(
-            store: store.scope(
-              state: \.homeState,
-              action: MainCoordinator.Action.home
-            )
-          )
+        switch viewStore.state {
         case .search:
           SearchCoordinatorView(
             store: store.scope(
