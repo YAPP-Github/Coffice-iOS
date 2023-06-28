@@ -31,7 +31,7 @@ struct FilterBottomSheetView: View {
               VStack {
                 switch viewStore.filterType {
                 case .cafeDetailFilter:
-                  EmptyView()
+                  cafeDetailFilterView
                 case .outlet:
                   cafeOutletFilterView
                 case .spaceSize:
@@ -53,7 +53,6 @@ struct FilterBottomSheetView: View {
         }
         .frame(width: proxy.size.width, height: proxy.size.height)
       }
-      .debug()
     }
   }
 }
