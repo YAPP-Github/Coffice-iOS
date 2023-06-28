@@ -14,11 +14,14 @@ struct SearchScreen: ReducerProtocol {
     /// 메인 페이지
     case cafeMap(CafeMapCore.State)
     case cafeSearchDetail(CafeSearchDetail.State)
+    case cafeSearchList(CafeSearchListCore.State)
   }
 
   enum Action: Equatable {
     case cafeMap(CafeMapCore.Action)
     case cafeSearchDetail(CafeSearchDetail.Action)
+    case cafeSearchList(CafeSearchListCore.Action)
+    case popView
   }
 
   var body: some ReducerProtocolOf<SearchScreen> {
@@ -35,5 +38,11 @@ struct SearchScreen: ReducerProtocol {
     ) {
       CafeSearchDetail()
     }
+
+    Scope(
+      state: /State.cafeSearchList,
+      action: /Action.cafeSearchList) {
+        CafeSearchListCore()
+      }
   }
 }
