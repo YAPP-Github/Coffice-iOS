@@ -40,9 +40,8 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
+    case filterSheetAction(FilterSheetCore.Action)
     case onAppear
-    case filterSheetViewAction(FilterSheetCore.Action)
-    case dismissFilterSheetView
   }
 
   var body: some ReducerProtocolOf<MainCoordinator> {
@@ -68,6 +67,10 @@ struct MainCoordinator: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .filterSheetAction(.dismiss):
+        state.filterSheetState = nil
+        return .none
+
       case .onAppear:
         return .none
 
@@ -76,7 +79,7 @@ struct MainCoordinator: ReducerProtocol {
         return .none
 
       case .search(
-        .routeAction(_, .cafeMap(.presentFilterSheetView(let filterSheetState)))
+        .routeAction(_, .cafeSearchList(.presentFilterSheetView(let filterSheetState)))
       ):
         state.filterSheetState = filterSheetState
         return .none
