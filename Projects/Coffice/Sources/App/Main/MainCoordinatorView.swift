@@ -20,6 +20,12 @@ struct MainCoordinatorView: View {
           mainView
         }
         tabBarView
+        IfLetStore(
+          store.scope(
+            state: \.filterSheetState,
+            action: MainCoordinator.Action.filterSheetAction),
+          then: FilterBottomSheetView.init
+        )
       }
       .onAppear {
         viewStore.send(.onAppear)
