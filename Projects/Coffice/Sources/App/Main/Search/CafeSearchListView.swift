@@ -75,22 +75,24 @@ extension CafeSearchListView {
   }
   var orderFilterView: some View {
     WithViewStore(store) { viewStore in
-      ScrollView(.horizontal) {
+      ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 8) {
           ForEach(viewStore.filterOrders, id: \.self) { order in
-            Button {
-              viewStore.send(.filterButtonTapped(order))
-            } label: {
-              Text(order.titleName)
-                .font(.subheadline)
-                .foregroundColor(.black)
-                .lineLimit(1)
-                .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 20)
-                    .stroke(.gray, lineWidth: 1)
-                }
-                .frame(height: 60)
+            if order != .none {
+              Button {
+                viewStore.send(.filterButtonTapped(order))
+              } label: {
+                Text(order.titleName)
+                  .font(.subheadline)
+                  .foregroundColor(.black)
+                  .lineLimit(1)
+                  .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
+                  .overlay {
+                    RoundedRectangle(cornerRadius: 20)
+                      .stroke(.gray, lineWidth: 1)
+                  }
+                  .frame(height: 60)
+              }
             }
           }
         }
