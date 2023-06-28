@@ -23,7 +23,9 @@ struct FilterBottomSheetView: View {
     WithViewStore(store) { viewStore in
       GeometryReader { proxy in
         ZStack {
-          if isDimmed { Color.black.opacity(0.5).ignoresSafeArea() }
+          Color.black.opacity(0.5).ignoresSafeArea().onTapGesture {
+            viewStore.send(.dismiss)
+          }
           RoundedRectangle(cornerRadius: 15)
             .foregroundColor(.white)
             .shadow(color: .gray, radius: 5)
