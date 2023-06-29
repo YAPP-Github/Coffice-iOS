@@ -30,6 +30,8 @@ struct MainCoordinator: ReducerProtocol {
     var selectedTab: TabBar.State.TabBarItemType {
       tabBarState.selectedTab
     }
+
+    var bubbleMessageState: BubbleMessage.State?
   }
 
   enum Action: Equatable {
@@ -38,6 +40,8 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
+    case bubbleMessage(BubbleMessage.Action)
+    case dismissBubbleMessageView
     case onAppear
   }
 
@@ -69,6 +73,16 @@ struct MainCoordinator: ReducerProtocol {
 
       case let .tabBar(.selectTab(itemType)):
         debugPrint("selectedTab : \(itemType)")
+        return .none
+
+      case .search(
+        .routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))
+      ):
+        state.bubbleMessageState = bubbleMessageState
+        return .none
+
+      case .dismissBubbleMessageView:
+        state.bubbleMessageState = nil
         return .none
 
       default:

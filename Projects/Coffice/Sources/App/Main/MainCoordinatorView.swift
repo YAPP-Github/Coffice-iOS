@@ -20,6 +20,17 @@ struct MainCoordinatorView: View {
           mainView
         }
         tabBarView
+
+        IfLetStore(
+          store.scope(
+            state: \.bubbleMessageState,
+            action: MainCoordinator.Action.bubbleMessage
+          ),
+          then: BubbleMessageView.init
+        )
+        .onTapGesture {
+          viewStore.send(.dismissBubbleMessageView)
+        }
       }
       .onAppear {
         viewStore.send(.onAppear)
