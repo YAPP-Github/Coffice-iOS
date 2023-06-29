@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "pencil-line-14px.pdf",
+      "filename" : "pencil-line-14px.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "pencil-line-14px@2x.pdf",
+      "filename" : "pencil-line-14px@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "pencil-line-14px@3x.pdf",
+      "filename" : "pencil-line-14px@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
