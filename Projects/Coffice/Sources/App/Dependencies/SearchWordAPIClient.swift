@@ -29,7 +29,7 @@ struct SearchWordAPIClient: DependencyKey {
     urlComponents?.path = "/api/v1/search-words/\(id)"
     guard let request = urlComponents?.toURLRequest(method: .delete)
     else { return }
-    let response = try await coreNetwork.dataTask(request: request)
+    _ = try await coreNetwork.dataTask(request: request)
     return
   }
 
@@ -39,7 +39,7 @@ struct SearchWordAPIClient: DependencyKey {
     urlComponents?.path = "/api/v1/search-words"
     guard let request = urlComponents?.toURLRequest(method: .delete)
     else { return }
-    let response = try await coreNetwork.dataTask(request: request)
+    _ = try await coreNetwork.dataTask(request: request)
     return
   }
 }

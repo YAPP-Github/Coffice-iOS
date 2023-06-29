@@ -27,6 +27,14 @@ struct SearchCoordinator: ReducerProtocol {
   var body: some ReducerProtocolOf<SearchCoordinator> {
     Reduce<State, Action> { state, action in
       switch action {
+      case .routeAction(_, action: .cafeMap(.pushToSearchListForTest)):
+        state.routes.push(.cafeSearchList(.init()))
+        return .none
+
+      case .routeAction(_, action: .cafeSearchList(.popView)):
+        state.routes.pop()
+        return .none
+
       case .routeAction(_, action: .cafeMap(.pushToSearchDetailForTest)):
         state.routes.push(.cafeSearchDetail(.init()))
         return .none
