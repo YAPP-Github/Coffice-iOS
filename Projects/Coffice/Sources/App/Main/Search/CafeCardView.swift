@@ -20,10 +20,10 @@ struct CafeCardView: View {
             .frame(width: 100, height: 180)
             .cornerRadius(15, corners: [.topLeft, .bottomLeft])
             .scaledToFill()
-          
+
           VStack(alignment: .leading, spacing: 10) {
             Spacer()
-            
+
             HStack {
               Text("학림다방")
                 .font(.headline)
@@ -35,16 +35,16 @@ struct CafeCardView: View {
               }
               .padding(.trailing)
             }
-            
+
             HStack(spacing: 3) {
-              Image(asset: CofficeAsset.Asset.mapPinFill118px)
+              Image(asset: CofficeAsset.Asset.mapPinFill18px)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20, height: 20)
               Text("서울 용산")
                 .font(.subheadline)
             }
-            
+
             HStack {
               Text("영업시간")
                 .font(.caption)
@@ -57,7 +57,7 @@ struct CafeCardView: View {
               Text("08:00 ~ 21:00")
                 .font(.caption)
             }
-            
+
             HStack {
               Text("콘센트")
                 .font(.caption)
@@ -82,7 +82,7 @@ struct CafeCardView: View {
               Text("대형")
                 .font(.caption)
             }
-            
+
             HStack {
               Text("단체석")
                 .font(.caption)
@@ -101,7 +101,7 @@ struct CafeCardView: View {
                 }
                 .foregroundColor(.red)
             }
-            
+
             Spacer()
           }
         }
