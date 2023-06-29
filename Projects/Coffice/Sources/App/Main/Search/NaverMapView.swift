@@ -41,7 +41,12 @@ extension NaverMapView: UIViewRepresentable {
   }
 
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if NaverMapView.storage.location != viewStore.state.region {
+    let mapCenterLocation = CLLocationCoordinate2D(
+      latitude: uiView.mapView.latitude,
+      longitude: uiView.mapView.longitude
+    )
+    if mapCenterLocation != viewStore.state.region {
+      NaverMapView.storage.location = viewStore.state.region
       let nmgLocation = NMGLatLng(lat: viewStore.state.region.latitude, lng: viewStore.state.region.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: 15)
       DispatchQueue.main.async {
@@ -119,5 +124,10 @@ class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate,
     let view = CustomInfoWindowView(frame: CGRect(origin: .zero, size: CGSize(width: 50, height: 50)))
     view.backgroundColor = .red
     return view
+  }
+
+  func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
+    let location = CLLocationCoordinate2D(latitude: mapView.latitude, longitude: mapView.longitude)
+    target.viewStore.send(.cameraDidChange(location))
   }
 }

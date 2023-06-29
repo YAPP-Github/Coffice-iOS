@@ -70,6 +70,8 @@ struct CafeMapCore: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
 
+    case cameraDidChange(CLLocationCoordinate2D)
+
     case floatingButtonTapped(FloatingButton)
     case updateCurrentLocation
     case updateCafeMarkers
@@ -97,6 +99,11 @@ struct CafeMapCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+
+      case .cameraDidChange(let location):
+        state.region = location
+        return .none
+
       case .floatingButtonTapped(let buttonType):
         switch buttonType {
         case .currentLocationButton:
