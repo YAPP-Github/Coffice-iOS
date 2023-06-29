@@ -50,6 +50,16 @@ extension CafeSearchDetailSubInfoView {
               Image(systemName: viewState.iconName)
                 .resizable()
                 .frame(width: 30, height: 30)
+                .overlay(alignment: .topTrailing) {
+                  Button {
+                    viewStore.send(.infoGuideButtonTapped)
+                  } label: {
+                    Image(asset: CofficeAsset.Asset.informationLine18px)
+                      .resizable()
+                      .frame(width: 18, height: 18)
+                  }
+                  .offset(x: 5, y: -5)
+                }
               HStack(spacing: 8) {
                 Text(viewState.title)
                   .foregroundColor(.black)

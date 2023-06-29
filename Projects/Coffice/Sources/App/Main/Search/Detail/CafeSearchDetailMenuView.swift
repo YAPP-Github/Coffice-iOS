@@ -329,11 +329,11 @@ extension CafeSearchDetailMenuView {
               Text("수민")
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.black)
-                .frame(alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
               Text("5.24 토")
                 .font(.system(size: 12))
                 .foregroundColor(.gray)
-                .frame(alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
               Spacer()
             }
 
