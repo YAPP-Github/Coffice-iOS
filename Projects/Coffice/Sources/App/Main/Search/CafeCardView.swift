@@ -37,7 +37,7 @@ struct CafeCardView: View {
             }
 
             HStack(spacing: 3) {
-              Image(asset: CofficeAsset.Asset.mapPinFill118px)
+              Image(asset: CofficeAsset.Asset.mapPinFill18px)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20, height: 20)
@@ -101,7 +101,6 @@ struct CafeCardView: View {
                 }
                 .foregroundColor(.red)
             }
-
             Spacer()
           }
         }

@@ -107,7 +107,7 @@ extension CafeMapView {
 
   var orderFilterView: some View {
     WithViewStore(store) { viewStore in
-      ScrollView(.horizontal) {
+      ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 8) {
           ForEach(viewStore.filterOrders, id: \.self) { order in
             Button {

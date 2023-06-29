@@ -23,6 +23,14 @@ struct MainCoordinatorView: View {
 
         IfLetStore(
           store.scope(
+            state: \.filterSheetState,
+            action: MainCoordinator.Action.filterSheetAction
+          ),
+          then: FilterBottomSheetView.init
+        )
+
+        IfLetStore(
+          store.scope(
             state: \.bubbleMessageState,
             action: MainCoordinator.Action.bubbleMessage
           ),

@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "mypage-navi-unselected-44px.pdf",
+      "filename" : "mypage-navi-unselected-44px.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "mypage-navi-unselected-44px@2x.pdf",
+      "filename" : "mypage-navi-unselected@2x-44px.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "mypage-navi-unselected-44px@3x.pdf",
+      "filename" : "mypage-navi-unselected@3x-44px.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
