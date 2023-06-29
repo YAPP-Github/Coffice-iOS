@@ -1,16 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "error-warning-line-18px.pdf",
+      "filename" : "error-warning-line-18px.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "error-warning-line@2x-18px.pdf",
+      "filename" : "error-warning-line@2x-18px.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "error-warning-line@3x-18px.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -1,16 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "map-pin-fill-18px.pdf",
+      "filename" : "map-pin-fill-18px.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "map-pin-fill@2x-18px.pdf",
+      "filename" : "map-pin-fill@2x-18px.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "map-pin-fill@3x-18px.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

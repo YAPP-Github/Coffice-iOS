@@ -32,6 +32,7 @@ struct MainCoordinator: ReducerProtocol {
     }
 
     var filterSheetState: FilterSheetCore.State?
+    var bubbleMessageState: BubbleMessage.State?
   }
 
   enum Action: Equatable {
@@ -41,6 +42,8 @@ struct MainCoordinator: ReducerProtocol {
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
     case filterSheetAction(FilterSheetCore.Action)
+    case bubbleMessage(BubbleMessage.Action)
+    case dismissBubbleMessageView
     case onAppear
   }
 
@@ -82,6 +85,15 @@ struct MainCoordinator: ReducerProtocol {
         .routeAction(_, .cafeSearchList(.presentFilterSheetView(let filterSheetState)))
       ):
         state.filterSheetState = filterSheetState
+
+      case .search(
+        .routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))
+      ):
+        state.bubbleMessageState = bubbleMessageState
+        return .none
+
+      case .dismissBubbleMessageView:
+        state.bubbleMessageState = nil
         return .none
 
       default:

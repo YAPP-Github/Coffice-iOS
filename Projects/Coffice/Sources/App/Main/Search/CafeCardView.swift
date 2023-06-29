@@ -20,6 +20,7 @@ struct CafeCardView: View {
             .frame(width: 100, height: 180)
             .cornerRadius(15, corners: [.topLeft, .bottomLeft])
             .scaledToFill()
+
           VStack(alignment: .leading, spacing: 10) {
             Spacer()
 
@@ -36,7 +37,7 @@ struct CafeCardView: View {
             }
 
             HStack(spacing: 3) {
-              Image(asset: CofficeAsset.Asset.mapPinFill118px)
+              Image(asset: CofficeAsset.Asset.mapPinFill18px)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20, height: 20)
