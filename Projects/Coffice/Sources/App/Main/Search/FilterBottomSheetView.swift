@@ -74,6 +74,7 @@ extension FilterBottomSheetView {
       }
     }
   }
+
   var resetAndSaveButtonView: some View {
     WithViewStore(store) { viewStore in
       HStack {
@@ -112,6 +113,7 @@ extension FilterBottomSheetView {
       }
     }
   }
+
   var cafeOutletFilterView: some View { headerView }
   var cafeSizeFilterView: some View { headerView }
   var cafeRunningTimeFilterView: some View { headerView }

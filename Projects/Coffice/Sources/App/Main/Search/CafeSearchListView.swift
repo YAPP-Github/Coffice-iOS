@@ -37,6 +37,7 @@ extension CafeSearchListView {
       orderFilterView
     }
   }
+
   var cafeListView: some View {
     ScrollView {
       ForEach(0...10, id: \.self) { _ in
@@ -45,6 +46,7 @@ extension CafeSearchListView {
       }
     }
   }
+
   var searchTextField: some View {
     ZStack {
       TextField(
@@ -73,6 +75,7 @@ extension CafeSearchListView {
     }
     .padding(.horizontal, 16)
   }
+
   var orderFilterView: some View {
     WithViewStore(store) { viewStore in
       ScrollView(.horizontal, showsIndicators: false) {
