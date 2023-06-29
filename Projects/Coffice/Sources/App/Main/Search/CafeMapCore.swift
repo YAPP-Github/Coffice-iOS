@@ -108,7 +108,7 @@ struct CafeMapCore: ReducerProtocol {
       case .updateCafeMarkers:
         return .run { send in
           let result = await TaskResult {
-            let cafeListData = try await placeAPIClient.fetchDefaultPlaces(page: 1, size: 20, sort: .ascending)
+            let cafeListData = try await placeAPIClient.fetchDefaultPlaces(page: 0, size: 200, sort: .ascending)
             return cafeListData.map {
               CafeMarkerData(
                 cafeName: $0.name,
