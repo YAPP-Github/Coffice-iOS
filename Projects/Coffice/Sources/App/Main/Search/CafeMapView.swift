@@ -23,12 +23,10 @@ struct CafeMapView: View {
               .background(.white)
             floatingButtonView
             .padding()
+            Spacer()
             CafeCardView()
-              .frame(width: 360, height: 180)
-              .position(
-                x: geometry.size.width / 2,
-                y: geometry.size.height / 2.7
-              )
+              .frame(width: geometry.size.width, height: 260)
+              .padding(.bottom, TabBarPreferenceKey.defaultValue.height)
           }
           .navigationBarHidden(true)
         }
