@@ -10,100 +10,69 @@ import SwiftUI
 
 struct CafeCardView: View {
   var body: some View {
-    RoundedRectangle(cornerRadius: 15)
-      .foregroundColor(.white)
-      .shadow(color: .gray, radius: 2, x: 0, y: 2)
+    Rectangle()
+      .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale1))
+      .cornerRadius(12, corners: [.topLeft, .topRight])
+      .shadow(color: .gray, radius: 2, x: 0, y: 0)
       .overlay {
-        HStack(spacing: 10) {
-          Image(asset: CofficeAsset.Asset.cafeImage)
-            .resizable()
-            .frame(width: 100, height: 180)
-            .cornerRadius(15, corners: [.topLeft, .bottomLeft])
-            .scaledToFill()
-          
-          VStack(alignment: .leading, spacing: 10) {
-            Spacer()
-            
-            HStack {
-              Text("학림다방")
-                .font(.headline)
-              Spacer()
-              Button {
-              } label: {
-                Image(systemName: "bookmark")
-                  .foregroundColor(.gray)
+        VStack(alignment: .leading, spacing: 0) {
+          HStack(alignment: .top, spacing: 0) {
+            VStack(alignment: .leading, spacing: 8) {
+              HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("훅스턴")
+                  .applyCofficeFont(font: CofficeFont.header2)
+                  .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+                Text("서울 서대문구")
+                  .applyCofficeFont(font: .body2Medium)
+                  .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
               }
-              .padding(.trailing)
+              HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("영업중")
+                  .applyCofficeFont(font: .button)
+                  .foregroundColor(Color(asset: CofficeAsset.Colors.secondary1))
+                Text("월: 11:00 ~23:00")
+                  .applyCofficeFont(font: .body1Medium)
+                  .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+              }
             }
-            
-            HStack(spacing: 3) {
-              Image(asset: CofficeAsset.Asset.mapPinFill118px)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 20, height: 20)
-              Text("서울 용산")
-                .font(.subheadline)
-            }
-            
-            HStack {
-              Text("영업시간")
-                .font(.caption)
-                .padding(EdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.orange, lineWidth: 1)
-                }
-                .foregroundColor(.orange)
-              Text("08:00 ~ 21:00")
-                .font(.caption)
-            }
-            
-            HStack {
-              Text("콘센트")
-                .font(.caption)
-                .padding(EdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.orange, lineWidth: 1)
-                }
-                .foregroundColor(.orange)
-              Text("넉넉")
-                .font(.caption)
-              Spacer()
-                .frame(width: 20)
-              Text("카페크기")
-                .font(.caption)
-                .padding(EdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.orange, lineWidth: 1)
-                }
-                .foregroundColor(.orange)
-              Text("대형")
-                .font(.caption)
-            }
-            
-            HStack {
-              Text("단체석")
-                .font(.caption)
-                .padding(EdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.red, lineWidth: 1)
-                }
-                .foregroundColor(.red)
-              Text("디저트")
-                .font(.caption)
-                .padding(EdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.red, lineWidth: 1)
-                }
-                .foregroundColor(.red)
-            }
-            
             Spacer()
+            Button {
+
+            } label: {
+              Image(uiImage: CofficeAsset.Asset.bookmarkLine40px.image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 40, height: 40)
+            }
           }
+          .padding(EdgeInsets(top: 24, leading: 20, bottom: 16, trailing: 20))
+          ScrollView(.horizontal, showsIndicators: false) {
+            HStack {
+              ForEach(1...10, id: \.self) { _ in
+                Image(uiImage: CofficeAsset.Asset.cafeImage.image)
+                  .resizable()
+                  .frame(width: 124, height: 112)
+                  .cornerRadius(4, corners: .allCorners)
+                  .scaledToFit()
+                  .padding(.trailing, 8)
+              }
+            }
+          }
+          .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 20))
+          HStack {
+            Text("🔌 콘센트 넉넉")
+              .applyCofficeFont(font: .body2Medium)
+              .padding(.horizontal, 8)
+              .padding(.vertical, 4)
+              .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                  .stroke(
+                    Color(asset: CofficeAsset.Colors.grayScale3),
+                    lineWidth: 1
+                  )
+              )
+          }
+          .padding(EdgeInsets(top: 0, leading: 20, bottom: 20, trailing: 0))
         }
       }
   }
