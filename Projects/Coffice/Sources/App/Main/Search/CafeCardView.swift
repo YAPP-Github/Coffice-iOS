@@ -47,7 +47,7 @@ struct CafeCardView: View {
           }
           .padding(EdgeInsets(top: 24, leading: 20, bottom: 16, trailing: 20))
           ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
+            HStack(spacing: 0) {
               ForEach(1...10, id: \.self) { _ in
                 Image(uiImage: CofficeAsset.Asset.cafeImage.image)
                   .resizable()
