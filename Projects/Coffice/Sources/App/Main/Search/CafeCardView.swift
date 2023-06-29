@@ -101,7 +101,6 @@ struct CafeCardView: View {
                 }
                 .foregroundColor(.red)
             }
-
             Spacer()
           }
         }

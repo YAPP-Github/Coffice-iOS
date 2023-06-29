@@ -23,6 +23,12 @@ struct SearchCoordinatorView: View {
         )
 
         CaseLet(
+          state: /SearchScreen.State.cafeSearchList,
+          action: SearchScreen.Action.cafeSearchList,
+          then: CafeSearchListView.init
+        )
+
+        CaseLet(
           state: /SearchScreen.State.cafeSearchDetail,
           action: SearchScreen.Action.cafeSearchDetail,
           then: CafeSearchDetailView.init

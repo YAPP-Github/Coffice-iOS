@@ -36,6 +36,7 @@ struct CafeMapCore: ReducerProtocol {
     case personnel
     // TODO: 테스트용 코드로 제거 예정
     case searchDetail
+    case searchList
 
     var title: String {
       switch self {
@@ -45,6 +46,7 @@ struct CafeMapCore: ReducerProtocol {
       case .personnel: return "인원"
       // TODO: 테스트용 코드로 제거 예정
       case .searchDetail: return "검색상세"
+      case .searchList: return "검색결과"
       }
     }
   }
@@ -96,6 +98,7 @@ struct CafeMapCore: ReducerProtocol {
     case fetchCafeList
     // TODO: 임시 테스트 코드 작성
     case pushToSearchDetailForTest
+    case pushToSearchListForTest
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -169,6 +172,8 @@ struct CafeMapCore: ReducerProtocol {
       case .filterOrderMenuClicked(let filterOrder):
         // TODO: 필터 메뉴에 따른 이벤트 처리 필요
         switch filterOrder {
+        case .searchList:
+          return EffectTask(value: .pushToSearchListForTest)
         case .searchDetail:
           return EffectTask(value: .pushToSearchDetailForTest)
         default:

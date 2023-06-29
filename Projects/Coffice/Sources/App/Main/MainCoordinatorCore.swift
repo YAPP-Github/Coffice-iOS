@@ -31,6 +31,7 @@ struct MainCoordinator: ReducerProtocol {
       tabBarState.selectedTab
     }
 
+    var filterSheetState: FilterSheetCore.State?
     var bubbleMessageState: BubbleMessage.State?
   }
 
@@ -40,6 +41,7 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
+    case filterSheetAction(FilterSheetCore.Action)
     case bubbleMessage(BubbleMessage.Action)
     case dismissBubbleMessageView
     case onAppear
@@ -68,12 +70,21 @@ struct MainCoordinator: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .filterSheetAction(.dismiss):
+        state.filterSheetState = nil
+        return .none
+
       case .onAppear:
         return .none
 
       case let .tabBar(.selectTab(itemType)):
         debugPrint("selectedTab : \(itemType)")
         return .none
+
+      case .search(
+        .routeAction(_, .cafeSearchList(.presentFilterSheetView(let filterSheetState)))
+      ):
+        state.filterSheetState = filterSheetState
 
       case .search(
         .routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))
