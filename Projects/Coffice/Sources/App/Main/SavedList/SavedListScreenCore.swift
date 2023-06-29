@@ -41,7 +41,8 @@ struct SearchScreen: ReducerProtocol {
 
     Scope(
       state: /State.cafeSearchList,
-      action: /Action.cafeSearchList) {
+      action: /Action.cafeSearchList
+    ) {
         CafeSearchListCore()
       }
   }

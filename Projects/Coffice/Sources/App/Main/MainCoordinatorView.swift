@@ -23,7 +23,8 @@ struct MainCoordinatorView: View {
         IfLetStore(
           store.scope(
             state: \.filterSheetState,
-            action: MainCoordinator.Action.filterSheetAction),
+            action: MainCoordinator.Action.filterSheetAction
+          ),
           then: FilterBottomSheetView.init
         )
       }
