@@ -86,10 +86,7 @@ struct CafeMapCore: ReducerProtocol {
     case searchTextFieldClearButtonTapped
     case searchTextSubmitted
     case updateCameraPosition(CLLocationCoordinate2D)
-    case cafeListResponse(TaskResult<[CafeMarkerData]>)
     case fetchCafeList
-    // TODO: 임시 테스트 코드 작성
-    case pushToSearchDetailForTest
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
