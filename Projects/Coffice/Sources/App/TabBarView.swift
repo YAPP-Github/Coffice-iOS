@@ -16,6 +16,14 @@ struct TabBarView: View {
     WithViewStore(store) { viewStore in
       if viewStore.isTabBarViewPresented {
         mainView
+          .overlay(
+              GeometryReader { proxy in
+                  Color.clear.preference(key: TabBarPreferenceKey.self, value: proxy.size)
+              }
+          )
+          .onPreferenceChange(TabBarPreferenceKey.self) { size in
+            TabBarPreferenceKey.defaultValue = size
+          }
       } else {
         EmptyView()
       }
