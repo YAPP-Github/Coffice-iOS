@@ -37,6 +37,7 @@ struct CafeMapCore: ReducerProtocol {
     // TODO: 테스트용 코드로 제거 예정
     case searchDetail
     case searchList
+
     var title: String {
       switch self {
       case .runningTime: return "영업시간"
