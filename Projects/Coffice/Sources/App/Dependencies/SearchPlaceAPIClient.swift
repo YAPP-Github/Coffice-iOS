@@ -13,6 +13,25 @@ import Network
 struct SearchPlaceAPIClient: DependencyKey {
   static var liveValue: SearchPlaceAPIClient = .liveValue
 
+  func searchPlaces(requestValue: SearchPlaceRequestValue) async throws -> [SearchPlaceResponseDTO] {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/places/search"
+    guard let requestBody = try? JSONEncoder()
+      .encode(requestValue.toDTO()) else {
+      throw CoreNetworkError.jsonEncodeFailed
+    }
+    guard let request = urlComponents?.toURLRequest(
+      method: .post,
+      httpBody: requestBody
+    ) else {
+      throw LoginError.emptyAccessToken
+    }
+    let response: [SearchPlaceResponseDTO] = try await coreNetwork
+      .dataTask(request: request)
+    return response
+  }
+
   func fetchDefaultPlaces(page: Int, size: Int, sort: SortDescriptor) async throws -> [SearchPlaceResponseDTO] {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
@@ -24,21 +43,6 @@ struct SearchPlaceAPIClient: DependencyKey {
     ]
 
     guard let request = urlComponents?.toURLRequest(method: .get)
-    else { throw CoreNetworkError.requestConvertFailed }
-
-    let response: [SearchPlaceResponseDTO] = try await coreNetwork.dataTask(request: request)
-    return response
-  }
-
-  func fetchPlaces(requestValue: SearchPlaceRequestDTO) async throws -> [SearchPlaceResponseDTO] {
-    let coreNetwork = CoreNetwork.shared
-    var urlComponents = URLComponents(string: coreNetwork.baseURL)
-    urlComponents?.path = "/api/v1/places/search"
-
-    guard let requestBody = try? JSONEncoder().encode(requestValue)
-    else { throw CoreNetworkError.jsonEncodeFailed }
-
-    guard let request = urlComponents?.toURLRequest(method: .post, httpBody: requestBody)
     else { throw CoreNetworkError.requestConvertFailed }
 
     let response: [SearchPlaceResponseDTO] = try await coreNetwork.dataTask(request: request)
