@@ -13,7 +13,7 @@ struct CafeCardView: View {
     Rectangle()
       .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale1))
       .cornerRadius(12, corners: [.topLeft, .topRight])
-      .shadow(color: .gray, radius: 2, x: 0, y: 0)
+      .shadow(color: .black.opacity(0.16), radius: 5, x: 0, y: 0)
       .overlay {
         VStack(alignment: .leading, spacing: 0) {
           HStack(alignment: .top, spacing: 0) {
@@ -61,6 +61,7 @@ struct CafeCardView: View {
           .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 20))
           HStack {
             Text("🔌 콘센트 넉넉")
+              .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
               .applyCofficeFont(font: .body2Medium)
               .padding(.horizontal, 8)
               .padding(.vertical, 4)
