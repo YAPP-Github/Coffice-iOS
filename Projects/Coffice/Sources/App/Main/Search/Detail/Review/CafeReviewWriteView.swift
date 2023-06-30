@@ -34,6 +34,7 @@ struct CafeReviewWriteView: View {
           Image(asset: CofficeAsset.Asset.cafeImage)
             .resizable()
             .frame(width: 48, height: 48)
+            .cornerRadius(4, corners: .allCorners)
             .padding(.top, 4)
 
           VStack {
