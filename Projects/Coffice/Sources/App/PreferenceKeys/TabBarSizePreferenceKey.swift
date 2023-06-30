@@ -9,9 +9,9 @@
 import Foundation
 import SwiftUI
 
-struct TabBarPreferenceKey: PreferenceKey {
+struct TabBarSizePreferenceKey: PreferenceKey {
   static var defaultValue: CGSize = .zero
-  static func reduce(value: inout CGSize, nextValue: () -> CGSize ) {
+  static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
     value = nextValue()
   }
 }
