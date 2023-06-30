@@ -21,7 +21,7 @@ struct CafeReviewOptionButtonsView: View {
           .frame(height: 20)
           .frame(maxWidth: .infinity, alignment: .leading)
         ScrollView(.horizontal) {
-          HStack {
+          HStack(spacing: 8) {
             ForEach(viewStore.optionButtonViewStates.indices, id: \.self) { viewStateIndex in
               let viewState = viewStore.optionButtonViewStates[viewStateIndex]
 
@@ -38,6 +38,7 @@ struct CafeReviewOptionButtonsView: View {
                       .stroke(Color(asset: viewState.borderColorAsset), lineWidth: 1)
                   }
                   .frame(height: 34)
+                  .padding(.leading, 1)
               }
             }
           }
