@@ -53,7 +53,22 @@ struct CafeReviewWriteView: View {
           .background(Color(asset: CofficeAsset.Colors.grayScale3))
           .frame(height: 1)
 
-        Spacer()
+        reviewFormScrollView
+
+        VStack(alignment: .center) {
+          Button {
+            // TODO: 등록, 수정하기 버튼 이벤트 구현 필요
+          } label: {
+            Text("등록하기")
+              .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale1))
+              .applyCofficeFont(font: .button)
+              .frame(maxWidth: .infinity)
+          }
+          .disabled(viewStore.isSaveButtonEnabled.isFalse)
+        }
+        .frame(height: 44)
+        .background(Color(asset: viewStore.saveButtonBackgroundColorAsset))
+        .cornerRadius(4, corners: .allCorners)
       }
       .padding(.horizontal, 20)
       .onAppear {
@@ -63,11 +78,45 @@ struct CafeReviewWriteView: View {
   }
 }
 
+extension CafeReviewWriteView {
+  var reviewFormScrollView: some View {
+    ScrollView(.vertical, showsIndicators: true) {
+      VStack(spacing: 0) {
+        reviewOptionMenuView
+        reviewTextView
+      }
+    }
+  }
+
+  var reviewOptionMenuView: some View {
+    WithViewStore(store) { viewStore in
+      VStack(alignment: .leading, spacing: 0) {
+        ForEach(viewStore.optionButtonStates.indices, id: \.self) { buttonIndex in
+          CafeReviewOptionButtonsView(
+            store: store.scope(
+              state: \.optionButtonStates[buttonIndex],
+              action: CafeReviewWrite.Action.optionButtonsAction
+            )
+          )
+        }
+      }
+    }
+  }
+
+  var reviewTextView: some View {
+    WithViewStore(store) { viewStore in
+      VStack(alignment: .leading, spacing: 0) {
+
+      }
+    }
+  }
+}
+
 struct CafeReviewWriteView_Previews: PreviewProvider {
   static var previews: some View {
     CafeReviewWriteView(
       store: .init(
-        initialState: .initialState,
+        initialState: .mock,
         reducer: CafeReviewWrite()
       )
     )

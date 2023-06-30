@@ -32,7 +32,8 @@ struct SearchCoordinator: ReducerProtocol {
         return .none
 
       case .routeAction(_, action: .cafeSearchDetail(.presentCafeReviewWriteView)):
-        state.routes.presentSheet(.cafeReviewWrite(.initialState))
+        // TODO: 실제 API 응답을 받아서 화면 이동하도록 개발 필요
+        state.routes.presentSheet(.cafeReviewWrite(.mock))
         return .none
 
       case .routeAction(_, action: .cafeReviewWrite(.dismissView)):
