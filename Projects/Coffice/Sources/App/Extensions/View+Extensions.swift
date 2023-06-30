@@ -56,4 +56,14 @@ extension View {
       )
     )
   }
+
+  func toast(message: String, image: Image, isPresented: Binding<Bool>) -> some View {
+    self.modifier(
+      Toast(
+        message: message,
+        isPresented: isPresented,
+        image: image
+      )
+    )
+  }
 }
