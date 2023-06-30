@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Foundation
 
 struct CafeReviewWrite: ReducerProtocol {
   typealias OutletStateOption = CafeReviewOptionButtons.State.OutletOption
@@ -24,13 +25,23 @@ struct CafeReviewWrite: ReducerProtocol {
 
     var optionButtonStates: [CafeReviewOptionButtons.State]
     var isSaveButtonEnabled = false
+    @BindingState var reviewText = ""
 
     var saveButtonBackgroundColorAsset: CofficeColors {
       return isSaveButtonEnabled ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale6
     }
+
+    let textViewScrollId = UUID()
+    var currentTextLengthDescription: String { "\(reviewText.count)" }
+    var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
+    var isTextViewEmpty: Bool {
+      reviewText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    let maximumTextLength = 200
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
     case onAppear
     case dismissView
     case optionButtonsAction(CafeReviewOptionButtons.Action)
@@ -38,6 +49,8 @@ struct CafeReviewWrite: ReducerProtocol {
   }
 
   var body: some ReducerProtocolOf<CafeReviewWrite> {
+    BindingReducer()
+
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -58,7 +71,7 @@ struct CafeReviewWrite: ReducerProtocol {
         return EffectTask(value: .updateSaveButtonState)
 
       case .updateSaveButtonState:
-        state.isSaveButtonEnabled = state.optionButtonStates.allSatisfy { $0.isSelectedOptionButton }
+        state.isSaveButtonEnabled = state.optionButtonStates.allSatisfy(\.isSelectedOptionButton)
         return .none
 
       default:

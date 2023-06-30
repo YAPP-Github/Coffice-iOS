@@ -71,6 +71,7 @@ struct CafeReviewWriteView: View {
         .background(Color(asset: viewStore.saveButtonBackgroundColorAsset))
         .cornerRadius(4, corners: .allCorners)
       }
+      .ignoresSafeArea(.keyboard)
       .padding(.horizontal, 20)
       .onAppear {
         viewStore.send(.onAppear)
@@ -81,10 +82,12 @@ struct CafeReviewWriteView: View {
 
 extension CafeReviewWriteView {
   var reviewFormScrollView: some View {
-    ScrollView(.vertical, showsIndicators: true) {
-      VStack(spacing: 0) {
-        reviewOptionMenuView
-        reviewTextView
+    WithViewStore(store) { viewStore in
+      ScrollView(.vertical, showsIndicators: true) {
+        VStack(spacing: 0) {
+          reviewOptionMenuView
+          reviewTextView
+        }
       }
     }
   }
@@ -107,8 +110,36 @@ extension CafeReviewWriteView {
   var reviewTextView: some View {
     WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
-
+        CafeReviewTextView(text: viewStore.binding(\.$reviewText))
+          .frame(height: 206)
+          .overlay(
+            textDescriptionView, alignment: .bottomTrailing
+          )
+          .overlay {
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(
+                Color(asset: CofficeAsset.Colors.grayScale3),
+                lineWidth: 1
+              )
+          }
+          .id(viewStore.textViewScrollId)
       }
+      .padding(.top, 16)
+    }
+  }
+
+  var textDescriptionView: some View {
+    WithViewStore(store) { viewStore in
+      HStack(alignment: .bottom, spacing: 0) {
+        Text(viewStore.currentTextLengthDescription)
+          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+          .applyCofficeFont(font: .body3Medium)
+        Text(viewStore.maximumTextLengthDescription)
+          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale5))
+          .applyCofficeFont(font: .body3Medium)
+      }
+      .padding(.trailing, 20)
+      .padding(.bottom, 20)
     }
   }
 }
