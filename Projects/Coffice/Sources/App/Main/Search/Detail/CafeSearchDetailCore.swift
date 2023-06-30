@@ -52,6 +52,7 @@ struct CafeSearchDetail: ReducerProtocol {
     case toggleToPresentTextForTest
     case infoGuideButtonTapped
     case presentBubbleMessageView(BubbleMessage.State)
+    case presentCafeReviewWriteView
   }
 
   @Dependency(\.apiClient) private var apiClient
