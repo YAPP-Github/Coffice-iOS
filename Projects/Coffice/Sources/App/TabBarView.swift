@@ -18,11 +18,11 @@ struct TabBarView: View {
         mainView
           .overlay(
               GeometryReader { proxy in
-                  Color.clear.preference(key: TabBarPreferenceKey.self, value: proxy.size)
+                  Color.clear.preference(key: TabBarSizePreferenceKey.self, value: proxy.size)
               }
           )
-          .onPreferenceChange(TabBarPreferenceKey.self) { size in
-            TabBarPreferenceKey.defaultValue = size
+          .onPreferenceChange(TabBarSizePreferenceKey.self) { size in
+            TabBarSizePreferenceKey.defaultValue = size
           }
       } else {
         EmptyView()
