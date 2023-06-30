@@ -31,6 +31,14 @@ struct SearchCoordinator: ReducerProtocol {
         state.routes.push(.cafeSearchList(.init()))
         return .none
 
+      case .routeAction(_, action: .cafeSearchDetail(.presentCafeReviewWriteView)):
+        state.routes.presentSheet(.cafeReviewWrite(.initialState))
+        return .none
+
+      case .routeAction(_, action: .cafeReviewWrite(.dismissView)):
+        state.routes.dismiss()
+        return .none
+
       case .routeAction(_, action: .cafeSearchList(.popView)):
         state.routes.pop()
         return .none

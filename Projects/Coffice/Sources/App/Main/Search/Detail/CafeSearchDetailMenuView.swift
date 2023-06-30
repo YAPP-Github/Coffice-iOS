@@ -269,7 +269,7 @@ extension CafeSearchDetailMenuView {
   }
 
   private var reviewHeaderView: some View {
-    WithViewStore(store) { _ in
+    WithViewStore(store) { viewStore in
       HStack {
         Text("리뷰 10")
           .foregroundColor(.black)
@@ -279,7 +279,7 @@ extension CafeSearchDetailMenuView {
         Spacer()
 
         Button {
-          // TODO: 리뷰쓰기 이벤트 구현 필요
+          viewStore.send(.presentCafeReviewWriteView)
         } label: {
           HStack(spacing: 5) {
             Text("리뷰 쓰기")
