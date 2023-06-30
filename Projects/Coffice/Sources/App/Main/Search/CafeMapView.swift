@@ -26,7 +26,7 @@ struct CafeMapView: View {
             Spacer()
             CafeCardView()
               .frame(width: geometry.size.width, height: 260)
-              .padding(.bottom, TabBarPreferenceKey.defaultValue.height)
+              .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
           }
           .navigationBarHidden(true)
         }
