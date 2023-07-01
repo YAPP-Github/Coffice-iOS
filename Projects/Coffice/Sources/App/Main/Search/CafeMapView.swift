@@ -24,7 +24,7 @@ struct CafeMapView: View {
             floatingButtonView
             .padding()
             Spacer()
-            CafeCardView()
+            CafeCardView(store: store)
               .frame(width: geometry.size.width, height: 260)
               .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
           }

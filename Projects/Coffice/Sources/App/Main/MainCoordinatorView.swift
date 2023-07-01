@@ -31,6 +31,14 @@ struct MainCoordinatorView: View {
 
         IfLetStore(
           store.scope(
+            state: \.toastMessageState,
+            action: MainCoordinator.Action.toastMessage
+          ),
+          then: ToastView.init
+        )
+
+        IfLetStore(
+          store.scope(
             state: \.bubbleMessageState,
             action: MainCoordinator.Action.bubbleMessage
           ),

@@ -89,6 +89,9 @@ struct CafeMapCore: ReducerProtocol {
     case searchTextSubmitted
     case updateCameraPosition(CLLocationCoordinate2D)
     case fetchCafeList
+
+    case bookmarkButtonTapped
+    case showToast(ToastViewReducer.State)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -169,6 +172,9 @@ struct CafeMapCore: ReducerProtocol {
         guard state.searchText.trimmingCharacters(in: .whitespaces).isNotEmpty
         else { return .none }
         return .none
+
+      case .bookmarkButtonTapped:
+        return EffectTask(value: .showToast(.mock))
 
       default:
         return .none
