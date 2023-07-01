@@ -10,24 +10,6 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 
-protocol KeyboardPresentationReadable {
-  var eventPublisher: AnyPublisher<Bool, Never> { get }
-}
-
-extension KeyboardPresentationReadable {
-  var eventPublisher: AnyPublisher<Bool, Never> {
-    Publishers.Merge(
-      NotificationCenter.default
-        .publisher(for: UIResponder.keyboardWillShowNotification)
-        .map { _ in return true },
-      NotificationCenter.default
-        .publisher(for: UIResponder.keyboardWillHideNotification)
-        .map { _ in return false }
-    )
-    .eraseToAnyPublisher()
-  }
-}
-
 struct CafeReviewWriteView: View {
   private let store: StoreOf<CafeReviewWrite>
 

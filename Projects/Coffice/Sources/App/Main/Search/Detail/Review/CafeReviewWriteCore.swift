@@ -9,6 +9,24 @@
 import ComposableArchitecture
 import Foundation
 
+protocol KeyboardPresentationReadable {
+  var eventPublisher: AnyPublisher<Bool, Never> { get }
+}
+
+extension KeyboardPresentationReadable {
+  var eventPublisher: AnyPublisher<Bool, Never> {
+    Publishers.Merge(
+      NotificationCenter.default
+        .publisher(for: UIResponder.keyboardWillShowNotification)
+        .map { _ in return true },
+      NotificationCenter.default
+        .publisher(for: UIResponder.keyboardWillHideNotification)
+        .map { _ in return false }
+    )
+    .eraseToAnyPublisher()
+  }
+}
+
 struct CafeReviewWrite: ReducerProtocol {
   typealias OutletStateOption = CafeReviewOptionButtons.State.OutletOption
   typealias WifiStateOption = CafeReviewOptionButtons.State.WifiOption
