@@ -6,11 +6,34 @@
 //  Copyright (c) 2023 kr.co.yapp. All rights reserved.
 //
 
+import Combine
 import ComposableArchitecture
 import SwiftUI
 
+protocol KeyboardPresentationReadable {
+  var eventPublisher: AnyPublisher<Bool, Never> { get }
+}
+
+extension KeyboardPresentationReadable {
+  var eventPublisher: AnyPublisher<Bool, Never> {
+    Publishers.Merge(
+      NotificationCenter.default
+        .publisher(for: UIResponder.keyboardWillShowNotification)
+        .map { _ in return true },
+      NotificationCenter.default
+        .publisher(for: UIResponder.keyboardWillHideNotification)
+        .map { _ in return false }
+    )
+    .eraseToAnyPublisher()
+  }
+}
+
 struct CafeReviewWriteView: View {
-  let store: StoreOf<CafeReviewWrite>
+  private let store: StoreOf<CafeReviewWrite>
+
+  init(store: StoreOf<CafeReviewWrite>) {
+    self.store = store
+  }
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -80,13 +103,23 @@ struct CafeReviewWriteView: View {
   }
 }
 
-extension CafeReviewWriteView {
+extension CafeReviewWriteView: KeyboardPresentationReadable {
   var reviewFormScrollView: some View {
     WithViewStore(store) { viewStore in
-      ScrollView(.vertical, showsIndicators: true) {
-        VStack(spacing: 0) {
-          reviewOptionMenuView
-          reviewTextView
+      ScrollViewReader { proxy in
+        ScrollView(.vertical, showsIndicators: true) {
+          VStack(spacing: 0) {
+            reviewOptionMenuView
+            reviewTextView
+          }
+        }
+        .id(viewStore.mainScrollViewScrollId)
+        .onReceive(eventPublisher) { isShowing in
+          if isShowing {
+            proxy.scrollTo(viewStore.textViewScrollId, anchor: .bottom)
+          } else {
+            proxy.scrollTo(viewStore.mainScrollViewScrollId, anchor: .bottom)
+          }
         }
       }
     }

@@ -32,6 +32,7 @@ struct CafeReviewWrite: ReducerProtocol {
     }
 
     let textViewScrollId = UUID()
+    let mainScrollViewScrollId = UUID()
     var currentTextLengthDescription: String { "\(reviewText.count)" }
     var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
     var isTextViewEmpty: Bool {
