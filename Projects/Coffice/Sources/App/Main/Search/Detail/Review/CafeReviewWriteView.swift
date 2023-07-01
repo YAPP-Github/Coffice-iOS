@@ -142,22 +142,40 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
 
   var reviewTextView: some View {
     WithViewStore(store) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
-        CafeReviewTextView(text: viewStore.binding(\.$reviewText))
-          .frame(height: 206)
-          .overlay(
-            textDescriptionView, alignment: .bottomTrailing
+      ZStack(alignment: .topLeading) {
+        VStack(alignment: .leading, spacing: 0) {
+          CafeReviewTextView(text: viewStore.binding(\.$reviewText))
+            .frame(height: 206)
+            .overlay(
+              textDescriptionView, alignment: .bottomTrailing
+            )
+            .padding(13)
+            .overlay {
+              RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                  Color(asset: CofficeAsset.Colors.grayScale3),
+                  lineWidth: 1
+                )
+            }
+            .id(viewStore.textViewScrollId)
+        }
+        .padding(.top, 16)
+
+        if viewStore.shouldPresentTextViewPlaceholder {
+          Text(
+            """
+            혼자서 오기 좋았나요?
+            테이블, 의자는 편했나요?
+            카페에서 작업하며 느꼈던 점들을 공유해주세요!
+            """
           )
-          .overlay {
-            RoundedRectangle(cornerRadius: 8)
-              .stroke(
-                Color(asset: CofficeAsset.Colors.grayScale3),
-                lineWidth: 1
-              )
-          }
-          .id(viewStore.textViewScrollId)
+          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale6))
+          .applyCofficeFont(font: .paragraph)
+          .padding(.top, 36)
+          .padding(.leading, 20)
+          .allowsHitTesting(false)
+        }
       }
-      .padding(.top, 16)
     }
   }
 

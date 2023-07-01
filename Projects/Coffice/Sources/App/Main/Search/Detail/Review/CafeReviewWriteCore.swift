@@ -33,12 +33,15 @@ struct CafeReviewWrite: ReducerProtocol {
 
     let textViewScrollId = UUID()
     let mainScrollViewScrollId = UUID()
+    let maximumTextLength = 200
     var currentTextLengthDescription: String { "\(reviewText.count)" }
     var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
     var isTextViewEmpty: Bool {
       reviewText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-    let maximumTextLength = 200
+    var shouldPresentTextViewPlaceholder: Bool {
+      reviewText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
   }
 
   enum Action: Equatable, BindableAction {
