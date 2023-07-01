@@ -9,13 +9,11 @@
 import Foundation
 
 public struct LoginRequestDTO: Encodable {
-  let accessToken: String
-  let providerType: String
-  let providerUserId: String
+  public let authProviderType: String
+  public let authProviderUserId: String
 
-  public init(accessToken: String, providerType: String, providerUserId: String) {
-    self.accessToken = accessToken
-    self.providerType = providerType
-    self.providerUserId = providerUserId
+  public init(authProviderType: String, authProviderUserId: String) {
+    self.authProviderType = authProviderType
+    self.authProviderUserId = authProviderUserId
   }
 }

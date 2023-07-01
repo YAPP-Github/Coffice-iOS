@@ -35,13 +35,14 @@ public final class CoreNetwork: CoreNetworkInterface {
     return baseURL
   }
 
-  private var token: String? {
-    if let token = KeychainManager.shared.getItem(key: "token") {
+  public var token: String? {
+    if let token = KeychainManager.shared.getItem(key: KeychainManager.tokenKey) {
       return token
-    } else if let anonymousToken = KeychainManager.shared.getItem(key: "anonymousToken") {
+    } else if let anonymousToken = KeychainManager.shared
+      .getItem(key: KeychainManager.anonymousTokenKey) {
       return anonymousToken
     }
-    return "accessToken"
+    return nil
   }
 
   private init() { }

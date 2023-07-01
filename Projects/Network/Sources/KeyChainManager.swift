@@ -23,6 +23,8 @@ public final class KeychainManager: KeychainManagerInterface {
   }
 
   public static let shared = KeychainManager()
+  public static let anonymousTokenKey: String = "anonymousToken"
+  public static let tokenKey: String = "token"
 
   private init() {}
 

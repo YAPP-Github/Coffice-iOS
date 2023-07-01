@@ -72,8 +72,8 @@ struct MyPage: ReducerProtocol {
         }
 
       case .userInfoFetched(let user):
-        state.loginType = user.loginType
-        state.nickName = user.loginType == .anonymous ? "로그인 하러가기" : user.name
+        state.loginType = user.loginTypes.first!
+        state.nickName = user.loginTypes.first == .anonymous ? "로그인 하러가기" : user.name
         return .none
 
       case .menuClicked(let menuItem):

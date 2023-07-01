@@ -11,12 +11,17 @@ import Network
 
 struct User: Hashable {
   let id: Int
-  let loginType: LoginType
+  let loginTypes: [LoginType]
   let name: String
 }
 
 extension MemberResponseDTO {
   func toEntity() -> User {
-    return User(id: memberId, loginType: LoginType.type(of: authProviderType ?? ""), name: name)
+    return .init(
+      id: memberId,
+      loginTypes: authProviders.map {
+        LoginType.type(of: $0.authProviderType)
+      },
+      name: name)
   }
 }
