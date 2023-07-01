@@ -44,10 +44,13 @@ extension CafeReviewTextView.Coordinator: UITextViewDelegate {
   var maxTextLength: Int { 200 }
 
   func textViewDidChange(_ textView: UITextView) {
+    var updatedText = textView.text ?? ""
+
     if textView.text.count > maxTextLength {
-      text.wrappedValue = String(textView.text.prefix(maxTextLength))
-    } else {
-      text.wrappedValue = textView.text
+      updatedText = String(textView.text.prefix(maxTextLength))
     }
+
+    textView.text = updatedText
+    text.wrappedValue = updatedText
   }
 }
