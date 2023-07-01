@@ -33,7 +33,7 @@ struct MainCoordinator: ReducerProtocol {
 
     var filterSheetState: FilterSheetCore.State?
     var bubbleMessageState: BubbleMessage.State?
-    var toastMessageState: ToastViewReducer.State?
+    var toastMessageState: Toast.State?
   }
 
   enum Action: Equatable {
@@ -44,7 +44,7 @@ struct MainCoordinator: ReducerProtocol {
     case tabBar(TabBar.Action)
     case filterSheetAction(FilterSheetCore.Action)
     case bubbleMessage(BubbleMessage.Action)
-    case toastMessage(ToastViewReducer.Action)
+    case toastMessage(Toast.Action)
     case dismissToastMessageView
     case dismissBubbleMessageView
     case onAppear

@@ -1,5 +1,5 @@
 //
-//  ToastViewCore.swift
+//  ToastCore.swift
 //  coffice
 //
 //  Created by 천수현 on 2023/07/01.
@@ -10,7 +10,7 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
-struct ToastViewReducer: ReducerProtocol {
+struct Toast: ReducerProtocol {
   struct State: Equatable {
     let title: String
     let image: CofficeImages
@@ -21,7 +21,7 @@ struct ToastViewReducer: ReducerProtocol {
     case onAppear
   }
 
-  var body: some ReducerProtocolOf<ToastViewReducer> {
+  var body: some ReducerProtocolOf<Toast> {
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -31,7 +31,7 @@ struct ToastViewReducer: ReducerProtocol {
   }
 }
 
-extension ToastViewReducer.State {
+extension Toast.State {
   static var mock: Self {
     .init(
       title: "장소가 저장되었습니다.",

@@ -10,9 +10,9 @@ import ComposableArchitecture
 import SwiftUI
 
 struct ToastView: View {
-  private let store: StoreOf<ToastViewReducer>
+  private let store: StoreOf<Toast>
 
-  init(store: StoreOf<ToastViewReducer>) {
+  init(store: StoreOf<Toast>) {
     self.store = store
   }
 
@@ -44,7 +44,7 @@ struct ToastView_Previews: PreviewProvider {
     ToastView(
       store: .init(
         initialState: .mock,
-        reducer: ToastViewReducer()
+        reducer: Toast()
       )
     )
   }

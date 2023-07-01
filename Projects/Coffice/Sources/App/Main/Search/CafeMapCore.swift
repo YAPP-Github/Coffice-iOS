@@ -91,7 +91,7 @@ struct CafeMapCore: ReducerProtocol {
     case fetchCafeList
 
     case bookmarkButtonTapped
-    case showToast(ToastViewReducer.State)
+    case showToast(Toast.State)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
