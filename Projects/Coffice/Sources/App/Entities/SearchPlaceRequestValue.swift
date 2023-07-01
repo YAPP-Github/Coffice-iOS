@@ -17,10 +17,10 @@ struct SearchPlaceRequestValue {
   let isOpened: Bool?
   let hasCommunalTable: Bool?
   let capcityLevel: [CapacityLevel]?
-  let drinkType: [DrinkType]?
-  let foodType: [FoodType]?
+  let drinkTypes: [DrinkType]?
+  let foodTypes: [FoodType]?
+  let restroomTypes: [RestroomType]?
   let pageSize: Int
-  let pageNumber: Int
 
   enum CapacityLevel {
     case unknown
@@ -85,10 +85,11 @@ extension SearchPlaceRequestValue {
       open: isOpened,
       hasCommunalTable: hasCommunalTable,
       capcityLevel: capcityLevel?.compactMap { $0.dtoName },
-      drinkType: drinkType?.compactMap { $0.dtoName },
-      foodType: foodType?.compactMap { $0.dtoName },
+      drinkType: drinkTypes?.compactMap { $0.dtoName },
+      foodType: foodTypes?.compactMap { $0.dtoName },
+      restroomTypes: restroomTypes?.compactMap { $0.dtoName },
       pageSize: pageSize,
-      pageNumber: pageNumber
+      lastSeenDistacne: nil
     )
   }
 }
