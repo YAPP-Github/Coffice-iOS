@@ -11,6 +11,7 @@ import SwiftUI
 
 struct CafeCardView: View {
   let store: StoreOf<CafeMapCore>
+
   var body: some View {
     WithViewStore(store) { viewStore in
       Rectangle()
