@@ -60,7 +60,7 @@ extension CafeSearchListView {
         .frame(width: 280, height: 48)
         Spacer()
         Button {
-        // TODO: 버튼 클릭 시, 하단 리스트 뷰 -> 마커 찍혀 있는 지도뷰
+          // TODO: 버튼 클릭 시, 하단 리스트 뷰 -> 마커 찍혀 있는 지도뷰
         } label: {
           CofficeAsset.Asset.mapLine24px.swiftUIImage
             .resizable()
@@ -80,17 +80,17 @@ extension CafeSearchListView {
               store.send(.filterButtonTapped(filter))
             } label: {
               if filter == .detail {
-                    Image(asset: CofficeAsset.Asset.filterLine24px)
-                      .resizable()
-                      .renderingMode(.template)
-                      .frame(width: 24, height: 24)
-                      .scaledToFit()
-                      .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
-                      .frame(width: filter.size.width, height: filter.size.height)
-                      .overlay(
-                        RoundedRectangle(cornerRadius: 18)
-                            .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
-                         )
+                Image(asset: CofficeAsset.Asset.filterLine24px)
+                  .resizable()
+                  .renderingMode(.template)
+                  .frame(width: 24, height: 24)
+                  .scaledToFit()
+                  .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                  .frame(width: filter.size.width, height: filter.size.height)
+                  .overlay(
+                    RoundedRectangle(cornerRadius: 18)
+                      .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
+                  )
               } else {
                 HStack(alignment: .center, spacing: 0) {
                   Text(filter.title)
@@ -104,9 +104,9 @@ extension CafeSearchListView {
                 }
                 .frame(width: filter.size.width, height: filter.size.height)
                 .overlay(
-                       RoundedRectangle(cornerRadius: 18)
-                           .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
-                   )
+                  RoundedRectangle(cornerRadius: 18)
+                    .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
+                )
               }
             }
             .cornerRadius(18)
