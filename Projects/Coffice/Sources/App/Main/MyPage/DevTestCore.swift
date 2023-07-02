@@ -12,7 +12,8 @@ struct DevTest: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init()
     // ■ TCA에서 UI와 State 프로퍼티를 바인딩하는 여러가지 방법이 있습니다.
-    // - reference(옛날 방식 코드도 있으니 가려가며 참고) : https://www.pointfree.co/blog/posts/63-the-composable-architecture-%EF%B8%8F-swiftui-bindings
+    // - reference(옛날 방식 코드도 있으니 가려가며 참고)
+    // https://www.pointfree.co/blog/posts/63-the-composable-architecture-%EF%B8%8F-swiftui-bindings
     // 1) @BindingState를 사용하지 않는 방법 (textFieldWithoutBindingState 참고)
     // - 바인딩할 변수에 대한 Action을 수동으로 구현해서 사용해야 합니다.
     // 2) @BindingState를 사용하는 방법 (textFieldWithBindingState 참고)
