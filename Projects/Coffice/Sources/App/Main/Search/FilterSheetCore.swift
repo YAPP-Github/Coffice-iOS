@@ -54,7 +54,7 @@ struct OptionButton: Equatable {
     case drink
     case toilet
   }
-  // TODO:
+
   enum SpaceSizeButton: Equatable, CaseIterable {
     case large
     case midium
