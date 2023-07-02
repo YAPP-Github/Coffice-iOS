@@ -20,7 +20,7 @@ public struct PlaceResponseDTO: Decodable {
   public let hasCommunalTable: Bool?
   public let capacityLevel: String?
   public let imageUrls: [String]?
-  public let crowdednessList: [CrowdednessResponse]?
+  public let crowdednessList: [CrowdednessResponseDTO]?
   public let drinkTypes: [String]?
   public let foodTypes: [String]?
   public let restroomTypes: [String]?

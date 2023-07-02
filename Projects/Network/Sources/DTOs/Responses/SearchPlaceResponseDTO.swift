@@ -20,7 +20,7 @@ public struct SearchPlaceResponseDTO: Decodable {
   public let hasCommunalTable: Bool?
   public let capacityLevel: String?
   public let imageUrls: [String]?
-  public let crowdednessList: [CrowdednessResponse]?
+  public let crowdednessList: [CrowdednessResponseDTO]?
   public let drinkTypes: [String]?
   public let foodTypes: [String]?
   public let restroomTypes: [String]?
@@ -39,7 +39,7 @@ public struct TimeOffsetDTO: Decodable {
   public let minute: Int?
 }
 
-public struct CrowdednessResponse: Decodable {
+public struct CrowdednessResponseDTO: Decodable {
   public let weekDayType: String?
   public let dayTimeType: String?
   public let crowdednessLevel: String?
