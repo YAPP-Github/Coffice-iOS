@@ -72,12 +72,12 @@ extension CafeSearchListView {
   }
 
   var filterButtons: some View {
-    WithViewStore(store) { store in
+    WithViewStore(store) { viewStore in
       ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 8) {
-          ForEach(store.filterOrders, id: \.self) { filter in
+          ForEach(viewStore.filterOrders, id: \.self) { filter in
             Button {
-              store.send(.filterButtonTapped(filter))
+              viewStore.send(.filterButtonTapped(filter))
             } label: {
               if filter == .detail {
                 Image(asset: CofficeAsset.Asset.filterLine24px)
