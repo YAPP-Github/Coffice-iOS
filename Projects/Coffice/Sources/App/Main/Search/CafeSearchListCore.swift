@@ -17,7 +17,7 @@ struct CafeSearchListCore: ReducerProtocol {
     var filterSheetState = FilterSheetCore.State(filterType: .cafeDetailFilter)
     var data: [SearchPlaceResponseDTO] = []
     var pageSize: Int = 10
-    var pageNumber: Int = -1
+    var pageNumber: Int = 0
     var pagenationRange: Range<Int> {
       pageNumber * pageSize..<(pageNumber + 1) * pageSize - 1
     }
@@ -29,7 +29,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case fetchData(SearchPlaceRequestValue)
     case dataResponse(TaskResult<[SearchPlaceResponseDTO]>)
     case filterButtonTapped(FilterType)
-    case scrollAndloadData(Int)
+    case scrollAndLoadData(Int)
     case dismiss
     case popView
   }
@@ -44,7 +44,7 @@ struct CafeSearchListCore: ReducerProtocol {
         return .none
 
       // TODO: 무한스크롤 추후 수정 예정
-      case .scrollAndloadData(let itemIndex):
+      case .scrollAndLoadData(let itemIndex):
         let currentPageNumber = itemIndex / state.pageSize
         if state.pagenationRange ~= itemIndex || currentPageNumber <= state.pageNumber {
           return .none

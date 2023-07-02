@@ -21,7 +21,7 @@ struct CafeSearchListView: View {
           LazyVStack(spacing: 0) {
             ForEach(1...10, id: \.self) { idx in
               CafeCardView(viewType: .listCell)
-                .onAppear { viewStore.send(.scrollAndloadData(idx)) }
+                .onAppear { viewStore.send(.scrollAndLoadData(idx)) }
                 .padding(.bottom, 40)
             }
           }
