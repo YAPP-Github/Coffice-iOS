@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-struct SearchPlaceRequestValue {
+struct SearchPlaceRequestValue: Equatable {
   let searchText: String?
   let latitude: Double
   let longitude: Double
