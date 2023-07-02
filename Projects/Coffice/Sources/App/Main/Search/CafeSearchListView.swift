@@ -14,93 +14,105 @@ struct CafeSearchListView: View {
 
   var body: some View {
     WithViewStore(store) { viewStore in
-        VStack {
-          header
-          cafeListView
+      VStack(spacing: 0) {
+        headerView
+          .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 16))
+        ScrollView(.vertical, showsIndicators: false) {
+          LazyVStack(spacing: 0) {
+            ForEach(1...10, id: \.self) { idx in
+              CafeCardView(viewType: .listCell)
+                .onAppear { viewStore.send(.scrollAndloadData(idx)) }
+                .padding(.bottom, 40)
+            }
+          }
         }
+        .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
+      }
     }
     .navigationBarBackButtonHidden(true)
   }
 }
 
 extension CafeSearchListView {
-  var header: some View {
-    VStack(spacing: 0) {
-      HStack {
-        Button {
-        } label: {
-          Text("지도")
+  var headerView: some View {
+    WithViewStore(store) { viewStore in
+      VStack(alignment: .leading, spacing: 8) {
+        headLine
+        filterButtons
+      }
+    }
+  }
+
+  var headLine: some View {
+    WithViewStore(store) { viewStore in
+      HStack(spacing: 0) {
+        HStack(spacing: 12) {
+          Button {
+          } label: {
+            Image(asset: CofficeAsset.Asset.arrowLeftTopbarLine24px)
+              .resizable()
+              .frame(width: 24, height: 24)
+          }
+          Text("SearchKeyWord")
+          Spacer()
         }
-        .padding(.leading)
-        searchTextField
-      }
-      orderFilterView
-    }
-  }
-
-  var cafeListView: some View {
-    ScrollView {
-      ForEach(0...10, id: \.self) { _ in
-        CafeCellView()
-          .padding(.horizontal)
-      }
-    }
-  }
-
-  var searchTextField: some View {
-    ZStack {
-      TextField(
-        "🔍  지역, 지하철로 검색",
-        text: .constant("")
-      )
-      .frame(height: 35)
-      .padding(.leading, 5)
-      .padding(.trailing, 25)
-      .overlay {
-        RoundedRectangle(cornerRadius: 5)
-          .stroke(.gray, lineWidth: 1)
-      }
-      .onSubmit {
-      }
-      HStack {
+        .frame(width: 280, height: 48)
         Spacer()
         Button {
 
         } label: {
-          Image(systemName: "xmark.circle.fill")
-            .foregroundColor(.gray)
-            .padding(.trailing, 5)
+          Image(asset: CofficeAsset.Asset.mapLine24px)
+            .resizable()
+            .frame(width: 24, height: 24)
         }
       }
+      .frame(width: 335, height: 48)
     }
-    .padding(.horizontal, 16)
   }
 
-  var orderFilterView: some View {
-    WithViewStore(store) { viewStore in
+  var filterButtons: some View {
+    WithViewStore(store) { store in
       ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 8) {
-          ForEach(viewStore.filterOrders, id: \.self) { order in
-            if order != .none {
-              Button {
-                viewStore.send(.filterButtonTapped(order))
-              } label: {
-                Text(order.titleName)
-                  .font(.subheadline)
-                  .foregroundColor(.black)
-                  .lineLimit(1)
-                  .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
-                  .overlay {
-                    RoundedRectangle(cornerRadius: 20)
-                      .stroke(.gray, lineWidth: 1)
-                  }
-                  .frame(height: 60)
+          ForEach(store.filterOrders, id: \.self) { filter in
+            Button {
+              store.send(.filterButtonTapped(filter))
+            } label: {
+              if filter == .detail {
+                    Image(asset: CofficeAsset.Asset.filterLine24px)
+                      .resizable()
+                      .renderingMode(.template)
+                      .frame(width: 24, height: 24)
+                      .scaledToFit()
+                      .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                      .frame(width: filter.size.width, height: filter.size.height)
+                      .overlay(
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
+                         )
+              } else {
+                HStack(alignment: .center, spacing: 0) {
+                  Text(filter.title)
+                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                    .applyCofficeFont(font: .body1Medium)
+                  Image(asset: CofficeAsset.Asset.arrowDropDownLine18px)
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 18, height: 18)
+                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                }
+                .frame(width: filter.size.width, height: filter.size.height)
+                .overlay(
+                       RoundedRectangle(cornerRadius: 18)
+                           .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
+                   )
               }
             }
+            .cornerRadius(18)
           }
         }
-        .padding(.horizontal, 16)
       }
+      .frame(width: 355, height: 36)
     }
   }
 }
