@@ -8,19 +8,19 @@
 
 import Foundation
 
-public struct SearchPlaceResponseDTO: Decodable {
+public struct SearchPlaceResponseDTO: Decodable, Equatable {
   public let placeId: Int
   public let name: String
   public let coordinates: CoordinateDTO
   public let address: AddressDTO?
 }
 
-public struct CoordinateDTO: Decodable {
+public struct CoordinateDTO: Decodable, Equatable {
   public let latitude: Double
   public let longitude: Double
 }
 
-public struct AddressDTO: Decodable {
+public struct AddressDTO: Decodable, Equatable {
   public let value: String?
   public let postalCode: String?
 }
