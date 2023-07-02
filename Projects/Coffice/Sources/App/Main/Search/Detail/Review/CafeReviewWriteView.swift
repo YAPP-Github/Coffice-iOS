@@ -10,7 +10,11 @@ import ComposableArchitecture
 import SwiftUI
 
 struct CafeReviewWriteView: View {
-  let store: StoreOf<CafeReviewWrite>
+  private let store: StoreOf<CafeReviewWrite>
+
+  init(store: StoreOf<CafeReviewWrite>) {
+    self.store = store
+  }
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -35,19 +39,25 @@ struct CafeReviewWriteView: View {
             .resizable()
             .frame(width: 48, height: 48)
             .cornerRadius(4, corners: .allCorners)
-            .padding(.top, 4)
 
-          VStack {
+          VStack(spacing: 0) {
             Text("훅스턴")
               .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
               .applyCofficeFont(font: .subtitleSemiBold)
               .frame(maxWidth: .infinity, alignment: .leading)
+              .frame(height: 20, alignment: .center)
+
+            Spacer()
+
             Text("서울 서대문구 연희로 91 2층")
               .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
               .applyCofficeFont(font: .body1Medium)
               .frame(maxWidth: .infinity, alignment: .leading)
+              .frame(height: 20, alignment: .center)
           }
+          .frame(height: 48)
         }
+        .padding(.top, 4)
         .padding(.bottom, 16)
 
         Divider()
@@ -71,6 +81,7 @@ struct CafeReviewWriteView: View {
         .background(Color(asset: viewStore.saveButtonBackgroundColorAsset))
         .cornerRadius(4, corners: .allCorners)
       }
+      .ignoresSafeArea(.keyboard)
       .padding(.horizontal, 20)
       .onAppear {
         viewStore.send(.onAppear)
@@ -79,12 +90,24 @@ struct CafeReviewWriteView: View {
   }
 }
 
-extension CafeReviewWriteView {
+extension CafeReviewWriteView: KeyboardPresentationReadable {
   var reviewFormScrollView: some View {
-    ScrollView(.vertical, showsIndicators: true) {
-      VStack(spacing: 0) {
-        reviewOptionMenuView
-        reviewTextView
+    WithViewStore(store) { viewStore in
+      ScrollViewReader { proxy in
+        ScrollView(.vertical, showsIndicators: true) {
+          VStack(spacing: 0) {
+            reviewOptionMenuView
+            reviewTextView
+          }
+        }
+        .id(viewStore.mainScrollViewScrollId)
+        .onReceive(eventPublisher) { isShowing in
+          if isShowing {
+            proxy.scrollTo(viewStore.textViewScrollId, anchor: .bottom)
+          } else {
+            proxy.scrollTo(viewStore.mainScrollViewScrollId, anchor: .bottom)
+          }
+        }
       }
     }
   }
@@ -106,8 +129,53 @@ extension CafeReviewWriteView {
 
   var reviewTextView: some View {
     WithViewStore(store) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
+      ZStack(alignment: .topLeading) {
+        VStack(alignment: .leading, spacing: 0) {
+          CafeReviewTextView(text: viewStore.binding(\.$reviewText))
+            .frame(height: 206)
+            .overlay(
+              textDescriptionView, alignment: .bottomTrailing
+            )
+            .padding(13)
+            .overlay {
+              RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                  Color(asset: CofficeAsset.Colors.grayScale3),
+                  lineWidth: 1
+                )
+            }
+            .id(viewStore.textViewScrollId)
+        }
+        .padding(.top, 16)
 
+        if viewStore.shouldPresentTextViewPlaceholder {
+          Text(
+            """
+            혼자서 오기 좋았나요?
+            테이블, 의자는 편했나요?
+            카페에서 작업하며 느꼈던 점들을 공유해주세요!
+            """
+          )
+          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale6))
+          .applyCofficeFont(font: .paragraph)
+          .padding(.top, 36)
+          .padding(.leading, 20)
+          .allowsHitTesting(false)
+        }
+      }
+      .padding(.bottom, 58)
+    }
+  }
+
+  var textDescriptionView: some View {
+    WithViewStore(store) { viewStore in
+      HStack(alignment: .bottom, spacing: 0) {
+        Text(viewStore.currentTextLengthDescription)
+          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+          .applyCofficeFont(font: .body3Medium)
+        Text(viewStore.maximumTextLengthDescription)
+          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale5))
+          .applyCofficeFont(font: .body3Medium)
       }
     }
   }

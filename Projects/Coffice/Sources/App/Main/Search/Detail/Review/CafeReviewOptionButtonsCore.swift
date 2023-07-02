@@ -20,7 +20,7 @@ struct CafeReviewOptionButtons: ReducerProtocol {
       }
     }
     var isSelectedOptionButton: Bool {
-      return optionButtonViewStates.contains { $0.isSelected }
+      return optionButtonViewStates.contains(where: \.isSelected)
     }
 
     var title: String {
