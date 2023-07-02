@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Foundation
+import Network
 import TCACoordinators
 
 struct AppCoordinator: ReducerProtocol {
@@ -17,7 +18,7 @@ struct AppCoordinator: ReducerProtocol {
     )
 
     var routes: [Route<AppScreen.State>]
-    var isLoggedIn = false
+    var isLoggedIn = CoreNetwork.shared.token != nil
   }
 
   enum Action: IndexedRouterAction, Equatable {

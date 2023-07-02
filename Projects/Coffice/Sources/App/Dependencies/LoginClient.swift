@@ -20,9 +20,12 @@ struct LoginClient: DependencyKey {
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/members/login"
     guard let requestBody = try? JSONEncoder()
-      .encode(LoginRequestDTO(accessToken: accessToken ?? "",
-                              providerType: loginType.name,
-                              providerUserId: UUID().uuidString)) else {
+      .encode(
+        LoginRequestDTO(
+          authProviderType: loginType.name,
+          authProviderUserId: accessToken ?? UUID().uuidString
+        )
+      ) else {
       throw LoginError.jsonEncodeFailed
     }
     guard let request = urlComponents?.toURLRequest(
@@ -32,6 +35,11 @@ struct LoginClient: DependencyKey {
       throw LoginError.emptyAccessToken
     }
     let response: LoginResponseDTO = try await coreNetwork.dataTask(request: request)
+    KeychainManager.shared.addItem(
+      key: loginType == .anonymous ?
+      KeychainManager.anonymousTokenKey : KeychainManager.tokenKey,
+      value: response.accessToken
+    )
     return response
   }
 

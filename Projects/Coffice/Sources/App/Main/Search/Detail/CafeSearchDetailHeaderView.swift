@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Kingfisher
 import SwiftUI
 
 struct CafeSearchDetailHeaderView: View {
@@ -17,12 +18,20 @@ struct CafeSearchDetailHeaderView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { _ in
+    WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
-        Image("cafeImage")
-          .resizable()
-          .frame(height: 200 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0))
-          .scaledToFit()
+        // TODO: 이미지 여러장 들어오는 경우 스크롤 필요
+        if let imageUrl = viewStore.cafe?.imageUrls?.first {
+          KFImage.url(URL(string: imageUrl))
+            .resizable()
+            .frame(height: 200 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0))
+            .scaledToFit()
+        } else {
+          Image("cafeImage")
+            .resizable()
+            .frame(height: 200 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0))
+            .scaledToFit()
+        }
 
         VStack(spacing: 0) {
           HStack {
@@ -32,13 +41,13 @@ struct CafeSearchDetailHeaderView: View {
                 .font(.system(size: 14, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 20)
-              Text("훅스턴")
+              Text(viewStore.cafe?.name ?? "훅스턴")
                 .foregroundColor(.black)
                 .font(.system(size: 26, weight: .bold))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 36)
                 .padding(.top, 8)
-              Text("서울 서대문구 연희로 91 2층")
+              Text(viewStore.cafe?.address?.address ?? "서울 서대문구 연희로 91 2층")
                 .foregroundColor(.gray)
                 .font(.system(size: 14))
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -46,7 +55,7 @@ struct CafeSearchDetailHeaderView: View {
             }
 
             VStack {
-              Image(systemName: "bookmark")
+              CofficeAsset.Asset.bookmarkLine24px.swiftUIImage
                 .resizable()
                 .frame(width: 20, height: 24)
                 .padding(.top, 10)

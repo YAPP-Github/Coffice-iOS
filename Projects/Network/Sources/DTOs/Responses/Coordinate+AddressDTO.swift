@@ -1,5 +1,5 @@
 //
-//  SearchPlaceResponseDTO.swift
+//  Coordinate+AddressDTO.swift
 //  Network
 //
 //  Created by 천수현 on 2023/06/22.
@@ -7,13 +7,6 @@
 //
 
 import Foundation
-
-public struct SearchPlaceResponseDTO: Decodable {
-  public let placeId: Int
-  public let name: String
-  public let coordinates: CoordinateDTO
-  public let address: AddressDTO?
-}
 
 public struct CoordinateDTO: Decodable {
   public let latitude: Double
