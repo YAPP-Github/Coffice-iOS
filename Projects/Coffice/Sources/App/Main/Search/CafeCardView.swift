@@ -62,6 +62,7 @@ extension CafeCardView {
             .scaledToFill()
             .frame(width: 40, height: 40)
         }
+        .padding(.trailing, viewType == .listCell ? 20 : 0)
       }
       .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
       ScrollView(.horizontal, showsIndicators: false) {
