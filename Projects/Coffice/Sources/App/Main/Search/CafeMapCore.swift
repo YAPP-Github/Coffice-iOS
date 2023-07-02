@@ -83,7 +83,6 @@ struct CafeMapCore: ReducerProtocol {
 
     case requestLocationAuthorization
 
-    case searchTextDidChanged(text: String)
     case searchTextFieldClearButtonClicked
     case searchTextFieldClearButtonTapped
     case searchTextSubmitted
@@ -102,6 +101,9 @@ struct CafeMapCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .binding(\.$searchText):
+        debugPrint("searchText : \(state.searchText)")
+        return .none
 
       case .cameraDidChange(let location):
         state.region = location
@@ -159,10 +161,6 @@ struct CafeMapCore: ReducerProtocol {
         default:
           return .none
         }
-
-      case .searchTextDidChanged(let text):
-        state.searchText = text
-        return .none
 
       case .searchTextFieldClearButtonTapped:
         state.searchText = ""
