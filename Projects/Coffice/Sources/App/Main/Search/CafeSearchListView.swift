@@ -48,6 +48,7 @@ extension CafeSearchListView {
       HStack(spacing: 0) {
         HStack(spacing: 12) {
           Button {
+            // TODO: 버튼 클릭 시, 초기 지도화면으로 이동
           } label: {
             CofficeAsset.Asset.arrowLeftTopbarLine24px.swiftUIImage
               .resizable()
@@ -59,7 +60,7 @@ extension CafeSearchListView {
         .frame(width: 280, height: 48)
         Spacer()
         Button {
-
+        // TODO: 버튼 클릭 시, 하단 리스트 뷰 -> 마커 찍혀 있는 지도뷰
         } label: {
           CofficeAsset.Asset.mapLine24px.swiftUIImage
             .resizable()
