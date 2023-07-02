@@ -13,6 +13,8 @@ struct FilterBottomSheetView: View {
   let isDimmed: Bool = false
   let isDragAble: Bool = false
   private let store: StoreOf<FilterSheetCore>
+
+  @State var isApearSheet = false
   @State private var height = CGFloat.zero
 
   init(store: StoreOf<FilterSheetCore>) {
@@ -26,32 +28,40 @@ struct FilterBottomSheetView: View {
           Color.black.opacity(0.5).ignoresSafeArea().onTapGesture {
             viewStore.send(.dismiss)
           }
-          RoundedRectangle(cornerRadius: 15)
-            .foregroundColor(.white)
-            .shadow(color: .gray, radius: 5)
-            .overlay {
-              VStack {
-                switch viewStore.filterType {
-                case .cafeDetailFilter:
-                  cafeDetailFilterView
-                case .outlet:
-                  cafeOutletFilterView
-                case .spaceSize:
-                  cafeSizeFilterView
-                case .runningTime:
-                  cafeRunningTimeFilterView
-                case .personnel:
-                  cafePersonnelFilterView
-                default:
-                  EmptyView()
-                }
-                Spacer()
+          .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.000001) {
+              withAnimation { isApearSheet = true }
               }
-              .padding()
-              .frame(width: proxy.size.width, height: proxy.size.height)
             }
-            .onAppear { height = proxy.size.height }
-            .offset(y: height - 200)
+          if isApearSheet {
+            RoundedRectangle(cornerRadius: 15)
+              .transition(.move(edge: .bottom))
+              .foregroundColor(.white)
+              .shadow(color: .gray, radius: 5)
+              .overlay {
+                VStack(spacing: 0) {
+                  switch viewStore.filterType {
+                  case .cafeDetailFilter:
+                    cafeDetailFilterView
+                  case .outlet:
+                    cafeOutletFilterView
+                  case .spaceSize:
+                    cafeSizeFilterView
+                  case .runningTime:
+                    cafeRunningTimeFilterView
+                  case .personnel:
+                    cafePersonnelFilterView
+                  default:
+                    EmptyView()
+                  }
+                  Spacer()
+                }
+                .frame(width: proxy.size.width, height: proxy.size.height)
+              }
+              .onAppear { height = proxy.size.height }
+              // TODO: Filter별 높이 조정
+              .offset(y: height - 200)
+          }
         }
         .frame(width: proxy.size.width, height: proxy.size.height)
       }
@@ -62,7 +72,7 @@ struct FilterBottomSheetView: View {
 extension FilterBottomSheetView {
   var headerView: some View {
     WithViewStore(store) { viewStore in
-      HStack {
+      HStack(spacing: 0) {
         Text(viewStore.filterType.titleName)
           .font(.headline)
         Spacer()
@@ -72,13 +82,13 @@ extension FilterBottomSheetView {
           Image(asset: CofficeAsset.Asset.close40px)
         }
       }
+      .frame(height: 85)
     }
   }
 
   var resetAndSaveButtonView: some View {
     WithViewStore(store) { viewStore in
       HStack {
-        Spacer()
         Button {
 
         } label: {
@@ -114,7 +124,22 @@ extension FilterBottomSheetView {
     }
   }
 
-  var cafeOutletFilterView: some View { headerView }
+  var cafeOutletFilterView: some View {
+    WithViewStore(store) { viewStore in
+      headerView
+      HStack {
+        ForEach(viewStore.outletButtonViewState.indices, id: \.self) { idx in
+          Button {
+            viewStore.send(.buttonTapped(idx, .outlet))
+          } label: {
+            Text(viewStore.outletButtonViewState[idx].buttonTitle)
+          }
+          .background(Color(asset: viewStore.outletButtonViewState[idx].backgroundColor))
+        }
+      }
+    }
+  }
+  // TODO: FilterView 구성
   var cafeSizeFilterView: some View { headerView }
   var cafeRunningTimeFilterView: some View { headerView }
   var cafePersonnelFilterView: some View { headerView }
