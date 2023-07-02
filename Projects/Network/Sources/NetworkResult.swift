@@ -12,4 +12,9 @@ struct NetworkResult<DTO: Decodable>: Decodable {
   let code: String
   let message: String
   let data: DTO
+  let page: PageResponse?
+
+  struct PageResponse: Decodable {
+    let hasNext: Bool?
+  }
 }
