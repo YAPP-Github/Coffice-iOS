@@ -163,6 +163,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
           .allowsHitTesting(false)
         }
       }
+      .padding(.bottom, 58)
     }
   }
 
@@ -176,8 +177,6 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
           .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale5))
           .applyCofficeFont(font: .body3Medium)
       }
-      .padding(.trailing, 20)
-      .padding(.bottom, 20)
     }
   }
 }
