@@ -7,8 +7,8 @@
 //
 
 import ComposableArchitecture
-import SwiftUI
 import Kingfisher
+import SwiftUI
 
 struct CafeSearchDetailHeaderView: View {
   private let store: StoreOf<CafeSearchDetail>

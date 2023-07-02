@@ -22,6 +22,7 @@ extension MemberResponseDTO {
       loginTypes: authProviders.map {
         LoginType.type(of: $0.authProviderType)
       },
-      name: name)
+      name: name
+    )
   }
 }

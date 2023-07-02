@@ -126,7 +126,7 @@ struct CafeMapCore: ReducerProtocol {
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
               searchText: "스타벅스", userLatitude: 37.498768, userLongitude: 127.0277985,
-              maximumSearchDistacne: 1000, isOpened: nil, hasCommunalTable: nil,
+              maximumSearchDistance: 1000, isOpened: nil, hasCommunalTable: nil,
               filters: nil, pageSize: 10, pageableKey: nil
             )
 

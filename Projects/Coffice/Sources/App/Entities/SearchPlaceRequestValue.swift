@@ -13,7 +13,7 @@ struct SearchPlaceRequestValue {
   let searchText: String?
   let userLatitude: Double
   let userLongitude: Double
-  let maximumSearchDistacne: Double
+  let maximumSearchDistance: Double
   let isOpened: Bool?
   let hasCommunalTable: Bool?
   let filters: CafeSearchFilters?
@@ -31,7 +31,7 @@ extension SearchPlaceRequestValue {
       searchText: searchText,
       latitude: userLatitude,
       longitude: userLongitude,
-      distance: maximumSearchDistacne,
+      distance: maximumSearchDistance,
       open: isOpened,
       hasCommunalTable: hasCommunalTable,
       capcityLevel: filters?.capacityLevels?.compactMap { $0.dtoName },

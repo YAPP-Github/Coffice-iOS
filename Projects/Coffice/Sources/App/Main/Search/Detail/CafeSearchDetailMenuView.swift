@@ -117,31 +117,31 @@ extension CafeSearchDetailMenuView {
 
   private var locationInfoView: some View {
     WithViewStore(store) { viewStore in
-    VStack(spacing: 0) {
-      HStack {
-        Image(systemName: "mappin")
-          .frame(width: 18, height: 18)
-
-        Text(viewStore.cafe?.address?.address ?? "서울 서대문구 연희로 91 2층")
-          .foregroundColor(.gray)
-          .font(.system(size: 14))
-          .frame(alignment: .leading)
-          .frame(height: 20)
-
-        Button {
-          // TODO: 좌측 텍스트 복사 이벤트
-        } label: {
-          Image(systemName: "doc.on.doc")
-            .resizable()
+      VStack(spacing: 0) {
+        HStack {
+          Image(systemName: "mappin")
             .frame(width: 18, height: 18)
-            .tint(.black)
-        }
 
-        Spacer()
+          Text(viewStore.cafe?.address?.address ?? "서울 서대문구 연희로 91 2층")
+            .foregroundColor(.gray)
+            .font(.system(size: 14))
+            .frame(alignment: .leading)
+            .frame(height: 20)
+
+          Button {
+            // TODO: 좌측 텍스트 복사 이벤트
+          } label: {
+            Image(systemName: "doc.on.doc")
+              .resizable()
+              .frame(width: 18, height: 18)
+              .tint(.black)
+          }
+
+          Spacer()
+        }
       }
-    }
-    .frame(height: 28)
-    .padding(.top, 20)
+      .frame(height: 28)
+      .padding(.top, 20)
     }
   }
 

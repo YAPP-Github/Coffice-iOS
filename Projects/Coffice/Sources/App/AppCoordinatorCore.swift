@@ -8,8 +8,8 @@
 
 import ComposableArchitecture
 import Foundation
-import TCACoordinators
 import Network
+import TCACoordinators
 
 struct AppCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
