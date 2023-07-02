@@ -10,7 +10,7 @@ import SwiftUI
 
 struct CafeCardView: View {
   let viewType: ViewType
-  
+
   enum ViewType {
     case cardView
     case listCell
