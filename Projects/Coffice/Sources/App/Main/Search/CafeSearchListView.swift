@@ -49,7 +49,7 @@ extension CafeSearchListView {
         HStack(spacing: 12) {
           Button {
           } label: {
-            Image(asset: CofficeAsset.Asset.arrowLeftTopbarLine24px)
+            CofficeAsset.Asset.arrowLeftTopbarLine24px.swiftUIImage
               .resizable()
               .frame(width: 24, height: 24)
           }
@@ -61,7 +61,7 @@ extension CafeSearchListView {
         Button {
 
         } label: {
-          Image(asset: CofficeAsset.Asset.mapLine24px)
+          CofficeAsset.Asset.mapLine24px.swiftUIImage
             .resizable()
             .frame(width: 24, height: 24)
         }
