@@ -57,7 +57,7 @@ extension CafeCardView {
         Button {
 
         } label: {
-          Image(uiImage: CofficeAsset.Asset.bookmarkLine40px.image)
+          CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
             .resizable()
             .scaledToFill()
             .frame(width: 40, height: 40)
