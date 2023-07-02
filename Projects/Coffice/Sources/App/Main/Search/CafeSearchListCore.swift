@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Network
+import SwiftUI
 
 struct CafeSearchListCore: ReducerProtocol {
   struct State: Equatable {
@@ -110,7 +111,7 @@ extension CafeSearchListCore {
       }
     }
 
-    var size: (width: Double, height: Double) {
+    var size: (width: CGFloat, height: CGFloat) {
       switch self {
       case .detail: return (width: 56, height: 36)
       case .runningTime: return (width: 91, height: 36)
