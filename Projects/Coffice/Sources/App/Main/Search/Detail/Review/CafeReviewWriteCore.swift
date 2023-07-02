@@ -10,34 +10,55 @@ import ComposableArchitecture
 import Foundation
 
 struct CafeReviewWrite: ReducerProtocol {
+  enum ReviewOption {
+    case create
+    case edit
+  }
+
   typealias OutletStateOption = CafeReviewOptionButtons.State.OutletOption
   typealias WifiStateOption = CafeReviewOptionButtons.State.WifiOption
   typealias NoiseOption = CafeReviewOptionButtons.State.NoiseOption
 
   struct State: Equatable {
-    static let mock: Self = .init(
-      optionButtonStates: [
-        .init(optionType: .outletState(nil)),
-        .init(optionType: .wifiState(nil)),
-        .init(optionType: .noise(nil))
-      ]
-    )
+    static let mock: Self = .init(reviewOption: .create)
 
     var optionButtonStates: [CafeReviewOptionButtons.State]
+    var reviewOption: ReviewOption
+
     var isSaveButtonEnabled = false
     @BindingState var reviewText = ""
+    let textViewScrollId = UUID()
+    let mainScrollViewScrollId = UUID()
+    let maximumTextLength = 200
 
     var saveButtonBackgroundColorAsset: CofficeColors {
       return isSaveButtonEnabled ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale6
     }
-
-    let textViewScrollId = UUID()
-    let mainScrollViewScrollId = UUID()
-    let maximumTextLength = 200
     var currentTextLengthDescription: String { "\(reviewText.count)" }
     var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
     var shouldPresentTextViewPlaceholder: Bool {
       reviewText.isEmpty
+    }
+
+    init(reviewOption: ReviewOption) {
+      self.reviewOption = reviewOption
+
+      switch reviewOption {
+      case .create:
+        optionButtonStates = [
+          .init(optionType: .outletState(nil)),
+          .init(optionType: .wifiState(nil)),
+          .init(optionType: .noise(nil))
+        ]
+      case .edit:
+        // TODO: 기존 리뷰 정보를 참고해서 버튼, 텍스트뷰 상태 업데이트 필요
+        optionButtonStates = [
+          .init(optionType: .outletState(nil)),
+          .init(optionType: .wifiState(nil)),
+          .init(optionType: .noise(nil))
+        ]
+        reviewText = ""
+      }
     }
   }
 
