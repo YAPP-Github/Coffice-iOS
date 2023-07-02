@@ -9,25 +9,7 @@
 import Foundation
 import Network
 
-/*
- public let placeId: Int
- public let name: String
- public let coordinates: CoordinateDTO
- public let address: AddressDTO?
- public let homepageUrl: String?
- public let openingHours: [OpeningHourResponseDTO]?
- public let phoneNumber: String?
- public let electricOutletLevel: String?
- public let hasCommunalTable: Bool?
- public let capacityLevel: String?
- public let imageUrls: [String]?
- public let crowdednessList: [CrowdednessResponse]?
- public let drinkTypes: [String]?
- public let foodTypes: [String]?
- public let restroomTypes: [String]?
- public let distance: Double?
- */
-struct Cafe {
+struct Cafe: Equatable {
   let placeId: Int
   let name: String
   let address: Address?
@@ -39,6 +21,7 @@ struct Cafe {
   let hasCommunalTable: Bool?
   let capacityLevel: String?
   let imageUrls: [String]?
+  let homepageUrl: String?
   let crowdednessList: [CrowdednessResponse]?
   let isOpened: Bool?
   let capcityLevel: CapacityLevel?
@@ -61,6 +44,7 @@ extension SearchPlaceResponseDTO {
       hasCommunalTable: hasCommunalTable,
       capacityLevel: capacityLevel,
       imageUrls: imageUrls,
+      homepageUrl: homepageUrl,
       crowdednessList: crowdednessList?.map { $0.toEntity() },
       isOpened: nil,
       capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
@@ -85,6 +69,7 @@ extension PlaceResponseDTO {
       hasCommunalTable: hasCommunalTable,
       capacityLevel: capacityLevel,
       imageUrls: imageUrls,
+      homepageUrl: homepageUrl,
       crowdednessList: crowdednessList?.map { $0.toEntity() },
       isOpened: nil,
       capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),

@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-public struct Address {
+public struct Address: Equatable {
   public let address: String?
   public let postalCode: String?
 }

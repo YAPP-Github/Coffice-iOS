@@ -90,18 +90,20 @@ extension CafeSearchDetailMenuView {
   }
 
   private var snsInfoView: some View {
-    HStack {
-      Image(systemName: "network")
-        .resizable()
-        .frame(width: 18, height: 18)
-      Button {
-        // TODO: SNS Link Action 구현 필요
-      } label: {
-        Text("https://www.instagram.com/hoxton_seoul최대...")
-          .foregroundColor(.brown)
-          .font(.system(size: 14))
-          .frame(alignment: .leading)
-          .frame(height: 30)
+    WithViewStore(store) { viewStore in
+      HStack {
+        Image(systemName: "network")
+          .resizable()
+          .frame(width: 18, height: 18)
+        Button {
+          // TODO: SNS Link Action 구현 필요
+        } label: {
+          Text(viewStore.cafe?.homepageUrl ?? "https://www.instagram.com/hoxton_seoul최대...")
+            .foregroundColor(.brown)
+            .font(.system(size: 14))
+            .frame(alignment: .leading)
+            .frame(height: 30)
+        }
       }
     }
   }
@@ -114,12 +116,13 @@ extension CafeSearchDetailMenuView {
   }
 
   private var locationInfoView: some View {
+    WithViewStore(store) { viewStore in
     VStack(spacing: 0) {
       HStack {
         Image(systemName: "mappin")
           .frame(width: 18, height: 18)
 
-        Text("서울 서대문구 연희로 91 2층")
+        Text(viewStore.cafe?.address?.address ?? "서울 서대문구 연희로 91 2층")
           .foregroundColor(.gray)
           .font(.system(size: 14))
           .frame(alignment: .leading)
@@ -139,21 +142,24 @@ extension CafeSearchDetailMenuView {
     }
     .frame(height: 28)
     .padding(.top, 20)
+    }
   }
 
   private var contactInfoView: some View {
-    HStack {
-      Image(systemName: "phone")
-        .resizable()
-        .frame(width: 18, height: 18)
-      Text("02) 123-4567")
-        .foregroundColor(.brown)
-        .font(.system(size: 14))
-        .frame(alignment: .leading)
-        .frame(height: 20)
+    WithViewStore(store) { viewStore in
+      HStack {
+        Image(systemName: "phone")
+          .resizable()
+          .frame(width: 18, height: 18)
+        Text(viewStore.cafe?.phoneNumber ?? "02) 123-4567")
+          .foregroundColor(.brown)
+          .font(.system(size: 14))
+          .frame(alignment: .leading)
+          .frame(height: 20)
+      }
+      .frame(height: 28)
+      .padding(.top, 4)
     }
-    .frame(height: 28)
-    .padding(.top, 4)
   }
 
   private var runningTimeView: some View {

@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-public struct OpeningHourResponse {
+public struct OpeningHourResponse: Equatable {
   public let dayOfWeek: String?
   public let openingHourType: String?
   public let openedAt: TimeOffset?

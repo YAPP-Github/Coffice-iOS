@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-public struct TimeOffset {
+public struct TimeOffset: Equatable {
   public let hour: Int?
   public let minute: Int?
 }
