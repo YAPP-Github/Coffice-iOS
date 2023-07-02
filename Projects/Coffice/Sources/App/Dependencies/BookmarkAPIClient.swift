@@ -13,14 +13,14 @@ import Network
 struct BookmarkAPIClient: DependencyKey {
   static var liveValue: BookmarkAPIClient = .liveValue
 
-  func fetchMyPlaces() async throws -> [PlaceResponseDTO] {
+  func fetchMyPlaces() async throws -> [SearchPlaceResponseDTO] {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/members/me/places"
     guard let request = urlComponents?.toURLRequest(method: .get) else {
       throw CoreNetworkError.requestConvertFailed
     }
-    let response: [PlaceResponseDTO] = try await coreNetwork.dataTask(request: request)
+    let response: [SearchPlaceResponseDTO] = try await coreNetwork.dataTask(request: request)
     return response
   }
 

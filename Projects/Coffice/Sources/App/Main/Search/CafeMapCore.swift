@@ -124,12 +124,18 @@ struct CafeMapCore: ReducerProtocol {
       case .updateCafeMarkers:
         return .run { send in
           let result = await TaskResult {
-            let cafeListData = try await placeAPIClient.fetchDefaultPlaces(page: 0, size: 200, sort: .ascending)
-            return cafeListData.map {
+            let cafeRequest = SearchPlaceRequestValue(
+              searchText: "스타벅스", userLatitude: 37.498768, userLongitude: 127.0277985,
+              maximumSearchDistacne: 1000, isOpened: nil, hasCommunalTable: nil,
+              filters: nil, pageSize: 10, pageableKey: nil
+            )
+
+            let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
+            return cafeListData.cafes.map {
               CafeMarkerData(
                 cafeName: $0.name,
-                latitude: $0.coordinates.latitude,
-                longitude: $0.coordinates.longitude
+                latitude: $0.latitude,
+                longitude: $0.longitude
               )
             }
           }
