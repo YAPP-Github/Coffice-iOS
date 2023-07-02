@@ -70,6 +70,22 @@ struct MainCoordinator: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .filterSheetAction(.buttonTapped(let idx, let optionType)):
+        switch optionType {
+        case .outlet:
+          state.filterSheetState!.outletButtonViewState[idx].currentTappedState.toggle()
+          return .none
+        case .spaceSize:
+          state.filterSheetState!.spaceSizeButtonViewState[idx].currentTappedState.toggle()
+          return .none
+
+        case .drink:
+          return .none
+
+        default:
+          return .none
+        }
+
       case .filterSheetAction(.dismiss):
         state.filterSheetState = nil
         return .none
