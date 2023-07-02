@@ -49,7 +49,7 @@ extension CafeCardView {
             Text("영업중")
               .applyCofficeFont(font: .button)
               .foregroundColor(Color(asset: CofficeAsset.Colors.secondary1))
-            Text("월: 11:00 ~23:00")
+            Text("월: 11:00 ~ 23:00")
               .applyCofficeFont(font: .body1Medium)
               .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
           }
