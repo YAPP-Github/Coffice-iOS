@@ -12,7 +12,7 @@ struct CafeReviewTextView: UIViewRepresentable {
   private let textView: UITextView = {
     let textView = UITextView()
     textView.textColor = UIColor(Color(asset: CofficeAsset.Colors.grayScale9))
-    textView.font = .systemFont(ofSize: 14)
+    textView.applyCoffice(font: .paragraph)
     return textView
   }()
 
