@@ -75,6 +75,7 @@ struct MainCoordinator: ReducerProtocol {
         case .outlet:
           state.filterSheetState!.outletButtonViewState[idx].currentTappedState.toggle()
           return .none
+
         case .spaceSize:
           state.filterSheetState!.spaceSizeButtonViewState[idx].currentTappedState.toggle()
           return .none
