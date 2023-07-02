@@ -73,11 +73,11 @@ struct MainCoordinator: ReducerProtocol {
       case .filterSheetAction(.buttonTapped(let idx, let optionType)):
         switch optionType {
         case .outlet:
-          state.filterSheetState!.outletButtonViewState[idx].currentTappedState.toggle()
+          state.filterSheetState?.outletButtonViewState[idx].currentTappedState.toggle()
           return .none
 
         case .spaceSize:
-          state.filterSheetState!.spaceSizeButtonViewState[idx].currentTappedState.toggle()
+          state.filterSheetState?.spaceSizeButtonViewState[idx].currentTappedState.toggle()
           return .none
 
         case .drink:
