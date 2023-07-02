@@ -86,6 +86,9 @@ struct CafeReviewWriteView: View {
       .onAppear {
         viewStore.send(.onAppear)
       }
+      .onTapGesture {
+        UIApplication.keyWindow?.endEditing(true)
+      }
     }
   }
 }
@@ -97,15 +100,19 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
         ScrollView(.vertical, showsIndicators: true) {
           VStack(spacing: 0) {
             reviewOptionMenuView
+              .id(viewStore.textViewDidEndEditingScrollId)
             reviewTextView
+              .padding(.bottom, viewStore.textViewBottomPadding)
+              .id(viewStore.textViewDidBeginEditingScrollId)
           }
         }
-        .id(viewStore.mainScrollViewScrollId)
-        .onReceive(eventPublisher) { isShowing in
-          if isShowing {
-            proxy.scrollTo(viewStore.textViewScrollId, anchor: .bottom)
+        .onReceive(keyboardEventPublisher) { isKeyboardShowing in
+          viewStore.send(.updateTextViewBottomPadding(isTextViewEditing: isKeyboardShowing))
+
+          if isKeyboardShowing {
+            proxy.scrollTo(viewStore.textViewDidBeginEditingScrollId, anchor: .bottom)
           } else {
-            proxy.scrollTo(viewStore.mainScrollViewScrollId, anchor: .bottom)
+            proxy.scrollTo(viewStore.textViewDidEndEditingScrollId, anchor: .bottom)
           }
         }
       }
@@ -144,7 +151,6 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
                   lineWidth: 1
                 )
             }
-            .id(viewStore.textViewScrollId)
         }
         .padding(.top, 16)
 
