@@ -45,7 +45,7 @@ struct CafeSearchListCore: ReducerProtocol {
 
       // TODO: 무한스크롤 추후 수정 예정
       case .scrollAndloadData(let itemIndex):
-        let currentPageNumber = itemIndex/state.pageSize
+        let currentPageNumber = itemIndex / state.pageSize
         if state.pagenationRange ~= itemIndex || currentPageNumber <= state.pageNumber {
           return .none
         } else {
