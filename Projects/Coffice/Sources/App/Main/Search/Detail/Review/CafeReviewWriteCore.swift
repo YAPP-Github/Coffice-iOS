@@ -36,11 +36,8 @@ struct CafeReviewWrite: ReducerProtocol {
     let maximumTextLength = 200
     var currentTextLengthDescription: String { "\(reviewText.count)" }
     var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
-    var isTextViewEmpty: Bool {
-      reviewText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
     var shouldPresentTextViewPlaceholder: Bool {
-      reviewText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+      reviewText.isEmpty
     }
   }
 
