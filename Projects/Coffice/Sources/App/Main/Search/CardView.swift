@@ -40,7 +40,7 @@ struct CardView: View {
         }
         Spacer()
         Button {
-
+          // TODO: 북마크 기능 추가
         } label: {
           CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
             .resizable()
