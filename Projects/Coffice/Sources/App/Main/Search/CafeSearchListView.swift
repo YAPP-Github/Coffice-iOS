@@ -19,8 +19,8 @@ struct CafeSearchListView: View {
           .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 16))
         ScrollView(.vertical, showsIndicators: false) {
           LazyVStack(spacing: 0) {
-            ForEach(0..<viewStore.cafeFetchData.count, id: \.self) { idx in
-              CafeSearchListCell(store: store, cafe: viewStore.state.cafeFetchData[idx])
+            ForEach(0..<viewStore.searchPlaceData.count, id: \.self) { idx in
+              CafeSearchListCell(store: store, cafe: viewStore.state.searchPlaceData[idx])
                 .padding(.bottom, 40)
             }
           }
