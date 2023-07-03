@@ -13,7 +13,7 @@ import Network
 struct BookmarkAPIClient: DependencyKey {
   static var liveValue: BookmarkAPIClient = .liveValue
 
-  func fetchMyPlaces() async throws -> [SearchPlaceResponseDTO] {
+  func fetchMyPlaces() async throws -> [Cafe] {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/members/me/places"
@@ -21,16 +21,25 @@ struct BookmarkAPIClient: DependencyKey {
       throw CoreNetworkError.requestConvertFailed
     }
     let response: [SearchPlaceResponseDTO] = try await coreNetwork.dataTask(request: request)
-    return response
+    return response.map { $0.toCafeEntity() }
   }
 
-  func addMyPlace(placeId: Int) async throws -> HTTPURLResponse {
+  func addMyPlace(placeId: Int, folderId: Int) async throws -> HTTPURLResponse {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
-    urlComponents?.path = "/api/v1/members/me/places/\(placeId)"
-    guard let request = urlComponents?.toURLRequest(method: .post) else {
-      throw CoreNetworkError.requestConvertFailed
+    urlComponents?.path = "/api/v1/places/\(placeId)/save-to-folder"
+    let requestValue = SaveToFolderRequestDTO(placeFolderId: folderId)
+    guard let requestBody = try? JSONEncoder()
+      .encode(requestValue) else {
+      throw CoreNetworkError.jsonEncodeFailed
     }
+    guard let request = urlComponents?.toURLRequest(
+      method: .post,
+      httpBody: requestBody
+    ) else {
+      throw CoreNetworkError.jsonEncodeFailed
+    }
+    dump(request)
     let response = try await coreNetwork.dataTask(request: request)
     return response
   }
@@ -38,7 +47,7 @@ struct BookmarkAPIClient: DependencyKey {
   func deleteMyPlace(placeId: Int) async throws -> HTTPURLResponse {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
-    urlComponents?.path = "/api/v1/members/me/places/\(placeId)"
+    urlComponents?.path = "/api/v1/places/\(placeId)/delete-from-folder"
     guard let request = urlComponents?.toURLRequest(method: .delete) else {
       throw CoreNetworkError.requestConvertFailed
     }

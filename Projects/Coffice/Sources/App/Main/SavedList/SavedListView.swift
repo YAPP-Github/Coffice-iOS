@@ -28,7 +28,7 @@ struct SavedListView: View {
             alignment: .center,
             spacing: 24
           ) {
-            ForEach((0...30), id: \.self) { _ in
+            ForEach(viewStore.cafes, id: \.self) { cafe in
               VStack(spacing: 0) {
                 CofficeAsset.Asset.cafeImage.swiftUIImage
                   .resizable()
@@ -50,12 +50,14 @@ struct SavedListView: View {
                         .frame(width: 40, height: 40)
                     }
                   }
-                Text("카페 이름")
+                Text(cafe.name)
+                  .lineLimit(1)
                   .frame(maxWidth: .infinity, alignment: .leading)
                   .applyCofficeFont(font: .header3)
                   .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
                   .padding(.top, 16)
-                Text("카페 주소")
+                Text(cafe.address?.address ?? "")
+                  .lineLimit(1)
                   .frame(maxWidth: .infinity, alignment: .leading)
                   .applyCofficeFont(font: .body2Medium)
                   .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
@@ -77,6 +79,9 @@ struct SavedListView: View {
             .padding(.vertical, 14)
           }
         }
+      }
+      .onAppear {
+        viewStore.send(.onAppear)
       }
     }
   }

@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-struct Cafe: Equatable {
+struct Cafe: Hashable {
   static let dummy = Cafe(
     placeId: 0,
     name: "name",
