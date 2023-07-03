@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CardView: View {
   let viewType: ViewType
+  let cafe: Cafe
 
   enum ViewType {
     case cardView
@@ -21,15 +22,15 @@ struct CardView: View {
       HStack(alignment: .top, spacing: 0) {
         VStack(alignment: .leading, spacing: 8) {
           HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text("훅스턴")
+            Text(cafe.name)
               .applyCofficeFont(font: CofficeFont.header2)
               .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
-            Text("서울 서대문구")
+            Text(cafe.address?.address ?? "")
               .applyCofficeFont(font: .body2Medium)
               .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
           }
           HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text("영업중")
+            Text(cafe.isOpened ?? false ? "영업중" : "영업종료")
               .applyCofficeFont(font: .button)
               .foregroundColor(Color(asset: CofficeAsset.Colors.secondary1))
             Text("월: 11:00 ~ 23:00")
@@ -83,6 +84,9 @@ struct CardView: View {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-      CardView(viewType: .cardView)
+      CardView(
+        viewType: .cardView,
+        cafe: Cafe.dummy
+      )
     }
 }

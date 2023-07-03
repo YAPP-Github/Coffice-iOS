@@ -24,6 +24,7 @@ struct CafeSearchListCore: ReducerProtocol {
   }
 
   enum Action: Equatable {
+    case onAppear
     case updateState(FilterSheetCore.State)
     case presentFilterSheetView(FilterSheetCore.State)
     case dataResponse(TaskResult<[Cafe]>)
@@ -38,11 +39,31 @@ struct CafeSearchListCore: ReducerProtocol {
   var body: some ReducerProtocolOf<CafeSearchListCore> {
     Reduce { state, action in
       switch action {
+      case .onAppear:
+        return .run { send in
+          let result = await TaskResult {
+            let requestValue = SearchPlaceRequestValue(
+              searchText: "스타벅스",
+              userLatitude: 37.498768,
+              userLongitude: 127.0277985,
+              maximumSearchDistance: 10000,
+              isOpened: nil,
+              hasCommunalTable: nil,
+              filters: nil,
+              pageSize: 10,
+              pageableKey: nil
+            )
+            let response = try await placeAPIClient.searchPlaces(requestValue: requestValue)
+            return response.cafes
+          }
+          await send(.dataResponse(result))
+        }
+
       case .updateState(let bottomSheetState):
         state.filterSheetState = bottomSheetState
         return .none
 
-      // TODO: 무한스크롤 추후 수정 예정
+        // TODO: 무한스크롤 추후 수정 예정
       case .scrollAndLoadData(let itemIndex):
         let currentPageNumber = itemIndex / state.pageSize
         if state.pagenationRange ~= itemIndex || currentPageNumber <= state.pageNumber {
@@ -52,7 +73,12 @@ struct CafeSearchListCore: ReducerProtocol {
           return .none
         }
 
-      case .dataResponse(.success(let data)):
+      case .dataResponse(.success(let cafeData)):
+        state.cafeFetchData = cafeData
+        return .none
+
+      case .dataResponse(.failure(let error)):
+        debugPrint(error)
         return .none
 
       case .filterButtonTapped(let filterButton):

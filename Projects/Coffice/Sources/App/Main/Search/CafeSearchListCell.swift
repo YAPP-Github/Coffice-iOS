@@ -13,10 +13,11 @@ import SwiftUI
 
 struct CafeSearchListCell: View {
   let store: StoreOf<CafeSearchListCore>
+  let cafe: Cafe
 
   var body: some View {
     WithViewStore(store) { viewStore in
-      CardView(viewType: .listCell)
+      CardView(viewType: .listCell, cafe: cafe)
     }
   }
 }
@@ -27,7 +28,8 @@ struct CafeSearchListCell_Previews: PreviewProvider {
       store: .init(
         initialState: .init(),
         reducer: CafeSearchListCore()
-      )
+      ),
+      cafe: Cafe.dummy
     )
   }
 }

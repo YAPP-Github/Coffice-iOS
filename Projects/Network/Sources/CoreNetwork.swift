@@ -60,7 +60,6 @@ public final class CoreNetwork: CoreNetworkInterface {
 
   public func pageableDataTask<DTO: Decodable>(request: URLRequest) async throws -> (dto: DTO, hasNext: Bool) {
     let data = try await data(of: request)
-    print(String(data: data, encoding: .utf8))
     guard let dto = try? JSONDecoder().decode(NetworkResult<DTO>.self, from: data).data else {
       throw CoreNetworkError.jsonDecodeFailed
     }

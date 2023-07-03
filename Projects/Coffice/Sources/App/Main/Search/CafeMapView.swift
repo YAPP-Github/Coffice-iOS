@@ -25,9 +25,9 @@ struct CafeMapView: View {
             floatingButtonView
             .padding()
             Spacer()
-            CafeCardView(store: store)
-              .frame(width: geometry.size.width, height: 260)
-              .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+//            CafeCardView(store: store, cafe: viewStore.state.caf)
+//              .frame(width: geometry.size.width, height: 260)
+//              .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
           }
           .navigationBarHidden(true)
         }

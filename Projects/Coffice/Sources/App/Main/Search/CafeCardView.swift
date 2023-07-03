@@ -11,6 +11,7 @@ import SwiftUI
 
 struct CafeCardView: View {
   let store: StoreOf<CafeMapCore>
+  let cafe: Cafe
 
   enum ViewType {
     case cardView
@@ -19,7 +20,7 @@ struct CafeCardView: View {
 
   var body: some View {
     WithViewStore(store) { viewStore in
-      CardView(viewType: .cardView)
+      CardView(viewType: .cardView, cafe: cafe)
     }
   }
 }
@@ -30,7 +31,8 @@ struct CafeCardView_Previews: PreviewProvider {
       store: .init(
         initialState: .init(),
         reducer: CafeMapCore()
-      )
+      ),
+      cafe: Cafe.dummy
     )
   }
 }
