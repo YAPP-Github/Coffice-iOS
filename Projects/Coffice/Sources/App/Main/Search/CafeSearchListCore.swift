@@ -27,7 +27,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case onAppear
     case updateState(FilterSheetCore.State)
     case presentFilterSheetView(FilterSheetCore.State)
-    case dataResponse(TaskResult<[Cafe]>)
+    case searchPlaceResponse(TaskResult<[Cafe]>)
     case filterButtonTapped(FilterType)
     case scrollAndLoadData(Int)
     case dismiss
@@ -56,7 +56,7 @@ struct CafeSearchListCore: ReducerProtocol {
             let response = try await placeAPIClient.searchPlaces(requestValue: requestValue)
             return response.cafes
           }
-          await send(.dataResponse(result))
+          await send(.searchPlaceResponse(result))
         }
 
       case .updateState(let bottomSheetState):
@@ -73,11 +73,11 @@ struct CafeSearchListCore: ReducerProtocol {
           return .none
         }
 
-      case .dataResponse(.success(let cafeData)):
+      case .searchPlaceResponse(.success(let cafeData)):
         state.searchPlaceData = cafeData
         return .none
 
-      case .dataResponse(.failure(let error)):
+      case .searchPlaceResponse(.failure(let error)):
         debugPrint(error)
         return .none
 
