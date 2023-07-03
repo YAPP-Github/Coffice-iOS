@@ -77,6 +77,7 @@ extension CafeMapView {
           "🔍  지역, 지하철로 검색",
           text: viewStore.binding(\.$searchText)
         )
+        .textFieldStyle(.plain)
         .frame(height: 35)
         .padding(.leading, 5)
         .padding(.trailing, 25)
