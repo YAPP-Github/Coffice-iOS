@@ -10,6 +10,27 @@ import Foundation
 import Network
 
 struct Cafe: Equatable {
+  static let dummy = Cafe(
+    placeId: 0,
+    name: "name",
+    address: .init(address: "address", postalCode: "00000"),
+    latitude: 37,
+    longitude: 125,
+    distanceFromUser: 100,
+    phoneNumber: "010-0000-0000",
+    electricOutletLevel: "low",
+    hasCommunalTable: nil,
+    capacityLevel: nil,
+    imageUrls: [],
+    homepageUrl: nil,
+    crowdednessList: nil,
+    isOpened: nil,
+    capcityLevel: nil,
+    drinkTypes: nil,
+    foodTypes: nil,
+    restroomType: nil
+  )
+
   let placeId: Int
   let name: String
   let address: Address?

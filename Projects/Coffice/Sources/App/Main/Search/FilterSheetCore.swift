@@ -8,47 +8,117 @@
 
 import ComposableArchitecture
 import Foundation
+import SwiftUI
+
+struct OptionButton: Equatable {
+  var id: UUID
+  var optionType: OptionType
+  var buttonType: ButtonType
+  var buttonTitle: String = ""
+  var savedTappedState: Bool = false
+  var currentTappedState: Bool = false
+  var foregroundColor: CofficeColors {
+    if currentTappedState {
+      return CofficeAsset.Colors.grayScale9
+    } else {
+      return CofficeAsset.Colors.grayScale7
+    }
+  }
+  var backgroundColor: CofficeColors {
+    if currentTappedState {
+      return CofficeAsset.Colors.grayScale9
+    } else {
+      return CofficeAsset.Colors.grayScale1
+    }
+  }
+
+  init(id: UUID, buttonType: ButtonType, optionType: OptionType, buttonTitle: String) {
+    self.id = id
+    self.optionType = optionType
+    self.buttonType = buttonType
+    self.buttonTitle = buttonTitle
+  }
+
+  enum OptionType: Equatable {
+    case outlet
+    case spaceSize
+    case food
+    case drink
+    case toilet
+  }
+
+  enum ButtonType: Equatable {
+    case outlet(OutletButton)
+    case spaceSize(SpaceSizeButton)
+    case food
+    case drink
+    case toilet
+  }
+
+  enum SpaceSizeButton: Equatable, CaseIterable {
+    case large
+    case midium
+    case small
+  }
+
+  enum RestroomButton: Equatable, CaseIterable {
+    case indoors
+    case genderSeparated
+  }
+
+  enum OutletButton: Equatable, CaseIterable {
+    case many
+    case several
+    case few
+
+    var name: String {
+      switch self {
+      case .many: return "넉넉"
+      case .several: return "보통"
+      case .few: return "부족"
+      }
+    }
+  }
+}
 
 struct FilterSheetCore: ReducerProtocol {
   struct State: Equatable {
     var filterType: FilterType = .none
-    var cafeSizeFilterButtons  = CafeSizeFilterButton.allCases
-    var cafeOutletFilterButtons = CafeOutletFilterButton.allCases
-    var cafeOperationHourFilterButtons = CafeOperationHourFilterButton.allCases
-    var cafePersonnelFilterButtons = CafePersonnelFilterButton.allCases
+    // TODO: 음료, 화장실, 단체석, 푸드 구현
+    var outletButtonViewState: [OptionButton] = OptionButton.OutletButton.allCases.map {
+      OptionButton(id: UUID(), buttonType: .outlet($0), optionType: .outlet, buttonTitle: $0.name)
+    }
+
+    var spaceSizeButtonViewState: [OptionButton] = OptionButton.SpaceSizeButton.allCases.map {
+      OptionButton(id: UUID(), buttonType: .spaceSize($0), optionType: .spaceSize, buttonTitle: "")
+    }
   }
 
   enum Action: Equatable {
+    case findTappedButton(UUID)
+    // TODO: filterButton 적용, 초기화
+    case buttonTapped(Int, OptionButton.OptionType)
+    case filterOptionRequest
     case dismiss
-    case filterCategoryButtonTapped(FilterType)
-    case cafeOutletFilterButtonTapped(CafeOutletFilterButton)
-    case cafeSizeFilterButtonTapped(CafeSizeFilterButton)
-    case cafeOperationHourFilterButtonTapped(CafeOperationHourFilterButton)
+    case searchPlaces
+    case searchPlacesResponse(TaskResult<Int>)
+    case resetFilter(FilterType)
   }
+
+  @Dependency(\.placeAPIClient) private var placeAPIClient
 
   var body: some ReducerProtocolOf<FilterSheetCore> {
     Reduce { state, action in
       switch action {
-      case .filterCategoryButtonTapped(let filterType):
-        switch filterType {
-        case .runningTime:
-          state.filterType = .runningTime
-          return .none
-
+      // TODO: action 동작 정의 MainCoordinatorCore에 구현
+      case .buttonTapped(let index, let optionType):
+        switch optionType {
         case .outlet:
-          state.filterType = .outlet
+          state.outletButtonViewState[index].currentTappedState.toggle()
           return .none
 
         case .spaceSize:
-          state.filterType = .spaceSize
-          return .none
-
-        case .personnel:
-          state.filterType = .personnel
-          return .none
-
-        case .cafeDetailFilter:
-          state.filterType = .cafeDetailFilter
+          state.spaceSizeButtonViewState[index].currentTappedState.toggle()
           return .none
 
         default:
@@ -63,70 +133,7 @@ struct FilterSheetCore: ReducerProtocol {
 }
 
 extension FilterSheetCore {
-  enum CafeDetailFilterButton: CaseIterable {
-
-  }
-
-  enum CafeOutletFilterButton: CaseIterable {
-    case enough
-    case some
-    case little
-    case none
-
-    var name: String {
-      switch self {
-      case .enough: return "넉넉(80%)"
-      case .some: return "보통(50%)"
-      case .little: return "부족(10%)"
-      case .none: return ""
-      }
-    }
-  }
-
-  enum CafeSizeFilterButton: CaseIterable {
-    case large
-    case medium
-    case small
-    case none
-
-    var name: String {
-      switch self {
-      case .large: return "대형"
-      case .medium: return "중형"
-      case .small: return "소형"
-      case .none: return ""
-      }
-    }
-  }
-
-  enum CafeOperationHourFilterButton: CaseIterable {
-    case clock
-    case onTime
-    case twentyFourHours
-    case none
-
-    var name: String {
-      switch self {
-      case .clock: return "넉넉(80%)"
-      case .onTime: return "영업중"
-      case .twentyFourHours: return "24시간"
-      case .none: return ""
-      }
-    }
-  }
-
-  enum CafePersonnelFilterButton: CaseIterable {
-    case moreFivePeople
-    case none
-
-    var name: String {
-      switch self {
-      case .moreFivePeople: return "5인이상"
-      case .none: return ""
-      }
-    }
-  }
-
+  // 어떤 FilterSheet인지 구분하도록 FilterType 설정
   enum FilterType: CaseIterable {
     case outlet
     case runningTime
@@ -139,7 +146,7 @@ extension FilterSheetCore {
       switch self {
       case .outlet: return "콘센트"
       case .runningTime: return "영업시간"
-      case .personnel: return "인원"
+      case .personnel: return "단체석"
       case .spaceSize: return "공간크기"
       case .cafeDetailFilter: return "세부필터"
       case .none: return ""

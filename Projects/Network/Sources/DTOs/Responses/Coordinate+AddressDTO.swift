@@ -13,7 +13,7 @@ public struct CoordinateDTO: Decodable {
   public let longitude: Double
 }
 
-public struct AddressDTO: Decodable {
+public struct AddressDTO: Decodable, Equatable {
   public let value: String?
   public let postalCode: String?
 }

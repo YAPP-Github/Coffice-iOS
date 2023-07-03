@@ -13,6 +13,7 @@ import SwiftUI
 struct CafeMapView: View {
   let store: StoreOf<CafeMapCore>
   var body: some View {
+
     WithViewStore(store) { viewStore in
       GeometryReader { geometry in
         ZStack {
@@ -24,9 +25,9 @@ struct CafeMapView: View {
             floatingButtonView
             .padding()
             Spacer()
-            CafeCardView(store: store)
-              .frame(width: geometry.size.width, height: 260)
-              .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+//            CafeCardView(store: store, cafe: viewStore.state.caf)
+//              .frame(width: geometry.size.width, height: 260)
+//              .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
           }
           .navigationBarHidden(true)
         }

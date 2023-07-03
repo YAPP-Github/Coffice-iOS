@@ -1,36 +1,32 @@
 //
-//  CafeCardView.swift
+//  CafeSearchListCell.swift
 //  coffice
 //
-//  Created by sehooon on 2023/06/26.
+//  Created by 천수현 on 2023/07/03.
 //  Copyright © 2023 kr.co.yapp. All rights reserved.
 //
 
 import ComposableArchitecture
+import Foundation
 import SwiftUI
 
-struct CafeCardView: View {
-  let store: StoreOf<CafeMapCore>
+struct CafeSearchListCell: View {
+  let store: StoreOf<CafeSearchListCore>
   let cafe: Cafe
-
-  enum ViewType {
-    case cardView
-    case listCell
-  }
 
   var body: some View {
     WithViewStore(store) { viewStore in
-      CardView(viewType: .cardView, cafe: cafe)
+      CardView(viewType: .listCell, cafe: cafe)
     }
   }
 }
 
-struct CafeCardView_Previews: PreviewProvider {
+struct CafeSearchListCell_Previews: PreviewProvider {
   static var previews: some View {
-    CafeCardView(
+    CafeSearchListCell(
       store: .init(
         initialState: .init(),
-        reducer: CafeMapCore()
+        reducer: CafeSearchListCore()
       ),
       cafe: Cafe.dummy
     )
