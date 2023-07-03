@@ -139,6 +139,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
       ZStack(alignment: .topLeading) {
         VStack(alignment: .leading, spacing: 0) {
           CafeReviewTextView(text: viewStore.binding(\.$reviewText))
+            .textFieldStyle(.plain)
             .frame(height: 206)
             .overlay(
               textDescriptionView, alignment: .bottomTrailing
