@@ -6,9 +6,8 @@
 //  Copyright © 2023 kr.co.yapp. All rights reserved.
 //
 
-import Foundation
-
 import ComposableArchitecture
+import Foundation
 import SwiftUI
 
 struct CafeSearchListCell: View {
