@@ -12,6 +12,7 @@ import Foundation
 struct CafeSearchDetail: ReducerProtocol {
   struct State: Equatable {
     let title = "CafeSearchDetail"
+    var cafe: Cafe?
 
     let subMenuTypes = SubMenuType.allCases
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
@@ -47,19 +48,30 @@ struct CafeSearchDetail: ReducerProtocol {
 
   enum Action: Equatable {
     case onAppear
+    case placeResponse(cafe: Cafe)
     case popView
     case subMenuTapped(State.SubMenuType)
     case toggleToPresentTextForTest
     case infoGuideButtonTapped
     case presentBubbleMessageView(BubbleMessage.State)
+    case presentCafeReviewWriteView
   }
 
-  @Dependency(\.apiClient) private var apiClient
+  @Dependency(\.placeAPIClient) private var placeAPIClient
 
   var body: some ReducerProtocolOf<CafeSearchDetail> {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        return .run { send in
+          let cafe = try await placeAPIClient.fetchPlace(placeId: 1)
+          await send(.placeResponse(cafe: cafe))
+        } catch: { error, send in
+          debugPrint(error)
+        }
+
+      case .placeResponse(let cafe):
+        state.cafe = cafe
         return .none
 
       case .subMenuTapped(let menuType):

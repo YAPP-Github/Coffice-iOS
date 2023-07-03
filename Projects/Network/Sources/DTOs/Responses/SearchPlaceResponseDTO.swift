@@ -8,17 +8,23 @@
 
 import Foundation
 
-public struct PlaceResponseDTO: Decodable {
+public struct SearchPlaceResponseDTO: Decodable {
   public let placeId: Int
   public let name: String
   public let coordinates: CoordinateDTO
   public let address: AddressDTO?
+  public let homepageUrl: String?
   public let openingHours: [OpeningHourResponseDTO]?
   public let phoneNumber: String?
   public let electricOutletLevel: String?
   public let hasCommunalTable: Bool?
   public let capacityLevel: String?
   public let imageUrls: [String]?
+  public let crowdednessList: [CrowdednessResponseDTO]?
+  public let drinkTypes: [String]?
+  public let foodTypes: [String]?
+  public let restroomTypes: [String]?
+  public let distance: Double?
 }
 
 public struct OpeningHourResponseDTO: Decodable {
@@ -31,4 +37,10 @@ public struct OpeningHourResponseDTO: Decodable {
 public struct TimeOffsetDTO: Decodable {
   public let hour: Int?
   public let minute: Int?
+}
+
+public struct CrowdednessResponseDTO: Decodable {
+  public let weekDayType: String?
+  public let dayTimeType: String?
+  public let crowdednessLevel: String?
 }

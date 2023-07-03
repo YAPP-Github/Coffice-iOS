@@ -15,7 +15,7 @@ struct CafeSearchListCore: ReducerProtocol {
     // TODO: filterButtonState 구현
     let filterOrders = FilterType.allCases
     var filterSheetState = FilterSheetCore.State(filterType: .cafeDetailFilter)
-    var data: [SearchPlaceResponseDTO] = []
+    var cafeFetchData: [Cafe] = []
     var pageSize: Int = 10
     var pageNumber: Int = 0
     var pagenationRange: Range<Int> {
@@ -26,8 +26,7 @@ struct CafeSearchListCore: ReducerProtocol {
   enum Action: Equatable {
     case updateState(FilterSheetCore.State)
     case presentFilterSheetView(FilterSheetCore.State)
-    case fetchData(SearchPlaceRequestValue)
-    case dataResponse(TaskResult<[SearchPlaceResponseDTO]>)
+    case dataResponse(TaskResult<[Cafe]>)
     case filterButtonTapped(FilterType)
     case scrollAndLoadData(Int)
     case dismiss
@@ -50,27 +49,10 @@ struct CafeSearchListCore: ReducerProtocol {
           return .none
         } else {
           state.pageNumber += 1
-          return .send(
-            .fetchData(
-              SearchPlaceRequestValue(
-                searchText: "스타", latitude: 37.4982763, longitude: 127.0268507, distacne: 13000000000,
-                isOpened: nil, hasCommunalTable: nil, capcityLevel: nil, drinkType: nil, foodType: nil,
-                pageSize: state.pageSize, pageNumber: state.pageNumber)
-            )
-          )
-        }
-
-      case .fetchData(let requestValue):
-        return .run { send in
-          let result = await TaskResult {
-            let data = try await placeAPIClient.searchPlaces(requestValue: requestValue)
-            return data
-          }
-          await send(.dataResponse(result))
+          return .none
         }
 
       case .dataResponse(.success(let data)):
-        state.data += data
         return .none
 
       case .filterButtonTapped(let filterButton):

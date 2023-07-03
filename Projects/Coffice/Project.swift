@@ -39,6 +39,7 @@ let project = Project.app(
     .external(name: "KakaoSDKAuth"),
     .external(name: "KakaoSDKCommon"),
     .external(name: "KakaoSDKUser"),
+    .external(name: "Kingfisher"),
     .external(name: "NMapsMap"),
     .project(target: "Network", path: .relativeToRoot("Projects/Network")),
     .external(name: "TCACoordinators")
