@@ -111,14 +111,14 @@ struct FilterSheetCore: ReducerProtocol {
     Reduce { state, action in
       switch action {
       // TODO: action 동작 정의 MainCoordinatorCore에 구현
-      case .buttonTapped(let idx, let optionType):
+      case .buttonTapped(let index, let optionType):
         switch optionType {
         case .outlet:
-          state.outletButtonViewState[idx].currentTappedState.toggle()
+          state.outletButtonViewState[index].currentTappedState.toggle()
           return .none
 
         case .spaceSize:
-          state.spaceSizeButtonViewState[idx].currentTappedState.toggle()
+          state.spaceSizeButtonViewState[index].currentTappedState.toggle()
           return .none
 
         default:

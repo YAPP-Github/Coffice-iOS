@@ -128,13 +128,13 @@ extension FilterBottomSheetView {
     WithViewStore(store) { viewStore in
       headerView
       HStack {
-        ForEach(viewStore.outletButtonViewState.indices, id: \.self) { idx in
+        ForEach(viewStore.outletButtonViewState.indices, id: \.self) { index in
           Button {
-            viewStore.send(.buttonTapped(idx, .outlet))
+            viewStore.send(.buttonTapped(index, .outlet))
           } label: {
-            Text(viewStore.outletButtonViewState[idx].buttonTitle)
+            Text(viewStore.outletButtonViewState[index].buttonTitle)
           }
-          .background(Color(asset: viewStore.outletButtonViewState[idx].backgroundColor))
+          .background(Color(asset: viewStore.outletButtonViewState[index].backgroundColor))
         }
       }
     }
