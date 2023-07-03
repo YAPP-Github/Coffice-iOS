@@ -15,7 +15,7 @@ struct CafeSearchListCore: ReducerProtocol {
     // TODO: filterButtonState 구현
     let filterOrders = FilterType.allCases
     var filterSheetState = FilterSheetCore.State(filterType: .cafeDetailFilter)
-    var searchPlaceDatas: [Cafe] = []
+    var cafeList: [Cafe] = []
     var pageSize: Int = 10
     var pageNumber: Int = 0
     var pagenationRange: Range<Int> {
@@ -73,8 +73,8 @@ struct CafeSearchListCore: ReducerProtocol {
           return .none
         }
 
-      case .searchPlaceResponse(.success(let cafeData)):
-        state.searchPlaceDatas = cafeData
+      case .searchPlaceResponse(.success(let cafeList)):
+        state.cafeList += cafeList
         return .none
 
       case .searchPlaceResponse(.failure(let error)):
