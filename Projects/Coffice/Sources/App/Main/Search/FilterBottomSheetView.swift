@@ -12,8 +12,8 @@ import SwiftUI
 struct FilterBottomSheetView: View {
   let isDimmed: Bool = false
   let isDragAble: Bool = false
+  let delayTime = 0.000001
   private let store: StoreOf<FilterSheetCore>
-
   @State var isApearSheet = false
   @State private var height = CGFloat.zero
 
@@ -29,7 +29,7 @@ struct FilterBottomSheetView: View {
             viewStore.send(.dismiss)
           }
           .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.000001) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
               withAnimation { isApearSheet = true }
               }
             }
