@@ -41,22 +41,26 @@ struct SavedListView: View {
                   .cornerRadius(5)
                   .overlay(alignment: .topTrailing) {
                     Button {
-                      debugPrint("저장화면 bookmark tapped")
+                      viewStore.send(.bookmarkButtonTapped(cafe: cafe))
                     } label: {
-                      CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+                      (
+                        cafe.isBookmarked ?
+                        CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
+                        : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+                      )
                         .resizable()
                         .renderingMode(.template)
                         .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
                         .frame(width: 40, height: 40)
                     }
                   }
-                Text(cafe.name)
+                Text(cafe.cafeData.name)
                   .lineLimit(1)
                   .frame(maxWidth: .infinity, alignment: .leading)
                   .applyCofficeFont(font: .header3)
                   .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
                   .padding(.top, 16)
-                Text(cafe.address?.address ?? "")
+                Text(cafe.cafeData.address?.address ?? "")
                   .lineLimit(1)
                   .frame(maxWidth: .infinity, alignment: .leading)
                   .applyCofficeFont(font: .body2Medium)
