@@ -15,8 +15,10 @@ struct DevTestView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 10) {
-
+        textFieldWithBindingState
+        textFieldWithoutBindingState
       }
+      .padding(20)
       .customNavigationBar(
         centerView: {
           Text(viewStore.title)
@@ -31,6 +33,44 @@ struct DevTestView: View {
       )
       .onAppear {
         viewStore.send(.onAppear)
+      }
+    }
+  }
+}
+
+extension DevTestView {
+  private var textFieldWithBindingState: some View {
+    WithViewStore(store) { viewStore in
+      TextField(
+        "textField with BindingState",
+        text: viewStore.binding(\.$textFieldStringWithBindingState)
+      )
+      .frame(height: 35)
+      .padding(.horizontal, 5)
+      .padding(.trailing, 25)
+      .overlay {
+        RoundedRectangle(cornerRadius: 5)
+          .stroke(.gray, lineWidth: 1)
+      }
+    }
+  }
+
+  private var textFieldWithoutBindingState: some View {
+    WithViewStore(store) { viewStore in
+      EmptyView()
+      TextField(
+        "textField without BindingState",
+        text: viewStore.binding(
+          get: \.textFieldStringWithoutBindingState,
+          send: DevTest.Action.textFieldStringDidChange
+        )
+      )
+      .frame(height: 35)
+      .padding(.horizontal, 5)
+      .padding(.trailing, 25)
+      .overlay {
+        RoundedRectangle(cornerRadius: 5)
+          .stroke(.gray, lineWidth: 1)
       }
     }
   }

@@ -38,12 +38,17 @@ struct MyPage: ReducerProtocol {
   struct State: Equatable {
     let title = "MyPage"
     var nickName = "닉네임"
-    let menuTypes: [MenuType] = MenuType.allCases
-    let menuItems: [MenuItem]
+    var menuItems: [MenuItem] = MenuType.allCases.map(MenuItem.init)
     var loginType: LoginType = .anonymous
+    var shouldShowDevTestMenu = false
 
     init() {
-      menuItems = menuTypes.map(MenuItem.init)
+      menuItems = MenuType.allCases
+        .filter {
+          guard $0 == .devTest else { return true }
+          return shouldShowDevTestMenu
+        }
+        .map(MenuItem.init)
     }
   }
 
