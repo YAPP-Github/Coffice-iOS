@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 struct SavedList: ReducerProtocol {
   struct State: Equatable {
-    let title = "SavedList"
+    let title = "저장 리스트"
   }
 
   enum Action: Equatable {
