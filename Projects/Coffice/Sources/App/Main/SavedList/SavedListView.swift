@@ -13,7 +13,33 @@ struct SavedListView: View {
   let store: StoreOf<SavedList>
 
   var body: some View {
-    mainView
+    WithViewStore(store) { viewStore in
+      Group {
+        if viewStore.state.cafes.isEmpty {
+          emptyListReplaceView
+        } else {
+          mainView
+        }
+      }
+      .onAppear {
+        viewStore.send(.onAppear)
+      }
+      .onDisappear {
+        viewStore.send(.onDisappear)
+      }
+      .customNavigationBar {
+        HStack(spacing: 4) {
+          Text(viewStore.title)
+            .applyCofficeFont(font: .header1)
+            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+          CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
+            .frame(width: 36, height: 36)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, 20)
+        .padding(.vertical, 14)
+      }
+    }
   }
 
   var mainView: some View {
@@ -70,28 +96,24 @@ struct SavedListView: View {
             }
           }
           .padding(.horizontal, 20)
-          .customNavigationBar {
-            HStack(spacing: 4) {
-              Text(viewStore.title)
-                .applyCofficeFont(font: .header1)
-                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-              CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-                .frame(width: 36, height: 36)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 20)
-            .padding(.vertical, 14)
-          }
         }
         .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
-      .onDisappear {
-        viewStore.send(.onDisappear)
-      }
     }
+  }
+
+  private var emptyListReplaceView: some View {
+    VStack(alignment: .center) {
+      Text("아직 저장된 공간이 없어요")
+        .applyCofficeFont(font: .header2)
+        .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+      Text("작업하고 싶은 공간을 저장해보세요")
+        .applyCofficeFont(font: .subtitle1Medium)
+        .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+        .padding(.top, 12)
+    }
+    .frame(maxHeight: .infinity)
+    .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
   }
 }
 
