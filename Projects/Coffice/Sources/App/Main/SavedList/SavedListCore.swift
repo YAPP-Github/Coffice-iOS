@@ -20,6 +20,7 @@ struct SavedList: ReducerProtocol {
     var unBookmarkedCafeIds: [Int] {
       return cafes.filter { $0.isBookmarked.isFalse }.map { $0.cafeData.placeId }
     }
+    var didFetchComplete: Bool = false
   }
 
   enum Action: Equatable {
@@ -58,6 +59,7 @@ struct SavedList: ReducerProtocol {
 
       case .bookmarkedCafeResponse(let cafes):
         state.cafes = cafes
+        state.didFetchComplete = true
         return .none
 
       case .deleteCafesFromBookmark:

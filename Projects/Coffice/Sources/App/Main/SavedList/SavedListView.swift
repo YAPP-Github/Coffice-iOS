@@ -15,7 +15,7 @@ struct SavedListView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       Group {
-        if viewStore.state.cafes.isEmpty {
+        if viewStore.state.didFetchComplete && viewStore.state.cafes.isEmpty {
           emptyListReplaceView
         } else {
           mainView
