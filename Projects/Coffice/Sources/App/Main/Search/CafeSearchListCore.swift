@@ -11,8 +11,14 @@ import Network
 import SwiftUI
 
 struct CafeSearchListCore: ReducerProtocol {
+  enum ViewType {
+    case mapView
+    case listView
+  }
+
   struct State: Equatable {
     // TODO: filterButtonState 구현
+    var viewType: ViewType = .mapView
     let filterOrders = FilterType.allCases
     var filterSheetState = FilterSheetCore.State(filterType: .cafeDetailFilter)
     var cafeList: [Cafe] = []
@@ -24,12 +30,14 @@ struct CafeSearchListCore: ReducerProtocol {
   }
 
   enum Action: Equatable {
+    case updateViewType(ViewType)
     case onAppear
     case updateState(FilterSheetCore.State)
     case presentFilterSheetView(FilterSheetCore.State)
     case searchPlaceResponse(TaskResult<[Cafe]>)
     case filterButtonTapped(FilterType)
     case scrollAndLoadData(Int)
+    case backbuttonTapped
     case dismiss
     case popView
   }
@@ -39,6 +47,18 @@ struct CafeSearchListCore: ReducerProtocol {
   var body: some ReducerProtocolOf<CafeSearchListCore> {
     Reduce { state, action in
       switch action {
+      case .dismiss:
+        return .none
+
+      case .backbuttonTapped:
+        state.cafeList = []
+        state.pageNumber = 0
+        return .send(.dismiss)
+
+      case .updateViewType(let viewType):
+        state.viewType = viewType
+        return .none
+
       case .onAppear:
         return .run { send in
           let result = await TaskResult {
