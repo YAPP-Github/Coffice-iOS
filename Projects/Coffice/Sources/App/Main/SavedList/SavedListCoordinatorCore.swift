@@ -25,8 +25,16 @@ struct SavedListCoordinator: ReducerProtocol {
   }
 
   var body: some ReducerProtocolOf<SavedListCoordinator> {
-    Reduce<State, Action> { _, action in
+    Reduce<State, Action> { state, action in
       switch action {
+      case .routeAction(_, action: .savedList(.pushCafeDetail(let cafeId))):
+        state.routes.push(.cafeSearchDetail(.init(cafeId: cafeId)))
+        return .none
+
+      case .routeAction(_, action: .cafeSearchDetail(.popView)):
+        state.routes.pop()
+        return .none
+
       default:
         return .none
       }

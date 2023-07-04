@@ -62,7 +62,7 @@ struct CafeSearchDetailView_Previews: PreviewProvider {
   static var previews: some View {
     CafeSearchDetailView(
       store: .init(
-        initialState: .init(),
+        initialState: .init(cafeId: 1),
         reducer: CafeSearchDetail()
       )
     )

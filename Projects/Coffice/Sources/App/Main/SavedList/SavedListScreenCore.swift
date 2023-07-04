@@ -1,5 +1,5 @@
 //
-//  SearchScreenCore.swift
+//  SavedListScreenCore.swift
 //  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/29.
@@ -9,29 +9,24 @@
 import ComposableArchitecture
 import TCACoordinators
 
-struct SearchScreen: ReducerProtocol {
+struct SavedListScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지
-    case cafeMap(CafeMapCore.State)
+    case savedList(SavedList.State)
     case cafeSearchDetail(CafeSearchDetail.State)
-    case cafeSearchList(CafeSearchListCore.State)
-    case cafeReviewWrite(CafeReviewWrite.State)
   }
 
   enum Action: Equatable {
-    case cafeMap(CafeMapCore.Action)
+    case savedList(SavedList.Action)
     case cafeSearchDetail(CafeSearchDetail.Action)
-    case cafeSearchList(CafeSearchListCore.Action)
-    case cafeReviewWrite(CafeReviewWrite.Action)
-    case popView
   }
 
-  var body: some ReducerProtocolOf<SearchScreen> {
+  var body: some ReducerProtocolOf<SavedListScreen> {
     Scope(
-      state: /State.cafeMap,
-      action: /Action.cafeMap
+      state: /State.savedList,
+      action: /Action.savedList
     ) {
-      CafeMapCore()
+      SavedList()
     }
 
     Scope(
@@ -39,20 +34,6 @@ struct SearchScreen: ReducerProtocol {
       action: /Action.cafeSearchDetail
     ) {
       CafeSearchDetail()
-    }
-
-    Scope(
-      state: /State.cafeSearchList,
-      action: /Action.cafeSearchList
-    ) {
-        CafeSearchListCore()
-    }
-
-    Scope(
-      state: /State.cafeReviewWrite,
-      action: /Action.cafeReviewWrite
-    ) {
-        CafeReviewWrite()
     }
   }
 }

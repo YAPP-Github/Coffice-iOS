@@ -78,7 +78,7 @@ struct CafeMapCore: ReducerProtocol {
     case cafeListResponse(TaskResult<[CafeMarkerData]>)
 
     case filterOrderMenuClicked(FilterOrder)
-    case pushToSearchDetailForTest
+    case pushToSearchDetailForTest(cafeId: Int)
     case pushToSearchListForTest
 
     case requestLocationAuthorization
@@ -161,7 +161,7 @@ struct CafeMapCore: ReducerProtocol {
         case .searchList:
           return EffectTask(value: .pushToSearchListForTest)
         case .searchDetail:
-          return EffectTask(value: .pushToSearchDetailForTest)
+          return EffectTask(value: .pushToSearchDetailForTest(cafeId: 1))
         default:
           return .none
         }

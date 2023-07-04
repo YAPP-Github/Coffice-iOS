@@ -29,6 +29,7 @@ struct SavedList: ReducerProtocol {
     case bookmarkButtonTapped(cafe: BookmarkCafe)
     case bookmarkedCafeResponse(cafes: [BookmarkCafe])
     case deleteCafesFromBookmark
+    case pushCafeDetail(cafeId: Int)
   }
 
   @Dependency(\.bookmarkClient) private var bookmarkClient
@@ -68,6 +69,9 @@ struct SavedList: ReducerProtocol {
         } catch: { error, send in
           debugPrint(error)
         }
+
+      case .pushCafeDetail(let cafeId):
+        return .none
       }
     }
   }

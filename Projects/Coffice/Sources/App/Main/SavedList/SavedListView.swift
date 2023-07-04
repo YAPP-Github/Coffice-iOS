@@ -93,6 +93,9 @@ struct SavedListView: View {
                   .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                   .padding(.top, 4)
               }
+              .onTapGesture {
+                viewStore.send(.pushCafeDetail(cafeId: cafe.cafeData.placeId))
+              }
             }
           }
           .padding(.horizontal, 20)
