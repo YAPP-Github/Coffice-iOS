@@ -13,9 +13,13 @@ struct SavedList: ReducerProtocol {
     let cafeData: Cafe
     var isBookmarked: Bool
   }
+
   struct State: Equatable {
     let title = "저장 리스트"
     var cafes: [BookmarkCafe] = []
+    var unBookmarkedCafeIds: [Int] {
+      return cafes.filter { $0.isBookmarked.isFalse }.map { $0.cafeData.placeId }
+    }
   }
 
   enum Action: Equatable {
@@ -23,7 +27,7 @@ struct SavedList: ReducerProtocol {
     case onDisappear
     case bookmarkButtonTapped(cafe: BookmarkCafe)
     case bookmarkedCafeResponse(cafes: [BookmarkCafe])
-    case deleteCafefromBookmark(cafeId: Int)
+    case deleteCafesFromBookmark
   }
 
   @Dependency(\.bookmarkClient) private var bookmarkClient
@@ -42,7 +46,9 @@ struct SavedList: ReducerProtocol {
         }
 
       case .onDisappear:
-        return .none
+        return .run { send in
+          await send(.deleteCafesFromBookmark)
+        }
 
       case .bookmarkButtonTapped(let cafe):
         if let index = state.cafes.firstIndex(of: cafe) {
@@ -54,8 +60,12 @@ struct SavedList: ReducerProtocol {
         state.cafes = cafes
         return .none
 
-      case .deleteCafefromBookmark(let cafeId):
-        return .none
+      case .deleteCafesFromBookmark:
+        return .run { [unBookmarkedCafeIds = state.unBookmarkedCafeIds] send in
+          try await bookmarkClient.deleteMyPlaces(placeIds: unBookmarkedCafeIds)
+        } catch: { error, send in
+          debugPrint(error)
+        }
       }
     }
   }

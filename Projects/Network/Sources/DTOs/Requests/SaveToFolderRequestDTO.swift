@@ -8,10 +8,10 @@
 
 import Foundation
 
-public struct SaveToFolderRequestDTO: Encodable {
-  public let placeFolderId: Int
+public struct SavePlacesRequestDTO: Encodable {
+  public let placeIds: [Int]
 
-  public init(placeFolderId: Int) {
-    self.placeFolderId = placeFolderId
+  public init(placeIds: [Int]) {
+    self.placeIds = placeIds
   }
 }
