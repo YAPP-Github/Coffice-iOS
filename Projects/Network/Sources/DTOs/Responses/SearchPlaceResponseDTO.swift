@@ -30,13 +30,8 @@ public struct SearchPlaceResponseDTO: Decodable {
 public struct OpeningHourResponseDTO: Decodable {
   public let dayOfWeek: String?
   public let openingHourType: String?
-  public let openedAt: TimeOffsetDTO?
-  public let closedAt: TimeOffsetDTO?
-}
-
-public struct TimeOffsetDTO: Decodable {
-  public let hour: Int?
-  public let minute: Int?
+  public let openedAt: String?
+  public let closedAt: String?
 }
 
 public struct CrowdednessResponseDTO: Decodable {

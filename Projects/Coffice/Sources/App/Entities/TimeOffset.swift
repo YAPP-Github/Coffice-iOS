@@ -14,8 +14,9 @@ public struct TimeOffset: Equatable {
   public let minute: Int?
 }
 
-extension TimeOffsetDTO {
+extension String {
+  // TODO: String 형태로 내려오는 time을 변환하기
   func toEntity() -> TimeOffset {
-    return .init(hour: hour, minute: minute)
+    return .init(hour: 0, minute: 0)
   }
 }
