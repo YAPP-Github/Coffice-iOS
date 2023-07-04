@@ -18,6 +18,12 @@ extension CLLocationCoordinate2D: Equatable {
 }
 
 struct CafeMapCore: ReducerProtocol {
+  enum ViewType {
+    case mainMapView
+    case searhView
+    case resultMapView
+  }
+
   enum FilterOrder: CaseIterable {
     case runningTime
     case outlet
@@ -58,16 +64,27 @@ struct CafeMapCore: ReducerProtocol {
   }
 
   struct State: Equatable {
+    var selectedCafe: Cafe?
+    var isSelectedCafe: Bool = false
+    var displayViewType: ViewType = .mainMapView
+    var cafeSearchState = CafeSearchViewCore.State()
+    var cafeSearchListState = CafeSearchListCore.State()
+
     var region: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
     var currentCameraPosition: CLLocationCoordinate2D?
-    var cafeList: [CafeMarkerData] = []
-    var markerList: [NMFMarker] = []
+    var cafeMarkerList: [CafeMarkerData] = []
+    var cafeList: [Cafe] = []
     let filterOrders = FilterOrder.allCases
     let floatingButtons = FloatingButton.allCases
     @BindingState var searchText = ""
   }
 
   enum Action: Equatable, BindableAction {
+    case cafeSearchListAction(CafeSearchListCore.Action)
+    case updateDisplayType(ViewType)
+    case cafeSearchViewAction(CafeSearchViewCore.Action)
+    case requestSearchPlaceResponse(TaskResult<[Cafe]>)
+
     case binding(BindingAction<State>)
 
     case cameraDidChange(CLLocationCoordinate2D)
@@ -83,9 +100,6 @@ struct CafeMapCore: ReducerProtocol {
 
     case requestLocationAuthorization
 
-    case searchTextFieldClearButtonClicked
-    case searchTextFieldClearButtonTapped
-    case searchTextSubmitted
     case updateCameraPosition(CLLocationCoordinate2D)
     case fetchCafeList
 
@@ -99,10 +113,71 @@ struct CafeMapCore: ReducerProtocol {
   var body: some ReducerProtocolOf<Self> {
     BindingReducer()
 
+    Scope(state: \.cafeSearchListState, action: /CafeMapCore.Action.cafeSearchListAction) {
+      CafeSearchListCore()
+    }
+
+    Scope(state: \.cafeSearchState, action: /CafeMapCore.Action.cafeSearchViewAction) {
+        CafeSearchViewCore()
+    }
+
     Reduce { state, action in
       switch action {
-      case .binding(\.$searchText):
-        debugPrint("searchText : \(state.searchText)")
+      case .cafeSearchListAction(.dismiss):
+        state.cafeList = []
+        state.cafeMarkerList = []
+        state.isSelectedCafe = false
+        state.displayViewType = .mainMapView
+        return .none
+
+      case .requestSearchPlaceResponse(let result):
+        switch result {
+        case .success(let cafeList):
+          if cafeList.isEmpty {
+            state.cafeList = []
+            state.cafeMarkerList = []
+            state.isSelectedCafe = false
+            state.selectedCafe = nil
+            return .none
+          }
+          state.cafeList = cafeList
+          state.selectedCafe = cafeList.first!
+          state.isSelectedCafe = true
+          state.cafeMarkerList = cafeList.map {
+            CafeMarkerData(
+              cafeName: $0.name,
+              latitude: $0.latitude,
+              longitude: $0.longitude
+            )
+          }
+          state.displayViewType = .resultMapView
+          return .send(.cafeSearchViewAction(.dismiss))
+
+        case .failure(let error):
+          state.cafeSearchState.currentBodyType = .searchResultEmptyView
+          debugPrint(error)
+          return .none
+        }
+
+      case .cafeSearchViewAction(.requestSearchPlace(let searchText)):
+        let latitude = state.region.latitude
+        let longitude = state.region.longitude
+        return .run { send in
+          let result = await TaskResult {
+            let cafeRequest = SearchPlaceRequestValue(
+              searchText: searchText, userLatitude: latitude, userLongitude: longitude,
+              maximumSearchDistance: 2000, isOpened: nil, hasCommunalTable: nil,
+              filters: nil, pageSize: 10, pageableKey: nil
+            )
+
+            let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
+            return cafeListData.cafes
+          }
+          await send(.requestSearchPlaceResponse(result))
+        }
+
+      case .updateDisplayType(let displayType):
+        state.displayViewType = displayType
         return .none
 
       case .cameraDidChange(let location):
@@ -147,7 +222,7 @@ struct CafeMapCore: ReducerProtocol {
       case .cafeListResponse(let result):
         switch result {
         case .success(let cafeList):
-          state.cafeList = cafeList
+          state.cafeMarkerList = cafeList
           return .none
         case .failure(let error):
           debugPrint(error)
@@ -167,15 +242,6 @@ struct CafeMapCore: ReducerProtocol {
         default:
           return .none
         }
-
-      case .searchTextFieldClearButtonTapped:
-        state.searchText = ""
-        return .none
-
-      case .searchTextSubmitted:
-        guard state.searchText.trimmingCharacters(in: .whitespaces).isNotEmpty
-        else { return .none }
-        return .none
 
       case .bookmarkButtonTapped:
         return EffectTask(value: .showToast(.mock))
