@@ -17,15 +17,24 @@ struct CafeSearchListView: View {
       VStack(spacing: 0) {
         headerView
           .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 16))
-        ScrollView(.vertical, showsIndicators: false) {
-          LazyVStack(spacing: 0) {
-            ForEach(0..<viewStore.cafeList.count, id: \.self) { index in
-              CafeSearchListCell(store: store, cafe: viewStore.state.cafeList[index])
-                .padding(.bottom, 40)
+          .background(.white)
+
+        switch viewStore.viewType {
+        case .listView:
+          ScrollView(.vertical, showsIndicators: false) {
+            LazyVStack(spacing: 0) {
+              ForEach(0..<viewStore.cafeList.count, id: \.self) { index in
+                CafeSearchListCell(store: store, cafe: viewStore.state.cafeList[index])
+                  .onTapGesture { print("\(index)") }
+                  .padding(.bottom, 40)
+              }
             }
           }
+          .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
+          .background(.white)
+        case .mapView:
+          Spacer()
         }
-        .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
       }
       .onAppear {
         viewStore.send(.onAppear)
@@ -50,7 +59,7 @@ extension CafeSearchListView {
       HStack(spacing: 0) {
         HStack(spacing: 12) {
           Button {
-            // TODO: 버튼 클릭 시, 초기 지도화면으로 이동
+            viewStore.send(.backbuttonTapped)
           } label: {
             CofficeAsset.Asset.arrowLeftTopbarLine24px.swiftUIImage
               .resizable()
@@ -62,11 +71,18 @@ extension CafeSearchListView {
         .frame(width: 280, height: 48)
         Spacer()
         Button {
-          // TODO: 버튼 클릭 시, 하단 리스트 뷰 -> 마커 찍혀 있는 지도뷰
+          if viewStore.viewType == .mapView {
+            viewStore.send(.updateViewType(.listView))
+          } else {
+            viewStore.send(.updateViewType(.mapView))
+          }
         } label: {
-          CofficeAsset.Asset.mapLine24px.swiftUIImage
-            .resizable()
-            .frame(width: 24, height: 24)
+          switch viewStore.viewType {
+          case .mapView:
+            CofficeAsset.Asset.mapLine24px.swiftUIImage
+          case .listView:
+            CofficeAsset.Asset.list24px.swiftUIImage
+          }
         }
       }
       .frame(width: 335, height: 48)
