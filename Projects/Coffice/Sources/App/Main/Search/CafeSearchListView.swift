@@ -52,8 +52,7 @@ extension CafeSearchListView {
 
   var headLine: some View {
     WithViewStore(store) { viewStore in
-      HStack(spacing: 0) {
-        HStack(spacing: 12) {
+        HStack(spacing: 0) {
           Button {
             viewStore.send(.backbuttonTapped)
           } label: {
@@ -61,26 +60,26 @@ extension CafeSearchListView {
               .resizable()
               .frame(width: 24, height: 24)
           }
+          .padding(.trailing, 12)
           Text(viewStore.title)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .lineLimit(1)
             .onTapGesture { viewStore.send(.titleLabelTapped) }
-          Spacer()
-        }
-        .frame(width: 280, height: 48)
-        Spacer()
-        Button {
-          if viewStore.viewType == .mapView {
-            viewStore.send(.updateViewType(.listView))
-          } else {
-            viewStore.send(.updateViewType(.mapView))
+          Button {
+            if viewStore.viewType == .mapView {
+              viewStore.send(.updateViewType(.listView))
+            } else {
+              viewStore.send(.updateViewType(.mapView))
+            }
+          } label: {
+            switch viewStore.viewType {
+            case .mapView:
+              CofficeAsset.Asset.list24px.swiftUIImage
+            case .listView:
+              CofficeAsset.Asset.mapLine24px.swiftUIImage
+            }
           }
-        } label: {
-          switch viewStore.viewType {
-          case .mapView:
-            CofficeAsset.Asset.mapLine24px.swiftUIImage
-          case .listView:
-            CofficeAsset.Asset.list24px.swiftUIImage
-          }
-        }
+          .padding(.trailing, 20)
       }
       .frame(height: 48)
     }
