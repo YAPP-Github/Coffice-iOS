@@ -60,7 +60,7 @@ struct CafeSearchCore: ReducerProtocol {
         return .send(.requestSearchPlace(recentWord))
 
       case .binding(\.$searchText):
-        if state.searchText == "" {
+        if state.searchText.isEmpty {
           state.currentBodyType = .recentSearchListView
         } else {
           state.currentBodyType = .searchResultListView
