@@ -17,7 +17,7 @@ struct CafeSearchListView: View {
       VStack(spacing: 0) {
         headerView
           .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 16))
-          .background(.white)
+          .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
         switch viewStore.viewType {
         case .listView:
           ScrollView(.vertical, showsIndicators: false) {
@@ -30,13 +30,10 @@ struct CafeSearchListView: View {
             }
             .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
           }
-          .background(.white)
+          .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
         case .mapView:
           Spacer()
         }
-      }
-      .onAppear {
-        viewStore.send(.onAppear)
       }
     }
     .navigationBarBackButtonHidden(true)
@@ -103,27 +100,27 @@ extension CafeSearchListView {
                   .renderingMode(.template)
                   .frame(width: 24, height: 24)
                   .scaledToFit()
-                  .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                   .frame(width: filter.size.width, height: filter.size.height)
                   .overlay(
                     RoundedRectangle(cornerRadius: 18)
-                      .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
+                      .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
                   )
               } else {
                 HStack(alignment: .center, spacing: 0) {
                   Text(filter.title)
-                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                     .applyCofficeFont(font: .body1Medium)
                   Image(asset: CofficeAsset.Asset.arrowDropDownLine18px)
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 18, height: 18)
-                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 }
                 .frame(width: filter.size.width, height: filter.size.height)
                 .overlay(
                   RoundedRectangle(cornerRadius: 18)
-                    .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
+                    .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
                 )
               }
             }
