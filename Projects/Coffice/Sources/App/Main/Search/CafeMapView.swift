@@ -31,12 +31,12 @@ struct CafeMapView: View {
             case .searhView:
               CafeSearchView(store: store.scope(
                 state: \.cafeSearchState,
-                action: CafeMapCore.Action.cafeSearchViewAction)
+                action: CafeMapCore.Action.cafeSearchAction)
               )
               .background(.white)
               .zIndex(1)
             }
-            VStack(alignment: .trailing) {
+            VStack(alignment: .trailing, spacing: 0) {
               header
                 .onTapGesture { viewStore.send(.updateDisplayType(.searhView)) }
                 .background(.white)
@@ -45,7 +45,8 @@ struct CafeMapView: View {
               Spacer()
               if viewStore.state.isSelectedCafe {
                 CafeCardView(store: store, cafe: viewStore.state.selectedCafe!)
-                  .frame(width: geometry.size.width, height: 260)
+                  .frame(maxWidth: .infinity)
+                  .frame(height: 260)
                   .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
               }
             }
@@ -100,6 +101,7 @@ extension CafeMapView {
           text: viewStore.binding(\.$searchText)
         )
         .textFieldStyle(.plain)
+        .applyCofficeFont(font: .subtitle1Medium)
         .frame(height: 35)
         .padding(.leading, 5)
         .padding(.trailing, 25)
