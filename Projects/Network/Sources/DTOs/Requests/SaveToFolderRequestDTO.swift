@@ -9,9 +9,9 @@
 import Foundation
 
 public struct SavePlacesRequestDTO: Encodable {
-  public let placeIds: [Int]
+  public let postIds: [Int]
 
-  public init(placeIds: [Int]) {
-    self.placeIds = placeIds
+  public init(postIds: [Int]) {
+    self.postIds = postIds
   }
 }

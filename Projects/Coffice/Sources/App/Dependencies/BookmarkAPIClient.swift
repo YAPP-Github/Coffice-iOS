@@ -45,7 +45,7 @@ struct BookmarkAPIClient: DependencyKey {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/members/me/places"
-    guard let requestBody = try? JSONEncoder().encode(SavePlacesRequestDTO(placeIds: placeIds))
+    guard let requestBody = try? JSONEncoder().encode(SavePlacesRequestDTO(postIds: placeIds))
     else { throw LoginError.jsonEncodeFailed }
     guard let request = urlComponents?.toURLRequest(method: .delete, httpBody: requestBody)
     else { throw LoginError.emptyAccessToken }
