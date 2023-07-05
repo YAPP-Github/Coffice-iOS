@@ -36,8 +36,8 @@ struct CafeSearchView: View {
 
 extension CafeSearchView {
   var cafeSearchBodyView: some View {
-    WithViewStore(store) { viewStore in
-      switch viewStore.currentBodyType {
+    WithViewStore(store, observe: \.currentBodyType) { viewStore in
+      switch viewStore.state {
       case .recentSearchListView:
         recentSearchListView
 
