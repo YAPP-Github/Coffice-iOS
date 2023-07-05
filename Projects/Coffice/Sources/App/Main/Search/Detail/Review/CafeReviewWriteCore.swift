@@ -27,10 +27,11 @@ struct CafeReviewWrite: ReducerProtocol {
 
     var isSaveButtonEnabled = false
     @BindingState var reviewText = ""
-    let textViewScrollId = UUID()
-    let mainScrollViewScrollId = UUID()
+    let textViewDidBeginEditingScrollId = UUID()
+    let textViewDidEndEditingScrollId = UUID()
     let maximumTextLength = 200
 
+    var textViewBottomPadding: CGFloat = 0.0
     var saveButtonBackgroundColorAsset: CofficeColors {
       return isSaveButtonEnabled ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale6
     }
@@ -68,6 +69,7 @@ struct CafeReviewWrite: ReducerProtocol {
     case dismissView
     case optionButtonsAction(CafeReviewOptionButtons.Action)
     case updateSaveButtonState
+    case updateTextViewBottomPadding(isTextViewEditing: Bool)
   }
 
   var body: some ReducerProtocolOf<CafeReviewWrite> {
@@ -94,6 +96,10 @@ struct CafeReviewWrite: ReducerProtocol {
 
       case .updateSaveButtonState:
         state.isSaveButtonEnabled = state.optionButtonStates.allSatisfy(\.isSelectedOptionButton)
+        return .none
+
+      case .updateTextViewBottomPadding(let isTextViewEditing):
+        state.textViewBottomPadding = isTextViewEditing ? 200 : 0
         return .none
 
       default:

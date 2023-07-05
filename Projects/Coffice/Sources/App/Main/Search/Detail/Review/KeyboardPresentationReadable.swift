@@ -10,11 +10,11 @@ import Combine
 import UIKit
 
 protocol KeyboardPresentationReadable {
-  var eventPublisher: AnyPublisher<Bool, Never> { get }
+  var keyboardEventPublisher: AnyPublisher<Bool, Never> { get }
 }
 
 extension KeyboardPresentationReadable {
-  var eventPublisher: AnyPublisher<Bool, Never> {
+  var keyboardEventPublisher: AnyPublisher<Bool, Never> {
     Publishers.Merge(
       NotificationCenter.default
         .publisher(for: UIResponder.keyboardWillShowNotification)

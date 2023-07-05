@@ -32,17 +32,17 @@ struct CafeReviewTextView: UIViewRepresentable {
   }
 
   class Coordinator: NSObject {
-    var text: Binding<String>
+    @Binding private(set) var text: String
+    let maxTextLength: Int = 200
+    let maxNumberOfLine: Int = 11
 
     init(_ text: Binding<String>) {
-      self.text = text
+      self._text = text
     }
   }
 }
 
 extension CafeReviewTextView.Coordinator: UITextViewDelegate {
-  var maxTextLength: Int { 200 }
-
   func textViewDidChange(_ textView: UITextView) {
     var updatedText = textView.text ?? ""
 
@@ -51,6 +51,28 @@ extension CafeReviewTextView.Coordinator: UITextViewDelegate {
     }
 
     textView.text = updatedText
-    text.wrappedValue = updatedText
+    $text.wrappedValue = updatedText
+  }
+
+  func sizeOf(string: String, constrainedToWidth width: Double, font: UIFont) -> CGSize {
+    return (string as NSString).boundingRect(
+      with: CGSize(width: width, height: .greatestFiniteMagnitude),
+      options: NSStringDrawingOptions.usesLineFragmentOrigin,
+      attributes: [.font: font],
+      context: nil
+    ).size
+  }
+
+  func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    guard let font = textView.font else { return false }
+
+    let newText = (textView.text as NSString).replacingCharacters(in: range, with: text)
+    var textWidth = textView.frame.inset(by: textView.textContainerInset).width
+    textWidth -= 2.0 * textView.textContainer.lineFragmentPadding
+
+    let boundingRect = sizeOf(string: newText, constrainedToWidth: Double(textWidth), font: font)
+    let numberOfLines = boundingRect.height / font.lineHeight
+
+    return numberOfLines <= 11
   }
 }

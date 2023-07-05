@@ -32,6 +32,7 @@ struct CafeReviewWriteView: View {
           }
         }
         .padding(.top, 24)
+        .padding(.horizontal, 20)
         .padding(.bottom, 16)
 
         HStack {
@@ -59,10 +60,12 @@ struct CafeReviewWriteView: View {
         }
         .padding(.top, 4)
         .padding(.bottom, 16)
+        .padding(.horizontal, 20)
 
         Divider()
           .background(Color(asset: CofficeAsset.Colors.grayScale3))
           .frame(height: 1)
+          .padding(.horizontal, 20)
 
         reviewFormScrollView
 
@@ -80,11 +83,14 @@ struct CafeReviewWriteView: View {
         .frame(height: 44)
         .background(Color(asset: viewStore.saveButtonBackgroundColorAsset))
         .cornerRadius(4, corners: .allCorners)
+        .padding(.horizontal, 20)
       }
       .ignoresSafeArea(.keyboard)
-      .padding(.horizontal, 20)
       .onAppear {
         viewStore.send(.onAppear)
+      }
+      .onTapGesture {
+        UIApplication.keyWindow?.endEditing(true)
       }
     }
   }
@@ -97,15 +103,21 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
         ScrollView(.vertical, showsIndicators: true) {
           VStack(spacing: 0) {
             reviewOptionMenuView
+              .id(viewStore.textViewDidEndEditingScrollId)
+              .padding(.horizontal, 20)
             reviewTextView
+              .padding(.bottom, viewStore.textViewBottomPadding)
+              .id(viewStore.textViewDidBeginEditingScrollId)
+              .padding(.horizontal, 20)
           }
         }
-        .id(viewStore.mainScrollViewScrollId)
-        .onReceive(eventPublisher) { isShowing in
-          if isShowing {
-            proxy.scrollTo(viewStore.textViewScrollId, anchor: .bottom)
+        .onReceive(keyboardEventPublisher) { isKeyboardShowing in
+          viewStore.send(.updateTextViewBottomPadding(isTextViewEditing: isKeyboardShowing))
+
+          if isKeyboardShowing {
+            proxy.scrollTo(viewStore.textViewDidBeginEditingScrollId, anchor: .bottom)
           } else {
-            proxy.scrollTo(viewStore.mainScrollViewScrollId, anchor: .bottom)
+            proxy.scrollTo(viewStore.textViewDidEndEditingScrollId, anchor: .bottom)
           }
         }
       }
@@ -132,6 +144,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
       ZStack(alignment: .topLeading) {
         VStack(alignment: .leading, spacing: 0) {
           CafeReviewTextView(text: viewStore.binding(\.$reviewText))
+            .textFieldStyle(.plain)
             .frame(height: 206)
             .overlay(
               textDescriptionView, alignment: .bottomTrailing
@@ -144,7 +157,6 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
                   lineWidth: 1
                 )
             }
-            .id(viewStore.textViewScrollId)
         }
         .padding(.top, 16)
 
