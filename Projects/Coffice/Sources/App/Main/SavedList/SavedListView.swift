@@ -74,10 +74,11 @@ struct SavedListView: View {
                         CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
                         : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
                       )
-                        .resizable()
-                        .renderingMode(.template)
-                        .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-                        .frame(width: 40, height: 40)
+                      .resizable()
+                      .renderingMode(.template)
+                      .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+                      .frame(width: 40, height: 40)
+                      .opacity(0.8)
                     }
                   }
                 Text(cafe.cafeData.name)
