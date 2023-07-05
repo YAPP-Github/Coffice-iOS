@@ -15,7 +15,7 @@ struct CafeSearchView: View {
   }
 
   @FocusState private var focusField: Field?
-  let store: StoreOf<CafeSearchViewCore>
+  let store: StoreOf<CafeSearchCore>
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -191,8 +191,8 @@ struct CafeSearchView_Previews: PreviewProvider {
   static var previews: some View {
     CafeSearchView(
       store: Store(
-        initialState: CafeSearchViewCore.State(), reducer: {
-          CafeSearchViewCore()
+        initialState: CafeSearchCore.State(), reducer: {
+          CafeSearchCore()
         }
       )
     )
