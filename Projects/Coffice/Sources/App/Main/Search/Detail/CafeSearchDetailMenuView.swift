@@ -414,7 +414,7 @@ struct CafeSearchDetailMenuView_Previews: PreviewProvider {
   static var previews: some View {
     CafeSearchDetailMenuView(
       store: .init(
-        initialState: .init(),
+        initialState: .init(cafeId: 1),
         reducer: CafeSearchDetail()
       )
     )

@@ -44,8 +44,8 @@ struct SearchCoordinator: ReducerProtocol {
         state.routes.pop()
         return .none
 
-      case .routeAction(_, action: .cafeMap(.pushToSearchDetailForTest)):
-        state.routes.push(.cafeSearchDetail(.init()))
+      case .routeAction(_, action: .cafeMap(.pushToSearchDetailForTest(let cafeId))):
+        state.routes.push(.cafeSearchDetail(.init(cafeId: cafeId)))
         return .none
 
       case .routeAction(_, action: .cafeSearchDetail(.popView)):

@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-public struct CrowdednessResponse: Equatable {
+public struct CrowdednessResponse: Hashable {
   public let weekDayType: String?
   public let dayTimeType: String?
   public let crowdednessLevel: String?

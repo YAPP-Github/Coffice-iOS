@@ -12,6 +12,7 @@ import Foundation
 struct CafeSearchDetail: ReducerProtocol {
   struct State: Equatable {
     let title = "CafeSearchDetail"
+    var cafeId: Int
     var cafe: Cafe?
 
     let subMenuTypes = SubMenuType.allCases
@@ -63,8 +64,8 @@ struct CafeSearchDetail: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return .run { send in
-          let cafe = try await placeAPIClient.fetchPlace(placeId: 1)
+        return .run { [cafeId = state.cafeId] send in
+          let cafe = try await placeAPIClient.fetchPlace(placeId: cafeId)
           await send(.placeResponse(cafe: cafe))
         } catch: { error, send in
           debugPrint(error)
