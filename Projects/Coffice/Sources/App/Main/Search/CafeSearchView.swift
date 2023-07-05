@@ -99,7 +99,7 @@ extension CafeSearchView {
     WithViewStore(store) { viewStore in
       VStack {
         ScrollView {
-          ForEach(viewStore.cafeList, id: \.self) {_ in
+          ForEach(viewStore.cafeList, id: \.self) { _ in
             Text("")
           }
         }
