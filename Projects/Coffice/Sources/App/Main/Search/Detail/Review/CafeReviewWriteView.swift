@@ -32,6 +32,7 @@ struct CafeReviewWriteView: View {
           }
         }
         .padding(.top, 24)
+        .padding(.horizontal, 20)
         .padding(.bottom, 16)
 
         HStack {
@@ -59,10 +60,12 @@ struct CafeReviewWriteView: View {
         }
         .padding(.top, 4)
         .padding(.bottom, 16)
+        .padding(.horizontal, 20)
 
         Divider()
           .background(Color(asset: CofficeAsset.Colors.grayScale3))
           .frame(height: 1)
+          .padding(.horizontal, 20)
 
         reviewFormScrollView
 
@@ -80,9 +83,9 @@ struct CafeReviewWriteView: View {
         .frame(height: 44)
         .background(Color(asset: viewStore.saveButtonBackgroundColorAsset))
         .cornerRadius(4, corners: .allCorners)
+        .padding(.horizontal, 20)
       }
       .ignoresSafeArea(.keyboard)
-      .padding(.horizontal, 20)
       .onAppear {
         viewStore.send(.onAppear)
       }
@@ -101,9 +104,11 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
           VStack(spacing: 0) {
             reviewOptionMenuView
               .id(viewStore.textViewDidEndEditingScrollId)
+              .padding(.horizontal, 20)
             reviewTextView
               .padding(.bottom, viewStore.textViewBottomPadding)
               .id(viewStore.textViewDidBeginEditingScrollId)
+              .padding(.horizontal, 20)
           }
         }
         .onReceive(keyboardEventPublisher) { isKeyboardShowing in

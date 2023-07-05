@@ -32,12 +32,12 @@ struct CafeReviewTextView: UIViewRepresentable {
   }
 
   class Coordinator: NSObject {
-    var text: Binding<String>
+    @Binding private(set) var text: String
     let maxTextLength: Int = 200
     let maxNumberOfLine: Int = 11
 
     init(_ text: Binding<String>) {
-      self.text = text
+      self._text = text
     }
   }
 }
@@ -51,7 +51,7 @@ extension CafeReviewTextView.Coordinator: UITextViewDelegate {
     }
 
     textView.text = updatedText
-    text.wrappedValue = updatedText
+    $text.wrappedValue = updatedText
   }
 
   func sizeOf(string: String, constrainedToWidth width: Double, font: UIFont) -> CGSize {
