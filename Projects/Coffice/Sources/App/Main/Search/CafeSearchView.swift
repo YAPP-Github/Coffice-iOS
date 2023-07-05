@@ -25,7 +25,6 @@ struct CafeSearchView: View {
           .frame(minHeight: 2)
           .background(Color(asset: CofficeAsset.Colors.grayScale2))
         cafeSearchBodyView
-          .transition(.move(edge: .bottom))
       }
       .onAppear {
         focusField = .keyword
@@ -36,23 +35,54 @@ struct CafeSearchView: View {
 }
 
 extension CafeSearchView {
+  var cafeSearchBodyView: some View {
+    WithViewStore(store) { viewStore in
+      switch viewStore.currentBodyType {
+      case .recentSearchListView:
+        recentSearchListView
+
+      case .searchResultEmptyView:
+        searchResultEmptyView
+
+      case .searchResultListView:
+        searchResultListView
+      }
+    }
+  }
+
   var cafeSearchHeaderView: some View {
     WithViewStore(store) { viewStore in
-      HStack(spacing: 0) {
+      HStack(alignment: .top, spacing: 0) {
         HStack(spacing: 0) {
           CofficeAsset.Asset.searchLine24px.swiftUIImage
+            .resizable()
+            .frame(width: 24, height: 24)
+            .scaledToFit()
             .padding(.trailing, 12)
-          TextField( "지하철, 카페 이름으로 검색", text: viewStore.binding(\.$searchText))
+          TextField("지하철, 카페 이름으로 검색", text: viewStore.binding(\.$searchText))
+            .applyCofficeFont(font: .subtitle1Medium)
+            .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
             .onSubmit { viewStore.send(.submitText) }
             .textFieldStyle(.plain)
             .focused($focusField, equals: .keyword)
             .keyboardType(.default)
             .lineLimit(1)
-          Button {
-          } label: {
-            CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
-              .renderingMode(.template)
-              .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale6))
+          if viewStore.searchText.isNotEmpty {
+            Button {
+              viewStore.send(.clearText)
+            } label: {
+              CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
+                .resizable()
+                .renderingMode(.template)
+                .frame(width: 18, height: 18)
+                .scaledToFit()
+                .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale6))
+            }
+            .padding(.trailing, 8)
+          } else {
+            Color.clear
+              .frame(width: 24, height: 24)
+              .padding(.trailing, 8)
           }
           Button {
             viewStore.send(.dismiss)
@@ -60,22 +90,9 @@ extension CafeSearchView {
             CofficeAsset.Asset.close24px.swiftUIImage
           }
         }
-        .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 16))
+        .padding(EdgeInsets(top: 12, leading: 20, bottom: 28, trailing: 20))
       }
       .frame(height: 64)
-    }
-  }
-
-  var cafeSearchBodyView: some View {
-    WithViewStore(store) { viewStore in
-      switch viewStore.currentBodyType {
-      case .recentSearchListView:
-        recentSearchListView
-      case .searchResultEmptyView:
-        searchResultEmptyView
-      case .searchResultListView:
-        searchResultListView
-      }
     }
   }
 
@@ -92,16 +109,28 @@ extension CafeSearchView {
   }
 
   var searchResultEmptyView: some View {
-    VStack {
+    VStack(alignment: .center, spacing: 0) {
       Spacer()
       CofficeAsset.Asset.errorWarningFill40px.swiftUIImage
+        .resizable()
+        .renderingMode(.template)
+        .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale5))
+        .frame(width: 40, height: 40)
+        .scaledToFit()
         .padding(.bottom, 12)
       VStack(spacing: 12) {
         Text("검색결과가 없어요!")
+          .applyCofficeFont(font: .header2)
+          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+          .padding(.top, 8)
         Text("다른 검색어로 다시 검색해주세요.")
+          .applyCofficeFont(font: .subtitle1Medium)
+          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale6))
+          .padding(.bottom, 8)
       }
       Spacer()
     }
+    .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
   }
 
   var recentSearchListView: some View {
@@ -118,6 +147,11 @@ extension CafeSearchView {
           VStack(spacing: 0) {
             ForEach(viewStore.state.recentSearchKeyWordList.indices, id: \.self) { index in
               listCell(viewStore.state.recentSearchKeyWordList[index].text, index)
+                .onTapGesture {
+                  viewStore.send(
+                    .tappedRecentSearchWord(viewStore.state.recentSearchKeyWordList[index].text)
+                  )
+                }
             }
           }
         }
