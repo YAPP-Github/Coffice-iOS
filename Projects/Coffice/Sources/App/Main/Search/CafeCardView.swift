@@ -16,7 +16,7 @@ struct CafeCardView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       Rectangle()
-        .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale1))
+        .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
         .cornerRadius(12, corners: [.topLeft, .topRight])
         .shadow(color: .black.opacity(0.16), radius: 5, x: 0, y: 0)
         .overlay {
@@ -27,19 +27,19 @@ struct CafeCardView: View {
                   Text(cafe.name)
                     .lineLimit(1)
                     .applyCofficeFont(font: CofficeFont.header2)
-                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+                    .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
                   Text(cafe.address?.address ?? "")
                     .lineLimit(1)
                     .applyCofficeFont(font: .body2Medium)
-                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                   Text(cafe.isOpened ?? false ? "영업중" : "영업종료")
                     .applyCofficeFont(font: .button)
-                    .foregroundColor(Color(asset: CofficeAsset.Colors.secondary1))
+                    .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
                   Text("월: 11:00 ~ 23:00")
                     .applyCofficeFont(font: .body1Medium)
-                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 }
               }
               Spacer()
@@ -68,14 +68,14 @@ struct CafeCardView: View {
             .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
             HStack {
               Text("🔌 콘센트 넉넉")
-                .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 .applyCofficeFont(font: .body2Medium)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .overlay(
                   RoundedRectangle(cornerRadius: 4)
                     .stroke(
-                      Color(asset: CofficeAsset.Colors.grayScale3),
+                      CofficeAsset.Colors.grayScale3.swiftUIColor,
                       lineWidth: 1
                     )
                 )
