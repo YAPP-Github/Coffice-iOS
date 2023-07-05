@@ -21,6 +21,9 @@ struct SavedList: ReducerProtocol {
       return cafes.filter { $0.isBookmarked.isFalse }.map { $0.cafeData.placeId }
     }
     var didFetchComplete: Bool = false
+    var shouldShowEmptyListReplaceView: Bool {
+      return didFetchComplete && cafes.isEmpty
+    }
   }
 
   enum Action: Equatable {
