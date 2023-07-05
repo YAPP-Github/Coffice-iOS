@@ -1,5 +1,5 @@
 //
-//  CafeSearchCore.swift
+//  CafeSearchListCore.swift
 //  coffice
 //
 //  Created by sehooon on 2023/06/27.
@@ -18,6 +18,7 @@ struct CafeSearchListCore: ReducerProtocol {
 
   struct State: Equatable {
     // TODO: filterButtonState 구현
+    var title: String = ""
     var viewType: ViewType = .mapView
     let filterOrders = FilterType.allCases
     var filterSheetState = FilterSheetCore.State(filterType: .cafeDetailFilter)
@@ -40,6 +41,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case backbuttonTapped
     case dismiss
     case popView
+    case titleLabelTapped
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -47,6 +49,9 @@ struct CafeSearchListCore: ReducerProtocol {
   var body: some ReducerProtocolOf<CafeSearchListCore> {
     Reduce { state, action in
       switch action {
+      case .titleLabelTapped:
+        return .none
+
       case .dismiss:
         return .none
 
