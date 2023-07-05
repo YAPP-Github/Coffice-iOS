@@ -209,18 +209,34 @@ struct FontModifier: ViewModifier {
 
   init(font: CofficeFont) {
     self.font = font
-    CofficeFontFamily.Pretendard.all.forEach { $0.register() }
+  }
+
+  func body(content: Content) -> some View {
+    content
+      .lineSpacing(font.lineSpacing)
+      .font(.custom(font.name, size: font.size))
+  }
+}
+
+struct TextFieldFontModifier: ViewModifier {
+  var font: CofficeFont
+
+  init(font: CofficeFont) {
+    self.font = font
   }
 
   func body(content: Content) -> some View {
     content
       .font(.custom(font.name, size: font.size))
-      .lineSpacing(font.lineSpacing)
   }
 }
 
 extension View {
   func applyCofficeFont(font: CofficeFont) -> some View {
     modifier(FontModifier(font: font))
+  }
+
+  func applyCofficeFontForTextField(font: CofficeFont) -> some View {
+    modifier(TextFieldFontModifier(font: font))
   }
 }

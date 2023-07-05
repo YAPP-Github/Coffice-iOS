@@ -60,13 +60,12 @@ extension CafeSearchView {
             .scaledToFit()
             .padding(.trailing, 12)
           TextField("지하철, 카페 이름으로 검색", text: viewStore.binding(\.$searchText))
-            .applyCofficeFont(font: .subtitle1Medium)
+            .applyCofficeFontForTextField(font: .subtitle1Medium)
             .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
             .onSubmit { viewStore.send(.submitText) }
             .textFieldStyle(.plain)
             .focused($focusField, equals: .keyword)
             .keyboardType(.default)
-            .lineLimit(1)
           if viewStore.searchText.isNotEmpty {
             Button {
               viewStore.send(.clearText)
