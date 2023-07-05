@@ -67,7 +67,7 @@ struct CafeMapCore: ReducerProtocol {
     var selectedCafe: Cafe?
     var isSelectedCafe: Bool = false
     var displayViewType: ViewType = .mainMapView
-    var cafeSearchState = CafeSearchViewCore.State()
+    var cafeSearchState = CafeSearchCore.State()
     var cafeSearchListState = CafeSearchListCore.State()
 
     var region: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
@@ -82,9 +82,8 @@ struct CafeMapCore: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     case cafeSearchListAction(CafeSearchListCore.Action)
     case updateDisplayType(ViewType)
-    case cafeSearchViewAction(CafeSearchViewCore.Action)
-    case requestSearchPlaceResponse(TaskResult<[Cafe]>)
-
+    case cafeSearchAction(CafeSearchCore.Action)
+    case requestSearchPlaceResponse(TaskResult<[Cafe]>, String)
     case binding(BindingAction<State>)
 
     case cameraDidChange(CLLocationCoordinate2D)
@@ -117,20 +116,36 @@ struct CafeMapCore: ReducerProtocol {
       CafeSearchListCore()
     }
 
-    Scope(state: \.cafeSearchState, action: /CafeMapCore.Action.cafeSearchViewAction) {
-        CafeSearchViewCore()
+    Scope(state: \.cafeSearchState, action: /CafeMapCore.Action.cafeSearchAction) {
+      CafeSearchCore()
     }
 
     Reduce { state, action in
       switch action {
+      case .cafeSearchAction(.dismiss):
+        switch state.cafeSearchState.previousViewType {
+        case .mapView:
+          state.displayViewType = .mainMapView
+          return .none
+        case .searchListView:
+          state.displayViewType = .resultMapView
+          return .none
+        }
+
+      case .cafeSearchListAction(.titleLabelTapped):
+        state.displayViewType = .searhView
+        state.cafeSearchState.previousViewType = .searchListView
+        return .none
+
       case .cafeSearchListAction(.dismiss):
         state.cafeList = []
         state.cafeMarkerList = []
         state.isSelectedCafe = false
+        state.cafeSearchListState.cafeList = []
         state.displayViewType = .mainMapView
         return .none
 
-      case .requestSearchPlaceResponse(let result):
+      case .requestSearchPlaceResponse(let result, let title):
         switch result {
         case .success(let cafeList):
           if cafeList.isEmpty {
@@ -138,9 +153,11 @@ struct CafeMapCore: ReducerProtocol {
             state.cafeMarkerList = []
             state.isSelectedCafe = false
             state.selectedCafe = nil
+            state.cafeSearchState.currentBodyType = .searchResultEmptyView
             return .none
           }
           state.cafeList = cafeList
+          state.cafeSearchListState.cafeList = cafeList
           state.selectedCafe = cafeList.first!
           state.isSelectedCafe = true
           state.cafeMarkerList = cafeList.map {
@@ -150,8 +167,14 @@ struct CafeMapCore: ReducerProtocol {
               longitude: $0.longitude
             )
           }
+          state.region = CLLocationCoordinate2D(
+            latitude: state.selectedCafe!.latitude,
+            longitude: state.selectedCafe!.longitude
+          )
           state.displayViewType = .resultMapView
-          return .send(.cafeSearchViewAction(.dismiss))
+          state.cafeSearchListState.title = title
+          state.cafeSearchState.previousViewType = .searchListView
+          return .send(.cafeSearchAction(.dismiss))
 
         case .failure(let error):
           state.cafeSearchState.currentBodyType = .searchResultEmptyView
@@ -159,7 +182,8 @@ struct CafeMapCore: ReducerProtocol {
           return .none
         }
 
-      case .cafeSearchViewAction(.requestSearchPlace(let searchText)):
+      case .cafeSearchAction(.requestSearchPlace(let searchText)):
+        let title = searchText
         let latitude = state.region.latitude
         let longitude = state.region.longitude
         return .run { send in
@@ -173,11 +197,12 @@ struct CafeMapCore: ReducerProtocol {
             let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
             return cafeListData.cafes
           }
-          await send(.requestSearchPlaceResponse(result))
+          await send(.requestSearchPlaceResponse(result, title))
         }
 
       case .updateDisplayType(let displayType):
         state.displayViewType = displayType
+        state.cafeSearchState.previousViewType = .mapView
         return .none
 
       case .cameraDidChange(let location):
