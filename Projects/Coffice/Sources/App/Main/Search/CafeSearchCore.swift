@@ -25,7 +25,7 @@ struct CafeSearchCore: ReducerProtocol {
 
   struct State: Equatable {
     @BindingState var searchText = ""
-    var recentSearchKeyWordList: [SearchWordResponseDTO] = []
+    var recentSearchKeywordList: [SearchWordResponseDTO] = []
     var stationList: [String] = []
     var cafeList: [String] = []
     var currentBodyType: CafeSearchViewBodyType = .searchResultListView
@@ -68,7 +68,7 @@ struct CafeSearchCore: ReducerProtocol {
         return .none
 
       case .deleteRecentSearchWord(let index):
-        let id = state.recentSearchKeyWordList[index].searchWordId
+        let id = state.recentSearchKeywordList[index].searchWordId
         return .run { send in
           try await searchWordClient.deleteRecentSearchWord(id: id)
           await send(.fetchRecentSearchWords)
@@ -79,11 +79,11 @@ struct CafeSearchCore: ReducerProtocol {
       case .recentSearchWordsResponse(let result):
         switch result {
         case .success(let recentSearchWords):
-          state.recentSearchKeyWordList = recentSearchWords
+          state.recentSearchKeywordList = recentSearchWords
           return .none
 
         case .failure(let error):
-          state.recentSearchKeyWordList = []
+          state.recentSearchKeywordList = []
           debugPrint(error)
           return .none
         }
@@ -103,7 +103,7 @@ struct CafeSearchCore: ReducerProtocol {
         state.searchText = ""
         state.cafeList.removeAll()
         state.stationList.removeAll()
-        state.recentSearchKeyWordList.removeAll()
+        state.recentSearchKeywordList.removeAll()
         return .none
 
       case .onAppear:

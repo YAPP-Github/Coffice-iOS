@@ -144,11 +144,11 @@ extension CafeSearchView {
           .frame(height: 60)
         ScrollView(.vertical, showsIndicators: false) {
           VStack(spacing: 0) {
-            ForEach(viewStore.state.recentSearchKeyWordList.indices, id: \.self) { index in
-              listCell(viewStore.state.recentSearchKeyWordList[index].text, index)
+            ForEach(viewStore.state.recentSearchKeywordList.indices, id: \.self) { index in
+              listCell(viewStore.state.recentSearchKeywordList[index].text, index)
                 .onTapGesture {
                   viewStore.send(
-                    .tappedRecentSearchWord(viewStore.state.recentSearchKeyWordList[index].text)
+                    .tappedRecentSearchWord(viewStore.state.recentSearchKeywordList[index].text)
                   )
                 }
             }
