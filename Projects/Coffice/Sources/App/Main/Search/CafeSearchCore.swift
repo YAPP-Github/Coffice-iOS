@@ -34,7 +34,7 @@ struct CafeSearchCore: ReducerProtocol {
 
   enum Action: Equatable, BindableAction {
     case dismiss
-    case onApear
+    case onAppear
     case submitText
     case fetchRecentSearchWords
     case clearText
@@ -106,7 +106,7 @@ struct CafeSearchCore: ReducerProtocol {
         state.recentSearchKeyWordList.removeAll()
         return .none
 
-      case .onApear:
+      case .onAppear:
         state.currentBodyType = .recentSearchListView
         return .send(.fetchRecentSearchWords)
 
