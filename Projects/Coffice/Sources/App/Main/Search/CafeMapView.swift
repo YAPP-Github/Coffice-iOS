@@ -20,7 +20,7 @@ struct CafeMapView: View {
             .ignoresSafeArea()
           ZStack {
             switch viewStore.displayViewType {
-            case .resultMapView:
+            case .searchResultView:
               CafeSearchListView(store: store.scope(
                 state: \.cafeSearchListState,
                 action: CafeMapCore.Action.cafeSearchListAction)
@@ -28,24 +28,23 @@ struct CafeMapView: View {
               .zIndex(1)
             case.mainMapView:
               Color.clear
-            case .searhView:
+            case .searchView:
               CafeSearchView(store: store.scope(
                 state: \.cafeSearchState,
                 action: CafeMapCore.Action.cafeSearchAction)
               )
-              .background(.white)
+              .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .zIndex(1)
             }
             VStack(alignment: .trailing, spacing: 0) {
               header
-                .onTapGesture { viewStore.send(.updateDisplayType(.searhView)) }
-                .background(.white)
+                .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
+                .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               floatingButtonView
                 .padding()
               Spacer()
-              if viewStore.state.isSelectedCafe {
+              if viewStore.isSelectedCafe {
                 CafeCardView(store: store, cafe: viewStore.state.selectedCafe!)
-                  .frame(maxWidth: .infinity)
                   .frame(height: 260)
                   .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
               }

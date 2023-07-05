@@ -20,8 +20,8 @@ extension CLLocationCoordinate2D: Equatable {
 struct CafeMapCore: ReducerProtocol {
   enum ViewType {
     case mainMapView
-    case searhView
-    case resultMapView
+    case searchView
+    case searchResultView
   }
 
   enum FilterOrder: CaseIterable {
@@ -128,12 +128,12 @@ struct CafeMapCore: ReducerProtocol {
           state.displayViewType = .mainMapView
           return .none
         case .searchListView:
-          state.displayViewType = .resultMapView
+          state.displayViewType = .searchResultView
           return .none
         }
 
       case .cafeSearchListAction(.titleLabelTapped):
-        state.displayViewType = .searhView
+        state.displayViewType = .searchView
         state.cafeSearchState.previousViewType = .searchListView
         return .none
 
@@ -171,7 +171,7 @@ struct CafeMapCore: ReducerProtocol {
             latitude: state.selectedCafe!.latitude,
             longitude: state.selectedCafe!.longitude
           )
-          state.displayViewType = .resultMapView
+          state.displayViewType = .searchResultView
           state.cafeSearchListState.title = title
           state.cafeSearchState.previousViewType = .searchListView
           return .send(.cafeSearchAction(.dismiss))
