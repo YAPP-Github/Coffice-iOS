@@ -11,7 +11,12 @@ import Foundation
 import Network
 import SwiftUI
 
-struct CafeSearchViewCore: ReducerProtocol {
+struct CafeSearchCore: ReducerProtocol {
+  enum PreviousViewType {
+    case mapView
+    case searchListView
+  }
+
   enum CafeSearchViewBodyType {
     case recentSearchListView
     case searchResultEmptyView
@@ -24,6 +29,7 @@ struct CafeSearchViewCore: ReducerProtocol {
     var stationList: [String] = []
     var cafeList: [String] = []
     var currentBodyType: CafeSearchViewBodyType = .searchResultListView
+    var previousViewType: PreviousViewType = .mapView
   }
 
   enum Action: Equatable, BindableAction {
@@ -31,10 +37,12 @@ struct CafeSearchViewCore: ReducerProtocol {
     case onApear
     case submitText
     case fetchRecentSearchWords
+    case clearText
     case requestSearchPlace(String)
     case deleteRecentSearchWord(Int)
     case binding(BindingAction<State>)
     case recentSearchWordsResponse(TaskResult<[SearchWordResponseDTO]>)
+    case tappedRecentSearchWord(String)
   }
 
   @Dependency(\.searchWordClient) private var searchWordClient
@@ -43,6 +51,22 @@ struct CafeSearchViewCore: ReducerProtocol {
     BindingReducer()
     Reduce { state, action in
       switch action {
+      case .clearText:
+        state.searchText = ""
+        state.currentBodyType = .recentSearchListView
+        return .none
+
+      case .tappedRecentSearchWord(let recentWord):
+        return .send(.requestSearchPlace(recentWord))
+
+      case .binding(\.$searchText):
+        if state.searchText == "" {
+          state.currentBodyType = .recentSearchListView
+        } else {
+          state.currentBodyType = .searchResultListView
+        }
+        return .none
+
       case .deleteRecentSearchWord(let index):
         let id = state.recentSearchKeyWordList[index].searchWordId
         return .run { send in
@@ -56,12 +80,11 @@ struct CafeSearchViewCore: ReducerProtocol {
         switch result {
         case .success(let recentSearchWords):
           state.recentSearchKeyWordList = recentSearchWords
-          print(recentSearchWords)
           return .none
 
         case .failure(let error):
           state.recentSearchKeyWordList = []
-          print(error)
+          debugPrint(error)
           return .none
         }
 
@@ -77,15 +100,14 @@ struct CafeSearchViewCore: ReducerProtocol {
         return .send(.requestSearchPlace(state.searchText))
 
       case .dismiss:
+        state.searchText = ""
         state.cafeList.removeAll()
         state.stationList.removeAll()
         state.recentSearchKeyWordList.removeAll()
-        state.searchText = ""
         return .none
 
       case .onApear:
         state.currentBodyType = .recentSearchListView
-        print("onApear")
         return .send(.fetchRecentSearchWords)
 
       default:
