@@ -25,7 +25,7 @@ struct CafeSearchCore: ReducerProtocol {
 
   struct State: Equatable {
     @BindingState var searchText = ""
-    var recentSearchKeywordList: [SearchWordResponseDTO] = []
+    var recentSearchWordList: [RecentSearchWord] = []
     var stationList: [String] = []
     var cafeList: [String] = []
     var currentBodyType: CafeSearchViewBodyType = .searchResultListView
@@ -41,7 +41,7 @@ struct CafeSearchCore: ReducerProtocol {
     case requestSearchPlace(String)
     case deleteRecentSearchWord(Int)
     case binding(BindingAction<State>)
-    case recentSearchWordsResponse(TaskResult<[SearchWordResponseDTO]>)
+    case recentSearchWordsResponse(TaskResult<[RecentSearchWord]>)
     case tappedRecentSearchWord(String)
   }
 
@@ -68,7 +68,7 @@ struct CafeSearchCore: ReducerProtocol {
         return .none
 
       case .deleteRecentSearchWord(let index):
-        let id = state.recentSearchKeywordList[index].searchWordId
+        let id = state.recentSearchWordList[index].searchWordId
         return .run { send in
           try await searchWordClient.deleteRecentSearchWord(id: id)
           await send(.fetchRecentSearchWords)
@@ -79,11 +79,11 @@ struct CafeSearchCore: ReducerProtocol {
       case .recentSearchWordsResponse(let result):
         switch result {
         case .success(let recentSearchWords):
-          state.recentSearchKeywordList = recentSearchWords
+          state.recentSearchWordList = recentSearchWords
           return .none
 
         case .failure(let error):
-          state.recentSearchKeywordList = []
+          state.recentSearchWordList = []
           debugPrint(error)
           return .none
         }
@@ -91,7 +91,14 @@ struct CafeSearchCore: ReducerProtocol {
       case .fetchRecentSearchWords:
         return .run { send in
           let result = await TaskResult {
-            try await searchWordClient.fetchRecentSearchWords()
+           let searchWordResponse = try await searchWordClient.fetchRecentSearchWords()
+            let recentSearchWords = searchWordResponse.map {
+              RecentSearchWord(
+                searchWordId: $0.searchWordId,
+                text: $0.text,
+                createdAt: $0.createdAt)
+            }
+            return recentSearchWords
           }
           return await send(.recentSearchWordsResponse(result))
         }
@@ -103,7 +110,7 @@ struct CafeSearchCore: ReducerProtocol {
         state.searchText = ""
         state.cafeList.removeAll()
         state.stationList.removeAll()
-        state.recentSearchKeywordList.removeAll()
+        state.recentSearchWordList.removeAll()
         return .none
 
       case .onAppear:
