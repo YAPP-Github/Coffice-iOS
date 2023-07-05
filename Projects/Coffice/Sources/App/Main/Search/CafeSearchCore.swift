@@ -67,8 +67,7 @@ struct CafeSearchCore: ReducerProtocol {
         }
         return .none
 
-      case .deleteRecentSearchWord(let index):
-        let id = state.recentSearchWordList[index].searchWordId
+      case .deleteRecentSearchWord(let id):
         return .run { send in
           try await searchWordClient.deleteRecentSearchWord(id: id)
           await send(.fetchRecentSearchWords)
