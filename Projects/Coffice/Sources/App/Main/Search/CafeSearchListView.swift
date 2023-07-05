@@ -18,19 +18,18 @@ struct CafeSearchListView: View {
         headerView
           .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 16))
           .background(.white)
-
         switch viewStore.viewType {
         case .listView:
           ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 0) {
               ForEach(0..<viewStore.cafeList.count, id: \.self) { index in
                 CafeSearchListCell(store: store, cafe: viewStore.state.cafeList[index])
-                  .onTapGesture { print("\(index)") }
+                  .onTapGesture { }
                   .padding(.bottom, 40)
               }
             }
+            .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
           }
-          .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
           .background(.white)
         case .mapView:
           Spacer()
@@ -65,7 +64,8 @@ extension CafeSearchListView {
               .resizable()
               .frame(width: 24, height: 24)
           }
-          Text("SearchKeyWord")
+          Text(viewStore.title)
+            .onTapGesture { viewStore.send(.titleLabelTapped) }
           Spacer()
         }
         .frame(width: 280, height: 48)
@@ -85,7 +85,7 @@ extension CafeSearchListView {
           }
         }
       }
-      .frame(width: 335, height: 48)
+      .frame(height: 48)
     }
   }
 
