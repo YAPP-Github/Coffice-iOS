@@ -104,6 +104,9 @@ struct CafeMapCore: ReducerProtocol {
 
     case bookmarkButtonTapped
     case showToast(Toast.State)
+
+    case resetPreviousResults
+    case resetResultsWhenSearchResultIsEmpty
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -122,6 +125,24 @@ struct CafeMapCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .resetResultsWhenSearchResultIsEmpty:
+        state.cafeList = []
+        state.cafeMarkerList = []
+        state.isSelectedCafe = false
+        state.selectedCafe = nil
+        state.cafeSearchState.previousViewType = .mainMapView
+        state.cafeSearchState.currentBodyType = .searchResultEmptyView
+        return .none
+
+      case .resetPreviousResults:
+        state.cafeList = []
+        state.cafeMarkerList = []
+        state.isSelectedCafe = false
+        state.selectedCafe = nil
+        state.cafeSearchListState.cafeList = []
+        state.displayViewType = .mainMapView
+        return .none
+
       case .cafeSearchAction(.dismiss):
         switch state.cafeSearchState.previousViewType {
         case .mainMapView:
@@ -140,23 +161,13 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
       case .cafeSearchListAction(.dismiss):
-        state.cafeList = []
-        state.cafeMarkerList = []
-        state.isSelectedCafe = false
-        state.cafeSearchListState.cafeList = []
-        state.displayViewType = .mainMapView
-        return .none
+        return .send(.resetPreviousResults)
 
       case .requestSearchPlaceResponse(let result, let title):
         switch result {
         case .success(let cafeList):
           if cafeList.isEmpty {
-            state.cafeList = []
-            state.cafeMarkerList = []
-            state.isSelectedCafe = false
-            state.selectedCafe = nil
-            state.cafeSearchState.currentBodyType = .searchResultEmptyView
-            return .none
+            return .send(.resetResultsWhenSearchResultIsEmpty)
           }
           state.cafeList = cafeList
           state.cafeSearchListState.cafeList = cafeList
