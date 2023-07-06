@@ -24,6 +24,7 @@ public struct SearchPlaceResponseDTO: Decodable {
   public let drinkTypes: [String]?
   public let foodTypes: [String]?
   public let restroomTypes: [String]?
+  public let archived: Bool?
   public let distance: Double?
 }
 

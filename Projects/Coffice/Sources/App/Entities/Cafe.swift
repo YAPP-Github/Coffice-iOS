@@ -28,7 +28,8 @@ struct Cafe: Hashable {
     capcityLevel: nil,
     drinkTypes: nil,
     foodTypes: nil,
-    restroomType: nil
+    restroomType: nil,
+    isBookmarked: nil
   )
 
   let placeId: Int
@@ -49,6 +50,7 @@ struct Cafe: Hashable {
   let drinkTypes: [DrinkType]?
   let foodTypes: [FoodType]?
   let restroomType: [RestroomType]?
+  var isBookmarked: Bool?
 }
 
 extension SearchPlaceResponseDTO {
@@ -71,7 +73,8 @@ extension SearchPlaceResponseDTO {
       capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
-      restroomType: restroomTypes?.compactMap { RestroomType.type(of: $0) }
+      restroomType: restroomTypes?.compactMap { RestroomType.type(of: $0) },
+      isBookmarked: archived
     )
   }
 }
@@ -96,7 +99,8 @@ extension PlaceResponseDTO {
       capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
-      restroomType: restroomTypes?.compactMap { RestroomType.type(of: $0) }
+      restroomType: restroomTypes?.compactMap { RestroomType.type(of: $0) },
+      isBookmarked: true
     )
   }
 }
