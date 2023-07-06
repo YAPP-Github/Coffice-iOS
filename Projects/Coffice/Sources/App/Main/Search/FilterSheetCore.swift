@@ -83,7 +83,7 @@ struct OptionButton: Equatable {
 
 struct FilterSheetCore: ReducerProtocol {
   struct State: Equatable {
-    var filterType: FilterType = .none
+    var filterType: CafeFilterType = .none
     // TODO: 음료, 화장실, 단체석, 푸드 구현
     var outletButtonViewState: [OptionButton] = OptionButton.OutletButton.allCases.map {
       OptionButton(id: UUID(), buttonType: .outlet($0), optionType: .outlet, buttonTitle: $0.name)
@@ -102,7 +102,7 @@ struct FilterSheetCore: ReducerProtocol {
     case dismiss
     case searchPlaces
     case searchPlacesResponse(TaskResult<Int>)
-    case resetFilter(FilterType)
+    case resetFilter(CafeFilterType)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -132,25 +132,34 @@ struct FilterSheetCore: ReducerProtocol {
   }
 }
 
-extension FilterSheetCore {
-  // 어떤 FilterSheet인지 구분하도록 FilterType 설정
-  enum FilterType: CaseIterable {
-    case outlet
-    case runningTime
-    case spaceSize
-    case cafeDetailFilter
-    case personnel
-    case none
+// 어떤 FilterSheet인지 구분하도록 FilterType 설정
+enum CafeFilterType: CaseIterable {
+  case detail
+  case runningTime
+  case outlet
+  case spaceSize
+  case personnel
+  case none
 
-    var titleName: String {
-      switch self {
-      case .outlet: return "콘센트"
-      case .runningTime: return "영업시간"
-      case .personnel: return "단체석"
-      case .spaceSize: return "공간크기"
-      case .cafeDetailFilter: return "세부필터"
-      case .none: return ""
-      }
+  var title: String {
+    switch self {
+    case .detail: return "세부필터"
+    case .runningTime: return "영업시간"
+    case .outlet: return "콘센트"
+    case .spaceSize: return "공간크기"
+    case .personnel: return "단체석"
+    case .none: return ""
+    }
+  }
+
+  var size: (width: CGFloat, height: CGFloat) {
+    switch self {
+    case .detail: return (width: 56, height: 36)
+    case .runningTime: return (width: 91, height: 36)
+    case .outlet: return (width: 79, height: 36)
+    case .spaceSize: return (width: 91, height: 36)
+    case .personnel: return (width: 69, height: 36)
+    default: return (width: 0, height: 0)
     }
   }
 }

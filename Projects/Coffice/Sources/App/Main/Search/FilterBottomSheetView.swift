@@ -41,7 +41,7 @@ struct FilterBottomSheetView: View {
               .overlay {
                 VStack(spacing: 0) {
                   switch viewStore.filterType {
-                  case .cafeDetailFilter:
+                  case .detail:
                     cafeDetailFilterView
                   case .outlet:
                     cafeOutletFilterView
@@ -73,7 +73,7 @@ extension FilterBottomSheetView {
   var headerView: some View {
     WithViewStore(store) { viewStore in
       HStack(spacing: 0) {
-        Text(viewStore.filterType.titleName)
+        Text(viewStore.filterType.title)
           .font(.headline)
         Spacer()
         Button {
