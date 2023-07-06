@@ -110,6 +110,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
               .id(viewStore.textViewDidBeginEditingScrollId)
               .padding(.horizontal, 20)
           }
+          .padding(.horizontal, 20)
         }
         .onReceive(keyboardEventPublisher) { isKeyboardShowing in
           viewStore.send(.updateTextViewBottomPadding(isTextViewEditing: isKeyboardShowing))

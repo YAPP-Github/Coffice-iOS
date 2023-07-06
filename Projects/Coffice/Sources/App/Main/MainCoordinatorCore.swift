@@ -67,29 +67,12 @@ struct MainCoordinator: ReducerProtocol {
       MyPageCoordinator()
     }
 
-    Scope(state: \State.tabBarState, action: /Action.tabBar) {
+    Scope(state: \.tabBarState, action: /Action.tabBar) {
       TabBar()
     }
 
     Reduce { state, action in
       switch action {
-      case .filterSheetAction(.buttonTapped(let index, let optionType)):
-        switch optionType {
-        case .outlet:
-          state.filterSheetState?.outletButtonViewState[index].currentTappedState.toggle()
-          return .none
-
-        case .spaceSize:
-          state.filterSheetState?.spaceSizeButtonViewState[index].currentTappedState.toggle()
-          return .none
-
-        case .drink:
-          return .none
-
-        default:
-          return .none
-        }
-
       case .filterSheetAction(.dismiss):
         state.filterSheetState = nil
         return .none
@@ -101,15 +84,13 @@ struct MainCoordinator: ReducerProtocol {
         debugPrint("selectedTab : \(itemType)")
         return .none
 
-      case .search(
-        .routeAction(_, .cafeSearchList(.presentFilterSheetView(let filterSheetState)))
-      ):
+      case .search(.routeAction(_, .cafeSearchList(.presentFilterSheetView(let filterSheetState)))):
         state.filterSheetState = filterSheetState
         return .none
 
-      case .search(
-        .routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))
-      ):
+      case
+          .search(.routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))),
+          .filterSheetAction(.presentBubbleMessageView(let bubbleMessageState)):
         state.bubbleMessageState = bubbleMessageState
         return .none
 
@@ -133,6 +114,12 @@ struct MainCoordinator: ReducerProtocol {
       default:
         return .none
       }
+    }
+    .ifLet(
+      \.filterSheetState,
+      action: /Action.filterSheetAction
+    ) {
+      CafeFilterBottomSheet()
     }
   }
 }

@@ -11,7 +11,7 @@ import SwiftUI
 
 struct CafeFilterBottomSheetView: View {
   private let store: StoreOf<CafeFilterBottomSheet>
-  @State var isApearSheet = false
+  @State var isSheetPresented = false
   @State private var height = CGFloat.zero
   let isDimmed: Bool = false
   let isDragAble: Bool = false
@@ -30,38 +30,25 @@ struct CafeFilterBottomSheetView: View {
           }
           .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
-              withAnimation { isApearSheet = true }
+              withAnimation { isSheetPresented = true }
             }
           }
 
-          if isApearSheet {
+          if isSheetPresented {
             RoundedRectangle(cornerRadius: 15)
               .transition(.move(edge: .bottom))
               .foregroundColor(.white)
               .shadow(color: .gray, radius: 5)
               .overlay {
                 VStack(spacing: 0) {
-                  switch viewStore.filterType {
-                  case .detail:
-                    cafeDetailFilterView
-                  case .outlet:
-                    cafeOutletFilterView
-                  case .spaceSize:
-                    cafeSizeFilterView
-                  case .runningTime:
-                    cafeRunningTimeFilterView
-                  case .personnel:
-                    cafePersonnelFilterView
-                  default:
-                    EmptyView()
-                  }
-                  Spacer()
+                  filterOptionButtonView
+                  resetAndSaveButtonView
                 }
                 .frame(width: proxy.size.width, height: proxy.size.height)
               }
               .onAppear { height = proxy.size.height }
-              // TODO: Filter별 높이 조정
-              .offset(y: height - 200)
+              // TODO: Filter 별 높이 조정
+              .offset(y: height - viewStore.bottomSheetHeight)
           }
         }
         .frame(width: proxy.size.width, height: proxy.size.height)
@@ -75,15 +62,86 @@ extension CafeFilterBottomSheetView {
     WithViewStore(store) { viewStore in
       HStack(spacing: 0) {
         Text(viewStore.filterType.title)
-          .font(.headline)
+          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+          .applyCofficeFont(font: .header1)
+          .frame(height: 32)
+          .padding(.top, 28)
+          .padding(.bottom, 20)
+        Button {
+          viewStore.send(.infoGuideButtonTapped)
+        } label: {
+          CofficeAsset.Asset.informationLine18px.swiftUIImage
+            .renderingMode(.template)
+            .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+            .padding(.top, 35)
+            .padding(.leading, 8)
+            .padding(.bottom, 27)
+        }
+
         Spacer()
+
         Button {
           viewStore.send(.dismiss)
         } label: {
           Image(asset: CofficeAsset.Asset.close40px)
+            .padding(.top, 24)
+            .padding(.bottom, 16)
         }
       }
-      .frame(height: 85)
+      .frame(height: 80)
+      .padding(.horizontal, 20)
+    }
+  }
+
+  var filterOptionButtonView: some View {
+    WithViewStore(store) { viewStore in
+      headerView
+      ScrollView(.vertical) {
+        VStack(alignment: .leading, spacing: 0) {
+          ForEach(viewStore.mainViewState.optionButtonCellViewStates.indices, id: \.self) { index in
+            let cellViewState = viewStore.mainViewState.optionButtonCellViewStates[safe: index]
+            let viewStates = cellViewState?.viewStates ?? []
+            if viewStore.shouldShowSubSectionView {
+              Text(cellViewState?.sectionTtile ?? "-")
+                .applyCofficeFont(font: .header3)
+                .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 20)
+                .padding(.bottom, 16)
+            }
+
+            if viewStates.isNotEmpty {
+              HStack(spacing: 8) {
+                ForEach(viewStates) { viewState in
+                  let option = viewState.option
+                  Button {
+                    viewStore.send(.optionButtonTapped(collectionIndex: index, optionType: option))
+                  } label: {
+                    Text(viewState.buttonTitle)
+                      .applyCofficeFont(font: .body1Medium)
+                      .foregroundColor(viewState.foregroundColor.swiftUIColor)
+                      .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                      .cornerRadius(16)
+                      .background(viewState.backgroundColor.swiftUIColor.clipShape(Capsule()))
+                      .overlay {
+                        RoundedRectangle(cornerRadius: 18)
+                          .stroke(viewState.borderColor.swiftUIColor, lineWidth: 1)
+                      }
+                      .frame(height: 36)
+                  }
+                }
+              }
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .frame(height: 36)
+              .padding(.bottom, 36)
+            } else {
+              EmptyView()
+            }
+          }
+        }
+        .padding(.leading, 20)
+      }
+      .padding(.top, 20)
     }
   }
 
@@ -122,30 +180,9 @@ extension CafeFilterBottomSheetView {
         }
         Spacer()
       }
+      .padding(.top, 20)
     }
   }
-
-  var cafeOutletFilterView: some View {
-    WithViewStore(store) { viewStore in
-      headerView
-      HStack {
-        ForEach(viewStore.outletButtonViewState.indices, id: \.self) { index in
-          Button {
-            viewStore.send(.buttonTapped(index: index, optionType: .outlet))
-          } label: {
-            Text(viewStore.outletButtonViewState[index].buttonTitle)
-          }
-          .background(Color(asset: viewStore.outletButtonViewState[index].backgroundColor))
-        }
-      }
-    }
-  }
-
-  // TODO: FilterView 구성
-  var cafeSizeFilterView: some View { headerView }
-  var cafeRunningTimeFilterView: some View { headerView }
-  var cafePersonnelFilterView: some View { headerView }
-  var cafeDetailFilterView: some View { headerView }
 }
 
 struct CafeFilterBottomSheetView_Previews: PreviewProvider {

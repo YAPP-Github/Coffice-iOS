@@ -85,7 +85,7 @@ struct CafeSearchListCore: ReducerProtocol {
         }
 
       case .updateState(let bottomSheetState):
-        state.filterSheetState = bottomSheetState
+        // TODO: 필터 업데이트 이벤트 구현 필요
         return .none
 
         // TODO: 무한스크롤 추후 수정 예정
@@ -107,8 +107,7 @@ struct CafeSearchListCore: ReducerProtocol {
         return .none
 
       case .filterButtonTapped(let filterType):
-        state.filterSheetState.filterType = filterType
-        return EffectTask(value: .presentFilterSheetView(state.filterSheetState))
+        return EffectTask(value: .presentFilterSheetView(.init(filterType: filterType)))
 
       default:
         return .none
