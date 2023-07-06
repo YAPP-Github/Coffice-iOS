@@ -28,6 +28,17 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     let filterType: CafeFilterType
     var mainViewState: CafeFilterBottomSheetViewState = .init(optionButtonCellViewStates: [])
 
+    let headerViewHeight: CGFloat = 80
+    let footerViewHeight: CGFloat = 84
+    var scrollViewHeight: CGFloat {
+      switch filterType {
+      case .detail:
+        return 435
+      default:
+        return 76
+      }
+    }
+
     init(filterType: CafeFilterType) {
       self.filterType = filterType
 
@@ -117,7 +128,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     }
 
     var bottomSheetHeight: CGFloat {
-      filterType == .detail ? 660 : 240
+      headerViewHeight + scrollViewHeight + footerViewHeight
     }
   }
 

@@ -41,13 +41,13 @@ struct CafeFilterBottomSheetView: View {
               .shadow(color: .gray, radius: 5)
               .overlay {
                 VStack(spacing: 0) {
-                  filterOptionButtonView
-                  resetAndSaveButtonView
+                  filterOptionButtonContainerView
+                  footerView
+                  Spacer()
                 }
                 .frame(width: proxy.size.width, height: proxy.size.height)
               }
               .onAppear { height = proxy.size.height }
-              // TODO: Filter 별 높이 조정
               .offset(y: height - viewStore.bottomSheetHeight)
           }
         }
@@ -83,7 +83,7 @@ extension CafeFilterBottomSheetView {
         Button {
           viewStore.send(.dismiss)
         } label: {
-          Image(asset: CofficeAsset.Asset.close40px)
+          CofficeAsset.Asset.close40px.swiftUIImage
             .padding(.top, 24)
             .padding(.bottom, 16)
         }
@@ -93,9 +93,17 @@ extension CafeFilterBottomSheetView {
     }
   }
 
-  var filterOptionButtonView: some View {
+  var filterOptionButtonContainerView: some View {
     WithViewStore(store) { viewStore in
-      headerView
+      VStack(spacing: 0) {
+        headerView
+        mainScrollView
+      }
+    }
+  }
+
+  var mainScrollView: some View {
+    WithViewStore(store) { viewStore in
       ScrollView(.vertical) {
         VStack(alignment: .leading, spacing: 0) {
           ForEach(viewStore.mainViewState.optionButtonCellViewStates.indices, id: \.self) { index in
@@ -141,46 +149,45 @@ extension CafeFilterBottomSheetView {
         }
         .padding(.leading, 20)
       }
+      .frame(height: viewStore.scrollViewHeight)
       .padding(.top, 20)
     }
   }
 
-  var resetAndSaveButtonView: some View {
+  var footerView: some View {
     WithViewStore(store) { viewStore in
-      HStack {
+      HStack(alignment: .center, spacing: 12) {
         Button {
-
+          // TODO: 초기화 버튼 이벤트 구현 필요
         } label: {
           Text("초기화")
-            .font(.subheadline)
-            .foregroundColor(.black)
-            .lineLimit(1)
-            .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
+            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+            .applyCofficeFont(font: .button)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(height: 44)
             .overlay {
-              RoundedRectangle(cornerRadius: 20)
-                .stroke(.gray, lineWidth: 1)
+              RoundedRectangle(cornerRadius: 4)
+                .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
             }
-            .frame(height: 60)
         }
-        Spacer()
-          .frame(width: 150)
-        Button {
 
+        Button {
+          // TODO: 저장 버튼 이벤트 구현 필요
         } label: {
-          Text("저장")
-            .font(.subheadline)
-            .foregroundColor(.black)
-            .lineLimit(1)
-            .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
-            .overlay {
-              RoundedRectangle(cornerRadius: 20)
-                .stroke(.gray, lineWidth: 1)
-            }
-            .frame(height: 60)
+          Text("저장하기")
+            .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+            .applyCofficeFont(font: .button)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(height: 44)
+            .background(
+              CofficeAsset.Colors.grayScale9.swiftUIColor
+                .frame(height: 44)
+                .cornerRadius(4, corners: .allCorners)
+            )
         }
-        Spacer()
       }
-      .padding(.top, 20)
+      .frame(height: 84)
+      .padding(.horizontal, 20)
     }
   }
 }
