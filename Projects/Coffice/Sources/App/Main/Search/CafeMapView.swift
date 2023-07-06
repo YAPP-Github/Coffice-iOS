@@ -26,6 +26,7 @@ struct CafeMapView: View {
                 action: CafeMapCore.Action.cafeSearchListAction)
               )
               .zIndex(1)
+
             case.mainMapView:
               Group {
                 if viewStore.selectedCafe != nil {
@@ -39,6 +40,7 @@ struct CafeMapView: View {
                   EmptyView()
                 }
               }
+
             case .searchView:
               CafeSearchView(store: store.scope(
                 state: \.cafeSearchState,
@@ -55,11 +57,9 @@ struct CafeMapView: View {
                 .padding()
               Spacer()
               if viewStore.isSelectedCafe {
-                if let cafe = viewStore.selectedCafe {
-                  CafeCardView(store: store)
-                    .frame(height: 260)
-                    .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
-                }
+                CafeCardView(store: store)
+                  .frame(height: 260)
+                  .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
               }
             }
           }

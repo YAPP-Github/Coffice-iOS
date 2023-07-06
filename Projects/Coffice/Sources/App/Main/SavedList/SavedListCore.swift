@@ -69,7 +69,7 @@ struct SavedList: ReducerProtocol {
           debugPrint(error)
         }
 
-      case .pushCafeDetail(let cafeId):
+      default:
         return .none
       }
     }

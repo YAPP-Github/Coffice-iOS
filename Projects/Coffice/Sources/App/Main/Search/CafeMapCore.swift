@@ -100,7 +100,7 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: ViewType
     case updateDisplayType(ViewType)
 
-    // MARK: sub-Core Actions
+    // MARK: Sub-Core Actions
     case cafeSearchListAction(CafeSearchListCore.Action)
     case cafeSearchAction(CafeSearchCore.Action)
 
@@ -136,7 +136,7 @@ struct CafeMapCore: ReducerProtocol {
   @Dependency(\.locationManager) private var locationManager
   @Dependency(\.bookmarkClient) private var bookmarkClient
 
-  // MARK: - body
+  // MARK: - Body
   var body: some ReducerProtocolOf<Self> {
     BindingReducer()
 
@@ -156,7 +156,7 @@ struct CafeMapCore: ReducerProtocol {
         state.cafeSearchState.previousViewType = .mainMapView
         return .none
 
-        // MARK: sub-Core Actions
+        // MARK: Sub-Core Actions
       case .cafeSearchAction(.dismiss):
         switch state.cafeSearchState.previousViewType {
         case .mainMapView:
