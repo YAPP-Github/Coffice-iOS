@@ -31,7 +31,7 @@ struct MainCoordinator: ReducerProtocol {
       tabBarState.selectedTab
     }
 
-    var filterSheetState: FilterSheetCore.State?
+    var filterSheetState: CafeFilterBottomSheet.State?
     var bubbleMessageState: BubbleMessage.State?
     var toastMessageState: Toast.State?
   }
@@ -42,7 +42,7 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
-    case filterSheetAction(FilterSheetCore.Action)
+    case filterSheetAction(CafeFilterBottomSheet.Action)
     case bubbleMessage(BubbleMessage.Action)
     case toastMessage(Toast.Action)
     case dismissToastMessageView

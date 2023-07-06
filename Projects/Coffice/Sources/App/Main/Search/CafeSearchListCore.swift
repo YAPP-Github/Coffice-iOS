@@ -19,7 +19,7 @@ struct CafeSearchListCore: ReducerProtocol {
   struct State: Equatable {
     // TODO: filterButtonState 구현
     let filterOrders = CafeFilterType.allCases
-    var filterSheetState = FilterSheetCore.State(filterType: .detail)
+    var filterSheetState = CafeFilterBottomSheet.State(filterType: .detail)
     var title: String = ""
     var viewType: ViewType = .mapView
     var cafeList: [Cafe] = []
@@ -33,8 +33,8 @@ struct CafeSearchListCore: ReducerProtocol {
   enum Action: Equatable {
     case updateViewType(ViewType)
     case onAppear
-    case updateState(FilterSheetCore.State)
-    case presentFilterSheetView(FilterSheetCore.State)
+    case updateState(CafeFilterBottomSheet.State)
+    case presentFilterSheetView(CafeFilterBottomSheet.State)
     case searchPlaceResponse(TaskResult<[Cafe]>)
     case filterButtonTapped(CafeFilterType)
     case scrollAndLoadData(Int)

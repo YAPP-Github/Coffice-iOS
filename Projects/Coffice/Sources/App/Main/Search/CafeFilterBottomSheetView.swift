@@ -1,5 +1,5 @@
 //
-//  CustomBottomSheet.swift
+//  CafeFilterBottomSheetView.swift
 //  coffice
 //
 //  Created by sehooon on 2023/06/27.
@@ -9,15 +9,15 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct FilterBottomSheetView: View {
+struct CafeFilterBottomSheetView: View {
+  private let store: StoreOf<CafeFilterBottomSheet>
+  @State var isApearSheet = false
+  @State private var height = CGFloat.zero
   let isDimmed: Bool = false
   let isDragAble: Bool = false
   let delayTime = 0.000001
-  private let store: StoreOf<FilterSheetCore>
-  @State var isApearSheet = false
-  @State private var height = CGFloat.zero
 
-  init(store: StoreOf<FilterSheetCore>) {
+  init(store: StoreOf<CafeFilterBottomSheet>) {
     self.store = store
   }
 
@@ -25,14 +25,15 @@ struct FilterBottomSheetView: View {
     WithViewStore(store) { viewStore in
       GeometryReader { proxy in
         ZStack {
-          Color.black.opacity(0.5).ignoresSafeArea().onTapGesture {
+          Color.black.opacity(0.4).ignoresSafeArea().onTapGesture {
             viewStore.send(.dismiss)
           }
           .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
               withAnimation { isApearSheet = true }
-              }
             }
+          }
+
           if isApearSheet {
             RoundedRectangle(cornerRadius: 15)
               .transition(.move(edge: .bottom))
@@ -69,7 +70,7 @@ struct FilterBottomSheetView: View {
   }
 }
 
-extension FilterBottomSheetView {
+extension CafeFilterBottomSheetView {
   var headerView: some View {
     WithViewStore(store) { viewStore in
       HStack(spacing: 0) {
@@ -130,7 +131,7 @@ extension FilterBottomSheetView {
       HStack {
         ForEach(viewStore.outletButtonViewState.indices, id: \.self) { index in
           Button {
-            viewStore.send(.buttonTapped(index, .outlet))
+            viewStore.send(.buttonTapped(index: index, optionType: .outlet))
           } label: {
             Text(viewStore.outletButtonViewState[index].buttonTitle)
           }
@@ -139,9 +140,21 @@ extension FilterBottomSheetView {
       }
     }
   }
+
   // TODO: FilterView 구성
   var cafeSizeFilterView: some View { headerView }
   var cafeRunningTimeFilterView: some View { headerView }
   var cafePersonnelFilterView: some View { headerView }
   var cafeDetailFilterView: some View { headerView }
+}
+
+struct CafeFilterBottomSheetView_Previews: PreviewProvider {
+  static var previews: some View {
+    CafeFilterBottomSheetView(
+      store: .init(
+        initialState: .mock,
+        reducer: CafeFilterBottomSheet()
+      )
+    )
+  }
 }
