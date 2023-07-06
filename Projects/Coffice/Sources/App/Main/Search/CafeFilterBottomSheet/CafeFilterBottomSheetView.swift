@@ -40,7 +40,7 @@ struct CafeFilterBottomSheetView: View {
           if isSheetPresented {
             RoundedRectangle(cornerRadius: 15)
               .transition(.move(edge: .bottom))
-              .foregroundColor(.white)
+              .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .shadow(color: .gray, radius: 5)
               .overlay {
                 VStack(spacing: 0) {
