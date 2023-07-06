@@ -70,7 +70,7 @@ struct SavedListView: View {
                       viewStore.send(.bookmarkButtonTapped(cafe: cafe))
                     } label: {
                       (
-                        cafe.isBookmarked ?? false
+                        cafe.isBookmarked
                         ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
                         : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
                       )
