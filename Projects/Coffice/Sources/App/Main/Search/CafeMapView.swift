@@ -27,7 +27,18 @@ struct CafeMapView: View {
               )
               .zIndex(1)
             case.mainMapView:
-              Color.clear
+              Group {
+                if let selectedCafe = viewStore.selectedCafe {
+                  VStack {
+                  Spacer()
+                  CafeCardView(store: store, cafe: selectedCafe)
+                    .frame(width: geometry.size.width, height: 260)
+                    .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+                  }
+                } else {
+                  EmptyView()
+                }
+              }
             case .searchView:
               CafeSearchView(store: store.scope(
                 state: \.cafeSearchState,

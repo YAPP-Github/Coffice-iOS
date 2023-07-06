@@ -75,12 +75,12 @@ struct CafeMapCore: ReducerProtocol {
     var cafeSearchState = CafeSearchCore.State()
     var cafeSearchListState = CafeSearchListCore.State()
 
-    var region: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
-    var currentCameraPosition: CLLocationCoordinate2D?
-    var cafeMarkerList: [CafeMarkerData] = []
+    var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
+    var cafeMarkerList: [Cafe] = []
     var cafeList: [Cafe] = []
     let filterOrders = FilterOrder.allCases
     let floatingButtons = FloatingButton.allCases
+    var isMovingToCurrentPosition = false
     @BindingState var searchText = ""
   }
 
@@ -91,12 +91,13 @@ struct CafeMapCore: ReducerProtocol {
     case requestSearchPlaceResponse(TaskResult<[Cafe]>, String)
     case binding(BindingAction<State>)
 
-    case cameraDidChange(CLLocationCoordinate2D)
-
     case floatingButtonTapped(FloatingButton)
     case updateCurrentLocation
     case updateCafeMarkers
-    case cafeListResponse(TaskResult<[CafeMarkerData]>)
+    case cafeListResponse(TaskResult<[Cafe]>)
+    case markerTapped(cafe: Cafe)
+    case mapViewTapped
+    case movedToCurrentPosition
 
     case filterOrderMenuClicked(FilterOrder)
     case pushToSearchDetailForTest(cafeId: Int)
@@ -175,14 +176,7 @@ struct CafeMapCore: ReducerProtocol {
           guard let cafe = cafeList.first else { return .none }
           state.selectedCafe = cafe
           state.isSelectedCafe = true
-          state.cafeMarkerList = cafeList.map {
-            CafeMarkerData(
-              cafeName: $0.name,
-              latitude: $0.latitude,
-              longitude: $0.longitude
-            )
-          }
-          state.region = CLLocationCoordinate2D(
+          state.currentCameraPosition = CLLocationCoordinate2D(
             latitude: cafe.latitude,
             longitude: cafe.longitude
           )
@@ -199,8 +193,8 @@ struct CafeMapCore: ReducerProtocol {
 
       case .cafeSearchAction(.requestSearchPlace(let searchText)):
         let title = searchText
-        let latitude = state.region.latitude
-        let longitude = state.region.longitude
+        let latitude = state.currentCameraPosition.latitude
+        let longitude = state.currentCameraPosition.longitude
         return .run { send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
@@ -220,13 +214,10 @@ struct CafeMapCore: ReducerProtocol {
         state.cafeSearchState.previousViewType = .mainMapView
         return .none
 
-      case .cameraDidChange(let location):
-        state.region = location
-        return .none
-
       case .floatingButtonTapped(let buttonType):
         switch buttonType {
         case .currentLocationButton:
+          state.isMovingToCurrentPosition = true
           return .send(.updateCurrentLocation)
         case .refreshButton:
           return .send(.updateCafeMarkers)
@@ -235,7 +226,7 @@ struct CafeMapCore: ReducerProtocol {
         }
 
       case .updateCurrentLocation:
-        state.region = locationManager.fetchCurrentLocation()
+        state.currentCameraPosition = locationManager.fetchCurrentLocation()
         return .none
 
       case .updateCafeMarkers:
@@ -248,13 +239,7 @@ struct CafeMapCore: ReducerProtocol {
             )
 
             let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
-            return cafeListData.cafes.map {
-              CafeMarkerData(
-                cafeName: $0.name,
-                latitude: $0.latitude,
-                longitude: $0.longitude
-              )
-            }
+            return cafeListData.cafes
           }
           await send(.cafeListResponse(result))
         }
@@ -268,6 +253,18 @@ struct CafeMapCore: ReducerProtocol {
           debugPrint(error)
           return .none
         }
+
+      case .markerTapped(let cafe):
+        state.selectedCafe = cafe
+        return .none
+
+      case .mapViewTapped:
+        state.selectedCafe = nil
+        return .none
+
+      case .movedToCurrentPosition:
+        state.isMovingToCurrentPosition = false
+        return .none
 
       case .requestLocationAuthorization:
         locationManager.requestAuthorization()
