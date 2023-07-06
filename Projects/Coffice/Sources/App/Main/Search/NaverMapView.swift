@@ -25,20 +25,40 @@ final class NaverMapViewStorage {
   var selectedMarker: MapMarker? {
     didSet {
       if let oldValue {
-        oldValue.width = 24
-        oldValue.height = 24
-        oldValue.iconImage = NMFOverlayImage(image: NaverMapView.storage.unselectedIconImage)
+        if oldValue.cafe.isBookmarked == true {
+          oldValue.width = 36
+          oldValue.height = 36
+          oldValue.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkUnselectedIconImage)
+        } else {
+          oldValue.width = 24
+          oldValue.height = 24
+          oldValue.iconImage = NMFOverlayImage(image: NaverMapView.storage.unselectedIconImage)
+        }
       }
       if let selectedMarker {
-        selectedMarker.width = 36
-        selectedMarker.height = 47
-        selectedMarker.iconImage = NMFOverlayImage(image: NaverMapView.storage.selectedIconImage)
+        if selectedMarker.cafe.isBookmarked == true {
+          selectedMarker.width = 48
+          selectedMarker.height = 52
+          selectedMarker.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkSelectedIconImage)
+        } else {
+          selectedMarker.width = 36
+          selectedMarker.height = 47
+          selectedMarker.iconImage = NMFOverlayImage(image: NaverMapView.storage.selectedIconImage)
+        }
       }
     }
   }
   var cafes: [Cafe] = []
   let unselectedIconImage = CofficeAsset.Asset.markerUnselected24px.image
   let selectedIconImage = CofficeAsset.Asset.markerSelected3647px.image
+  let bookmarkUnselectedIconImage = CofficeAsset.Asset.bookmarkUnselected36px.image
+  let bookmarkSelectedIconImage = CofficeAsset.Asset.bookmarkSelected4852px.image
+
+  func resetValues() {
+    markers.removeAll()
+    selectedMarker = nil
+    cafes.removeAll()
+  }
 }
 
 extension NaverMapView: UIViewRepresentable {
@@ -71,7 +91,7 @@ extension NaverMapView: UIViewRepresentable {
       }
     }
 
-    if NaverMapView.storage.cafes != viewStore.state.cafeMarkerList {
+    if viewStore.shouldUpdateMarkers {
       NaverMapView.storage.cafes = viewStore.state.cafeMarkerList
       DispatchQueue.main.async {
         addMarker(naverMapView: uiView, cafeList: viewStore.cafeMarkerList, coordinator: context.coordinator)
@@ -96,10 +116,13 @@ extension NaverMapView {
   func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], coordinator: Coordinator) {
     removeAllMarkers()
     for cafe in cafeList {
+      let iconImage = cafe.isBookmarked ?? false
+      ? NaverMapView.storage.bookmarkUnselectedIconImage
+      : NaverMapView.storage.unselectedIconImage
       let marker = MapMarker(
         cafe: cafe,
         position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude),
-        iconImage: NMFOverlayImage(image: NaverMapView.storage.unselectedIconImage)
+        iconImage: NMFOverlayImage(image: iconImage)
       )
 
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
@@ -116,6 +139,9 @@ extension NaverMapView {
       }
       marker.mapView = naverMapView.mapView
       NaverMapView.storage.markers.append(marker)
+    }
+    DispatchQueue.main.async {
+      viewStore.send(.updatedMarkers)
     }
   }
 
@@ -141,11 +167,6 @@ class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate,
 
 extension Coordinator: NMFMapViewTouchDelegate {
   func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
-    if let marker = NaverMapView.storage.selectedMarker {
-      marker.width = 24
-      marker.height = 24
-      marker.iconImage = NMFOverlayImage(image: NaverMapView.storage.unselectedIconImage)
-    }
     NaverMapView.storage.selectedMarker = nil
     DispatchQueue.main.async { [weak self] in
       self?.target.viewStore.send(.mapViewTapped)
@@ -159,15 +180,19 @@ final class MapMarker: NMFMarker {
   init(
     cafe: Cafe,
     position: NMGLatLng,
-    iconImage: NMFOverlayImage,
-    width: CGFloat = 24,
-    height: CGFloat = 24
+    iconImage: NMFOverlayImage
   ) {
     self.cafe = cafe
     super.init()
     self.position = position
-    self.iconImage = iconImage
-    self.width = width
-    self.height = height
+    if cafe.isBookmarked == true {
+      self.width = 36
+      self.height = 36
+      self.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkUnselectedIconImage)
+    } else {
+      self.width = 24
+      self.height = 24
+      self.iconImage = NMFOverlayImage(image: NaverMapView.storage.unselectedIconImage)
+    }
   }
 }

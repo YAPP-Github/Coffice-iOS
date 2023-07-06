@@ -89,6 +89,10 @@ struct CafeMapCore: ReducerProtocol {
     var cafeList: [Cafe] = []
     let floatingButtons = FloatingButton.allCases
     var isMovingToCurrentPosition = false
+    var isUpdatingMarkers = false
+    var shouldUpdateMarkers: Bool {
+      return cafeMarkerList.isNotEmpty && isUpdatingMarkers
+    }
   }
 
   // MARK: - Action
@@ -108,6 +112,7 @@ struct CafeMapCore: ReducerProtocol {
     case markerTapped(cafe: Cafe)
     case mapViewTapped
     case movedToCurrentPosition
+    case updatedMarkers
 
     // MARK: Search
     case filterOrderMenuClicked(FilterOrder)
@@ -120,14 +125,16 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: Common
     case binding(BindingAction<State>)
     case requestLocationAuthorization
-    case bookmarkButtonTapped
+    case bookmarkButtonTapped(cafe: Cafe)
     case showToast(Toast.State)
     case resetResult(ResetState)
+    case onDisappear
   }
 
   // MARK: - Dependencies
   @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.locationManager) private var locationManager
+  @Dependency(\.bookmarkClient) private var bookmarkClient
 
   // MARK: - body
   var body: some ReducerProtocolOf<Self> {
@@ -143,13 +150,13 @@ struct CafeMapCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      // MARK: ViewType
+        // MARK: ViewType
       case .updateDisplayType(let displayType):
         state.displayViewType = displayType
         state.cafeSearchState.previousViewType = .mainMapView
         return .none
 
-      // MARK: sub-Core Actions
+        // MARK: sub-Core Actions
       case .cafeSearchAction(.dismiss):
         switch state.cafeSearchState.previousViewType {
         case .mainMapView:
@@ -188,7 +195,7 @@ struct CafeMapCore: ReducerProtocol {
           await send(.requestSearchPlaceResponse(result, title))
         }
 
-      // MARK: NaverMapView
+        // MARK: NaverMapView
       case .floatingButtonTapped(let buttonType):
         switch buttonType {
         case .currentLocationButton:
@@ -205,6 +212,7 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
       case .updateCafeMarkers:
+        state.isUpdatingMarkers = true
         return .run { send in
           let result = await TaskResult {
             // TODO: Sample Value를 실제 요청값으로 바꾸기
@@ -242,7 +250,11 @@ struct CafeMapCore: ReducerProtocol {
         state.isMovingToCurrentPosition = false
         return .none
 
-      // MARK: Search
+      case .updatedMarkers:
+        state.isUpdatingMarkers = false
+        return .none
+
+        // MARK: Search
       case .filterOrderMenuClicked(let filterOrder):
         switch filterOrder {
         case .searchList:
@@ -279,7 +291,7 @@ struct CafeMapCore: ReducerProtocol {
           return .none
         }
 
-      // MARK: Common
+        // MARK: Common
       case .resetResult(let resetState):
         state.cafeList = []
         state.cafeMarkerList = []
@@ -299,8 +311,27 @@ struct CafeMapCore: ReducerProtocol {
         locationManager.requestAuthorization()
         return .none
 
-      case .bookmarkButtonTapped:
-        return EffectTask(value: .showToast(.mock))
+      case .bookmarkButtonTapped(let cafe):
+        state.selectedCafe?.isBookmarked?.toggle()
+        return .run { [isBookMarked = state.selectedCafe?.isBookmarked] send in
+          try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+          await send(
+            .showToast(
+              Toast.State(
+                title: isBookMarked ?? false ? "장소가 저장되었습니다." : "장소가 저장해제되었습니다.",
+                image: CofficeAsset.Asset.checkboxCircleFill18px,
+                config: Config.default
+              )
+            )
+          )
+        } catch: { error, send in
+          debugPrint(error)
+        }
+
+      case .onDisappear:
+        // TODO: MapView쪽 리셋 작업 필요
+        state.selectedCafe = nil
+        return .none
 
       default:
         return .none

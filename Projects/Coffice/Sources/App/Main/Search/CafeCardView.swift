@@ -11,7 +11,6 @@ import SwiftUI
 
 struct CafeCardView: View {
   let store: StoreOf<CafeMapCore>
-  let cafe: Cafe
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -24,17 +23,17 @@ struct CafeCardView: View {
             HStack(alignment: .top, spacing: 0) {
               VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                  Text(cafe.name)
+                  Text(viewStore.selectedCafe?.name ?? "")
                     .lineLimit(1)
                     .applyCofficeFont(font: CofficeFont.header2)
                     .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-                  Text(cafe.address?.address ?? "")
+                  Text(viewStore.selectedCafe?.address?.address ?? "")
                     .lineLimit(1)
                     .applyCofficeFont(font: .body2Medium)
                     .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                  Text(cafe.isOpened ?? false ? "영업중" : "영업종료")
+                  Text(viewStore.selectedCafe?.isOpened ?? false ? "영업중" : "영업종료")
                     .applyCofficeFont(font: .button)
                     .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
                   Text("월: 11:00 ~ 23:00")
@@ -44,12 +43,19 @@ struct CafeCardView: View {
               }
               Spacer()
               Button {
-                // TODO: 북마크 기능 추가
+                viewStore.send(.bookmarkButtonTapped(cafe: viewStore.selectedCafe ?? .dummy))
               } label: {
-                CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
-                  .resizable()
-                  .scaledToFill()
-                  .frame(width: 40, height: 40)
+                if viewStore.selectedCafe?.isBookmarked == true {
+                  CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 40, height: 40)
+                } else {
+                  CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 40, height: 40)
+                }
               }
             }
             .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
@@ -94,8 +100,7 @@ struct CafeCardView_Previews: PreviewProvider {
       store: .init(
         initialState: .init(),
         reducer: CafeMapCore()
-      ),
-      cafe: Cafe.dummy
+      )
     )
   }
 }

@@ -28,12 +28,12 @@ struct CafeMapView: View {
               .zIndex(1)
             case.mainMapView:
               Group {
-                if let selectedCafe = viewStore.selectedCafe {
+                if viewStore.selectedCafe != nil {
                   VStack {
-                  Spacer()
-                  CafeCardView(store: store, cafe: selectedCafe)
-                    .frame(width: geometry.size.width, height: 260)
-                    .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+                    Spacer()
+                    CafeCardView(store: store)
+                      .frame(width: geometry.size.width, height: 260)
+                      .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
                   }
                 } else {
                   EmptyView()
@@ -56,7 +56,7 @@ struct CafeMapView: View {
               Spacer()
               if viewStore.isSelectedCafe {
                 if let cafe = viewStore.selectedCafe {
-                  CafeCardView(store: store, cafe: cafe)
+                  CafeCardView(store: store)
                     .frame(height: 260)
                     .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
                 }
@@ -70,6 +70,9 @@ struct CafeMapView: View {
         }
       }
       .ignoresSafeArea(.keyboard)
+      .onDisappear {
+        viewStore.send(.onDisappear)
+      }
     }
   }
 }
