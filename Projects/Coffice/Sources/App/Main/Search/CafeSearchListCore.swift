@@ -18,8 +18,8 @@ struct CafeSearchListCore: ReducerProtocol {
 
   struct State: Equatable {
     // TODO: filterButtonState 구현
-    let filterOrders = CafeFilterType.allCases
-    var filterSheetState = CafeFilterBottomSheet.State(filterType: .detail)
+    let filterOrders = CafeFilter.BottomSheetType.allCases
+    var filterSheetState: CafeFilterBottomSheet.State = .mock
     var title: String = ""
     var viewType: ViewType = .mapView
     var cafeList: [Cafe] = []
@@ -36,7 +36,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case updateState(CafeFilterBottomSheet.State)
     case presentFilterSheetView(CafeFilterBottomSheet.State)
     case searchPlaceResponse(TaskResult<[Cafe]>)
-    case filterButtonTapped(CafeFilterType)
+    case filterButtonTapped(CafeFilter.BottomSheetType)
     case scrollAndLoadData(Int)
     case backbuttonTapped
     case dismiss
@@ -107,7 +107,7 @@ struct CafeSearchListCore: ReducerProtocol {
         return .none
 
       case .filterButtonTapped(let filterType):
-        return EffectTask(value: .presentFilterSheetView(.init(filterType: filterType)))
+        return EffectTask(value: .presentFilterSheetView(.init(filterType: filterType, cafeFilterIntormation: .mock)))
 
       default:
         return .none

@@ -25,14 +25,17 @@ struct CafeFilterBottomSheetView: View {
     WithViewStore(store) { viewStore in
       GeometryReader { proxy in
         ZStack {
-          Color.black.opacity(0.4).ignoresSafeArea().onTapGesture {
-            viewStore.send(.dismiss)
-          }
-          .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
-              withAnimation { isSheetPresented = true }
+          CofficeAsset.Colors.grayScale9.swiftUIColor
+            .opacity(0.4)
+            .ignoresSafeArea()
+            .onTapGesture {
+              viewStore.send(.dismiss)
             }
-          }
+            .onAppear {
+              DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
+                withAnimation { isSheetPresented = true }
+              }
+            }
 
           if isSheetPresented {
             RoundedRectangle(cornerRadius: 15)
@@ -123,7 +126,7 @@ extension CafeFilterBottomSheetView {
                 ForEach(viewStates) { viewState in
                   let option = viewState.option
                   Button {
-                    viewStore.send(.optionButtonTapped(collectionIndex: index, optionType: option))
+                    viewStore.send(.optionButtonTapped(optionType: option))
                   } label: {
                     Text(viewState.buttonTitle)
                       .applyCofficeFont(font: .body1Medium)
@@ -158,7 +161,7 @@ extension CafeFilterBottomSheetView {
     WithViewStore(store) { viewStore in
       HStack(alignment: .center, spacing: 12) {
         Button {
-          // TODO: 초기화 버튼 이벤트 구현 필요
+          viewStore.send(.resetCafeFilterButtonTapped)
         } label: {
           Text("초기화")
             .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -172,7 +175,7 @@ extension CafeFilterBottomSheetView {
         }
 
         Button {
-          // TODO: 저장 버튼 이벤트 구현 필요
+          viewStore.send(.saveCafeFilterButtonTapped)
         } label: {
           Text("저장하기")
             .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)

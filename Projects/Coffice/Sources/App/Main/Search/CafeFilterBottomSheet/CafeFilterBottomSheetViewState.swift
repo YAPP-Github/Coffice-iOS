@@ -17,6 +17,66 @@ struct CafeFilterBottomSheetViewState: Equatable {
 }
 
 struct CafeFilterOptionButtonViewState: Equatable, Identifiable {
+  let id = UUID()
+  var option: CafeFilter.OptionType
+  var buttonTitle: String = ""
+  var savedTappedState: Bool = false
+  var isSelected: Bool = false
+  var foregroundColor: CofficeColors {
+    if isSelected {
+      return CofficeAsset.Colors.grayScale1
+    } else {
+      return CofficeAsset.Colors.grayScale7
+    }
+  }
+  var backgroundColor: CofficeColors {
+    if isSelected {
+      return CofficeAsset.Colors.grayScale9
+    } else {
+      return CofficeAsset.Colors.grayScale1
+    }
+  }
+  var borderColor: CofficeColors {
+    if isSelected {
+      return CofficeAsset.Colors.grayScale9
+    } else {
+      return CofficeAsset.Colors.grayScale3
+    }
+  }
+
+  init(optionType: CafeFilter.OptionType, buttonTitle: String, isSelected: Bool = false) {
+    self.option = optionType
+    self.buttonTitle = buttonTitle
+    self.isSelected = isSelected
+  }
+}
+
+struct CafeFilterOptionButtonCellViewState: Equatable {
+  let id = UUID()
+  var viewStates: [CafeFilterOptionButtonViewState]
+  var sectionTtile: String {
+    switch viewStates.first?.option {
+    case .runningTime(let option):
+      return option.sectionTitle
+    case .outlet(let option):
+      return option.sectionTitle
+    case .spaceSize(let option):
+      return option.sectionTitle
+    case .personnel(let option):
+      return option.sectionTitle
+    case .food(let option):
+      return option.sectionTitle
+    case .toilet(let option):
+      return option.sectionTitle
+    case .drink(let option):
+      return option.sectionTitle
+    case .none:
+      return "-"
+    }
+  }
+}
+
+enum CafeFilter {
   enum OptionType: Equatable {
     /// 영업시간
     case runningTime(RunningTimeOption)
@@ -49,6 +109,34 @@ struct CafeFilterOptionButtonViewState: Equatable, Identifiable {
         return option.index
       case .drink(let option):
         return option.index
+      }
+    }
+  }
+
+  enum BottomSheetType: CaseIterable {
+    case detail
+    case runningTime
+    case outlet
+    case spaceSize
+    case personnel
+
+    var title: String {
+      switch self {
+      case .detail: return "세부필터"
+      case .runningTime: return "영업시간"
+      case .outlet: return "콘센트"
+      case .spaceSize: return "공간크기"
+      case .personnel: return "단체석"
+      }
+    }
+
+    var size: (width: CGFloat, height: CGFloat) {
+      switch self {
+      case .detail: return (width: 56, height: 36)
+      case .runningTime: return (width: 91, height: 36)
+      case .outlet: return (width: 79, height: 36)
+      case .spaceSize: return (width: 91, height: 36)
+      case .personnel: return (width: 69, height: 36)
       }
     }
   }
@@ -204,91 +292,6 @@ struct CafeFilterOptionButtonViewState: Equatable, Identifiable {
 
     var index: Int {
       return rawValue
-    }
-  }
-
-  let id = UUID()
-  var option: OptionType
-  var buttonTitle: String = ""
-  var savedTappedState: Bool = false
-  var isSelected: Bool = false
-  var foregroundColor: CofficeColors {
-    if isSelected {
-      return CofficeAsset.Colors.grayScale1
-    } else {
-      return CofficeAsset.Colors.grayScale7
-    }
-  }
-  var backgroundColor: CofficeColors {
-    if isSelected {
-      return CofficeAsset.Colors.grayScale9
-    } else {
-      return CofficeAsset.Colors.grayScale1
-    }
-  }
-  var borderColor: CofficeColors {
-    if isSelected {
-      return CofficeAsset.Colors.grayScale9
-    } else {
-      return CofficeAsset.Colors.grayScale3
-    }
-  }
-
-  init(optionType: OptionType, buttonTitle: String) {
-    self.option = optionType
-    self.buttonTitle = buttonTitle
-  }
-}
-
-struct CafeFilterOptionButtonCellViewState: Equatable {
-  let id = UUID()
-  var viewStates: [CafeFilterOptionButtonViewState]
-  var sectionTtile: String {
-    switch viewStates.first?.option {
-    case .runningTime(let option):
-      return option.sectionTitle
-    case .outlet(let option):
-      return option.sectionTitle
-    case .spaceSize(let option):
-      return option.sectionTitle
-    case .personnel(let option):
-      return option.sectionTitle
-    case .food(let option):
-      return option.sectionTitle
-    case .toilet(let option):
-      return option.sectionTitle
-    case .drink(let option):
-      return option.sectionTitle
-    case .none:
-      return "-"
-    }
-  }
-}
-
-enum CafeFilterType: CaseIterable {
-  case detail
-  case runningTime
-  case outlet
-  case spaceSize
-  case personnel
-
-  var title: String {
-    switch self {
-    case .detail: return "세부필터"
-    case .runningTime: return "영업시간"
-    case .outlet: return "콘센트"
-    case .spaceSize: return "공간크기"
-    case .personnel: return "단체석"
-    }
-  }
-
-  var size: (width: CGFloat, height: CGFloat) {
-    switch self {
-    case .detail: return (width: 56, height: 36)
-    case .runningTime: return (width: 91, height: 36)
-    case .outlet: return (width: 79, height: 36)
-    case .spaceSize: return (width: 91, height: 36)
-    case .personnel: return (width: 69, height: 36)
     }
   }
 }
