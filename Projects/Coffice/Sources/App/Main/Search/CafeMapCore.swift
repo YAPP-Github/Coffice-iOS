@@ -171,7 +171,8 @@ struct CafeMapCore: ReducerProtocol {
           }
           state.cafeList = cafeList
           state.cafeSearchListState.cafeList = cafeList
-          state.selectedCafe = cafeList.first!
+          guard let cafe = cafeList.first else { return .none }
+          state.selectedCafe = cafe
           state.isSelectedCafe = true
           state.cafeMarkerList = cafeList.map {
             CafeMarkerData(
@@ -181,8 +182,8 @@ struct CafeMapCore: ReducerProtocol {
             )
           }
           state.region = CLLocationCoordinate2D(
-            latitude: state.selectedCafe!.latitude,
-            longitude: state.selectedCafe!.longitude
+            latitude: cafe.latitude,
+            longitude: cafe.longitude
           )
           state.cafeSearchListState.title = title
           state.displayViewType = .searchResultView

@@ -44,9 +44,11 @@ struct CafeMapView: View {
                 .padding()
               Spacer()
               if viewStore.isSelectedCafe {
-                CafeCardView(store: store, cafe: viewStore.state.selectedCafe!)
-                  .frame(height: 260)
-                  .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+                if let cafe = viewStore.selectedCafe {
+                  CafeCardView(store: store, cafe: cafe)
+                    .frame(height: 260)
+                    .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+                }
               }
             }
           }
