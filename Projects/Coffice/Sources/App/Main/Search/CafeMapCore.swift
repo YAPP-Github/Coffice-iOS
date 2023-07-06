@@ -18,6 +18,11 @@ extension CLLocationCoordinate2D: Equatable {
 }
 
 struct CafeMapCore: ReducerProtocol {
+  enum ResetState {
+    case searchResultIsEmpty
+    case dismissSearchResultView
+  }
+
   enum ViewType {
     case mainMapView
     case searchView
@@ -39,7 +44,7 @@ struct CafeMapCore: ReducerProtocol {
       case .outlet: return "콘센트"
       case .spaceSize: return "공간크기"
       case .personnel: return "인원"
-      // TODO: 테스트용 코드로 제거 예정
+        // TODO: 테스트용 코드로 제거 예정
       case .searchDetail: return "검색상세"
       case .searchList: return "검색결과"
       }
@@ -105,8 +110,7 @@ struct CafeMapCore: ReducerProtocol {
     case bookmarkButtonTapped
     case showToast(Toast.State)
 
-    case resetPreviousResults
-    case resetResultsWhenSearchResultIsEmpty
+    case resetResult(ResetState)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -125,23 +129,20 @@ struct CafeMapCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      case .resetResultsWhenSearchResultIsEmpty:
+      case .resetResult(let resetState):
         state.cafeList = []
         state.cafeMarkerList = []
         state.isSelectedCafe = false
         state.selectedCafe = nil
-        state.cafeSearchState.previousViewType = .mainMapView
-        state.cafeSearchState.currentBodyType = .searchResultEmptyView
-        return .none
-
-      case .resetPreviousResults:
-        state.cafeList = []
-        state.cafeMarkerList = []
-        state.isSelectedCafe = false
-        state.selectedCafe = nil
-        state.cafeSearchListState.cafeList = []
-        state.displayViewType = .mainMapView
-        return .none
+        switch resetState {
+        case .searchResultIsEmpty:
+          state.cafeSearchState.previousViewType = .mainMapView
+          state.cafeSearchState.currentBodyType = .searchResultEmptyView
+          return .none
+        case .dismissSearchResultView:
+          state.displayViewType = .mainMapView
+          return .none
+        }
 
       case .cafeSearchAction(.dismiss):
         switch state.cafeSearchState.previousViewType {
@@ -161,13 +162,13 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
       case .cafeSearchListAction(.dismiss):
-        return .send(.resetPreviousResults)
+        return .send(.resetResult(.dismissSearchResultView))
 
       case .requestSearchPlaceResponse(let result, let title):
         switch result {
         case .success(let cafeList):
           if cafeList.isEmpty {
-            return .send(.resetResultsWhenSearchResultIsEmpty)
+            return .send(.resetResult(.searchResultIsEmpty))
           }
           state.cafeList = cafeList
           state.cafeSearchListState.cafeList = cafeList
