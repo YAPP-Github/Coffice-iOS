@@ -12,11 +12,6 @@ import Network
 import SwiftUI
 
 struct CafeSearchCore: ReducerProtocol {
-  enum PreviousViewType {
-    case mapView
-    case searchListView
-  }
-
   enum CafeSearchViewBodyType {
     case recentSearchListView
     case searchResultEmptyView
@@ -29,7 +24,7 @@ struct CafeSearchCore: ReducerProtocol {
     var stationList: [String] = []
     var cafeList: [String] = []
     var currentBodyType: CafeSearchViewBodyType = .searchResultListView
-    var previousViewType: PreviousViewType = .mapView
+    var previousViewType: CafeMapCore.ViewType = .mainMapView
   }
 
   enum Action: Equatable, BindableAction {

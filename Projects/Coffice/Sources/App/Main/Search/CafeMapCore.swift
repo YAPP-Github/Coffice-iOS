@@ -124,17 +124,19 @@ struct CafeMapCore: ReducerProtocol {
       switch action {
       case .cafeSearchAction(.dismiss):
         switch state.cafeSearchState.previousViewType {
-        case .mapView:
+        case .mainMapView:
           state.displayViewType = .mainMapView
           return .none
-        case .searchListView:
+        case .searchResultView:
           state.displayViewType = .searchResultView
+          return .none
+        default:
           return .none
         }
 
       case .cafeSearchListAction(.titleLabelTapped):
         state.displayViewType = .searchView
-        state.cafeSearchState.previousViewType = .searchListView
+        state.cafeSearchState.previousViewType = .searchResultView
         return .none
 
       case .cafeSearchListAction(.dismiss):
@@ -171,9 +173,9 @@ struct CafeMapCore: ReducerProtocol {
             latitude: state.selectedCafe!.latitude,
             longitude: state.selectedCafe!.longitude
           )
-          state.displayViewType = .searchResultView
           state.cafeSearchListState.title = title
-          state.cafeSearchState.previousViewType = .searchListView
+          state.displayViewType = .searchResultView
+          state.cafeSearchState.previousViewType = .searchResultView
           return .send(.cafeSearchAction(.dismiss))
 
         case .failure(let error):
@@ -202,7 +204,7 @@ struct CafeMapCore: ReducerProtocol {
 
       case .updateDisplayType(let displayType):
         state.displayViewType = displayType
-        state.cafeSearchState.previousViewType = .mapView
+        state.cafeSearchState.previousViewType = .mainMapView
         return .none
 
       case .cameraDidChange(let location):
