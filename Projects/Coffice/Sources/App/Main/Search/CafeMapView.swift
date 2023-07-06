@@ -13,21 +13,44 @@ import SwiftUI
 struct CafeMapView: View {
   let store: StoreOf<CafeMapCore>
   var body: some View {
-
     WithViewStore(store) { viewStore in
       GeometryReader { geometry in
         ZStack {
           NaverMapView(viewStore: viewStore)
             .ignoresSafeArea()
-          VStack(alignment: .trailing) {
-            header
-              .background(.white)
-            floatingButtonView
-            .padding()
-            Spacer()
-//            CafeCardView(store: store, cafe: viewStore.state.caf)
-//              .frame(width: geometry.size.width, height: 260)
-//              .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+          ZStack {
+            switch viewStore.displayViewType {
+            case .searchResultView:
+              CafeSearchListView(store: store.scope(
+                state: \.cafeSearchListState,
+                action: CafeMapCore.Action.cafeSearchListAction)
+              )
+              .zIndex(1)
+            case.mainMapView:
+              Color.clear
+            case .searchView:
+              CafeSearchView(store: store.scope(
+                state: \.cafeSearchState,
+                action: CafeMapCore.Action.cafeSearchAction)
+              )
+              .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+              .zIndex(1)
+            }
+            VStack(alignment: .trailing, spacing: 0) {
+              header
+                .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
+                .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+              floatingButtonView
+                .padding()
+              Spacer()
+              if viewStore.isSelectedCafe {
+                if let cafe = viewStore.selectedCafe {
+                  CafeCardView(store: store, cafe: cafe)
+                    .frame(height: 260)
+                    .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+                }
+              }
+            }
           }
           .navigationBarHidden(true)
         }
@@ -79,6 +102,7 @@ extension CafeMapView {
           text: viewStore.binding(\.$searchText)
         )
         .textFieldStyle(.plain)
+        .applyCofficeFont(font: .subtitle1Medium)
         .frame(height: 35)
         .padding(.leading, 5)
         .padding(.trailing, 25)
@@ -87,13 +111,11 @@ extension CafeMapView {
             .stroke(.gray, lineWidth: 1)
         }
         .onSubmit {
-          viewStore.send(.searchTextSubmitted)
         }
 
         HStack {
           Spacer()
           Button {
-            viewStore.send(.searchTextFieldClearButtonTapped)
           } label: {
             Image(systemName: "xmark.circle.fill")
               .foregroundColor(.gray)

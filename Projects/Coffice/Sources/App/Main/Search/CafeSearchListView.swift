@@ -17,18 +17,23 @@ struct CafeSearchListView: View {
       VStack(spacing: 0) {
         headerView
           .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 16))
-        ScrollView(.vertical, showsIndicators: false) {
-          LazyVStack(spacing: 0) {
-            ForEach(0..<viewStore.cafeList.count, id: \.self) { index in
-              CafeSearchListCell(store: store, cafe: viewStore.state.cafeList[index])
-                .padding(.bottom, 40)
+          .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+        switch viewStore.viewType {
+        case .listView:
+          ScrollView(.vertical, showsIndicators: false) {
+            LazyVStack(spacing: 0) {
+              ForEach(0..<viewStore.cafeList.count, id: \.self) { index in
+                CafeSearchListCell(store: store, cafe: viewStore.state.cafeList[index])
+                  .onTapGesture { }
+                  .padding(.bottom, 40)
+              }
             }
+            .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
           }
+          .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+        case .mapView:
+          Spacer()
         }
-        .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
-      }
-      .onAppear {
-        viewStore.send(.onAppear)
       }
     }
     .navigationBarBackButtonHidden(true)
@@ -47,29 +52,36 @@ extension CafeSearchListView {
 
   var headLine: some View {
     WithViewStore(store) { viewStore in
-      HStack(spacing: 0) {
-        HStack(spacing: 12) {
+        HStack(spacing: 0) {
           Button {
-            // TODO: 버튼 클릭 시, 초기 지도화면으로 이동
+            viewStore.send(.backbuttonTapped)
           } label: {
             CofficeAsset.Asset.arrowLeftTopbarLine24px.swiftUIImage
               .resizable()
               .frame(width: 24, height: 24)
           }
-          Text("SearchKeyWord")
-          Spacer()
-        }
-        .frame(width: 280, height: 48)
-        Spacer()
-        Button {
-          // TODO: 버튼 클릭 시, 하단 리스트 뷰 -> 마커 찍혀 있는 지도뷰
-        } label: {
-          CofficeAsset.Asset.mapLine24px.swiftUIImage
-            .resizable()
-            .frame(width: 24, height: 24)
-        }
+          .padding(.trailing, 12)
+          Text(viewStore.title)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .lineLimit(1)
+            .onTapGesture { viewStore.send(.titleLabelTapped) }
+          Button {
+            if viewStore.viewType == .mapView {
+              viewStore.send(.updateViewType(.listView))
+            } else {
+              viewStore.send(.updateViewType(.mapView))
+            }
+          } label: {
+            switch viewStore.viewType {
+            case .mapView:
+              CofficeAsset.Asset.list24px.swiftUIImage
+            case .listView:
+              CofficeAsset.Asset.mapLine24px.swiftUIImage
+            }
+          }
+          .padding(.trailing, 20)
       }
-      .frame(width: 335, height: 48)
+      .frame(height: 48)
     }
   }
 
@@ -87,27 +99,27 @@ extension CafeSearchListView {
                   .renderingMode(.template)
                   .frame(width: 24, height: 24)
                   .scaledToFit()
-                  .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                   .frame(width: filter.size.width, height: filter.size.height)
                   .overlay(
                     RoundedRectangle(cornerRadius: 18)
-                      .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
+                      .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
                   )
               } else {
                 HStack(alignment: .center, spacing: 0) {
                   Text(filter.title)
-                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                     .applyCofficeFont(font: .body1Medium)
                   Image(asset: CofficeAsset.Asset.arrowDropDownLine18px)
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 18, height: 18)
-                    .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 }
                 .frame(width: filter.size.width, height: filter.size.height)
                 .overlay(
                   RoundedRectangle(cornerRadius: 18)
-                    .stroke(Color(asset: CofficeAsset.Colors.grayScale4), lineWidth: 1)
+                    .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
                 )
               }
             }

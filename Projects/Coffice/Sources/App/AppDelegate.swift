@@ -19,6 +19,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
   ) -> Bool {
     // #36 GA Logging 임시 비활성화
     // FirebaseApp.configure()
+    CofficeFontFamily.registerAllCustomFonts()
     return true
   }
 }

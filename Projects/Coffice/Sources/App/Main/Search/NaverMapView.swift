@@ -54,10 +54,10 @@ extension NaverMapView: UIViewRepresentable {
       }
     }
 
-    if NaverMapView.storage.cafes != viewStore.state.cafeList {
-      NaverMapView.storage.cafes = viewStore.state.cafeList
+    if NaverMapView.storage.cafes != viewStore.state.cafeMarkerList {
+      NaverMapView.storage.cafes = viewStore.state.cafeMarkerList
       DispatchQueue.main.async {
-        addMarker(naverMapView: uiView, cafeList: viewStore.cafeList, coordinator: context.coordinator)
+        addMarker(naverMapView: uiView, cafeList: viewStore.cafeMarkerList, coordinator: context.coordinator)
       }
     }
   }

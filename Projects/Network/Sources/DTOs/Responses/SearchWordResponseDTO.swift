@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SearchWordResponseDTO: Decodable {
+public struct SearchWordResponseDTO: Decodable, Equatable {
   public let searchWordId: Int
   public let text: String
   public let createdAt: String

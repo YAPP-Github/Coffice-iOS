@@ -13,14 +13,14 @@ import Network
 struct SearchWordAPIClient: DependencyKey {
   static var liveValue: SearchWordAPIClient = .liveValue
 
-  func fetchRecentSearchWords() async throws -> [String] {
+  func fetchRecentSearchWords() async throws -> [SearchWordResponseDTO] {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/search-words"
     guard let request = urlComponents?.toURLRequest(method: .get)
     else { return .init() }
     let response: [SearchWordResponseDTO] = try await coreNetwork.dataTask(request: request)
-    return response.map { $0.text }
+    return response
   }
 
   func deleteRecentSearchWord(id: Int) async throws {
