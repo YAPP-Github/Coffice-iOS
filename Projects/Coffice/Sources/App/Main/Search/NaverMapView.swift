@@ -21,9 +21,28 @@ struct NaverMapView {
 
 final class NaverMapViewStorage {
   var location = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-  var markers: [NMFMarker] = []
-  var cafes: [CafeMarkerData] = []
-  let iconImage = CofficeAsset.Asset.mapPinFill24px.image
+  var markers: [MapMarker] = []
+  var selectedMarker: MapMarker? {
+    didSet {
+      if let oldValue {
+        oldValue.markerType.selectType = .unSelected
+      }
+      if let selectedMarker {
+        selectedMarker.markerType.selectType = .selected
+      }
+    }
+  }
+  var cafes: [Cafe] = []
+  let unselectedIconImage = CofficeAsset.Asset.markerUnselected24px.image
+  let selectedIconImage = CofficeAsset.Asset.markerSelected3647px.image
+  let bookmarkUnselectedIconImage = CofficeAsset.Asset.bookmarkUnselected36px.image
+  let bookmarkSelectedIconImage = CofficeAsset.Asset.bookmarkSelected4852px.image
+
+  func resetValues() {
+    markers.removeAll()
+    selectedMarker = nil
+    cafes.removeAll()
+  }
 }
 
 extension NaverMapView: UIViewRepresentable {
@@ -34,27 +53,29 @@ extension NaverMapView: UIViewRepresentable {
     naverMapView.showLocationButton = false
     naverMapView.mapView.positionMode = .direction
     naverMapView.mapView.locationOverlay.hidden = false
-    naverMapView.mapView.maxZoomLevel = 50
-    naverMapView.mapView.minZoomLevel = 30
+    naverMapView.mapView.maxZoomLevel = 20
+    naverMapView.mapView.minZoomLevel = 12
     naverMapView.mapView.addCameraDelegate(delegate: context.coordinator)
+    naverMapView.mapView.touchDelegate = context.coordinator
+    moveCameraTo(naverMapView: naverMapView, location: viewStore.currentCameraPosition, zoomLevel: 15)
     return naverMapView
   }
 
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    let mapCenterLocation = CLLocationCoordinate2D(
-      latitude: uiView.mapView.latitude,
-      longitude: uiView.mapView.longitude
-    )
-    if mapCenterLocation != viewStore.state.region {
-      NaverMapView.storage.location = viewStore.state.region
-      let nmgLocation = NMGLatLng(lat: viewStore.state.region.latitude, lng: viewStore.state.region.longitude)
+    if viewStore.isMovingToCurrentPosition {
+      let nmgLocation = NMGLatLng(
+        lat: viewStore.currentCameraPosition.latitude,
+        lng: viewStore.currentCameraPosition.longitude
+      )
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: 15)
       DispatchQueue.main.async {
-        uiView.mapView.moveCamera(cameraUpdate)
+        uiView.mapView.moveCamera(cameraUpdate) { _ in
+          viewStore.send(.movedToCurrentPosition)
+        }
       }
     }
 
-    if NaverMapView.storage.cafes != viewStore.state.cafeMarkerList {
+    if viewStore.shouldUpdateMarkers {
       NaverMapView.storage.cafes = viewStore.state.cafeMarkerList
       DispatchQueue.main.async {
         addMarker(naverMapView: uiView, cafeList: viewStore.cafeMarkerList, coordinator: context.coordinator)
@@ -76,40 +97,41 @@ extension NaverMapView {
     NaverMapView.storage.markers.removeAll()
   }
 
-  func addMarker(naverMapView: NMFNaverMapView, cafeList: [CafeMarkerData], coordinator: Coordinator) {
+  func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], coordinator: Coordinator) {
     removeAllMarkers()
     for cafe in cafeList {
-      let marker = NMFMarker()
-      marker.position = NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
-      marker.iconImage = NMFOverlayImage(image: CofficeAsset.Asset.mapPinFill24px.image)
-      marker.width = 20
-      marker.height = 20
+      let marker = MapMarker(
+        cafe: cafe,
+        markerType: .init(
+          bookmarkType: cafe.isBookmarked ? .bookmarked : .nonBookmarked,
+          selectType: .unSelected
+        ),
+        position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
+      )
 
-      let infoWindow = NMFInfoWindow()
-      infoWindow.position = NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
-      infoWindow.dataSource = coordinator
+      marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
+        NaverMapView.storage.selectedMarker = marker
 
-      marker.touchHandler = { [weak infoWindow] (overlay: NMFOverlay) -> Bool in
-        if infoWindow?.marker == nil {
-          infoWindow?.open(with: marker)
-          debugPrint("infowindow Open")
-        } else {
-          infoWindow?.close()
-          debugPrint("infoWindow Close")
+        DispatchQueue.main.async {
+          viewStore.send(.markerTapped(cafe: cafe))
         }
 
         moveCameraTo(naverMapView: naverMapView,
-                     location: .init(latitude: cafe.latitude, longitude: cafe.longitude))
+                     location: .init(latitude: cafe.latitude, longitude: cafe.longitude),
+                     zoomLevel: 18)
         return true
       }
       marker.mapView = naverMapView.mapView
       NaverMapView.storage.markers.append(marker)
     }
+    DispatchQueue.main.async {
+      viewStore.send(.updatedMarkers)
+    }
   }
 
-  func moveCameraTo(naverMapView: NMFNaverMapView, location: CLLocationCoordinate2D) {
+  func moveCameraTo(naverMapView: NMFNaverMapView, location: CLLocationCoordinate2D, zoomLevel: Double) {
     let nmgLocation = NMGLatLng(lat: location.latitude, lng: location.longitude)
-    let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation)
+    let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
     naverMapView.mapView.moveCamera(cameraUpdate)
   }
 }
@@ -125,9 +147,13 @@ class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate,
     view.backgroundColor = .red
     return view
   }
+}
 
-  func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
-    let location = CLLocationCoordinate2D(latitude: mapView.latitude, longitude: mapView.longitude)
-    target.viewStore.send(.cameraDidChange(location))
+extension Coordinator: NMFMapViewTouchDelegate {
+  func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
+    NaverMapView.storage.selectedMarker = nil
+    DispatchQueue.main.async { [weak self] in
+      self?.target.viewStore.send(.mapViewTapped)
+    }
   }
 }

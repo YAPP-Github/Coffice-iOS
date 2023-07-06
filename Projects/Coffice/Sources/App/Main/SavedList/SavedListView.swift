@@ -81,13 +81,13 @@ struct SavedListView: View {
                       .opacity(0.8)
                     }
                   }
-                Text(cafe.cafeData.name)
+                Text(cafe.name)
                   .lineLimit(1)
                   .frame(maxWidth: .infinity, alignment: .leading)
                   .applyCofficeFont(font: .header3)
                   .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
                   .padding(.top, 16)
-                Text(cafe.cafeData.address?.address ?? "")
+                Text(cafe.address?.address ?? "")
                   .lineLimit(1)
                   .frame(maxWidth: .infinity, alignment: .leading)
                   .applyCofficeFont(font: .body2Medium)
@@ -95,7 +95,7 @@ struct SavedListView: View {
                   .padding(.top, 4)
               }
               .onTapGesture {
-                viewStore.send(.pushCafeDetail(cafeId: cafe.cafeData.placeId))
+                viewStore.send(.pushCafeDetail(cafeId: cafe.placeId))
               }
             }
           }

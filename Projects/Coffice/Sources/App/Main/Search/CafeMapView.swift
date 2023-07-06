@@ -26,8 +26,21 @@ struct CafeMapView: View {
                 action: CafeMapCore.Action.cafeSearchListAction)
               )
               .zIndex(1)
-            case.mainMapView:
-              Color.clear
+
+            case .mainMapView:
+              Group {
+                if viewStore.selectedCafe != nil {
+                  VStack {
+                    Spacer()
+                    CafeCardView(store: store)
+                      .frame(width: geometry.size.width, height: 260)
+                      .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+                  }
+                } else {
+                  EmptyView()
+                }
+              }
+
             case .searchView:
               CafeSearchView(store: store.scope(
                 state: \.cafeSearchState,
@@ -44,11 +57,9 @@ struct CafeMapView: View {
                 .padding()
               Spacer()
               if viewStore.isSelectedCafe {
-                if let cafe = viewStore.selectedCafe {
-                  CafeCardView(store: store, cafe: cafe)
-                    .frame(height: 260)
-                    .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
-                }
+                CafeCardView(store: store)
+                  .frame(height: 260)
+                  .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
               }
             }
           }
@@ -59,6 +70,9 @@ struct CafeMapView: View {
         }
       }
       .ignoresSafeArea(.keyboard)
+      .onDisappear {
+        viewStore.send(.onDisappear)
+      }
     }
   }
 }

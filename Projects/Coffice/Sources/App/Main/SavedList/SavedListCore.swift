@@ -9,16 +9,12 @@
 import ComposableArchitecture
 
 struct SavedList: ReducerProtocol {
-  struct BookmarkCafe: Hashable {
-    let cafeData: Cafe
-    var isBookmarked: Bool
-  }
 
   struct State: Equatable {
     let title = "저장 리스트"
-    var cafes: [BookmarkCafe] = []
+    var cafes: [Cafe] = []
     var unBookmarkedCafeIds: [Int] {
-      return cafes.filter { $0.isBookmarked.isFalse }.map { $0.cafeData.placeId }
+      return cafes.filter { $0.isBookmarked.isFalse }.map { $0.placeId }
     }
     var didFetchComplete: Bool = false
     var shouldShowEmptyListReplaceView: Bool {
@@ -29,8 +25,8 @@ struct SavedList: ReducerProtocol {
   enum Action: Equatable {
     case onAppear
     case onDisappear
-    case bookmarkButtonTapped(cafe: BookmarkCafe)
-    case bookmarkedCafeResponse(cafes: [BookmarkCafe])
+    case bookmarkButtonTapped(cafe: Cafe)
+    case bookmarkedCafeResponse(cafes: [Cafe])
     case deleteCafesFromBookmark
     case pushCafeDetail(cafeId: Int)
   }
@@ -44,7 +40,7 @@ struct SavedList: ReducerProtocol {
         return .run { send in
           let bookmarkedCafes = try await bookmarkClient.fetchMyPlaces()
           await send(
-            .bookmarkedCafeResponse(cafes: bookmarkedCafes.map { BookmarkCafe(cafeData: $0, isBookmarked: true)})
+            .bookmarkedCafeResponse(cafes: bookmarkedCafes)
           )
         } catch: { error, send in
           debugPrint(error)
@@ -73,7 +69,7 @@ struct SavedList: ReducerProtocol {
           debugPrint(error)
         }
 
-      case .pushCafeDetail(let cafeId):
+      default:
         return .none
       }
     }
