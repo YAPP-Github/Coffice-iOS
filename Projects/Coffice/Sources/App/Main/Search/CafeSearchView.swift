@@ -60,6 +60,7 @@ extension CafeSearchView {
             .padding(.trailing, 12)
           TextField("지하철, 카페 이름으로 검색", text: viewStore.binding(\.$searchText))
             .applyCofficeFontForTextField(font: .subtitle1Medium)
+            .tint(CofficeAsset.Colors.grayScale9.swiftUIColor)
             .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
             .onSubmit { viewStore.send(.submitText) }
             .textFieldStyle(.plain)
