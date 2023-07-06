@@ -47,6 +47,7 @@ extension CafeSearchListView {
         headLine
         filterButtons
       }
+      .navigationBarHidden(true)
     }
   }
 
