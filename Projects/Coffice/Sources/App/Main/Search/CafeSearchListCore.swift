@@ -19,12 +19,12 @@ struct CafeSearchListCore: ReducerProtocol {
   struct State: Equatable {
     // TODO: filterButtonState 구현
     let filterOrders = CafeFilter.BottomSheetType.allCases
-    var filterSheetState: CafeFilterBottomSheet.State = .mock
     var title: String = ""
     var viewType: ViewType = .mapView
     var cafeList: [Cafe] = []
     var pageSize: Int = 10
     var pageNumber: Int = 0
+    var cafeFilterInformation: CafeFilterInformation = .mock
     var pagenationRange: Range<Int> {
       pageNumber * pageSize..<(pageNumber + 1) * pageSize - 1
     }
@@ -33,7 +33,6 @@ struct CafeSearchListCore: ReducerProtocol {
   enum Action: Equatable {
     case updateViewType(ViewType)
     case onAppear
-    case updateState(CafeFilterBottomSheet.State)
     case presentFilterSheetView(CafeFilterBottomSheet.State)
     case searchPlaceResponse(TaskResult<[Cafe]>)
     case filterButtonTapped(CafeFilter.BottomSheetType)
@@ -42,6 +41,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case dismiss
     case popView
     case titleLabelTapped
+    case updateCafeFilter(information: CafeFilterInformation)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -84,10 +84,6 @@ struct CafeSearchListCore: ReducerProtocol {
           await send(.searchPlaceResponse(result))
         }
 
-      case .updateState(let bottomSheetState):
-        // TODO: 필터 업데이트 이벤트 구현 필요
-        return .none
-
         // TODO: 무한스크롤 추후 수정 예정
       case .scrollAndLoadData(let itemIndex):
         let currentPageNumber = itemIndex / state.pageSize
@@ -108,6 +104,11 @@ struct CafeSearchListCore: ReducerProtocol {
 
       case .filterButtonTapped(let filterType):
         return EffectTask(value: .presentFilterSheetView(.init(filterType: filterType, cafeFilterIntormation: .mock)))
+
+      case .updateCafeFilter(let information):
+        // TODO: 필터 저장상태에 맞게 상단 필터뷰 업데이트 필요
+        state.cafeFilterInformation = information
+        return .none
 
       default:
         return .none

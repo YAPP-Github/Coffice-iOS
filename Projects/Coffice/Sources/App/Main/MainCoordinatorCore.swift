@@ -42,7 +42,7 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
-    case filterSheetAction(CafeFilterBottomSheet.Action)
+    case filterBottomSheet(action: CafeFilterBottomSheet.Action)
     case bubbleMessage(BubbleMessage.Action)
     case toastMessage(Toast.Action)
     case dismissToastMessageView
@@ -73,9 +73,16 @@ struct MainCoordinator: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      case .filterSheetAction(.dismiss):
+      case .filterBottomSheet(.dismiss):
         state.filterSheetState = nil
         return .none
+
+      case .filterBottomSheet(.saveCafeFilter(let information)):
+        return EffectTask(
+          value: .search(
+            .routeAction(1, action: .cafeSearchList(.updateCafeFilter(information: information)))
+          )
+        )
 
       case .onAppear:
         return .none
@@ -90,7 +97,7 @@ struct MainCoordinator: ReducerProtocol {
 
       case
           .search(.routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))),
-          .filterSheetAction(.presentBubbleMessageView(let bubbleMessageState)):
+          .filterBottomSheet(.presentBubbleMessageView(let bubbleMessageState)):
         state.bubbleMessageState = bubbleMessageState
         return .none
 
@@ -117,7 +124,7 @@ struct MainCoordinator: ReducerProtocol {
     }
     .ifLet(
       \.filterSheetState,
-      action: /Action.filterSheetAction
+      action: /Action.filterBottomSheet
     ) {
       CafeFilterBottomSheet()
     }

@@ -178,6 +178,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     case resetCafeFilterButtonTapped
     case resetCafeFilter
     case saveCafeFilterButtonTapped
+    case saveCafeFilter(information: CafeFilterInformation)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -250,7 +251,10 @@ struct CafeFilterBottomSheet: ReducerProtocol {
       case .saveCafeFilterButtonTapped:
         // TODO: 화면 상단 필터뷰로 데이터 전달하여 UI 업데이트 필요
         debugPrint("saved mainViewState : \(state.mainViewState)")
-        return EffectTask(value: .dismiss)
+        return .concatenate(
+          EffectTask(value: .saveCafeFilter(information: state.cafeFilterInformation)),
+          EffectTask(value: .dismiss)
+        )
 
       default:
         return .none
