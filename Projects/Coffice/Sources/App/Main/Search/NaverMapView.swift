@@ -25,26 +25,10 @@ final class NaverMapViewStorage {
   var selectedMarker: MapMarker? {
     didSet {
       if let oldValue {
-        if oldValue.cafe.isBookmarked {
-          oldValue.width = 36
-          oldValue.height = 36
-          oldValue.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkUnselectedIconImage)
-        } else {
-          oldValue.width = 24
-          oldValue.height = 24
-          oldValue.iconImage = NMFOverlayImage(image: NaverMapView.storage.unselectedIconImage)
-        }
+        oldValue.markerType.selectType = .unSelected
       }
       if let selectedMarker {
-        if selectedMarker.cafe.isBookmarked {
-          selectedMarker.width = 48
-          selectedMarker.height = 52
-          selectedMarker.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkSelectedIconImage)
-        } else {
-          selectedMarker.width = 36
-          selectedMarker.height = 47
-          selectedMarker.iconImage = NMFOverlayImage(image: NaverMapView.storage.selectedIconImage)
-        }
+        selectedMarker.markerType.selectType = .selected
       }
     }
   }
@@ -116,13 +100,13 @@ extension NaverMapView {
   func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], coordinator: Coordinator) {
     removeAllMarkers()
     for cafe in cafeList {
-      let iconImage = cafe.isBookmarked ?? false
-      ? NaverMapView.storage.bookmarkUnselectedIconImage
-      : NaverMapView.storage.unselectedIconImage
       let marker = MapMarker(
         cafe: cafe,
-        position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude),
-        iconImage: NMFOverlayImage(image: iconImage)
+        markerType: .init(
+          bookmarkType: cafe.isBookmarked ? .bookmarked : .nonBookmarked,
+          selectType: .unSelected
+        ),
+        position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
       )
 
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
@@ -170,29 +154,6 @@ extension Coordinator: NMFMapViewTouchDelegate {
     NaverMapView.storage.selectedMarker = nil
     DispatchQueue.main.async { [weak self] in
       self?.target.viewStore.send(.mapViewTapped)
-    }
-  }
-}
-
-final class MapMarker: NMFMarker {
-  let cafe: Cafe
-
-  init(
-    cafe: Cafe,
-    position: NMGLatLng,
-    iconImage: NMFOverlayImage
-  ) {
-    self.cafe = cafe
-    super.init()
-    self.position = position
-    if cafe.isBookmarked {
-      self.width = 36
-      self.height = 36
-      self.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkUnselectedIconImage)
-    } else {
-      self.width = 24
-      self.height = 24
-      self.iconImage = NMFOverlayImage(image: NaverMapView.storage.unselectedIconImage)
     }
   }
 }
