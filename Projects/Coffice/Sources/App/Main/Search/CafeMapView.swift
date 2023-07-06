@@ -27,7 +27,7 @@ struct CafeMapView: View {
               )
               .zIndex(1)
 
-            case.mainMapView:
+            case .mainMapView:
               Group {
                 if viewStore.selectedCafe != nil {
                   VStack {
