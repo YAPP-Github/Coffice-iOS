@@ -312,7 +312,7 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
       case .bookmarkButtonTapped(let cafe):
-        state.selectedCafe?.isBookmarked?.toggle()
+        state.selectedCafe?.isBookmarked.toggle()
         return .run { [isBookMarked = state.selectedCafe?.isBookmarked] send in
           try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
           await send(

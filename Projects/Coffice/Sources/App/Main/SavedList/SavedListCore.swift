@@ -14,7 +14,7 @@ struct SavedList: ReducerProtocol {
     let title = "저장 리스트"
     var cafes: [Cafe] = []
     var unBookmarkedCafeIds: [Int] {
-      return cafes.filter { $0.isBookmarked?.isFalse ?? false }.map { $0.placeId }
+      return cafes.filter { $0.isBookmarked.isFalse }.map { $0.placeId }
     }
     var didFetchComplete: Bool = false
     var shouldShowEmptyListReplaceView: Bool {
@@ -53,7 +53,7 @@ struct SavedList: ReducerProtocol {
 
       case .bookmarkButtonTapped(let cafe):
         if let index = state.cafes.firstIndex(of: cafe) {
-          state.cafes[index].isBookmarked?.toggle()
+          state.cafes[index].isBookmarked.toggle()
         }
         return .none
 

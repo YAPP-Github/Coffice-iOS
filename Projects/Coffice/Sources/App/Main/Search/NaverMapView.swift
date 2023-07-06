@@ -25,7 +25,7 @@ final class NaverMapViewStorage {
   var selectedMarker: MapMarker? {
     didSet {
       if let oldValue {
-        if oldValue.cafe.isBookmarked == true {
+        if oldValue.cafe.isBookmarked {
           oldValue.width = 36
           oldValue.height = 36
           oldValue.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkUnselectedIconImage)
@@ -36,7 +36,7 @@ final class NaverMapViewStorage {
         }
       }
       if let selectedMarker {
-        if selectedMarker.cafe.isBookmarked == true {
+        if selectedMarker.cafe.isBookmarked {
           selectedMarker.width = 48
           selectedMarker.height = 52
           selectedMarker.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkSelectedIconImage)
@@ -185,7 +185,7 @@ final class MapMarker: NMFMarker {
     self.cafe = cafe
     super.init()
     self.position = position
-    if cafe.isBookmarked == true {
+    if cafe.isBookmarked {
       self.width = 36
       self.height = 36
       self.iconImage = NMFOverlayImage(image: NaverMapView.storage.bookmarkUnselectedIconImage)

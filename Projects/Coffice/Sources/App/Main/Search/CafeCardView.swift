@@ -45,17 +45,17 @@ struct CafeCardView: View {
               Button {
                 viewStore.send(.bookmarkButtonTapped(cafe: viewStore.selectedCafe ?? .dummy))
               } label: {
-                if viewStore.selectedCafe?.isBookmarked == true {
-                  CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 40, height: 40)
-                } else {
-                  CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 40, height: 40)
+                Group {
+                  if viewStore.selectedCafe?.isBookmarked == true {
+                    CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
+                      .resizable()
+                  } else {
+                    CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+                      .resizable()
+                  }
                 }
+                .scaledToFill()
+                .frame(width: 40, height: 40)
               }
             }
             .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))

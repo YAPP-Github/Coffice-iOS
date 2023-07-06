@@ -29,7 +29,7 @@ struct Cafe: Hashable {
     drinkTypes: nil,
     foodTypes: nil,
     restroomType: nil,
-    isBookmarked: nil
+    isBookmarked: false
   )
 
   let placeId: Int
@@ -50,7 +50,7 @@ struct Cafe: Hashable {
   let drinkTypes: [DrinkType]?
   let foodTypes: [FoodType]?
   let restroomType: [RestroomType]?
-  var isBookmarked: Bool?
+  var isBookmarked: Bool
 }
 
 extension SearchPlaceResponseDTO {
@@ -74,7 +74,7 @@ extension SearchPlaceResponseDTO {
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
       restroomType: restroomTypes?.compactMap { RestroomType.type(of: $0) },
-      isBookmarked: archived
+      isBookmarked: archived ?? false
     )
   }
 }
