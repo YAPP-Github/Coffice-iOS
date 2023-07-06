@@ -68,29 +68,39 @@ struct CafeMapCore: ReducerProtocol {
     }
   }
 
+  // MARK: - State
   struct State: Equatable {
+    // MARK: ViewType
+    var displayViewType: ViewType = .mainMapView
+
+    // MARK: Selecting Cafe
     var selectedCafe: Cafe?
     var isSelectedCafe: Bool = false
-    var displayViewType: ViewType = .mainMapView
+
+    // MARK: Search
     var cafeSearchState = CafeSearchCore.State()
     var cafeSearchListState = CafeSearchListCore.State()
+    let filterOrders = FilterOrder.allCases
+    @BindingState var searchText = ""
 
+    // MARK: NaverMapView
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
     var cafeMarkerList: [Cafe] = []
     var cafeList: [Cafe] = []
-    let filterOrders = FilterOrder.allCases
     let floatingButtons = FloatingButton.allCases
     var isMovingToCurrentPosition = false
-    @BindingState var searchText = ""
   }
 
+  // MARK: - Action
   enum Action: Equatable, BindableAction {
-    case cafeSearchListAction(CafeSearchListCore.Action)
+    // MARK: ViewType
     case updateDisplayType(ViewType)
-    case cafeSearchAction(CafeSearchCore.Action)
-    case requestSearchPlaceResponse(TaskResult<[Cafe]>, String)
-    case binding(BindingAction<State>)
 
+    // MARK: sub-Core Actions
+    case cafeSearchListAction(CafeSearchListCore.Action)
+    case cafeSearchAction(CafeSearchCore.Action)
+
+    // MARK: NaverMapView
     case floatingButtonTapped(FloatingButton)
     case updateCurrentLocation
     case updateCafeMarkers
@@ -99,24 +109,27 @@ struct CafeMapCore: ReducerProtocol {
     case mapViewTapped
     case movedToCurrentPosition
 
+    // MARK: Search
     case filterOrderMenuClicked(FilterOrder)
+    case requestSearchPlaceResponse(TaskResult<[Cafe]>, String)
+
+    // MARK: Temporary
     case pushToSearchDetailForTest(cafeId: Int)
     case pushToSearchListForTest
 
+    // MARK: Common
+    case binding(BindingAction<State>)
     case requestLocationAuthorization
-
-    case updateCameraPosition(CLLocationCoordinate2D)
-    case fetchCafeList
-
     case bookmarkButtonTapped
     case showToast(Toast.State)
-
     case resetResult(ResetState)
   }
 
+  // MARK: - Dependencies
   @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.locationManager) private var locationManager
 
+  // MARK: - body
   var body: some ReducerProtocolOf<Self> {
     BindingReducer()
 
@@ -130,21 +143,13 @@ struct CafeMapCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      case .resetResult(let resetState):
-        state.cafeList = []
-        state.cafeMarkerList = []
-        state.isSelectedCafe = false
-        state.selectedCafe = nil
-        switch resetState {
-        case .searchResultIsEmpty:
-          state.cafeSearchState.previousViewType = .mainMapView
-          state.cafeSearchState.currentBodyType = .searchResultEmptyView
-          return .none
-        case .dismissSearchResultView:
-          state.displayViewType = .mainMapView
-          return .none
-        }
+      // MARK: ViewType
+      case .updateDisplayType(let displayType):
+        state.displayViewType = displayType
+        state.cafeSearchState.previousViewType = .mainMapView
+        return .none
 
+      // MARK: sub-Core Actions
       case .cafeSearchAction(.dismiss):
         switch state.cafeSearchState.previousViewType {
         case .mainMapView:
@@ -165,32 +170,6 @@ struct CafeMapCore: ReducerProtocol {
       case .cafeSearchListAction(.dismiss):
         return .send(.resetResult(.dismissSearchResultView))
 
-      case .requestSearchPlaceResponse(let result, let title):
-        switch result {
-        case .success(let cafeList):
-          if cafeList.isEmpty {
-            return .send(.resetResult(.searchResultIsEmpty))
-          }
-          state.cafeList = cafeList
-          state.cafeSearchListState.cafeList = cafeList
-          guard let cafe = cafeList.first else { return .none }
-          state.selectedCafe = cafe
-          state.isSelectedCafe = true
-          state.currentCameraPosition = CLLocationCoordinate2D(
-            latitude: cafe.latitude,
-            longitude: cafe.longitude
-          )
-          state.cafeSearchListState.title = title
-          state.displayViewType = .searchResultView
-          state.cafeSearchState.previousViewType = .searchResultView
-          return .send(.cafeSearchAction(.dismiss))
-
-        case .failure(let error):
-          state.cafeSearchState.currentBodyType = .searchResultEmptyView
-          debugPrint(error)
-          return .none
-        }
-
       case .cafeSearchAction(.requestSearchPlace(let searchText)):
         let title = searchText
         let latitude = state.currentCameraPosition.latitude
@@ -209,11 +188,7 @@ struct CafeMapCore: ReducerProtocol {
           await send(.requestSearchPlaceResponse(result, title))
         }
 
-      case .updateDisplayType(let displayType):
-        state.displayViewType = displayType
-        state.cafeSearchState.previousViewType = .mainMapView
-        return .none
-
+      // MARK: NaverMapView
       case .floatingButtonTapped(let buttonType):
         switch buttonType {
         case .currentLocationButton:
@@ -232,6 +207,7 @@ struct CafeMapCore: ReducerProtocol {
       case .updateCafeMarkers:
         return .run { send in
           let result = await TaskResult {
+            // TODO: Sample Value를 실제 요청값으로 바꾸기
             let cafeRequest = SearchPlaceRequestValue(
               searchText: "스타벅스", userLatitude: 37.498768, userLongitude: 127.0277985,
               maximumSearchDistance: 1000, isOpened: nil, hasCommunalTable: nil,
@@ -266,10 +242,7 @@ struct CafeMapCore: ReducerProtocol {
         state.isMovingToCurrentPosition = false
         return .none
 
-      case .requestLocationAuthorization:
-        locationManager.requestAuthorization()
-        return .none
-
+      // MARK: Search
       case .filterOrderMenuClicked(let filterOrder):
         switch filterOrder {
         case .searchList:
@@ -279,6 +252,52 @@ struct CafeMapCore: ReducerProtocol {
         default:
           return .none
         }
+
+      case .requestSearchPlaceResponse(let result, let title):
+        switch result {
+        case .success(let cafeList):
+          if cafeList.isEmpty {
+            return .send(.resetResult(.searchResultIsEmpty))
+          }
+          state.cafeList = cafeList
+          state.cafeSearchListState.cafeList = cafeList
+          guard let cafe = cafeList.first else { return .none }
+          state.selectedCafe = cafe
+          state.isSelectedCafe = true
+          state.currentCameraPosition = CLLocationCoordinate2D(
+            latitude: cafe.latitude,
+            longitude: cafe.longitude
+          )
+          state.cafeSearchListState.title = title
+          state.displayViewType = .searchResultView
+          state.cafeSearchState.previousViewType = .searchResultView
+          return .send(.cafeSearchAction(.dismiss))
+
+        case .failure(let error):
+          state.cafeSearchState.currentBodyType = .searchResultEmptyView
+          debugPrint(error)
+          return .none
+        }
+
+      // MARK: Common
+      case .resetResult(let resetState):
+        state.cafeList = []
+        state.cafeMarkerList = []
+        state.isSelectedCafe = false
+        state.selectedCafe = nil
+        switch resetState {
+        case .searchResultIsEmpty:
+          state.cafeSearchState.previousViewType = .mainMapView
+          state.cafeSearchState.currentBodyType = .searchResultEmptyView
+          return .none
+        case .dismissSearchResultView:
+          state.displayViewType = .mainMapView
+          return .none
+        }
+
+      case .requestLocationAuthorization:
+        locationManager.requestAuthorization()
+        return .none
 
       case .bookmarkButtonTapped:
         return EffectTask(value: .showToast(.mock))
