@@ -107,17 +107,8 @@ struct CafeSearchListCore: ReducerProtocol {
         return .none
 
       case .filterButtonTapped(let filterType):
-        switch filterType {
-        case .outlet:
-          state.filterSheetState.filterType = .outlet
-          return EffectTask(value: .presentFilterSheetView(state.filterSheetState))
-
-        case .spaceSize:
-          return .none
-
-        default:
-          return .none
-        }
+        state.filterSheetState.filterType = filterType
+        return EffectTask(value: .presentFilterSheetView(state.filterSheetState))
 
       default:
         return .none
