@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum LoginType {
   case kakao
@@ -27,11 +28,22 @@ enum LoginType {
   var displayName: String {
     switch self {
     case .kakao:
-      return "카카오"
+      return "카카오 로그인"
     case .apple:
-      return "애플"
+      return "Apple 로그인"
     case .anonymous:
       return "없음"
+    }
+  }
+
+  var image: Image {
+    switch self {
+    case .kakao:
+      return CofficeAsset.Asset.kakaoLogo18px.swiftUIImage
+    case .apple:
+      return CofficeAsset.Asset.appleLogo18px.swiftUIImage
+    case .anonymous:
+      return Image(systemName: "person")
     }
   }
 
