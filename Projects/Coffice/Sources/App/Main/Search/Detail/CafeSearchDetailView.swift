@@ -29,7 +29,11 @@ struct CafeSearchDetailView: View {
             CafeSearchDetailSubInfoView(store: store)
             CafeSearchDetailMenuView(store: store)
           }
-          .padding(.bottom, 50)
+          .padding(
+            .bottom,
+            TabBarSizePreferenceKey.defaultValue.height
+            + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
+          )
         }
       }
       .navigationBarHidden(true)
