@@ -34,7 +34,8 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     var mainViewState: CafeFilterBottomSheetViewState = .init(optionButtonCellViewStates: [])
 
     var isBottomSheetPresented = false
-    let dismissTimeInterval: UInt64 = 100_000_000
+    let dismissAnimationDuration: Double = 0.3
+    let dismissDelayNanoseconds: UInt64 = 300_000_000
     var containerViewHeight: CGFloat = .zero
     let headerViewHeight: CGFloat = 80
     let footerViewHeight: CGFloat = 84 + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
@@ -194,7 +195,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
       switch action {
       case .backgroundViewTapped:
         state.isBottomSheetPresented = false
-        let dismissTimeInterval = state.dismissTimeInterval
+        let dismissTimeInterval = state.dismissDelayNanoseconds
         return .run { send in
           try await Task.sleep(nanoseconds: dismissTimeInterval)
           await send(.dismiss)

@@ -50,7 +50,7 @@ struct CafeFilterBottomSheetView: View {
           }
         }
         .frame(width: proxy.size.width, height: proxy.size.height)
-        .animation(.easeIn(duration: 0.3), value: viewStore.isBottomSheetPresented)
+        .animation(.easeIn(duration: viewStore.dismissAnimationDuration), value: viewStore.isBottomSheetPresented)
       }
     }
   }
