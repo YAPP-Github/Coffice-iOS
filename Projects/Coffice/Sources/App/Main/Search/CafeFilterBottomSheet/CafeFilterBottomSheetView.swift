@@ -11,11 +11,6 @@ import SwiftUI
 
 struct CafeFilterBottomSheetView: View {
   private let store: StoreOf<CafeFilterBottomSheet>
-  @State var isSheetPresented = false
-  @State private var height = CGFloat.zero
-  let isDimmed: Bool = false
-  let isDragAble: Bool = false
-  let delayTime = 0.000001
 
   init(store: StoreOf<CafeFilterBottomSheet>) {
     self.store = store
@@ -29,15 +24,13 @@ struct CafeFilterBottomSheetView: View {
             .opacity(0.4)
             .ignoresSafeArea()
             .onTapGesture {
-              viewStore.send(.dismiss)
+              viewStore.send(.backgroundViewTapped)
             }
             .onAppear {
-              DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
-                withAnimation { isSheetPresented = true }
-              }
+              viewStore.send(.presentBottomSheet)
             }
 
-          if isSheetPresented {
+          if viewStore.isBottomSheetPresented {
             RoundedRectangle(cornerRadius: 15)
               .transition(.move(edge: .bottom))
               .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
@@ -50,11 +43,14 @@ struct CafeFilterBottomSheetView: View {
                 }
                 .frame(width: proxy.size.width, height: proxy.size.height)
               }
-              .onAppear { height = proxy.size.height }
-              .offset(y: height - viewStore.bottomSheetHeight)
+              .onAppear {
+                viewStore.send(.updateContainerView(height: proxy.size.height))
+              }
+              .offset(y: viewStore.containerViewHeight - viewStore.bottomSheetHeight)
           }
         }
         .frame(width: proxy.size.width, height: proxy.size.height)
+        .animation(.easeIn(duration: 0.3), value: viewStore.isBottomSheetPresented)
       }
     }
   }

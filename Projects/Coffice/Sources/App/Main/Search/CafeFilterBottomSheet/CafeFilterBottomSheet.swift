@@ -33,6 +33,9 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     var cafeFilterInformation: CafeFilterInformation
     var mainViewState: CafeFilterBottomSheetViewState = .init(optionButtonCellViewStates: [])
 
+    var isBottomSheetPresented = false
+    let dismissTimeInterval: UInt64 = 100_000_000
+    var containerViewHeight: CGFloat = .zero
     let headerViewHeight: CGFloat = 80
     let footerViewHeight: CGFloat = 84 + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
     var scrollViewHeight: CGFloat {
@@ -171,6 +174,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
 
   enum Action: Equatable {
     case dismiss
+    case presentBottomSheet
     case optionButtonTapped(optionType: OptionType)
     case infoGuideButtonTapped
     case presentBubbleMessageView(BubbleMessage.State)
@@ -178,6 +182,8 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     case resetCafeFilterButtonTapped
     case resetCafeFilter
     case saveCafeFilterButtonTapped
+    case backgroundViewTapped
+    case updateContainerView(height: CGFloat)
     case saveCafeFilter(information: CafeFilterInformation)
   }
 
@@ -186,6 +192,18 @@ struct CafeFilterBottomSheet: ReducerProtocol {
   var body: some ReducerProtocolOf<CafeFilterBottomSheet> {
     Reduce { state, action in
       switch action {
+      case .backgroundViewTapped:
+        state.isBottomSheetPresented = false
+        let dismissTimeInterval = state.dismissTimeInterval
+        return .run { send in
+          try await Task.sleep(nanoseconds: dismissTimeInterval)
+          await send(.dismiss)
+        }
+
+      case .presentBottomSheet:
+        state.isBottomSheetPresented = true
+        return .none
+
       case .optionButtonTapped(let optionType):
         switch optionType {
         case .runningTime(let option):
@@ -255,6 +273,10 @@ struct CafeFilterBottomSheet: ReducerProtocol {
           EffectTask(value: .saveCafeFilter(information: state.cafeFilterInformation)),
           EffectTask(value: .dismiss)
         )
+
+      case .updateContainerView(let height):
+        state.containerViewHeight = height
+        return .none
 
       default:
         return .none
