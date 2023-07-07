@@ -67,17 +67,6 @@ struct LoginView: View {
         }
         .frame(height: 50)
 
-        Button(action: {
-          viewStore.send(.useAppAsNonMember)
-        }, label: {
-          Text("익명으로 시작하기")
-            .tint(CofficeAsset.Colors.red.swiftUIColor)
-            .frame(maxWidth: .infinity, minHeight: 50)
-            .font(.system(size: 18, weight: .bold, design: .default))
-        })
-        .background(Color.pink.opacity(0.8))
-        .cornerRadius(10)
-
         Spacer()
       }
       .padding(20)

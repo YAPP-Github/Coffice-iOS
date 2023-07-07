@@ -18,7 +18,6 @@ struct AppCoordinator: ReducerProtocol {
     )
 
     var routes: [Route<AppScreen.State>]
-    var isLoggedIn = CoreNetwork.shared.token != nil
   }
 
   enum Action: IndexedRouterAction, Equatable {
@@ -35,12 +34,6 @@ struct AppCoordinator: ReducerProtocol {
         return .none
 
       case .useAppAsNonMember:
-        return .none
-
-      case .routeAction(_, .main(.onAppear)):
-        if state.isLoggedIn.isFalse {
-          state.routes.presentCover(.login(.initialState))
-        }
         return .none
 
       case .routeAction(_, action: .main(
