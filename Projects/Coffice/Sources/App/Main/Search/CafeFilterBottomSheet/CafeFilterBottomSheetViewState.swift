@@ -51,7 +51,8 @@ struct CafeFilterOptionButtonViewState: Equatable, Identifiable {
   }
 }
 
-struct CafeFilterOptionButtonCellViewState: Equatable {
+struct CafeFilterOptionButtonCellViewState: Equatable, Identifiable {
+  let id = UUID()
   var viewStates: [CafeFilterOptionButtonViewState]
   var sectionTitle: String {
     switch viewStates.first?.option {

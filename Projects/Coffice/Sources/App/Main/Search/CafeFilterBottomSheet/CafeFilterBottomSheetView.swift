@@ -105,11 +105,10 @@ extension CafeFilterBottomSheetView {
     WithViewStore(store) { viewStore in
       ScrollView(.vertical) {
         VStack(alignment: .leading, spacing: 0) {
-          ForEach(viewStore.mainViewState.optionButtonCellViewStates.indices, id: \.self) { index in
-            let cellViewState = viewStore.mainViewState.optionButtonCellViewStates[safe: index]
-            let viewStates = cellViewState?.viewStates ?? []
+          ForEach(viewStore.mainViewState.optionButtonCellViewStates) { cellViewState in
+            let viewStates = cellViewState.viewStates
             if viewStore.shouldShowSubSectionView {
-              Text(cellViewState?.sectionTitle ?? "-")
+              Text(cellViewState.sectionTitle)
                 .applyCofficeFont(font: .header3)
                 .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
