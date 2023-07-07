@@ -24,6 +24,8 @@ struct EditProfile: ReducerProtocol {
     case binding(BindingAction<State>)
     case confirmButtonTapped
     case clearText
+    case showTabBar
+    case hideTabBar
   }
 
   var body: some ReducerProtocolOf<EditProfile> {

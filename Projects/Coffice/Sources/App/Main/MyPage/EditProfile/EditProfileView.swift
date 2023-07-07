@@ -19,7 +19,6 @@ struct EditProfileView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       nickNameView
-        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
         .customNavigationBar(
           centerView: {
             Text("프로필 편집")
@@ -38,6 +37,12 @@ struct EditProfileView: View {
             }
           }
         )
+        .onAppear {
+          viewStore.send(.hideTabBar)
+        }
+        .onDisappear {
+          viewStore.send(.showTabBar)
+        }
     }
   }
 

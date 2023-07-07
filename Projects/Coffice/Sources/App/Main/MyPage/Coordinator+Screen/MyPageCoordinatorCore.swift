@@ -21,6 +21,8 @@ struct MyPageCoordinator: ReducerProtocol {
   enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: MyPageScreen.Action)
     case updateRoutes([Route<MyPageScreen.State>])
+    case hideTabBar
+    case showTabBar
   }
 
   var body: some ReducerProtocolOf<MyPageCoordinator> {
@@ -48,6 +50,12 @@ struct MyPageCoordinator: ReducerProtocol {
           .routeAction(_, action: .editProfile(.popView)):
         state.routes.pop()
         return .none
+
+      case .routeAction(_, action: .editProfile(.hideTabBar)):
+        return EffectTask(value: .hideTabBar)
+
+      case .routeAction(_, action: .editProfile(.showTabBar)):
+        return EffectTask(value: .showTabBar)
 
       default:
         return .none
