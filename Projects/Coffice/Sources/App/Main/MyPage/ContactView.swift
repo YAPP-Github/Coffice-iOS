@@ -9,8 +9,8 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct OpenSourcesView: View {
-  let store: StoreOf<OpenSources>
+struct ContactView: View {
+  let store: StoreOf<Contact>
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -38,10 +38,10 @@ struct OpenSourcesView: View {
 
 struct OpenSourcesView_Previews: PreviewProvider {
   static var previews: some View {
-    OpenSourcesView(
+    ContactView(
       store: .init(
         initialState: .initialState,
-        reducer: OpenSources()
+        reducer: Contact()
       )
     )
   }

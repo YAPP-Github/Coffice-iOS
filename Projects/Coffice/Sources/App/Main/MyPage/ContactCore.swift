@@ -8,11 +8,11 @@
 
 import ComposableArchitecture
 
-struct OpenSources: ReducerProtocol {
+struct Contact: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init()
 
-    let title = "오픈소스 라이브러리"
+    let title = "문의하기"
   }
 
   enum Action: Equatable {
@@ -20,7 +20,7 @@ struct OpenSources: ReducerProtocol {
     case popView
   }
 
-  var body: some ReducerProtocolOf<OpenSources> {
+  var body: some ReducerProtocolOf<Contact> {
     Reduce { state, action in
       switch action {
       case .onAppear:

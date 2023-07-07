@@ -26,25 +26,25 @@ struct MyPageCoordinator: ReducerProtocol {
   var body: some ReducerProtocolOf<MyPageCoordinator> {
     Reduce<State, Action> { state, action in
       switch action {
-      case .routeAction(_, action: .myPage(.pushToServiceTermsView)):
-        state.routes.push(.serviceTerms(.initialState))
+      case .routeAction(_, action: .myPage(.pushToLocationServiceTermsView)):
+        state.routes.push(.locationServiceTerms(.initialState))
         return .none
 
       case .routeAction(_, action: .myPage(.pushToPrivacyPolicy)):
         state.routes.push(.privacyPolicy(.initialState))
         return .none
 
-      case .routeAction(_, action: .myPage(.pushToOpenSourcesView)):
-        state.routes.push(.openSources(.initialState))
+      case .routeAction(_, action: .myPage(.pushToContactView)):
+        state.routes.push(.contact(.initialState))
         return .none
 
       case .routeAction(_, action: .myPage(.pushToDevTestView)):
         state.routes.push(.devTest(.initialState))
         return .none
 
-      case .routeAction(_, action: .serviceTerms(.popView)),
+      case .routeAction(_, action: .locationServiceTerms(.popView)),
           .routeAction(_, action: .privacyPolicy(.popView)),
-          .routeAction(_, action: .openSources(.popView)),
+          .routeAction(_, action: .contact(.popView)),
           .routeAction(_, action: .devTest(.popView)):
         state.routes.pop()
         return .none

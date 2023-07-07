@@ -1,5 +1,5 @@
 //
-//  ServiceTermsView.swift
+//  LocationServiceTermsView.swift
 //  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/29.
@@ -9,8 +9,8 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct ServiceTermsView: View {
-  let store: StoreOf<ServiceTerms>
+struct LocationServiceTermsView: View {
+  let store: StoreOf<LocationServiceTerms>
 
   var body: some View {
     mainView
@@ -20,13 +20,13 @@ struct ServiceTermsView: View {
     WithViewStore(store) { viewStore in
       VStack {
         Spacer()
-        Text("ServiceTermsView")
+        Text("LoactionServiceTermsView")
 
         Spacer()
       }
       .customNavigationBar(
         centerView: {
-          Text("서비스 이용 약관")
+          Text("위치서비스 약관")
         },
         leftView: {
           Button {
@@ -40,12 +40,12 @@ struct ServiceTermsView: View {
   }
 }
 
-struct ServiceTermsView_Previews: PreviewProvider {
+struct LocationServiceTermsView_Previews: PreviewProvider {
   static var previews: some View {
-    ServiceTermsView(
+    LocationServiceTermsView(
       store: .init(
         initialState: .init(),
-        reducer: ServiceTerms()
+        reducer: LocationServiceTerms()
       )
     )
   }

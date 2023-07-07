@@ -71,9 +71,9 @@ struct MyPage: ReducerProtocol {
     case onAppear
     case menuButtonTapped(MenuItem)
     case userInfoFetched(User)
-    case pushToServiceTermsView
+    case pushToLocationServiceTermsView
     case pushToPrivacyPolicy
-    case pushToOpenSourcesView
+    case pushToContactView
     case pushToDevTestView
     case presentLoginPage
   }
@@ -101,9 +101,9 @@ struct MyPage: ReducerProtocol {
         case .privacyPolicy:
           return EffectTask(value: .pushToPrivacyPolicy)
         case .locationServiceTerms:
-          return EffectTask(value: .pushToServiceTermsView)
+          return EffectTask(value: .pushToLocationServiceTermsView)
         case .contact:
-          return .none // TODO: 메뉴 탭시 동작 채우기
+          return EffectTask(value: .pushToContactView)
         case .versionInformation:
           return .none
         case .logout:

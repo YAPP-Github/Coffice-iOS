@@ -1,5 +1,5 @@
 //
-//  ServiceTermsCore.swift
+//  LocationServiceTermsCore.swift
 //  Cafe
 //
 //  Created by MinKyeongTae on 2023/05/29.
@@ -8,11 +8,11 @@
 
 import ComposableArchitecture
 
-struct ServiceTerms: ReducerProtocol {
+struct LocationServiceTerms: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init()
 
-    let title = "서비스 이용 약관"
+    let title = "위치서비스 약관"
   }
 
   enum Action: Equatable {
@@ -22,7 +22,7 @@ struct ServiceTerms: ReducerProtocol {
 
   @Dependency(\.apiClient) private var apiClient
 
-  var body: some ReducerProtocolOf<ServiceTerms> {
+  var body: some ReducerProtocolOf<LocationServiceTerms> {
     Reduce { _, action in
       switch action {
       case .onAppear:
