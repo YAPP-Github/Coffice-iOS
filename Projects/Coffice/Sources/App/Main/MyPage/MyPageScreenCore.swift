@@ -15,7 +15,7 @@ struct MyPageScreen: ReducerProtocol {
     case privacyPolicy(PrivacyPolicy.State)
     case locationServiceTerms(LocationServiceTerms.State)
     case contact(Contact.State)
-    case devTest(DevTest.State)
+    case editProfile(EditProfile.State)
   }
 
   enum Action: Equatable {
@@ -23,7 +23,7 @@ struct MyPageScreen: ReducerProtocol {
     case privacyPolicy(PrivacyPolicy.Action)
     case locationServiceTerms(LocationServiceTerms.Action)
     case contact(Contact.Action)
-    case devTest(DevTest.Action)
+    case editProfile(EditProfile.Action)
   }
 
   var body: some ReducerProtocolOf<MyPageScreen> {
@@ -56,10 +56,10 @@ struct MyPageScreen: ReducerProtocol {
     }
 
     Scope(
-      state: /State.devTest,
-      action: /Action.devTest
+      state: /State.editProfile,
+      action: /Action.editProfile
     ) {
-      DevTest()
+      EditProfile()
     }
   }
 }

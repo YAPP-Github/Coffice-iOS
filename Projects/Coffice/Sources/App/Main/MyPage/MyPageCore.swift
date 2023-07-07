@@ -67,11 +67,12 @@ struct MyPage: ReducerProtocol {
   enum Action: Equatable {
     case onAppear
     case menuButtonTapped(MenuItem)
+    case editProfileButtonTapped
     case userInfoFetched(User)
     case pushToLocationServiceTermsView
     case pushToPrivacyPolicy
     case pushToContactView
-    case pushToDevTestView
+    case pushToEditProfile
     case presentLoginPage
   }
 
@@ -91,6 +92,9 @@ struct MyPage: ReducerProtocol {
       case .userInfoFetched(let user):
         state.user = user
         return .none
+
+      case .editProfileButtonTapped:
+        return EffectTask(value: .pushToEditProfile)
 
       case .menuButtonTapped(let menuItem):
         switch menuItem.menuType {

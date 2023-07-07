@@ -41,9 +41,9 @@ struct MyPageCoordinatorView: View {
         )
 
         CaseLet(
-          state: /MyPageScreen.State.devTest,
-          action: MyPageScreen.Action.devTest,
-          then: DevTestView.init
+          state: /MyPageScreen.State.editProfile,
+          action: MyPageScreen.Action.editProfile,
+          then: EditProfileView.init
         )
       }
     }

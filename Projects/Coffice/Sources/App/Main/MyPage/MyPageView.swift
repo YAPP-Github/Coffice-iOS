@@ -61,7 +61,7 @@ struct MyPageView: View {
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
         Spacer()
         Button {
-          print("button") // TODO: 닉네임 수정 화면으로 이동
+          viewStore.send(.editProfileButtonTapped)
         } label: {
           HStack(spacing: 0) {
             Text("SNS 로그인")

@@ -38,14 +38,14 @@ struct MyPageCoordinator: ReducerProtocol {
         state.routes.push(.contact(.initialState))
         return .none
 
-      case .routeAction(_, action: .myPage(.pushToDevTestView)):
-        state.routes.push(.devTest(.initialState))
+      case .routeAction(_, action: .myPage(.pushToEditProfile)):
+        state.routes.push(.editProfile(.initialState))
         return .none
 
       case .routeAction(_, action: .locationServiceTerms(.popView)),
           .routeAction(_, action: .privacyPolicy(.popView)),
           .routeAction(_, action: .contact(.popView)),
-          .routeAction(_, action: .devTest(.popView)):
+          .routeAction(_, action: .editProfile(.popView)):
         state.routes.pop()
         return .none
 
