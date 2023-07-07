@@ -52,11 +52,8 @@ struct MyPage: ReducerProtocol {
   }
 
   struct State: Equatable {
-    let title = "MyPage"
-    var nickName = "닉네임"
+    var user: User?
     var menuItems: [MenuItem] = MenuType.allCases.map(MenuItem.init)
-    var loginType: LoginType = .anonymous
-    var shouldShowDevTestMenu = false
     var versionNumber: String {
       let versionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
       return versionNumber ?? "1.0.0"
@@ -92,8 +89,7 @@ struct MyPage: ReducerProtocol {
         }
 
       case .userInfoFetched(let user):
-        state.loginType = user.loginTypes.first!
-        state.nickName = user.loginTypes.first == .anonymous ? "로그인 하러가기" : user.name
+        state.user = user
         return .none
 
       case .menuButtonTapped(let menuItem):

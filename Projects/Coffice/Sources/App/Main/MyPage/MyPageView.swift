@@ -32,7 +32,7 @@ struct MyPageView: View {
         nickNameView
           .padding(.top, 110)
 
-        if viewStore.loginType == .anonymous {
+        if viewStore.user?.loginTypes.contains(.anonymous) == true {
           Color.clear
             .frame(width: 0, height: 0)
             .padding(.top, 56)
@@ -56,12 +56,12 @@ struct MyPageView: View {
   private var nickNameView: some View {
     WithViewStore(store) { viewStore in
       HStack {
-        Text("닉네임")
+        Text(viewStore.user?.name ?? "닉네임")
           .applyCofficeFont(font: .header1)
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
         Spacer()
         Button {
-          print("button")
+          print("button") // TODO: 닉네임 수정 화면으로 이동
         } label: {
           HStack(spacing: 0) {
             Text("SNS 로그인")
@@ -92,10 +92,10 @@ struct MyPageView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
           HStack(spacing: 8) {
-            viewStore.loginType.image
+            viewStore.user?.loginTypes.first?.image
               .resizable()
               .frame(width: 18, height: 18)
-            Text(viewStore.loginType.displayName)
+            Text(viewStore.user?.loginTypes.first?.displayName ?? "")
               .applyCofficeFont(font: .body2Medium)
               .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
               .padding(.trailing, 10)
