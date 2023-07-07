@@ -30,7 +30,7 @@ struct EditProfileView: View {
           },
           rightView: {
             Button {
-              viewStore.send(.popView)
+              viewStore.send(.dismissButtonTapped)
             } label: {
               CofficeAsset.Asset.close40px.swiftUIImage
                 .frame(width: 40, height: 40)
@@ -39,9 +39,6 @@ struct EditProfileView: View {
         )
         .onAppear {
           viewStore.send(.hideTabBar)
-        }
-        .onDisappear {
-          viewStore.send(.showTabBar)
         }
     }
   }

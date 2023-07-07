@@ -21,6 +21,7 @@ struct EditProfile: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     case onAppear
     case popView
+    case dismissButtonTapped
     case binding(BindingAction<State>)
     case confirmButtonTapped
     case clearText
@@ -35,8 +36,11 @@ struct EditProfile: ReducerProtocol {
       case .onAppear:
         return .none
 
-      case .popView:
-        return .none
+      case .dismissButtonTapped:
+        return .concatenate(
+          EffectTask(value: .showTabBar),
+          EffectTask(value: .popView)
+        )
 
       case .binding(\.$nicknameTextField):
         return .none
