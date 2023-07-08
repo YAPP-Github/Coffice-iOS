@@ -33,7 +33,6 @@ struct CafeSearchListCore: ReducerProtocol {
   enum Action: Equatable {
     case updateViewType(ViewType)
     case onAppear
-    case updateState(CafeFilterBottomSheet.State)
     case searchPlaceResponse(TaskResult<[Cafe]>)
     case filterMenus(action: CafeFilterMenus.Action)
     case scrollAndLoadData(Int)
