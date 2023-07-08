@@ -80,7 +80,7 @@ extension CafeFilterBottomSheetView {
         Spacer()
 
         Button {
-          viewStore.send(.dismiss)
+          viewStore.send(.dismissWithDelay)
         } label: {
           CofficeAsset.Asset.close40px.swiftUIImage
             .padding(.top, 24)

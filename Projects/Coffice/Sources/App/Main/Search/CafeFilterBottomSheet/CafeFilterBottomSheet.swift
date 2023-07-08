@@ -175,7 +175,10 @@ struct CafeFilterBottomSheet: ReducerProtocol {
 
   enum Action: Equatable {
     case dismiss
+    /// dismiss 애니메이션 적용을 위해 딜레이 시간을 적용한 이벤트
+    case dismissWithDelay
     case presentBottomSheet
+    case hideBottomSheet
     case optionButtonTapped(optionType: OptionType)
     case infoGuideButtonTapped
     case presentBubbleMessageView(BubbleMessage.State)
@@ -194,12 +197,11 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .backgroundViewTapped:
+        return EffectTask(value: .dismissWithDelay)
+
+      case .hideBottomSheet:
         state.isBottomSheetPresented = false
-        let dismissTimeInterval = state.dismissDelayNanoseconds
-        return .run { send in
-          try await Task.sleep(nanoseconds: dismissTimeInterval)
-          await send(.dismiss)
-        }
+        return .none
 
       case .presentBottomSheet:
         state.isBottomSheetPresented = true
@@ -270,14 +272,25 @@ struct CafeFilterBottomSheet: ReducerProtocol {
       case .saveCafeFilterButtonTapped:
         // TODO: 화면 상단 필터뷰로 데이터 전달하여 UI 업데이트 필요
         debugPrint("saved mainViewState : \(state.mainViewState)")
+        let dismissDelayNanoseconds = Int(state.dismissDelayNanoseconds)
         return .concatenate(
           EffectTask(value: .saveCafeFilter(information: state.cafeFilterInformation)),
-          EffectTask(value: .dismiss)
+          EffectTask(value: .dismissWithDelay)
         )
 
       case .updateContainerView(let height):
         state.containerViewHeight = height
         return .none
+
+      case .dismissWithDelay:
+        let dismissDelayNanoseconds = Int(state.dismissDelayNanoseconds)
+        state.isBottomSheetPresented = false
+        return .concatenate(
+          EffectTask(value: .hideBottomSheet)
+            .delay(for: .nanoseconds(dismissDelayNanoseconds), scheduler: DispatchQueue.main)
+            .eraseToEffect(),
+          EffectTask(value: .dismiss)
+        )
 
       default:
         return .none
