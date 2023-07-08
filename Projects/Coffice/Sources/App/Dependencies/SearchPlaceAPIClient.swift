@@ -38,30 +38,6 @@ struct SearchPlaceAPIClient: DependencyKey {
     return cafeSearchResponse
   }
 
-  func fetchDefaultPlaces(page: Int, size: Int, sort: SortDescriptor) async throws -> CafeSearchResponse {
-    let coreNetwork = CoreNetwork.shared
-    var urlComponents = URLComponents(string: coreNetwork.baseURL)
-    urlComponents?.path = "/api/v1/places"
-    urlComponents?.queryItems = [
-      .init(name: "page", value: String(page)),
-      .init(name: "size", value: String(size)),
-      .init(name: "sort", value: sort.name)
-    ]
-
-    guard let request = urlComponents?.toURLRequest(method: .get)
-    else { throw CoreNetworkError.requestConvertFailed }
-
-    let response: [PlaceResponseDTO] = try await coreNetwork
-      .dataTask(request: request)
-    let cafeSearchResponse = CafeSearchResponse(
-      cafes: response.map { $0.toCafeEntity() },
-      filters: nil,
-      hasNext: false
-    )
-
-    return cafeSearchResponse
-  }
-
   func fetchPlace(placeId: Int) async throws -> Cafe {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
