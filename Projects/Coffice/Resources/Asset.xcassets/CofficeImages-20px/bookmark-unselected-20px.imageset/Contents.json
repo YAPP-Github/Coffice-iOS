@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "bookmark-unselected-20px.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "bookmark-unselected@2x-20px.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "bookmark-unselected@3x-20px.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
