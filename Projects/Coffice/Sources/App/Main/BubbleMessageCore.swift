@@ -11,9 +11,44 @@ import Foundation
 
 struct BubbleMessage: ReducerProtocol {
   struct State: Equatable {
-    let title: String
-    let subTitle: String
-    let subInfoViewStates: [SubInfoViewState]
+    let guideType: CafeFilter.GuideType
+
+    var title: String {
+      switch guideType {
+      case .outletState: return "콘센트"
+      case .spaceSize: return "공간크기"
+      case .groupSeat: return "단체석"
+      }
+    }
+
+    var subTitle: String {
+      switch guideType {
+      case .outletState: return "좌석대비 콘센트 비율"
+      case .spaceSize: return "테이블 기준 크기"
+      case .groupSeat: return "단체석 기준"
+      }
+    }
+
+    var subInfoViewStates: [SubInfoViewState] {
+      switch guideType {
+      case .outletState:
+        return [
+          .init(iconImage: CofficeAsset.Asset.close40px, title: "넉넉:", description: "80% 이상"),
+          .init(iconImage: CofficeAsset.Asset.close40px, title: "보통:", description: "30% ~ 80%"),
+          .init(iconImage: CofficeAsset.Asset.close40px, title: "부족:", description: "30% 미만")
+        ]
+      case .spaceSize:
+        return [
+          .init(iconImage: CofficeAsset.Asset.close40px, title: "대형:", description: "테이블 15개 이상"),
+          .init(iconImage: CofficeAsset.Asset.close40px, title: "보통:", description: "테이블 6 ~ 14개"),
+          .init(iconImage: CofficeAsset.Asset.close40px, title: "부족:", description: "테이블 5개 이하")
+        ]
+      case .groupSeat:
+        return [
+          .init(iconImage: CofficeAsset.Asset.close40px, title: "단체석:", description: "5인 테이블")
+        ]
+      }
+    }
   }
 
   struct SubInfoViewState: Equatable, Identifiable {
@@ -39,14 +74,6 @@ struct BubbleMessage: ReducerProtocol {
 
 extension BubbleMessage.State {
   static var mock: Self {
-    .init(
-      title: "콘센트",
-      subTitle: "좌석대비 콘센트 비율",
-      subInfoViewStates: [
-        .init(iconImage: CofficeAsset.Asset.close40px, title: "넉넉:", description: "80% 이상"),
-        .init(iconImage: CofficeAsset.Asset.close40px, title: "보통:", description: "30% ~ 80%"),
-        .init(iconImage: CofficeAsset.Asset.close40px, title: "부족:", description: "30% 미만")
-      ]
-    )
+    .init(guideType: .outletState)
   }
 }
