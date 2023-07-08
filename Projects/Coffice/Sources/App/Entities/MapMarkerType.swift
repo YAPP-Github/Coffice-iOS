@@ -25,26 +25,26 @@ struct MapMarkerType {
   var width: CGFloat {
     switch (bookmarkType, selectType) {
     case (.nonBookmarked, .unSelected):
-      return 24
+      return 20
     case (.nonBookmarked, .selected):
-      return 36
+      return 28
     case (.bookmarked, .unSelected):
-      return 36
+      return 20
     case (.bookmarked, .selected):
-      return 48
+      return 28
     }
   }
 
   var height: CGFloat {
     switch (bookmarkType, selectType) {
     case (.nonBookmarked, .unSelected):
-      return 24
+      return 20
     case (.nonBookmarked, .selected):
-      return 47
-    case (.bookmarked, .unSelected):
       return 36
+    case (.bookmarked, .unSelected):
+      return 20
     case (.bookmarked, .selected):
-      return 52
+      return 36
     }
   }
 

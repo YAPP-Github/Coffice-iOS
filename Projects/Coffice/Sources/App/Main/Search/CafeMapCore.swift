@@ -93,6 +93,7 @@ struct CafeMapCore: ReducerProtocol {
     var shouldUpdateMarkers: Bool {
       return cafeMarkerList.isNotEmpty && isUpdatingMarkers
     }
+    var isUpdatingBookmarkState = false
   }
 
   // MARK: - Action
@@ -112,10 +113,11 @@ struct CafeMapCore: ReducerProtocol {
     case markerTapped(cafe: Cafe)
     case mapViewTapped
     case movedToCurrentPosition
-    case updatedMarkers
+    case markersUpdated
+    case bookmarkStateUpdated
 
     // MARK: Search
-    case filterOrderMenuClicked(FilterOrder)
+    case filterOrderMenuTapped(FilterOrder)
     case requestSearchPlaceResponse(TaskResult<[Cafe]>, String)
 
     // MARK: Temporary
@@ -217,9 +219,9 @@ struct CafeMapCore: ReducerProtocol {
           let result = await TaskResult {
             // TODO: Sample Value를 실제 요청값으로 바꾸기
             let cafeRequest = SearchPlaceRequestValue(
-              searchText: "스타벅스", userLatitude: 37.498768, userLongitude: 127.0277985,
-              maximumSearchDistance: 1000, isOpened: nil, hasCommunalTable: nil,
-              filters: nil, pageSize: 10, pageableKey: nil
+              searchText: "", userLatitude: 37.498768, userLongitude: 127.0277985,
+              maximumSearchDistance: 1000000, isOpened: nil, hasCommunalTable: nil,
+              filters: nil, pageSize: 1000, pageableKey: nil
             )
 
             let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
@@ -250,12 +252,16 @@ struct CafeMapCore: ReducerProtocol {
         state.isMovingToCurrentPosition = false
         return .none
 
-      case .updatedMarkers:
+      case .markersUpdated:
         state.isUpdatingMarkers = false
         return .none
 
+      case .bookmarkStateUpdated:
+        state.isUpdatingBookmarkState = false
+        return .none
+
         // MARK: Search
-      case .filterOrderMenuClicked(let filterOrder):
+      case .filterOrderMenuTapped(let filterOrder):
         switch filterOrder {
         case .searchList:
           return EffectTask(value: .pushToSearchListForTest)
@@ -313,12 +319,17 @@ struct CafeMapCore: ReducerProtocol {
 
       case .bookmarkButtonTapped(let cafe):
         state.selectedCafe?.isBookmarked.toggle()
-        return .run { [isBookMarked = state.selectedCafe?.isBookmarked] send in
-          try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+        state.isUpdatingBookmarkState = true
+        return .run { [isBookmarked = state.selectedCafe?.isBookmarked] send in
+          if isBookmarked == true {
+            try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+          } else {
+            try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
+          }
           await send(
             .showToast(
               Toast.State(
-                title: isBookMarked ?? false ? "장소가 저장되었습니다." : "장소가 저장해제되었습니다.",
+                title: isBookmarked ?? false ? "장소가 저장되었습니다." : "장소가 저장해제되었습니다.",
                 image: CofficeAsset.Asset.checkboxCircleFill18px,
                 config: Config.default
               )

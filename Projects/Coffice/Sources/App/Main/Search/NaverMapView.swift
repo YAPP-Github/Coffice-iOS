@@ -33,10 +33,10 @@ final class NaverMapViewStorage {
     }
   }
   var cafes: [Cafe] = []
-  let unselectedIconImage = CofficeAsset.Asset.markerUnselected24px.image
-  let selectedIconImage = CofficeAsset.Asset.markerSelected3647px.image
-  let bookmarkUnselectedIconImage = CofficeAsset.Asset.bookmarkUnselected36px.image
-  let bookmarkSelectedIconImage = CofficeAsset.Asset.bookmarkSelected4852px.image
+  let unselectedIconImage = CofficeAsset.Asset.unselected20px.image
+  let selectedIconImage = CofficeAsset.Asset.selected2836px.image
+  let bookmarkUnselectedIconImage = CofficeAsset.Asset.bookmarkUnselected20px.image
+  let bookmarkSelectedIconImage = CofficeAsset.Asset.bookmarkSelected2836px.image
 
   func resetValues() {
     markers.removeAll()
@@ -75,11 +75,23 @@ extension NaverMapView: UIViewRepresentable {
       }
     }
 
-    if viewStore.shouldUpdateMarkers {
-      NaverMapView.storage.cafes = viewStore.state.cafeMarkerList
+    if viewStore.shouldUpdateMarkers
+        && NaverMapView.storage.cafes != viewStore.cafeMarkerList {
+      NaverMapView.storage.cafes = viewStore.cafeMarkerList
       DispatchQueue.main.async {
-        addMarker(naverMapView: uiView, cafeList: viewStore.cafeMarkerList, coordinator: context.coordinator)
+        addMarker(
+          naverMapView: uiView,
+          cafeList: NaverMapView.storage.cafes,
+          coordinator: context.coordinator
+        )
       }
+    }
+
+    if viewStore.isUpdatingBookmarkState {
+      NaverMapView.storage.selectedMarker?.markerType.bookmarkType =
+      viewStore.selectedCafe?.isBookmarked ?? false
+      ? .bookmarked
+      : .nonBookmarked
     }
   }
 
@@ -116,36 +128,39 @@ extension NaverMapView {
           viewStore.send(.markerTapped(cafe: cafe))
         }
 
-        moveCameraTo(naverMapView: naverMapView,
-                     location: .init(latitude: cafe.latitude, longitude: cafe.longitude),
-                     zoomLevel: 18)
         return true
       }
+      marker.captionText = cafe.name
+      marker.captionColor = CofficeAsset.Colors.grayScale9.color
+      marker.captionTextSize = CofficeFont.body2MediumSemiBold.size
+      marker.captionMinZoom = 15.5
+      marker.captionRequestedWidth = 90
+
       marker.mapView = naverMapView.mapView
       NaverMapView.storage.markers.append(marker)
     }
     DispatchQueue.main.async {
-      viewStore.send(.updatedMarkers)
+      viewStore.send(.markersUpdated)
     }
   }
 
-  func moveCameraTo(naverMapView: NMFNaverMapView, location: CLLocationCoordinate2D, zoomLevel: Double) {
+  func moveCameraTo(naverMapView: NMFNaverMapView, location: CLLocationCoordinate2D, zoomLevel: Double? = nil) {
     let nmgLocation = NMGLatLng(lat: location.latitude, lng: location.longitude)
-    let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
-    naverMapView.mapView.moveCamera(cameraUpdate)
+
+    if let zoomLevel {
+      let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
+      naverMapView.mapView.moveCamera(cameraUpdate)
+    } else {
+      let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation)
+      naverMapView.mapView.moveCamera(cameraUpdate)
+    }
   }
 }
 
-class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate, NMFOverlayImageDataSource {
+class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate {
   var target: NaverMapView
   init(target: NaverMapView) {
     self.target = target
-  }
-
-  func view(with overlay: NMFOverlay) -> UIView {
-    let view = CustomInfoWindowView(frame: CGRect(origin: .zero, size: CGSize(width: 50, height: 50)))
-    view.backgroundColor = .red
-    return view
   }
 }
 
