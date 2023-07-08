@@ -128,9 +128,6 @@ extension NaverMapView {
           viewStore.send(.markerTapped(cafe: cafe))
         }
 
-        moveCameraTo(naverMapView: naverMapView,
-                     location: .init(latitude: cafe.latitude, longitude: cafe.longitude),
-                     zoomLevel: 18)
         return true
       }
       marker.captionText = cafe.name
@@ -147,23 +144,23 @@ extension NaverMapView {
     }
   }
 
-  func moveCameraTo(naverMapView: NMFNaverMapView, location: CLLocationCoordinate2D, zoomLevel: Double) {
+  func moveCameraTo(naverMapView: NMFNaverMapView, location: CLLocationCoordinate2D, zoomLevel: Double? = nil) {
     let nmgLocation = NMGLatLng(lat: location.latitude, lng: location.longitude)
-    let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
-    naverMapView.mapView.moveCamera(cameraUpdate)
+
+    if let zoomLevel {
+      let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
+      naverMapView.mapView.moveCamera(cameraUpdate)
+    } else {
+      let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation)
+      naverMapView.mapView.moveCamera(cameraUpdate)
+    }
   }
 }
 
-class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate, NMFOverlayImageDataSource {
+class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate {
   var target: NaverMapView
   init(target: NaverMapView) {
     self.target = target
-  }
-
-  func view(with overlay: NMFOverlay) -> UIView {
-    let view = CustomInfoWindowView(frame: CGRect(origin: .zero, size: CGSize(width: 50, height: 50)))
-    view.backgroundColor = .red
-    return view
   }
 }
 
