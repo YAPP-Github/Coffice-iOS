@@ -21,37 +21,42 @@ struct CafeFilterMenusView: View {
       VStack(spacing: 0) {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
-            ForEach(viewStore.filterOrders, id: \.self) { filter in
+            ForEach(viewStore.buttonViewStates) { viewState in
               Button {
-                viewStore.send(.filterButtonTapped(filter))
+                viewStore.send(.filterButtonTapped(viewState.menuType))
               } label: {
-                if filter == .detail {
-                  Image(asset: CofficeAsset.Asset.filterLine24px)
+                switch viewState.menuType {
+                case .detail:
+                  CofficeAsset.Asset.filterLine24px.swiftUIImage
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: 24, height: 24)
                     .scaledToFit()
-                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                    .frame(width: filter.size.width, height: filter.size.height)
+                    .foregroundColor(viewState.foregroundColorAsset.swiftUIColor)
+                    .frame(width: viewState.menuType.size.width, height: viewState.menuType.size.height)
+                    .cornerRadius(16)
+                    .background(viewState.backgroundColorAsset.swiftUIColor.clipShape(Capsule()))
                     .overlay(
                       RoundedRectangle(cornerRadius: 18)
-                        .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
+                        .stroke(viewState.borderColorAsset.swiftUIColor, lineWidth: 1)
                     )
-                } else {
+                default:
                   HStack(alignment: .center, spacing: 0) {
-                    Text(filter.title)
-                      .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                    Text(viewState.menuType.title)
+                      .foregroundColor(viewState.foregroundColorAsset.swiftUIColor)
                       .applyCofficeFont(font: .body1Medium)
                     Image(asset: CofficeAsset.Asset.arrowDropDownLine18px)
                       .resizable()
                       .renderingMode(.template)
                       .frame(width: 18, height: 18)
-                      .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                      .foregroundColor(viewState.foregroundColorAsset.swiftUIColor)
                   }
-                  .frame(width: filter.size.width, height: filter.size.height)
+                  .frame(width: viewState.menuType.size.width, height: viewState.menuType.size.height)
+                  .cornerRadius(16)
+                  .background(viewState.backgroundColorAsset.swiftUIColor.clipShape(Capsule()))
                   .overlay(
                     RoundedRectangle(cornerRadius: 18)
-                      .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
+                      .stroke(viewState.borderColorAsset.swiftUIColor, lineWidth: 1)
                   )
                 }
               }
@@ -60,6 +65,8 @@ struct CafeFilterMenusView: View {
           }
         }
         .frame(width: 355, height: 36)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 16)
       }
       .onAppear {
         viewStore.send(.onAppear)

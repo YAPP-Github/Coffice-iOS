@@ -94,7 +94,7 @@ struct MainCoordinator: ReducerProtocol {
         return .none
 
       case .search(
-        .routeAction(_, .cafeSearchList(.filterMenus(action: .presentFilterSheetView(let filterSheetState))))
+        .routeAction(_, .cafeSearchList(.filterMenus(action: .presentFilterBottomSheetView(let filterSheetState))))
       ):
         state.filterSheetState = filterSheetState
         return .none

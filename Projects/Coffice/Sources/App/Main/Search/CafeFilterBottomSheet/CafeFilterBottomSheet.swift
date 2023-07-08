@@ -27,7 +27,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
       )
     }
 
-    let filterType: CafeFilter.BottomSheetType
+    let filterType: CafeFilter.MenuType
     /// 기존 필터 설정 상태
     var originCafeFilterInformation: CafeFilterInformation
     var cafeFilterInformation: CafeFilterInformation
@@ -48,7 +48,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
       }
     }
 
-    init(filterType: CafeFilter.BottomSheetType, cafeFilterIntormation: CafeFilterInformation) {
+    init(filterType: CafeFilter.MenuType, cafeFilterIntormation: CafeFilterInformation) {
       self.filterType = filterType
       self.originCafeFilterInformation = cafeFilterIntormation
       self.cafeFilterInformation = cafeFilterIntormation

@@ -109,6 +109,10 @@ struct CafeSearchListCore: ReducerProtocol {
         debugPrint(error)
         return .none
 
+      case .updateCafeFilter(let information):
+        state.cafeFilterInformation = information
+        return EffectTask(value: .filterMenus(action: .updateCafeFilter(information: information)))
+
       default:
         return .none
       }
