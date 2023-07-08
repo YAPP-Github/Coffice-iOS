@@ -99,7 +99,7 @@ struct CafeMapCore: ReducerProtocol {
     case movedToCurrentPosition
     case markersUpdated
     case bookmarkStateUpdated
-	case cleardMarkers
+    case cleardMarkers
 
     // MARK: Search
     case filterOrderMenuTapped(FilterOrder)
