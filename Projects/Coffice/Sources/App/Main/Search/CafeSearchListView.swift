@@ -22,11 +22,12 @@ struct CafeSearchListView: View {
         case .listView:
           ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 0) {
-              ForEach(0..<viewStore.cafeList.count, id: \.self) { index in
-                CafeSearchListCell(store: store, cafe: viewStore.state.cafeList[index])
-                  .onTapGesture { }
-                  .padding(.bottom, 40)
-              }
+                ForEach(viewStore.cafeList.indices, id: \.self) { index in
+                  CafeSearchListCell(store: store, cafe: viewStore.cafeList[index])
+                    .onAppear { viewStore.send(.scrollAndLoadData(index)) }
+                    .onTapGesture { }
+                    .padding(.bottom, 40)
+                }
             }
             .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 0))
           }
@@ -34,6 +35,9 @@ struct CafeSearchListView: View {
         case .mapView:
           Spacer()
         }
+      }
+      .onAppear {
+        viewStore.send(.onAppear)
       }
     }
     .navigationBarBackButtonHidden(true)
@@ -62,10 +66,13 @@ extension CafeSearchListView {
               .frame(width: 24, height: 24)
           }
           .padding(.trailing, 12)
-          Text(viewStore.title)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .lineLimit(1)
-            .onTapGesture { viewStore.send(.titleLabelTapped) }
+
+            Text(viewStore.title)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .contentShape(Rectangle())
+              .onTapGesture { viewStore.send(.titleLabelTapped) }
+              .lineLimit(1)
+
           Button {
             if viewStore.viewType == .mapView {
               viewStore.send(.updateViewType(.listView))
