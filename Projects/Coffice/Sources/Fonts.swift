@@ -28,6 +28,7 @@ enum CofficeFont {
   case body1Medium
   case body2
   case body2Medium
+  case body2MediumSemiBold
   case body3
   case body3Medium
   case paragraph
@@ -63,6 +64,8 @@ extension CofficeFont {
     case .body1Medium:
       return CofficeFontFamily.Pretendard.medium.name
     case .body2Medium:
+      return CofficeFontFamily.Pretendard.medium.name
+    case .body2MediumSemiBold:
       return CofficeFontFamily.Pretendard.medium.name
     case .body2:
       return CofficeFontFamily.Pretendard.regular.name
@@ -105,6 +108,8 @@ extension CofficeFont {
     case .body1Medium:
       return 14
     case .body2Medium:
+      return 12
+    case .body2MediumSemiBold:
       return 12
     case .body2:
       return 12
@@ -149,6 +154,8 @@ extension CofficeFont {
       return 20
     case .body2Medium:
       return 18
+    case .body2MediumSemiBold:
+      return 18
     case .body2:
       return 18
     case .body3Medium:
@@ -189,6 +196,8 @@ extension CofficeFont {
     case .body1Medium:
       return 0
     case .body2Medium:
+      return 0
+    case .body2MediumSemiBold:
       return 0
     case .body2:
       return 0
