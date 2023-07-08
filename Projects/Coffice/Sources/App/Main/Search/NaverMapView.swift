@@ -75,6 +75,12 @@ extension NaverMapView: UIViewRepresentable {
       }
     }
 
+    if viewStore.shouldClearMarkers {
+      removeAllMarkers()
+      NaverMapView.storage.resetValues()
+      DispatchQueue.main.async { viewStore.send(.cleardMarkers) }
+    }
+
     if viewStore.shouldUpdateMarkers
         && NaverMapView.storage.cafes != viewStore.cafeMarkerList {
       NaverMapView.storage.cafes = viewStore.cafeMarkerList
@@ -109,18 +115,20 @@ extension NaverMapView {
     NaverMapView.storage.markers.removeAll()
   }
 
-  func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], coordinator: Coordinator) {
+  func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], selectedCafe: Cafe?, coordinator: Coordinator) {
     removeAllMarkers()
     for cafe in cafeList {
       let marker = MapMarker(
         cafe: cafe,
         markerType: .init(
           bookmarkType: cafe.isBookmarked ? .bookmarked : .nonBookmarked,
-          selectType: .unSelected
+          selectType: selectedCafe?.placeId == cafe.placeId ? .selected : .unSelected
         ),
         position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
       )
-
+      if marker.markerType.selectType == .selected {
+        NaverMapView.storage.selectedMarker = marker
+      }
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         NaverMapView.storage.selectedMarker = marker
 
