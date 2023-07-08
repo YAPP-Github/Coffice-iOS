@@ -42,6 +42,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case popView
     case titleLabelTapped
     case updateCafeFilter(information: CafeFilterInformation)
+    case filterBottomSheetDismissed
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -112,6 +113,11 @@ struct CafeSearchListCore: ReducerProtocol {
       case .updateCafeFilter(let information):
         state.cafeFilterInformation = information
         return EffectTask(value: .filterMenus(action: .updateCafeFilter(information: information)))
+
+      case .filterBottomSheetDismissed:
+        return EffectTask(
+          value: .filterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
+        )
 
       default:
         return .none

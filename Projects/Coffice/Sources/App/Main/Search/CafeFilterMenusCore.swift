@@ -60,6 +60,22 @@ struct CafeFilterMenus: ReducerProtocol {
     let id = UUID()
     let menuType: CafeFilter.MenuType
     let isFilterSetting: Bool
+    /// 버튼 메뉴 타입에 맞는 필터 설정 시 활성화 되는 상태
+    private(set) var isFocused: Bool
+
+    init(
+      menuType: CafeFilter.MenuType,
+      isFilterSetting: Bool,
+      isFocused: Bool = false
+    ) {
+      self.menuType = menuType
+      self.isFilterSetting = isFilterSetting
+      self.isFocused = isFocused
+    }
+
+    mutating func focusButton() {
+      isFocused = true
+    }
 
     var foregroundColorAsset: CofficeColors {
       switch menuType {
@@ -88,13 +104,21 @@ struct CafeFilterMenus: ReducerProtocol {
     var borderColorAsset: CofficeColors {
       switch menuType {
       case .detail:
-        return isFilterSetting
-        ? CofficeAsset.Colors.grayScale9
-        : CofficeAsset.Colors.grayScale4
+        if isFocused {
+          return CofficeAsset.Colors.grayScale9
+        } else {
+          return isFilterSetting
+          ? CofficeAsset.Colors.grayScale9
+          : CofficeAsset.Colors.grayScale4
+        }
       default:
-        return isFilterSetting
-        ? CofficeAsset.Colors.grayScale9
-        : CofficeAsset.Colors.grayScale4
+        if isFocused {
+          return CofficeAsset.Colors.grayScale9
+        } else {
+          return isFilterSetting
+          ? CofficeAsset.Colors.grayScale9
+          : CofficeAsset.Colors.grayScale4
+        }
       }
     }
   }
@@ -113,10 +137,14 @@ struct CafeFilterMenus: ReducerProtocol {
       case .onAppear:
         return .none
 
-      case .filterButtonTapped(let filterType):
+      case .filterButtonTapped(let menuType):
+        guard let buttonViewStateIndex = state.buttonViewStates.firstIndex(where: { $0.menuType == menuType })
+        else { return .none }
+
+        state.buttonViewStates[buttonViewStateIndex].focusButton()
         return EffectTask(
           value: .presentFilterBottomSheetView(
-            .init(filterType: filterType, cafeFilterIntormation: state.filterInformation)
+            .init(filterType: menuType, cafeFilterIntormation: state.filterInformation)
           )
         )
 

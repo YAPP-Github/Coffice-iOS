@@ -86,6 +86,13 @@ struct MainCoordinator: ReducerProtocol {
           )
         )
 
+      case .filterBottomSheet(.dismissWithDelay):
+        return EffectTask(
+          value: .search(
+            .routeAction(1, action: .cafeSearchList(.filterBottomSheetDismissed))
+          )
+        )
+
       case .onAppear:
         return .none
 
