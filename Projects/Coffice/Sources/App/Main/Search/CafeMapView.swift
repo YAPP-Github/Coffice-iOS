@@ -15,36 +15,35 @@ struct CafeMapView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       GeometryReader { geometry in
-        ZStack {
+        ZStack(alignment: .center) {
           NaverMapView(viewStore: viewStore)
             .ignoresSafeArea()
-          ZStack {
-            switch viewStore.displayViewType {
-            case .searchResultView:
-              CafeSearchListView(store: store.scope(
-                state: \.cafeSearchListState,
-                action: CafeMapCore.Action.cafeSearchListAction)
-              )
-              .zIndex(1)
 
-            case .mainMapView:
-                if viewStore.selectedCafe != nil {
-                  VStack {
-                    Spacer()
+          switch viewStore.displayViewType {
+          case .searchResultView:
+            CafeSearchListView(store: store.scope(
+              state: \.cafeSearchListState,
+              action: CafeMapCore.Action.cafeSearchListAction)
+            )
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .zIndex(1)
 
-                    CafeCardView(store: store)
-                      .frame(width: geometry.size.width, height: 260)
-                      .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
-                  }
-                } else {
-                  floatingTestButtonView
-                }
+          case .mainMapView:
+            Color.clear
 
-            case .searchView:
-              CafeSearchView(store: store.scope(
-                state: \.cafeSearchState,
-                action: CafeMapCore.Action.cafeSearchAction)
-              )
+          case .searchView:
+            CafeSearchView(store: store.scope(
+              state: \.cafeSearchState,
+              action: CafeMapCore.Action.cafeSearchAction)
+            )
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+            .zIndex(1)
+          }
+
+          VStack(spacing: 0) {
+            header
+              .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .zIndex(1)
             }
@@ -54,21 +53,25 @@ struct CafeMapView: View {
                 .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               floatingButtonView
                 .padding()
+            HStack(spacing: 0) {
               Spacer()
-              if viewStore.isSelectedCafe {
-                CafeCardView(store: store, screendWidth: geometry.size.width)
-                  .frame(width: geometry.size.width)
-                  .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
-              }
+              floatingButtonView
+                .padding(.vertical)
+            }
+            Spacer()
+            floatingTestButtonView
+            if viewStore.selectedCafe != nil {
+              CafeCardView(store: store, screendWidth: geometry.size.width)
+                .frame(width: geometry.size.width)
+                .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
             }
           }
-          .navigationBarHidden(true)
-        }
-        .onAppear {
-          viewStore.send(.requestLocationAuthorization)
         }
       }
-      .ignoresSafeArea(.keyboard)
+      .navigationBarHidden(true)
+      .onAppear {
+        viewStore.send(.requestLocationAuthorization)
+      }
       .onDisappear {
         viewStore.send(.onDisappear)
       }
