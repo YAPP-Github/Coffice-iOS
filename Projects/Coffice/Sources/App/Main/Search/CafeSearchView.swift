@@ -28,6 +28,7 @@ struct CafeSearchView: View {
       }
       .onAppear {
         focusField = .keyword
+        viewStore.send(.onAppear)
       }
     }
   }
