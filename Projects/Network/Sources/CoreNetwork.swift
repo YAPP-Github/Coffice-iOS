@@ -66,7 +66,7 @@ public final class CoreNetwork: CoreNetworkInterface {
     guard let page = try? JSONDecoder().decode(NetworkResult<DTO>.self, from: data).page else {
       throw CoreNetworkError.jsonDecodeFailed
     }
-    return (dto: dto, hasNext: false)
+    return (dto: dto, hasNext: page.hasNext ?? false)
   }
 
   /// 반환값을 DTO로 변환하지 않을때 사용하는 메서드입니다.
