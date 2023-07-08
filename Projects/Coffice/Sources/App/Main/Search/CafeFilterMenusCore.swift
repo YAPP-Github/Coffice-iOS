@@ -56,6 +56,47 @@ struct CafeFilterMenus: ReducerProtocol {
     }
   }
 
+  enum Action: Equatable {
+    case onAppear
+    case filterButtonTapped(CafeFilter.MenuType)
+    case presentFilterBottomSheetView(CafeFilterBottomSheet.State)
+    case updateCafeFilter(information: CafeFilterInformation)
+    case updateButtonViewStates
+  }
+
+  var body: some ReducerProtocolOf<CafeFilterMenus> {
+    Reduce { state, action in
+      switch action {
+      case .onAppear:
+        return .none
+
+      case .filterButtonTapped(let menuType):
+        guard let buttonViewStateIndex = state.buttonViewStates.firstIndex(where: { $0.menuType == menuType })
+        else { return .none }
+
+        state.buttonViewStates[buttonViewStateIndex].focusButton()
+        return EffectTask(
+          value: .presentFilterBottomSheetView(
+            .init(filterType: menuType, cafeFilterIntormation: state.filterInformation)
+          )
+        )
+
+      case .updateCafeFilter(let information):
+        state.filterInformation = information
+        return EffectTask(value: .updateButtonViewStates)
+
+      case .updateButtonViewStates:
+        state.updateButtonViewStates()
+        return .none
+
+      default:
+        return .none
+      }
+    }
+  }
+}
+
+extension CafeFilterMenus.State {
   struct ButtonViewState: Equatable, Identifiable {
     let id = UUID()
     let menuType: CafeFilter.MenuType
@@ -119,45 +160,6 @@ struct CafeFilterMenus: ReducerProtocol {
           ? CofficeAsset.Colors.grayScale9
           : CofficeAsset.Colors.grayScale4
         }
-      }
-    }
-  }
-
-  enum Action: Equatable {
-    case onAppear
-    case filterButtonTapped(CafeFilter.MenuType)
-    case presentFilterBottomSheetView(CafeFilterBottomSheet.State)
-    case updateCafeFilter(information: CafeFilterInformation)
-    case updateButtonViewStates
-  }
-
-  var body: some ReducerProtocolOf<CafeFilterMenus> {
-    Reduce { state, action in
-      switch action {
-      case .onAppear:
-        return .none
-
-      case .filterButtonTapped(let menuType):
-        guard let buttonViewStateIndex = state.buttonViewStates.firstIndex(where: { $0.menuType == menuType })
-        else { return .none }
-
-        state.buttonViewStates[buttonViewStateIndex].focusButton()
-        return EffectTask(
-          value: .presentFilterBottomSheetView(
-            .init(filterType: menuType, cafeFilterIntormation: state.filterInformation)
-          )
-        )
-
-      case .updateCafeFilter(let information):
-        state.filterInformation = information
-        return EffectTask(value: .updateButtonViewStates)
-
-      case .updateButtonViewStates:
-        state.updateButtonViewStates()
-        return .none
-
-      default:
-        return .none
       }
     }
   }
