@@ -23,7 +23,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     static var mock: Self {
       .init(
         filterType: .detail,
-        cafeFilterIntormation: .mock
+        cafeFilterInformation: .mock
       )
     }
 
@@ -48,10 +48,10 @@ struct CafeFilterBottomSheet: ReducerProtocol {
       }
     }
 
-    init(filterType: CafeFilter.MenuType, cafeFilterIntormation: CafeFilterInformation) {
+    init(filterType: CafeFilter.MenuType, cafeFilterInformation: CafeFilterInformation) {
       self.filterType = filterType
-      self.originCafeFilterInformation = cafeFilterIntormation
-      self.cafeFilterInformation = cafeFilterIntormation
+      self.originCafeFilterInformation = cafeFilterInformation
+      self.cafeFilterInformation = cafeFilterInformation
       updateMainViewState()
     }
 

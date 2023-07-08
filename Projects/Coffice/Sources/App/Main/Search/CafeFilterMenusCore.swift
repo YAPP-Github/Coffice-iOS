@@ -77,7 +77,7 @@ struct CafeFilterMenus: ReducerProtocol {
         state.buttonViewStates[buttonViewStateIndex].focusButton()
         return EffectTask(
           value: .presentFilterBottomSheetView(
-            .init(filterType: menuType, cafeFilterIntormation: state.filterInformation)
+            .init(filterType: menuType, cafeFilterInformation: state.filterInformation)
           )
         )
 
