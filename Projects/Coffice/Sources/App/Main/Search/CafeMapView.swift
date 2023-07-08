@@ -28,7 +28,6 @@ struct CafeMapView: View {
               .zIndex(1)
 
             case .mainMapView:
-              Group {
                 if viewStore.selectedCafe != nil {
                   VStack {
                     Spacer()
@@ -40,7 +39,6 @@ struct CafeMapView: View {
                 } else {
                   floatingTestButtonView
                 }
-              }
 
             case .searchView:
               CafeSearchView(store: store.scope(
@@ -58,8 +56,8 @@ struct CafeMapView: View {
                 .padding()
               Spacer()
               if viewStore.isSelectedCafe {
-                CafeCardView(store: store)
-                  .frame(height: 260)
+                CafeCardView(store: store, screendWidth: geometry.size.width)
+                  .frame(width: geometry.size.width)
                   .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
               }
             }
