@@ -59,8 +59,10 @@ struct EditProfileView: View {
                     lineWidth: 1)
           HStack {
 
-            TextField("지하철, 카페 이름으로 검색",
-                      text: viewStore.binding(\.$nicknameTextField))
+            TextField(
+              "닉네임을 입력해주세요",
+              text: viewStore.binding(\.$nicknameTextField)
+            )
             .applyCofficeFontForTextField(font: .subtitle1Medium)
             .keyboardType(.default)
             .textFieldStyle(.plain)
@@ -95,7 +97,7 @@ struct EditProfileView: View {
           viewStore.send(.confirmButtonTapped)
         } label: {
           Text("완료")
-            .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale1))
+            .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
             .applyCofficeFont(font: .button)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
