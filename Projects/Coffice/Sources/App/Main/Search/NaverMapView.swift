@@ -140,7 +140,7 @@ extension NaverMapView {
       NaverMapView.storage.markers.append(marker)
     }
     DispatchQueue.main.async {
-      viewStore.send(.updatedMarkers)
+      viewStore.send(.markersUpdated)
     }
   }
 

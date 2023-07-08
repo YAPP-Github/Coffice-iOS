@@ -113,11 +113,11 @@ struct CafeMapCore: ReducerProtocol {
     case markerTapped(cafe: Cafe)
     case mapViewTapped
     case movedToCurrentPosition
-    case updatedMarkers
-    case updatedBookmarkState
+    case markersUpdated
+    case bookmarkStateUpdated
 
     // MARK: Search
-    case filterOrderMenuClicked(FilterOrder)
+    case filterOrderMenuTapped(FilterOrder)
     case requestSearchPlaceResponse(TaskResult<[Cafe]>, String)
 
     // MARK: Temporary
@@ -252,16 +252,16 @@ struct CafeMapCore: ReducerProtocol {
         state.isMovingToCurrentPosition = false
         return .none
 
-      case .updatedMarkers:
+      case .markersUpdated:
         state.isUpdatingMarkers = false
         return .none
 
-      case .updatedBookmarkState:
+      case .bookmarkStateUpdated:
         state.isUpdatingBookmarkState = false
         return .none
 
         // MARK: Search
-      case .filterOrderMenuClicked(let filterOrder):
+      case .filterOrderMenuTapped(let filterOrder):
         switch filterOrder {
         case .searchList:
           return EffectTask(value: .pushToSearchListForTest)

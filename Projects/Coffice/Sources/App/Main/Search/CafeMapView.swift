@@ -147,7 +147,7 @@ extension CafeMapView {
         HStack(spacing: 8) {
           ForEach(viewStore.filterOrders, id: \.self) { order in
             Button {
-              viewStore.send(.filterOrderMenuClicked(order))
+              viewStore.send(.filterOrderMenuTapped(order))
             } label: {
               Text(order.title)
                 .font(.subheadline)
