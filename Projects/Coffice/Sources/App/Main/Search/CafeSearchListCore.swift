@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import CoreLocation
 import Network
 import SwiftUI
 
@@ -20,19 +21,18 @@ struct CafeSearchListCore: ReducerProtocol {
     var filterBottomSheetState: CafeFilterBottomSheet.State = .mock
     var filterMenusState: CafeFilterMenus.State = .mock
     var title: String = ""
+    var hasNext: Bool?
+    var lastCafeDistance: Double = .zero
     var viewType: ViewType = .mapView
     var cafeList: [Cafe] = []
     var pageSize: Int = 10
-    var pageNumber: Int = 0
     var cafeFilterInformation: CafeFilterInformation = .mock
-    var pagenationRange: Range<Int> {
-      pageNumber * pageSize..<(pageNumber + 1) * pageSize - 1
-    }
   }
 
   enum Action: Equatable {
     case updateViewType(ViewType)
     case onAppear
+    case scrollAndRequestSearchPlace(Double)
     case searchPlaceResponse(TaskResult<[Cafe]>)
     case filterMenus(action: CafeFilterMenus.Action)
     case scrollAndLoadData(Int)
@@ -64,7 +64,6 @@ struct CafeSearchListCore: ReducerProtocol {
 
       case .backbuttonTapped:
         state.cafeList = []
-        state.pageNumber = 0
         return .send(.dismiss)
 
       case .updateViewType(let viewType):
@@ -72,34 +71,17 @@ struct CafeSearchListCore: ReducerProtocol {
         return .none
 
       case .onAppear:
-        return .run { send in
-          let result = await TaskResult {
-            let requestValue = SearchPlaceRequestValue(
-              searchText: "스타벅스",
-              userLatitude: 37.498768,
-              userLongitude: 127.0277985,
-              maximumSearchDistance: 10000,
-              isOpened: nil,
-              hasCommunalTable: nil,
-              filters: nil,
-              pageSize: 10,
-              pageableKey: nil
-            )
-            let response = try await placeAPIClient.searchPlaces(requestValue: requestValue)
-            return response.cafes
-          }
-          await send(.searchPlaceResponse(result))
-        }
+        state.viewType = .mapView
+        return .none
 
         // TODO: 무한스크롤 추후 수정 예정
       case .scrollAndLoadData(let itemIndex):
-        let currentPageNumber = itemIndex / state.pageSize
-        if state.pagenationRange ~= itemIndex || currentPageNumber <= state.pageNumber {
-          return .none
-        } else {
-          state.pageNumber += 1
-          return .none
+        if state.hasNext ?? false && state.cafeList.count - 1 == itemIndex {
+          guard let lastCafe = state.cafeList.last else { return .none}
+          state.lastCafeDistance = lastCafe.distanceFromUser
+          return .send(.scrollAndRequestSearchPlace(state.lastCafeDistance))
         }
+        return .none
 
       case .searchPlaceResponse(.success(let cafeList)):
         state.cafeList += cafeList
