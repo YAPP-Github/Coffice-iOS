@@ -88,6 +88,7 @@ extension NaverMapView: UIViewRepresentable {
         addMarker(
           naverMapView: uiView,
           cafeList: NaverMapView.storage.cafes,
+          selectedCafe: viewStore.selectedCafe,
           coordinator: context.coordinator
         )
       }
