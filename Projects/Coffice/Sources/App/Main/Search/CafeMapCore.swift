@@ -93,6 +93,7 @@ struct CafeMapCore: ReducerProtocol {
     var shouldUpdateMarkers: Bool {
       return cafeMarkerList.isNotEmpty && isUpdatingMarkers
     }
+    var isUpdatingBookmarkState = false
   }
 
   // MARK: - Action
@@ -113,6 +114,7 @@ struct CafeMapCore: ReducerProtocol {
     case mapViewTapped
     case movedToCurrentPosition
     case updatedMarkers
+    case updatedBookmarkState
 
     // MARK: Search
     case filterOrderMenuClicked(FilterOrder)
@@ -254,6 +256,10 @@ struct CafeMapCore: ReducerProtocol {
         state.isUpdatingMarkers = false
         return .none
 
+      case .updatedBookmarkState:
+        state.isUpdatingBookmarkState = false
+        return .none
+
         // MARK: Search
       case .filterOrderMenuClicked(let filterOrder):
         switch filterOrder {
@@ -313,12 +319,17 @@ struct CafeMapCore: ReducerProtocol {
 
       case .bookmarkButtonTapped(let cafe):
         state.selectedCafe?.isBookmarked.toggle()
-        return .run { [isBookMarked = state.selectedCafe?.isBookmarked] send in
-          try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+        state.isUpdatingBookmarkState = true
+        return .run { [isBookmarked = state.selectedCafe?.isBookmarked] send in
+          if isBookmarked == true {
+            try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+          } else {
+            try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
+          }
           await send(
             .showToast(
               Toast.State(
-                title: isBookMarked ?? false ? "장소가 저장되었습니다." : "장소가 저장해제되었습니다.",
+                title: isBookmarked ?? false ? "장소가 저장되었습니다." : "장소가 저장해제되었습니다.",
                 image: CofficeAsset.Asset.checkboxCircleFill18px,
                 config: Config.default
               )
