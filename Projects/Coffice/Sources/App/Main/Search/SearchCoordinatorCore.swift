@@ -28,7 +28,7 @@ struct SearchCoordinator: ReducerProtocol {
     Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, action: .cafeMap(.pushToSearchListForTest)):
-        state.routes.push(.cafeSearchList(.init()))
+        state.routes.push(.cafeSearchList(.init(filterMenusState: .mock)))
         return .none
 
       case .routeAction(_, action: .cafeSearchDetail(.presentCafeReviewWriteView)):

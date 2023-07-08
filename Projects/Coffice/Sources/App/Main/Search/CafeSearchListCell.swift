@@ -89,7 +89,7 @@ struct CafeSearchListCell_Previews: PreviewProvider {
   static var previews: some View {
     CafeSearchListCell(
       store: .init(
-        initialState: .init(),
+        initialState: .init(filterMenusState: .mock),
         reducer: CafeSearchListCore()
       ),
       cafe: Cafe.dummy
