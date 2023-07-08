@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import CoreLocation
 import Foundation
 import Network
 import SwiftUI
@@ -20,6 +21,8 @@ struct CafeSearchCore: ReducerProtocol {
 
   struct State: Equatable {
     @BindingState var searchText = ""
+    var searchTextSnapshot: String?
+    var searchCameraPositionSnapshot: CLLocationCoordinate2D?
     var recentSearchWordList: [RecentSearchWord] = []
     var stationList: [String] = []
     var cafeList: [String] = []
@@ -101,13 +104,13 @@ struct CafeSearchCore: ReducerProtocol {
         return .send(.requestSearchPlace(state.searchText))
 
       case .dismiss:
-        state.searchText = ""
         state.cafeList.removeAll()
         state.stationList.removeAll()
         state.recentSearchWordList.removeAll()
         return .none
 
       case .onAppear:
+        state.searchText = ""
         state.currentBodyType = .recentSearchListView
         return .send(.fetchRecentSearchWords)
 
