@@ -50,7 +50,7 @@ struct CafeMapView: View {
               .zIndex(1)
             }
             VStack(alignment: .trailing, spacing: 0) {
-              header
+              headerView
                 .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
                 .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               floatingButtonView
@@ -99,45 +99,28 @@ extension CafeMapView {
     }
   }
 
-  var header: some View {
+  var headerView: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
-        searchTextField
+        searchDescriptionView
         orderFilterView
       }
     }
   }
 
-  var searchTextField: some View {
+  var searchDescriptionView: some View {
     WithViewStore(store) { viewStore in
-      ZStack {
-        TextField(
-          "🔍  지역, 지하철로 검색",
-          text: viewStore.binding(\.$searchText)
-        )
-        .textFieldStyle(.plain)
-        .applyCofficeFont(font: .subtitle1Medium)
-        .frame(height: 35)
-        .padding(.leading, 5)
-        .padding(.trailing, 25)
-        .overlay {
-          RoundedRectangle(cornerRadius: 5)
-            .stroke(.gray, lineWidth: 1)
-        }
-        .onSubmit {
-        }
-
-        HStack {
-          Spacer()
-          Button {
-          } label: {
-            Image(systemName: "xmark.circle.fill")
-              .foregroundColor(.gray)
-              .padding(.trailing, 5)
-          }
-        }
+      HStack(spacing: 12) {
+        CofficeAsset.Asset.searchLine24px.swiftUIImage
+          .padding(.vertical, 12)
+        Text("지하철, 카페 이름으로 검색")
+          .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+          .applyCofficeFont(font: .subtitle1Medium)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .frame(height: 20)
+          .padding(.vertical, 14)
       }
-      .padding(.horizontal, 16)
+      .padding(.horizontal, 20)
     }
   }
 
@@ -148,6 +131,6 @@ extension CafeMapView {
         action: CafeMapCore.Action.cafeFilterMenus(action:)
       )
     )
-    .padding(.top, 16)
+    .padding(.top, 8)
   }
 }
