@@ -26,13 +26,10 @@ struct EditProfileView: View {
               .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
           },
           leftView: {
-            EmptyView()
-          },
-          rightView: {
             Button {
               viewStore.send(.dismissButtonTapped)
             } label: {
-              CofficeAsset.Asset.close40px.swiftUIImage
+              CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
                 .frame(width: 40, height: 40)
             }
           }
