@@ -219,9 +219,9 @@ struct CafeMapCore: ReducerProtocol {
           let result = await TaskResult {
             // TODO: Sample Value를 실제 요청값으로 바꾸기
             let cafeRequest = SearchPlaceRequestValue(
-              searchText: "스타벅스", userLatitude: 37.498768, userLongitude: 127.0277985,
-              maximumSearchDistance: 1000, isOpened: nil, hasCommunalTable: nil,
-              filters: nil, pageSize: 10, pageableKey: nil
+              searchText: "", userLatitude: 37.498768, userLongitude: 127.0277985,
+              maximumSearchDistance: 1000000, isOpened: nil, hasCommunalTable: nil,
+              filters: nil, pageSize: 1000, pageableKey: nil
             )
 
             let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
