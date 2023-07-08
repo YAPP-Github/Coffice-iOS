@@ -79,7 +79,7 @@ struct CafeMapCore: ReducerProtocol {
 
     // MARK: Search
     var cafeSearchState = CafeSearchCore.State()
-    var cafeSearchListState = CafeSearchListCore.State()
+    var cafeSearchListState = CafeSearchListCore.State(filterMenusState: .mock)
     let filterOrders = FilterOrder.allCases
     @BindingState var searchText = ""
 

@@ -14,7 +14,7 @@ struct CafeFilterInformation: Equatable {
     .init(
       outletOptionSet: .init([.many]),
       runningTimeOptionSet: .init([.twentyFourHours]),
-      spaceSizeOptionSet: .init([.large]),
+      spaceSizeOptionSet: .init([]),
       personnelOptionSet: .init([.groupSeat]),
       foodOptionSet: .init([.desert, .mealAvailable]),
       toiletOptionSet: .init([.indoors]),

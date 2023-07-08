@@ -86,6 +86,13 @@ struct MainCoordinator: ReducerProtocol {
           )
         )
 
+      case .filterBottomSheet(.dismissWithDelay):
+        return EffectTask(
+          value: .search(
+            .routeAction(1, action: .cafeSearchList(.filterBottomSheetDismissed))
+          )
+        )
+
       case .onAppear:
         return .none
 
@@ -93,7 +100,9 @@ struct MainCoordinator: ReducerProtocol {
         debugPrint("selectedTab : \(itemType)")
         return .none
 
-      case .search(.routeAction(_, .cafeSearchList(.presentFilterSheetView(let filterSheetState)))):
+      case .search(
+        .routeAction(_, .cafeSearchList(.filterMenus(action: .presentFilterBottomSheetView(let filterSheetState))))
+      ):
         state.filterSheetState = filterSheetState
         return .none
 

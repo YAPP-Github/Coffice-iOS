@@ -10,24 +10,15 @@ import ComposableArchitecture
 import SwiftUI
 
 struct CafeFilterBottomSheet: ReducerProtocol {
-  typealias OptionType = CafeFilter.OptionType
-  typealias RunningTimeOption = CafeFilter.RunningTimeOption
-  typealias OutletOption = CafeFilter.OutletOption
-  typealias SpaceSizeOption = CafeFilter.SpaceSizeOption
-  typealias PersonnelOption = CafeFilter.PersonnelOption
-  typealias FoodOption = CafeFilter.FoodOption
-  typealias ToiletOption = CafeFilter.ToiletOption
-  typealias DrinkOption = CafeFilter.DrinkOption
-
   struct State: Equatable {
     static var mock: Self {
       .init(
         filterType: .detail,
-        cafeFilterIntormation: .mock
+        cafeFilterInformation: .mock
       )
     }
 
-    let filterType: CafeFilter.BottomSheetType
+    let filterType: CafeFilter.MenuType
     /// 기존 필터 설정 상태
     var originCafeFilterInformation: CafeFilterInformation
     var cafeFilterInformation: CafeFilterInformation
@@ -39,144 +30,22 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     var containerViewHeight: CGFloat = .zero
     let headerViewHeight: CGFloat = 80
     let footerViewHeight: CGFloat = 84 + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
-    var scrollViewHeight: CGFloat {
-      switch filterType {
-      case .detail:
-        return 435
-      default:
-        return 76
-      }
-    }
 
-    init(filterType: CafeFilter.BottomSheetType, cafeFilterIntormation: CafeFilterInformation) {
+    init(filterType: CafeFilter.MenuType, cafeFilterInformation: CafeFilterInformation) {
       self.filterType = filterType
-      self.originCafeFilterInformation = cafeFilterIntormation
-      self.cafeFilterInformation = cafeFilterIntormation
+      self.originCafeFilterInformation = cafeFilterInformation
+      self.cafeFilterInformation = cafeFilterInformation
       updateMainViewState()
-    }
-
-    mutating func updateMainViewState() {
-      switch filterType {
-      case .detail:
-        mainViewState = .init(
-          optionButtonCellViewStates: [
-            runningTimeOptionButtonCellViewState,
-            outletOptionButtonCellViewState,
-            spaceSizeOptionButtonCellViewState,
-            personnelOptionButtonCellViewState,
-            foodOptionButtonCellViewState,
-            toiletOptionButtonCellViewState,
-            drinkOptionButtonCellViewState
-          ]
-        )
-      case .runningTime:
-        mainViewState = .init(optionButtonCellViewStates: [runningTimeOptionButtonCellViewState])
-      case .outlet:
-        mainViewState = .init(optionButtonCellViewStates: [outletOptionButtonCellViewState])
-      case .spaceSize:
-        mainViewState = .init(optionButtonCellViewStates: [spaceSizeOptionButtonCellViewState])
-      case .personnel:
-        mainViewState = .init(optionButtonCellViewStates: [personnelOptionButtonCellViewState])
-      }
-    }
-
-    var runningTimeOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
-      .init(
-        viewStates: RunningTimeOption.allCases.map {
-          CafeFilterOptionButtonViewState(
-            optionType: .runningTime($0),
-            buttonTitle: $0.title,
-            isSelected: cafeFilterInformation.runningTimeOptionSet.contains($0)
-          )
-        }
-      )
-    }
-
-    var outletOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
-      .init(
-        viewStates: OutletOption.allCases.map {
-          CafeFilterOptionButtonViewState(
-            optionType: .outlet($0),
-            buttonTitle: $0.title,
-            isSelected: cafeFilterInformation.outletOptionSet.contains($0)
-          )
-        }
-      )
-    }
-
-    var spaceSizeOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
-      .init(
-        viewStates: SpaceSizeOption.allCases.map {
-          CafeFilterOptionButtonViewState(
-            optionType: .spaceSize($0),
-            buttonTitle: $0.title,
-            isSelected: cafeFilterInformation.spaceSizeOptionSet.contains($0)
-          )
-        }
-      )
-    }
-
-    var personnelOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
-      .init(
-        viewStates: PersonnelOption.allCases.map {
-          CafeFilterOptionButtonViewState(
-            optionType: .personnel($0),
-            buttonTitle: $0.title,
-            isSelected: cafeFilterInformation.personnelOptionSet.contains($0)
-          )
-        }
-      )
-    }
-
-    var foodOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
-      .init(
-        viewStates: FoodOption.allCases.map {
-          CafeFilterOptionButtonViewState(
-            optionType: .food($0),
-            buttonTitle: $0.title,
-            isSelected: cafeFilterInformation.foodOptionSet.contains($0)
-          )
-        }
-      )
-    }
-
-    var toiletOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
-      .init(
-        viewStates: ToiletOption.allCases.map {
-          CafeFilterOptionButtonViewState(
-            optionType: .toilet($0),
-            buttonTitle: $0.title,
-            isSelected: cafeFilterInformation.toiletOptionSet.contains($0)
-          )
-        }
-      )
-    }
-
-    var drinkOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
-      .init(
-        viewStates: DrinkOption.allCases.map {
-          CafeFilterOptionButtonViewState(
-            optionType: .drink($0),
-            buttonTitle: $0.title,
-            isSelected: cafeFilterInformation.drinkOptionSet.contains($0)
-          )
-        }
-      )
-    }
-
-    var shouldShowSubSectionView: Bool {
-      return filterType == .detail
-    }
-
-    var bottomSheetHeight: CGFloat {
-      headerViewHeight + scrollViewHeight + footerViewHeight
     }
   }
 
   enum Action: Equatable {
     case dismiss
+    /// dismiss 애니메이션 적용을 위해 딜레이 시간을 적용한 이벤트
+    case dismissWithDelay
     case presentBottomSheet
-    case optionButtonTapped(optionType: OptionType)
+    case hideBottomSheet
+    case optionButtonTapped(optionType: CafeFilter.OptionType)
     case infoGuideButtonTapped
     case presentBubbleMessageView(BubbleMessage.State)
     case updateMainViewState
@@ -194,12 +63,11 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .backgroundViewTapped:
+        return EffectTask(value: .dismissWithDelay)
+
+      case .hideBottomSheet:
         state.isBottomSheetPresented = false
-        let dismissTimeInterval = state.dismissDelayNanoseconds
-        return .run { send in
-          try await Task.sleep(nanoseconds: dismissTimeInterval)
-          await send(.dismiss)
-        }
+        return .none
 
       case .presentBottomSheet:
         state.isBottomSheetPresented = true
@@ -272,16 +140,160 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         debugPrint("saved mainViewState : \(state.mainViewState)")
         return .concatenate(
           EffectTask(value: .saveCafeFilter(information: state.cafeFilterInformation)),
-          EffectTask(value: .dismiss)
+          EffectTask(value: .dismissWithDelay)
         )
 
       case .updateContainerView(let height):
         state.containerViewHeight = height
         return .none
 
+      case .dismissWithDelay:
+        let dismissDelayNanoseconds = Int(state.dismissDelayNanoseconds)
+        state.isBottomSheetPresented = false
+        return .concatenate(
+          EffectTask(value: .hideBottomSheet)
+            .delay(for: .nanoseconds(dismissDelayNanoseconds), scheduler: DispatchQueue.main)
+            .eraseToEffect(),
+          EffectTask(value: .dismiss)
+        )
+
       default:
         return .none
       }
     }
+  }
+}
+
+// MARK: - Mutating Function
+
+extension CafeFilterBottomSheet.State {
+  mutating func updateMainViewState() {
+    switch filterType {
+    case .detail:
+      mainViewState = .init(
+        optionButtonCellViewStates: [
+          runningTimeOptionButtonCellViewState,
+          outletOptionButtonCellViewState,
+          spaceSizeOptionButtonCellViewState,
+          personnelOptionButtonCellViewState,
+          foodOptionButtonCellViewState,
+          toiletOptionButtonCellViewState,
+          drinkOptionButtonCellViewState
+        ]
+      )
+    case .runningTime:
+      mainViewState = .init(optionButtonCellViewStates: [runningTimeOptionButtonCellViewState])
+    case .outlet:
+      mainViewState = .init(optionButtonCellViewStates: [outletOptionButtonCellViewState])
+    case .spaceSize:
+      mainViewState = .init(optionButtonCellViewStates: [spaceSizeOptionButtonCellViewState])
+    case .personnel:
+      mainViewState = .init(optionButtonCellViewStates: [personnelOptionButtonCellViewState])
+    }
+  }
+}
+
+// MARK: - Getter
+
+extension CafeFilterBottomSheet.State {
+  var scrollViewHeight: CGFloat {
+    switch filterType {
+    case .detail:
+      return 435
+    default:
+      return 76
+    }
+  }
+
+  var runningTimeOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
+    .init(
+      viewStates: CafeFilter.RunningTimeOption.allCases.map {
+        CafeFilterOptionButtonViewState(
+          optionType: .runningTime($0),
+          buttonTitle: $0.title,
+          isSelected: cafeFilterInformation.runningTimeOptionSet.contains($0)
+        )
+      }
+    )
+  }
+
+  var outletOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
+    .init(
+      viewStates: CafeFilter.OutletOption.allCases.map {
+        CafeFilterOptionButtonViewState(
+          optionType: .outlet($0),
+          buttonTitle: $0.title,
+          isSelected: cafeFilterInformation.outletOptionSet.contains($0)
+        )
+      }
+    )
+  }
+
+  var spaceSizeOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
+    .init(
+      viewStates: CafeFilter.SpaceSizeOption.allCases.map {
+        CafeFilterOptionButtonViewState(
+          optionType: .spaceSize($0),
+          buttonTitle: $0.title,
+          isSelected: cafeFilterInformation.spaceSizeOptionSet.contains($0)
+        )
+      }
+    )
+  }
+
+  var personnelOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
+    .init(
+      viewStates: CafeFilter.PersonnelOption.allCases.map {
+        CafeFilterOptionButtonViewState(
+          optionType: .personnel($0),
+          buttonTitle: $0.title,
+          isSelected: cafeFilterInformation.personnelOptionSet.contains($0)
+        )
+      }
+    )
+  }
+
+  var foodOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
+    .init(
+      viewStates: CafeFilter.FoodOption.allCases.map {
+        CafeFilterOptionButtonViewState(
+          optionType: .food($0),
+          buttonTitle: $0.title,
+          isSelected: cafeFilterInformation.foodOptionSet.contains($0)
+        )
+      }
+    )
+  }
+
+  var toiletOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
+    .init(
+      viewStates: CafeFilter.ToiletOption.allCases.map {
+        CafeFilterOptionButtonViewState(
+          optionType: .toilet($0),
+          buttonTitle: $0.title,
+          isSelected: cafeFilterInformation.toiletOptionSet.contains($0)
+        )
+      }
+    )
+  }
+
+  var drinkOptionButtonCellViewState: CafeFilterOptionButtonCellViewState {
+    .init(
+      viewStates: CafeFilter.DrinkOption.allCases.map {
+        CafeFilterOptionButtonViewState(
+          optionType: .drink($0),
+          buttonTitle: $0.title,
+          isSelected: cafeFilterInformation.drinkOptionSet.contains($0)
+        )
+      }
+    )
+  }
+
+  var shouldShowSubSectionView: Bool {
+    return filterType == .detail
+  }
+
+  var bottomSheetHeight: CGFloat {
+    headerViewHeight + scrollViewHeight + footerViewHeight
   }
 }

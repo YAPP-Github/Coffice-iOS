@@ -113,7 +113,7 @@ enum CafeFilter {
     }
   }
 
-  enum BottomSheetType: CaseIterable {
+  enum MenuType: CaseIterable {
     case detail
     case runningTime
     case outlet
