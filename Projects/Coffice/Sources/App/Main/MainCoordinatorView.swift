@@ -24,9 +24,9 @@ struct MainCoordinatorView: View {
         IfLetStore(
           store.scope(
             state: \.filterSheetState,
-            action: MainCoordinator.Action.filterSheetAction
+            action: MainCoordinator.Action.filterBottomSheet
           ),
-          then: FilterBottomSheetView.init
+          then: CafeFilterBottomSheetView.init
         )
 
         IfLetStore(

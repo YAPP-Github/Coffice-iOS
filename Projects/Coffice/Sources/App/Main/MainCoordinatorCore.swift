@@ -31,7 +31,7 @@ struct MainCoordinator: ReducerProtocol {
       tabBarState.selectedTab
     }
 
-    var filterSheetState: FilterSheetCore.State?
+    var filterSheetState: CafeFilterBottomSheet.State?
     var bubbleMessageState: BubbleMessage.State?
     var toastMessageState: Toast.State?
   }
@@ -42,7 +42,7 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
-    case filterSheetAction(FilterSheetCore.Action)
+    case filterBottomSheet(action: CafeFilterBottomSheet.Action)
     case bubbleMessage(BubbleMessage.Action)
     case toastMessage(Toast.Action)
     case dismissToastMessageView
@@ -67,32 +67,22 @@ struct MainCoordinator: ReducerProtocol {
       MyPageCoordinator()
     }
 
-    Scope(state: \State.tabBarState, action: /Action.tabBar) {
+    Scope(state: \.tabBarState, action: /Action.tabBar) {
       TabBar()
     }
 
     Reduce { state, action in
       switch action {
-      case .filterSheetAction(.buttonTapped(let index, let optionType)):
-        switch optionType {
-        case .outlet:
-          state.filterSheetState?.outletButtonViewState[index].currentTappedState.toggle()
-          return .none
-
-        case .spaceSize:
-          state.filterSheetState?.spaceSizeButtonViewState[index].currentTappedState.toggle()
-          return .none
-
-        case .drink:
-          return .none
-
-        default:
-          return .none
-        }
-
-      case .filterSheetAction(.dismiss):
+      case .filterBottomSheet(.dismiss):
         state.filterSheetState = nil
         return .none
+
+      case .filterBottomSheet(.saveCafeFilter(let information)):
+        return EffectTask(
+          value: .search(
+            .routeAction(1, action: .cafeSearchList(.updateCafeFilter(information: information)))
+          )
+        )
 
       case .onAppear:
         return .none
@@ -101,15 +91,13 @@ struct MainCoordinator: ReducerProtocol {
         debugPrint("selectedTab : \(itemType)")
         return .none
 
-      case .search(
-        .routeAction(_, .cafeSearchList(.presentFilterSheetView(let filterSheetState)))
-      ):
+      case .search(.routeAction(_, .cafeSearchList(.presentFilterSheetView(let filterSheetState)))):
         state.filterSheetState = filterSheetState
         return .none
 
-      case .search(
-        .routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))
-      ):
+      case
+          .search(.routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))),
+          .filterBottomSheet(.presentBubbleMessageView(let bubbleMessageState)):
         state.bubbleMessageState = bubbleMessageState
         return .none
 
@@ -133,6 +121,12 @@ struct MainCoordinator: ReducerProtocol {
       default:
         return .none
       }
+    }
+    .ifLet(
+      \.filterSheetState,
+      action: /Action.filterBottomSheet
+    ) {
+      CafeFilterBottomSheet()
     }
   }
 }

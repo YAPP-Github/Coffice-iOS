@@ -18,13 +18,13 @@ struct CafeSearchListCore: ReducerProtocol {
 
   struct State: Equatable {
     // TODO: filterButtonState 구현
+    let filterOrders = CafeFilter.BottomSheetType.allCases
     var title: String = ""
     var viewType: ViewType = .mapView
-    let filterOrders = FilterType.allCases
-    var filterSheetState = FilterSheetCore.State(filterType: .cafeDetailFilter)
     var cafeList: [Cafe] = []
     var pageSize: Int = 10
     var pageNumber: Int = 0
+    var cafeFilterInformation: CafeFilterInformation = .mock
     var pagenationRange: Range<Int> {
       pageNumber * pageSize..<(pageNumber + 1) * pageSize - 1
     }
@@ -33,15 +33,15 @@ struct CafeSearchListCore: ReducerProtocol {
   enum Action: Equatable {
     case updateViewType(ViewType)
     case onAppear
-    case updateState(FilterSheetCore.State)
-    case presentFilterSheetView(FilterSheetCore.State)
+    case presentFilterSheetView(CafeFilterBottomSheet.State)
     case searchPlaceResponse(TaskResult<[Cafe]>)
-    case filterButtonTapped(FilterType)
+    case filterButtonTapped(CafeFilter.BottomSheetType)
     case scrollAndLoadData(Int)
     case backbuttonTapped
     case dismiss
     case popView
     case titleLabelTapped
+    case updateCafeFilter(information: CafeFilterInformation)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -84,10 +84,6 @@ struct CafeSearchListCore: ReducerProtocol {
           await send(.searchPlaceResponse(result))
         }
 
-      case .updateState(let bottomSheetState):
-        state.filterSheetState = bottomSheetState
-        return .none
-
         // TODO: 무한스크롤 추후 수정 예정
       case .scrollAndLoadData(let itemIndex):
         let currentPageNumber = itemIndex / state.pageSize
@@ -106,51 +102,16 @@ struct CafeSearchListCore: ReducerProtocol {
         debugPrint(error)
         return .none
 
-      case .filterButtonTapped(let filterButton):
-        switch filterButton {
-        case .outlet:
-          state.filterSheetState.filterType = .outlet
-          return EffectTask(value: .presentFilterSheetView(state.filterSheetState))
+      case .filterButtonTapped(let filterType):
+        return EffectTask(value: .presentFilterSheetView(.init(filterType: filterType, cafeFilterIntormation: .mock)))
 
-        case .spaceSize:
-          return .none
-
-        default:
-          return .none
-        }
+      case .updateCafeFilter(let information):
+        // TODO: 필터 저장상태에 맞게 상단 필터뷰 업데이트 필요
+        state.cafeFilterInformation = information
+        return .none
 
       default:
         return .none
-      }
-    }
-  }
-}
-
-extension CafeSearchListCore {
-  enum FilterType: CaseIterable {
-    case detail
-    case runningTime
-    case outlet
-    case spaceSize
-    case personnel
-
-    var title: String {
-      switch self {
-      case .detail: return "CofficeAsset.Asset.filterLine24px"
-      case .runningTime: return "영업시간"
-      case .outlet: return "콘센트"
-      case .spaceSize: return "공간크기"
-      case .personnel: return "단체석"
-      }
-    }
-
-    var size: (width: CGFloat, height: CGFloat) {
-      switch self {
-      case .detail: return (width: 56, height: 36)
-      case .runningTime: return (width: 91, height: 36)
-      case .outlet: return (width: 79, height: 36)
-      case .spaceSize: return (width: 91, height: 36)
-      case .personnel: return (width: 69, height: 36)
       }
     }
   }
