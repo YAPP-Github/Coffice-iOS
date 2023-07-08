@@ -71,9 +71,7 @@ struct MyPageView: View {
               .frame(width: 24, height: 24)
           }
           .tint(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          .padding(.vertical, 6)
-          .padding(.leading, 16)
-          .padding(.trailing, 2)
+          .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 2))
           .background(CofficeAsset.Colors.grayScale8.swiftUIColor)
           .cornerRadius(18)
         }

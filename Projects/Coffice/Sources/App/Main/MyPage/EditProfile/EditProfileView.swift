@@ -58,7 +58,6 @@ struct EditProfileView: View {
             .stroke(CofficeAsset.Colors.grayScale3.swiftUIColor,
                     lineWidth: 1)
           HStack {
-
             TextField(
               "닉네임을 입력해주세요",
               text: viewStore.binding(\.$nicknameTextField)
