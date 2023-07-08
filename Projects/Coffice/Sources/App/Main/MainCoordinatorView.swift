@@ -19,7 +19,10 @@ struct MainCoordinatorView: View {
         NavigationView {
           mainView
         }
-        tabBarView
+
+        if viewStore.shouldShowTabBarView {
+          tabBarView
+        }
 
         IfLetStore(
           store.scope(

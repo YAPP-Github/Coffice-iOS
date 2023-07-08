@@ -12,18 +12,18 @@ struct MyPageScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지
     case myPage(MyPage.State)
-    case serviceTerms(ServiceTerms.State)
     case privacyPolicy(PrivacyPolicy.State)
-    case openSources(OpenSources.State)
-    case devTest(DevTest.State)
+    case locationServiceTerms(LocationServiceTerms.State)
+    case contact(Contact.State)
+    case editProfile(EditProfile.State)
   }
 
   enum Action: Equatable {
     case myPage(MyPage.Action)
-    case serviceTerms(ServiceTerms.Action)
     case privacyPolicy(PrivacyPolicy.Action)
-    case openSources(OpenSources.Action)
-    case devTest(DevTest.Action)
+    case locationServiceTerms(LocationServiceTerms.Action)
+    case contact(Contact.Action)
+    case editProfile(EditProfile.Action)
   }
 
   var body: some ReducerProtocolOf<MyPageScreen> {
@@ -35,13 +35,6 @@ struct MyPageScreen: ReducerProtocol {
     }
 
     Scope(
-      state: /State.serviceTerms,
-      action: /Action.serviceTerms
-    ) {
-      ServiceTerms()
-    }
-
-    Scope(
       state: /State.privacyPolicy,
       action: /Action.privacyPolicy
     ) {
@@ -49,17 +42,24 @@ struct MyPageScreen: ReducerProtocol {
     }
 
     Scope(
-      state: /State.openSources,
-      action: /Action.openSources
+      state: /State.locationServiceTerms,
+      action: /Action.locationServiceTerms
     ) {
-      OpenSources()
+      LocationServiceTerms()
     }
 
     Scope(
-      state: /State.devTest,
-      action: /Action.devTest
+      state: /State.contact,
+      action: /Action.contact
     ) {
-      DevTest()
+      Contact()
+    }
+
+    Scope(
+      state: /State.editProfile,
+      action: /Action.editProfile
+    ) {
+      EditProfile()
     }
   }
 }

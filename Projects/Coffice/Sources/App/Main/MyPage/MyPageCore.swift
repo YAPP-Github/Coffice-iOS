@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Foundation
+import SwiftUI
 
 struct MyPage: ReducerProtocol {
   struct MenuItem: Equatable, Identifiable {
@@ -16,50 +17,62 @@ struct MyPage: ReducerProtocol {
 
     var title: String {
       switch menuType {
-      case .serviceTerms:
-        return "서비스 이용 약관"
       case .privacyPolicy:
         return "개인정보 처리방침"
-      case .openSources:
-        return "오픈소스 라이브러리"
-      case .devTest:
-        return "개발자 테스트"
+      case .locationServiceTerms:
+        return "위치서비스 약관"
+      case .contact:
+        return "문의하기"
+      case .versionInformation:
+        return "버전 정보"
+      case .logout:
+        return "로그아웃"
+      case .memberLeave:
+        return "회원탈퇴"
+      }
+    }
+
+    var textColor: Color {
+      switch menuType {
+      case .privacyPolicy, .locationServiceTerms, .contact, .versionInformation:
+        return CofficeAsset.Colors.grayScale9.swiftUIColor
+      case .logout, .memberLeave:
+        return CofficeAsset.Colors.grayScale6.swiftUIColor
       }
     }
   }
 
   enum MenuType: CaseIterable {
-    case serviceTerms
     case privacyPolicy
-    case openSources
-    case devTest
+    case locationServiceTerms
+    case contact
+    case versionInformation
+    case logout
+    case memberLeave
   }
 
   struct State: Equatable {
-    let title = "MyPage"
-    var nickName = "닉네임"
+    var user: User?
     var menuItems: [MenuItem] = MenuType.allCases.map(MenuItem.init)
-    var loginType: LoginType = .anonymous
-    var shouldShowDevTestMenu = false
+    var versionNumber: String {
+      let versionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+      return versionNumber ?? "1.0.0"
+    }
 
     init() {
-      menuItems = MenuType.allCases
-        .filter {
-          guard $0 == .devTest else { return true }
-          return shouldShowDevTestMenu
-        }
-        .map(MenuItem.init)
+      menuItems = MenuType.allCases.map(MenuItem.init)
     }
   }
 
   enum Action: Equatable {
     case onAppear
-    case menuClicked(MenuItem)
+    case menuButtonTapped(MenuItem)
+    case editProfileButtonTapped
     case userInfoFetched(User)
-    case pushToServiceTermsView
+    case pushToLocationServiceTermsView
     case pushToPrivacyPolicy
-    case pushToOpenSourcesView
-    case pushToDevTestView
+    case pushToContactView
+    case pushToEditProfile
     case presentLoginPage
   }
 
@@ -77,20 +90,26 @@ struct MyPage: ReducerProtocol {
         }
 
       case .userInfoFetched(let user):
-        state.loginType = user.loginTypes.first!
-        state.nickName = user.loginTypes.first == .anonymous ? "로그인 하러가기" : user.name
+        state.user = user
         return .none
 
-      case .menuClicked(let menuItem):
+      case .editProfileButtonTapped:
+        return EffectTask(value: .pushToEditProfile)
+
+      case .menuButtonTapped(let menuItem):
         switch menuItem.menuType {
-        case .serviceTerms:
-          return EffectTask(value: .pushToServiceTermsView)
         case .privacyPolicy:
           return EffectTask(value: .pushToPrivacyPolicy)
-        case .openSources:
-          return EffectTask(value: .pushToOpenSourcesView)
-        case .devTest:
-          return EffectTask(value: .pushToDevTestView)
+        case .locationServiceTerms:
+          return EffectTask(value: .pushToLocationServiceTermsView)
+        case .contact:
+          return EffectTask(value: .pushToContactView)
+        case .versionInformation:
+          return .none
+        case .logout:
+          return .none
+        case .memberLeave:
+          return .none
         }
 
       default:

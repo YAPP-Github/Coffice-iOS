@@ -10,6 +10,7 @@ import Firebase
 import KakaoSDKAuth
 import KakaoSDKCommon
 import KakaoSDKUser
+import Network
 import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -20,6 +21,17 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     // #36 GA Logging 임시 비활성화
     // FirebaseApp.configure()
     CofficeFontFamily.registerAllCustomFonts()
+    checkIsFirstLaunch()
     return true
+  }
+
+  private func checkIsFirstLaunch() {
+    if UserDefaults.standard.bool(forKey: "alreadyLaunched").isFalse {
+      KeychainManager.shared.deleteUserToken()
+      Task {
+        let loginClient = LoginClient()
+        try await loginClient.login(loginType: .anonymous, accessToken: nil)
+      }
+    }
   }
 }

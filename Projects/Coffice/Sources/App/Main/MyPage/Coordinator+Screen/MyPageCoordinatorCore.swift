@@ -21,33 +21,41 @@ struct MyPageCoordinator: ReducerProtocol {
   enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: MyPageScreen.Action)
     case updateRoutes([Route<MyPageScreen.State>])
+    case hideTabBar
+    case showTabBar
   }
 
   var body: some ReducerProtocolOf<MyPageCoordinator> {
     Reduce<State, Action> { state, action in
       switch action {
-      case .routeAction(_, action: .myPage(.pushToServiceTermsView)):
-        state.routes.push(.serviceTerms(.initialState))
+      case .routeAction(_, action: .myPage(.pushToLocationServiceTermsView)):
+        state.routes.push(.locationServiceTerms(.initialState))
         return .none
 
       case .routeAction(_, action: .myPage(.pushToPrivacyPolicy)):
         state.routes.push(.privacyPolicy(.initialState))
         return .none
 
-      case .routeAction(_, action: .myPage(.pushToOpenSourcesView)):
-        state.routes.push(.openSources(.initialState))
+      case .routeAction(_, action: .myPage(.pushToContactView)):
+        state.routes.push(.contact(.initialState))
         return .none
 
-      case .routeAction(_, action: .myPage(.pushToDevTestView)):
-        state.routes.push(.devTest(.initialState))
+      case .routeAction(_, action: .myPage(.pushToEditProfile)):
+        state.routes.push(.editProfile(.initialState))
         return .none
 
-      case .routeAction(_, action: .serviceTerms(.popView)),
+      case .routeAction(_, action: .locationServiceTerms(.popView)),
           .routeAction(_, action: .privacyPolicy(.popView)),
-          .routeAction(_, action: .openSources(.popView)),
-          .routeAction(_, action: .devTest(.popView)):
+          .routeAction(_, action: .contact(.popView)),
+          .routeAction(_, action: .editProfile(.popView)):
         state.routes.pop()
         return .none
+
+      case .routeAction(_, action: .editProfile(.hideTabBar)):
+        return EffectTask(value: .hideTabBar)
+
+      case .routeAction(_, action: .editProfile(.showTabBar)):
+        return EffectTask(value: .showTabBar)
 
       default:
         return .none

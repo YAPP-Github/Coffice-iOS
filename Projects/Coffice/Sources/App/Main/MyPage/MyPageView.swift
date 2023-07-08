@@ -30,9 +30,16 @@ struct MyPageView: View {
 
       VStack(alignment: .leading, spacing: 0) {
         nickNameView
-        divider
-        linkedAccountTypeView
-        divider
+          .padding(.top, 110)
+
+        if viewStore.user?.loginTypes.contains(.anonymous) == true {
+          Color.clear
+            .frame(width: 0, height: 0)
+            .padding(.top, 56)
+        } else {
+          linkedAccountTypeView
+        }
+
         VStack(spacing: 0) {
           ForEach(viewStore.menuItems) { menuItem in
             menuItemView(menuItem: menuItem)
@@ -42,62 +49,60 @@ struct MyPageView: View {
 
         Spacer()
       }
-      .padding(.horizontal, 16)
-      .padding(.top, 50)
+      .padding(.horizontal, 20)
     }
   }
 
   private var nickNameView: some View {
     WithViewStore(store) { viewStore in
-
-      Group {
-        if viewStore.state.loginType == .anonymous {
-          Button {
-            viewStore.send(.presentLoginPage)
-          } label: {
-            HStack(alignment: .center, spacing: 0) {
-              Text(viewStore.state.nickName)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.title)
-              Button {
-                viewStore.send(.presentLoginPage)
-              } label: {
-                CofficeAsset.Asset.arrowRightSLine40px.swiftUIImage
-                  .resizable()
-                  .frame(width: 50, height: 50)
-              }
-            }
+      HStack {
+        Text(viewStore.user?.name ?? "닉네임")
+          .applyCofficeFont(font: .header1)
+          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+        Spacer()
+        Button {
+          viewStore.send(.editProfileButtonTapped)
+        } label: {
+          HStack(spacing: 0) {
+            Text("SNS 로그인")
+              .applyCofficeFont(font: .button)
+            CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
+              .renderingMode(.template)
+              .frame(width: 24, height: 24)
           }
-        } else {
-          HStack(alignment: .center, spacing: 0) {
-            Text(viewStore.state.nickName)
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .font(.title)
-            Button {
-              viewStore.send(.presentLoginPage)
-            } label: {
-              Image(systemName: "chevron.right")
-                .imageScale(.large)
-            }
-            .tint(.black)
-          }
+          .tint(CofficeAsset.Colors.grayScale1.swiftUIColor)
+          .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 2))
+          .background(CofficeAsset.Colors.grayScale8.swiftUIColor)
+          .cornerRadius(18)
         }
       }
-      .padding(.vertical, 30)
-      .tint(.black)
     }
   }
 
   private var linkedAccountTypeView: some View {
     WithViewStore(store) { viewStore in
+      VStack(spacing: 0) {
+        Divider()
+        HStack(alignment: .center, spacing: 0) {
+          Text("로그인")
+            .applyCofficeFont(font: .header3)
+            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-      HStack(alignment: .center, spacing: 0) {
-        Text("연결된 계정")
-          .frame(maxWidth: .infinity, alignment: .leading)
-        Text(viewStore.loginType.displayName)
-          .padding(.trailing, 10)
+          HStack(spacing: 8) {
+            viewStore.user?.loginTypes.first?.image
+              .resizable()
+              .frame(width: 18, height: 18)
+            Text(viewStore.user?.loginTypes.first?.displayName ?? "")
+              .applyCofficeFont(font: .body2Medium)
+              .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+              .padding(.trailing, 10)
+          }
+        }
+        .padding(.vertical, 29)
+        Divider()
       }
-      .padding(.vertical, 30)
+      .padding(.top, 29)
     }
   }
 
@@ -107,15 +112,26 @@ struct MyPageView: View {
       VStack(alignment: .leading, spacing: 0) {
         HStack {
           Button {
-            viewStore.send(.menuClicked(menuItem))
+            viewStore.send(.menuButtonTapped(menuItem))
           } label: {
-            Text(menuItem.title)
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .frame(height: 50)
-            Image(systemName: "chevron.right")
+            Group {
+              Text(menuItem.title)
+                .applyCofficeFont(font: .header3)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 50)
+              if menuItem.menuType == .versionInformation {
+                Text(viewStore.versionNumber)
+                  .applyCofficeFont(font: .body1)
+                  .tint(CofficeAsset.Colors.grayScale6.swiftUIColor)
+              } else {
+                CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
+                  .renderingMode(.template)
+                  .frame(width: 24, height: 24)
+              }
+            }
+            .tint(menuItem.textColor)
           }
         }
-        .tint(.black)
       }
     }
   }

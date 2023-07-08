@@ -34,6 +34,8 @@ struct MainCoordinator: ReducerProtocol {
     var filterSheetState: CafeFilterBottomSheet.State?
     var bubbleMessageState: BubbleMessage.State?
     var toastMessageState: Toast.State?
+
+    var shouldShowTabBarView = true
   }
 
   enum Action: Equatable {
@@ -116,6 +118,14 @@ struct MainCoordinator: ReducerProtocol {
 
       case .dismissToastMessageView:
         state.toastMessageState = nil
+        return .none
+
+      case .myPage(.hideTabBar):
+        state.shouldShowTabBarView = false
+        return .none
+
+      case .myPage(.showTabBar):
+        state.shouldShowTabBarView = true
         return .none
 
       default:

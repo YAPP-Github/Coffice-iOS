@@ -23,9 +23,9 @@ struct MyPageCoordinatorView: View {
         )
 
         CaseLet(
-          state: /MyPageScreen.State.serviceTerms,
-          action: MyPageScreen.Action.serviceTerms,
-          then: ServiceTermsView.init
+          state: /MyPageScreen.State.locationServiceTerms,
+          action: MyPageScreen.Action.locationServiceTerms,
+          then: LocationServiceTermsView.init
         )
 
         CaseLet(
@@ -35,15 +35,15 @@ struct MyPageCoordinatorView: View {
         )
 
         CaseLet(
-          state: /MyPageScreen.State.openSources,
-          action: MyPageScreen.Action.openSources,
-          then: OpenSourcesView.init
+          state: /MyPageScreen.State.contact,
+          action: MyPageScreen.Action.contact,
+          then: ContactView.init
         )
 
         CaseLet(
-          state: /MyPageScreen.State.devTest,
-          action: MyPageScreen.Action.devTest,
-          then: DevTestView.init
+          state: /MyPageScreen.State.editProfile,
+          action: MyPageScreen.Action.editProfile,
+          then: EditProfileView.init
         )
       }
     }
