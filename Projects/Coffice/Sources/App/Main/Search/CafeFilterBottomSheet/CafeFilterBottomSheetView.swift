@@ -66,15 +66,17 @@ extension CafeFilterBottomSheetView {
           .frame(height: 32)
           .padding(.top, 28)
           .padding(.bottom, 20)
-        Button {
-          viewStore.send(.infoGuideButtonTapped)
-        } label: {
-          CofficeAsset.Asset.informationLine18px.swiftUIImage
-            .renderingMode(.template)
-            .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
-            .padding(.top, 35)
-            .padding(.leading, 8)
-            .padding(.bottom, 27)
+        if viewStore.shouldShowGuideButton {
+          Button {
+            viewStore.send(.infoGuideButtonTapped)
+          } label: {
+            CofficeAsset.Asset.informationLine18px.swiftUIImage
+              .renderingMode(.template)
+              .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+              .padding(.top, 35)
+              .padding(.leading, 8)
+              .padding(.bottom, 27)
+          }
         }
 
         Spacer()

@@ -113,6 +113,12 @@ enum CafeFilter {
     }
   }
 
+  enum GuideType {
+    case outletState
+    case spaceSize
+    case groupSeat
+  }
+
   enum MenuType: CaseIterable {
     case detail
     case runningTime
