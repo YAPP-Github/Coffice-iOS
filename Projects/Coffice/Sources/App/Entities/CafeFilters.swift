@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CafeSearchFilters {
+struct CafeSearchFilters: Equatable {
   let capacityLevels: [CapacityLevel]?
   let drinkTypes: [DrinkType]?
   let foodTypes: [FoodType]?

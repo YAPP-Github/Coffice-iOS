@@ -20,9 +20,9 @@ public struct SearchPlaceRequestDTO: Encodable {
   public let foodTypes: [String]?
   public let restroomTypes: [String]?
   public let pageSize: Int
-  public let lastSeenDistacne: Double
+  public let lastSeenDistance: Double?
 
-  public init(searchText: String?, latitude: Double, longitude: Double, distance: Double, open: Bool?, hasCommunalTable: Bool?, capcityLevel: [String]?, drinkType: [String]?, foodType: [String]?, restroomTypes: [String]?, pageSize: Int, lastSeenDistacne: Double) {
+  public init(searchText: String?, latitude: Double, longitude: Double, distance: Double, open: Bool?, hasCommunalTable: Bool?, capcityLevel: [String]?, drinkType: [String]?, foodType: [String]?, restroomTypes: [String]?, pageSize: Int, lastSeenDistance: Double?) {
     self.searchText = searchText
     self.latitude = latitude
     self.longitude = longitude
@@ -34,6 +34,6 @@ public struct SearchPlaceRequestDTO: Encodable {
     self.foodTypes = foodType
     self.restroomTypes = restroomTypes
     self.pageSize = pageSize
-    self.lastSeenDistacne = lastSeenDistacne
+    self.lastSeenDistance = lastSeenDistance
   }
 }
