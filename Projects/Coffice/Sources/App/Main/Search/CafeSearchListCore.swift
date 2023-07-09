@@ -35,7 +35,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case scrollAndRequestSearchPlace(Double)
     case searchPlaceResponse(TaskResult<[Cafe]>)
     case filterMenus(action: CafeFilterMenus.Action)
-    case scrollAndLoadData(Int)
+    case scrollAndLoadData(Cafe)
     case backbuttonTapped
     case dismiss
     case popView
@@ -74,10 +74,9 @@ struct CafeSearchListCore: ReducerProtocol {
         state.viewType = .mapView
         return .none
 
-        // TODO: 무한스크롤 추후 수정 예정
-      case .scrollAndLoadData(let itemIndex):
-        if state.hasNext ?? false && state.cafeList.count - 1 == itemIndex {
-          guard let lastCafe = state.cafeList.last else { return .none }
+      case .scrollAndLoadData(let currentCafe):
+        guard let lastCafe = state.cafeList.last else { return .none }
+        if state.hasNext ?? false && lastCafe == currentCafe {
           state.lastCafeDistance = lastCafe.distanceFromUser
           return .send(.scrollAndRequestSearchPlace(state.lastCafeDistance))
         }

@@ -21,10 +21,10 @@ struct CafeSearchListView: View {
         case .listView:
           ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 0) {
-              ForEach(viewStore.cafeList.indices, id: \.self) { index in
-                CafeSearchListCell(store: store, cafe: viewStore.cafeList[index])
-                  .onAppear { viewStore.send(.scrollAndLoadData(index)) }
-                  .onTapGesture { }
+              ForEach(viewStore.cafeList, id: \.placeId) { cafe in
+                CafeSearchListCell(store: store, cafe: cafe)
+                  .onAppear { viewStore.send(.scrollAndLoadData(cafe)) }
+                  .onTapGesture {}
                   .padding(.bottom, 40)
               }
             }
