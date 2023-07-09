@@ -40,24 +40,12 @@ struct CafeMapView: View {
             .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
             .zIndex(1)
           }
-
-          VStack(spacing: 0) {
-            header
+          VStack(alignment: .trailing, spacing: 0) {
+            headerView
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-              .zIndex(1)
-            }
-            VStack(alignment: .trailing, spacing: 0) {
-              headerView
-                .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
-                .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-              floatingButtonView
-                .padding()
-            HStack(spacing: 0) {
-              Spacer()
-              floatingButtonView
-                .padding(.vertical)
-            }
+            floatingButtonView
+              .padding()
             Spacer()
             floatingTestButtonView
             if viewStore.selectedCafe != nil {
