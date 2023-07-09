@@ -103,7 +103,7 @@ extension CafeMapView {
         .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 16))
       }
       .background {
-        RoundedRectangle(cornerRadius: CGFloat(22))
+        RoundedRectangle(cornerRadius: 22)
           .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
           .shadow(color: .black.opacity(0.16), radius: 4, x: 0, y: 0)
       }
