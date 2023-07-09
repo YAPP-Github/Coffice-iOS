@@ -74,6 +74,13 @@ struct MyPage: ReducerProtocol {
     case pushToContactView
     case pushToEditProfile
     case presentLoginPage
+    case showCommonBottomSheet(
+      title: String,
+      description: String,
+      cancelButtonTitle: String,
+      confirmButtonTitle: String
+    )
+    case presentCommonBottomSheet(CommonBottomSheet.State)
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -100,16 +107,39 @@ struct MyPage: ReducerProtocol {
         switch menuItem.menuType {
         case .privacyPolicy:
           return EffectTask(value: .pushToPrivacyPolicy)
+
         case .locationServiceTerms:
           return EffectTask(value: .pushToLocationServiceTermsView)
+
         case .contact:
           return EffectTask(value: .pushToContactView)
+
         case .versionInformation:
           return .none
+
         case .logout:
-          return .none
+          return EffectTask(
+            value: .presentCommonBottomSheet(
+              .init(
+                title: "로그아웃",
+                description: "정말 로그아웃 하시겠어요?",
+                cancelButtonTitle: "나가기",
+                confirmButtonTitle: "로그아웃"
+              )
+            )
+          )
+
         case .memberLeave:
-          return .none
+          return EffectTask(
+            value: .presentCommonBottomSheet(
+              .init(
+                title: "회원탈퇴",
+                description: "삭제된 데이터는 복구가 불가능합니다.\n등록된 리뷰, 게시물은 탈퇴 후에도 유지되니\n삭제 후 탈퇴하시길 바랍니다. ",
+                cancelButtonTitle: "닫기",
+                confirmButtonTitle: "탈퇴하기"
+              )
+            )
+          )
         }
 
       default:

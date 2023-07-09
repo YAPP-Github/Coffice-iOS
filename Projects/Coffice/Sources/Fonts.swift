@@ -126,7 +126,7 @@ extension CofficeFont {
     }
   }
 
-  public var lineSpacing: CGFloat {
+  public var lineHeight: CGFloat {
     switch self {
     case .header0:
       return 36
@@ -215,20 +215,9 @@ extension CofficeFont {
 
 struct FontModifier: ViewModifier {
   var font: CofficeFont
-
-  init(font: CofficeFont) {
-    self.font = font
+  var fontOriginalLineHeight: CGFloat {
+    return UIFont(name: font.name, size: font.size)?.lineHeight ?? 20
   }
-
-  func body(content: Content) -> some View {
-    content
-      .lineSpacing(font.lineSpacing)
-      .font(.custom(font.name, size: font.size))
-  }
-}
-
-struct FontWithoutLineSpacingViewModifier: ViewModifier {
-  var font: CofficeFont
 
   init(font: CofficeFont) {
     self.font = font
@@ -237,15 +226,13 @@ struct FontWithoutLineSpacingViewModifier: ViewModifier {
   func body(content: Content) -> some View {
     content
       .font(.custom(font.name, size: font.size))
+      .lineSpacing(font.lineHeight - fontOriginalLineHeight)
+      .padding(.vertical, (font.lineHeight - fontOriginalLineHeight) / 2)
   }
 }
 
 extension View {
   func applyCofficeFont(font: CofficeFont) -> some View {
     modifier(FontModifier(font: font))
-  }
-
-  func applyCofficeFontWithoutLineSpacing(font: CofficeFont) -> some View {
-    modifier(FontWithoutLineSpacingViewModifier(font: font))
   }
 }

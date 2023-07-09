@@ -172,7 +172,7 @@ extension CafeSearchDetailMenuView {
               HStack(alignment: .top) {
                 Text("월 09:00 - 21:00")
                   .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                  .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
+                  .applyCofficeFont(font: .body1Medium)
                   .frame(height: 20)
                   .frame(alignment: .leading)
                   .padding(.top, 4)
@@ -185,7 +185,7 @@ extension CafeSearchDetailMenuView {
             if viewStore.needToPresentRunningTimeDetailInfo {
               Text(viewStore.runningTimeDetailInfo)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
+                .applyCofficeFont(font: .body1Medium)
                 .lineSpacing(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
@@ -196,7 +196,7 @@ extension CafeSearchDetailMenuView {
               VStack(spacing: 0) {
                 Text("- 브레이크 타임 :")
                   .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                  .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
+                  .applyCofficeFont(font: .body1Medium)
                   .frame(height: 20)
                   .padding(.top, 1)
                 Spacer()
@@ -210,7 +210,7 @@ extension CafeSearchDetailMenuView {
                   """
                 )
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
+                .applyCofficeFont(font: .body1Medium)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 40)
                 Spacer()
@@ -220,7 +220,7 @@ extension CafeSearchDetailMenuView {
 
             Text("- 주문마감 : 21:00")
               .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-              .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
+              .applyCofficeFont(font: .body1Medium)
               .frame(height: 20)
           }
         }
@@ -338,7 +338,7 @@ extension CafeSearchDetailMenuView {
           """
         )
         .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-        .applyCofficeFontWithoutLineSpacing(font: .body1)
+        .applyCofficeFont(font: .body1)
         .multilineTextAlignment(.leading)
         .padding(.top, 20)
 
