@@ -40,20 +40,19 @@ struct CafeMapView: View {
             .zIndex(1)
           }
 
-          VStack(alignment: .trailing, spacing: 0) {
+          VStack(alignment: .center, spacing: 0) {
             headerView
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-            floatingButtonView
-              .padding()
+              .padding(.bottom, 20)
+            if viewStore.isMovingCamera {
+              refreshButtonView
+            }
             Spacer()
             floatingTestButtonView
-              .padding(
-                .bottom,
-                viewStore.selectedCafe == nil ?
-                TabBarSizePreferenceKey.defaultValue.height + 20
-                : 20
-              )
+              .padding(.bottom, 8)
+            bottomFloatingButtonView
+              .padding(.trailing, 24)
             if viewStore.selectedCafe != nil {
               CafeCardView(store: store)
                 .frame(width: geometry.size.width)
@@ -85,24 +84,62 @@ struct CafeMapView: View {
 }
 
 extension CafeMapView {
-  var floatingButtonView: some View {
+  var refreshButtonView: some View {
     WithViewStore(store) { viewStore in
-      VStack(spacing: 10) {
-        ForEach(viewStore.floatingButtons, id: \.self) { floatingButton in
-          Button {
-            viewStore.send(.floatingButtonTapped(floatingButton))
-          } label: {
-            Circle()
-              .foregroundColor(.white)
-              .shadow(color: .gray, radius: 2, x: 0, y: 2)
-              .overlay {
-                Image(systemName: floatingButton.image)
-              }
-              .frame(width: 50, height: 50)
+      Button {
+        viewStore.send(.refreshButtonTapped)
+      } label: {
+        HStack(spacing: 8) {
+          CofficeAsset.Asset.refresh18px.swiftUIImage
+            .renderingMode(.template)
+            .resizable()
+            .frame(width: 18, height: 18)
+            .scaledToFill()
+            .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+          Text("현위치 재검색")
+            .applyCofficeFont(font: .body1Medium)
+            .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+        }
+        .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 16))
+      }
+      .background {
+        RoundedRectangle(cornerRadius: CGFloat(22))
+          .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+          .shadow(color: .black.opacity(0.16), radius: 4, x: 0, y: 0)
+      }
+    }
+  }
+
+  var bottomFloatingButtonView: some View {
+    WithViewStore(store) { viewStore in
+      HStack(spacing: 0) {
+        Spacer()
+        VStack(spacing: 10) {
+          ForEach(viewStore.bottomFloatingButtons, id: \.self) { floatingButton in
+            Button {
+              viewStore.send(.bottomFloatingButtonTapped(floatingButton))
+            } label: {
+              floatingButton.image
+                .resizable()
+                .frame(width: 36, height: 36)
+                .scaledToFill()
+                .padding([.horizontal, .vertical], 6)
+            }
+            .buttonStyle(.plain)
+            .background {
+              Circle()
+                .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+                .shadow(color: .black.opacity(0.16), radius: 4, x: 0, y: 0)
+            }
           }
-          .buttonStyle(.plain)
         }
       }
+      .padding(
+        .bottom,
+        viewStore.selectedCafe == nil ?
+        TabBarSizePreferenceKey.defaultValue.height + 24
+        : 24
+      )
     }
   }
 
@@ -110,6 +147,7 @@ extension CafeMapView {
   var floatingTestButtonView: some View {
     WithViewStore(store) { viewStore in
       HStack {
+        Spacer()
         Button {
           viewStore.send(.pushToSearchDetailForTest(cafeId: 1))
         } label: {
@@ -123,9 +161,8 @@ extension CafeMapView {
           }
         }
         .buttonStyle(.plain)
-        Spacer()
       }
-      .padding(.leading, 24)
+      .padding(.trailing, 24)
     }
   }
 
