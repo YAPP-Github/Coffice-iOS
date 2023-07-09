@@ -80,8 +80,9 @@ extension CafeSearchDetailSubInfoView {
           .padding(.top, 16)
         }
 
-        Divider()
-          .padding(.top, 20)
+        CofficeAsset.Colors.grayScale3.swiftUIColor
+          .frame(height: 1)
+          .padding(.top, 33)
       }
     }
   }

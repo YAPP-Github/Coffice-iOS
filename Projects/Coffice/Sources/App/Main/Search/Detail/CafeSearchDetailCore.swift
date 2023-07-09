@@ -144,22 +144,11 @@ extension CafeSearchDetail.State {
     var title: String {
       switch self {
       case .enoughOutlets:
-        return "콘센트 넉넉해요"
+        return "🔌 콘센트 넉넉해요"
       case .fastWifi:
-        return "와이파이 빨라요"
+        return "📶 와이파이 빨라요"
       case .quiet:
-        return "조용해요"
-      }
-    }
-
-    var iconName: String {
-      switch self {
-      case .enoughOutlets:
-        return "power"
-      case .fastWifi:
-        return "wifi"
-      case .quiet:
-        return "speaker.wave.1"
+        return "🔊 조용해요"
       }
     }
   }

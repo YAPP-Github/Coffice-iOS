@@ -28,7 +28,7 @@ struct CafeSearchDetailMenuView: View {
           reviewMenuView
         }
       }
-      .padding(.top, 32)
+      .padding(.top, 16)
     }
   }
 }
@@ -60,6 +60,7 @@ extension CafeSearchDetailMenuView {
 
         Spacer()
       }
+      .frame(height: 52)
     }
   }
 }
@@ -246,8 +247,8 @@ extension CafeSearchDetailMenuView {
     WithViewStore(store) { viewStore in
       HStack {
         Text("리뷰 10")
-          .foregroundColor(.black)
-          .font(.system(size: 16, weight: .bold))
+          .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
+          .applyCofficeFont(font: .header3)
           .frame(height: 52)
 
         Spacer()
@@ -257,19 +258,18 @@ extension CafeSearchDetailMenuView {
         } label: {
           HStack(spacing: 5) {
             Text("리뷰 쓰기")
-              .foregroundColor(.brown)
-              .font(.system(size: 12))
+              .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+              .applyCofficeFont(font: .body2Medium)
               .padding(.vertical, 10)
-              .padding(.leading, 10)
-            Image(systemName: "pencil")
-              .resizable()
-              .frame(width: 10.5, height: 10.5)
+              .padding(.leading, 12)
+            CofficeAsset.Asset.pencilLine14px.swiftUIImage
+              .renderingMode(.template)
+              .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
               .padding(.trailing, 10)
-              .tint(.brown)
           }
           .overlay(
             RoundedRectangle(cornerRadius: 4)
-              .stroke(.gray, lineWidth: 1)
+              .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
           )
         }
       }
@@ -279,7 +279,8 @@ extension CafeSearchDetailMenuView {
 
   private var userReviewListView: some View {
     WithViewStore(store) { _ in
-      VStack(spacing: 0) {
+      LazyVStack(spacing: 0) {
+        // TODO: 실제 리뷰 데이터 표출 필요
         ForEach(0..<10) { _ in
           userReviewCell
         }
@@ -293,20 +294,18 @@ extension CafeSearchDetailMenuView {
         VStack(spacing: 0) {
           HStack {
             VStack {
-              Image(systemName: "person.crop.circle")
-                .resizable()
-                .frame(width: 36, height: 36)
+              CofficeAsset.Asset.userProfile40px.swiftUIImage
               Spacer()
             }
 
             VStack(spacing: 4) {
               Text("수민")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundColor(.black)
+                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                .applyCofficeFont(font: .subtitleSemiBold)
                 .frame(maxWidth: .infinity, alignment: .leading)
               Text("5.24 토")
-                .font(.system(size: 12))
-                .foregroundColor(.gray)
+                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                .applyCofficeFont(font: .body2Medium)
                 .frame(maxWidth: .infinity, alignment: .leading)
               Spacer()
             }
@@ -318,16 +317,11 @@ extension CafeSearchDetailMenuView {
                 // TODO: 수정/삭제 & 신고하기 이벤트 구현 필요
               } label: {
                 if Int.random(in: 0...1) == 0 {
-                  Image(systemName: "ellipsis")
-                    .resizable()
-                    .scaledToFit()
-                    .rotationEffect(.degrees(90))
-                    .frame(width: 18)
-                    .tint(.black)
+                  CofficeAsset.Asset.more2Fill24px.swiftUIImage
                 } else {
                   Text("수정/삭제")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 12))
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                    .applyCofficeFont(font: .body2Medium)
                 }
               }
               Spacer()
@@ -343,35 +337,34 @@ extension CafeSearchDetailMenuView {
           오후엔 사람이 꽉차니 일찍오는 것 추천!
           """
         )
-        .foregroundColor(.gray)
-        .font(.system(size: 14))
+        .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+        .applyCofficeFontWithoutLineSpacing(font: .body1)
         .multilineTextAlignment(.leading)
         .padding(.top, 20)
 
-        // TODO: Tag기 한줄 넘어갈 경우 표출 사양 확인 필요
+        // TODO: Tag기 한줄 넘어갈 경우 넘어가도록 커스텀 뷰 구현 필요
         HStack(spacing: 8) {
           ForEach(CafeSearchDetail.State.ReviewTagType.allCases, id: \.self) { tagType in
-            HStack(spacing: 4) {
-              Image(systemName: tagType.iconName)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 12)
-                .padding(.leading, 8)
-              Text(tagType.title)
-                .foregroundColor(.gray)
-                .font(.system(size: 12))
-                .frame(height: 18)
-                .padding(.vertical, 4)
-                .padding(.trailing, 8)
-            }
-            .overlay(
-              RoundedRectangle(cornerRadius: 4).stroke(.gray, lineWidth: 1)
-            )
+            Text(tagType.title)
+              .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+              .applyCofficeFont(font: .body2Medium)
+              .frame(height: 18)
+              .padding(.vertical, 4)
+              .padding(.horizontal, 8)
+              .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                  .stroke(
+                    CofficeAsset.Colors.grayScale3.swiftUIColor,
+                    lineWidth: 1
+                  )
+              )
           }
         }
+        .frame(height: 26)
         .padding(.top, 20)
 
-        Divider()
+        CofficeAsset.Colors.grayScale3.swiftUIColor
+          .frame(height: 1)
           .padding(.top, 16)
       }
     }

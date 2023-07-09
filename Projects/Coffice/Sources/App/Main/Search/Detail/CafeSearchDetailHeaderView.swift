@@ -57,7 +57,11 @@ struct CafeSearchDetailHeaderView: View {
             }
 
             VStack {
-              CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+              Button {
+                // TODO: 북마크 API 연동 필요
+              } label: {
+                CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+              }
               Spacer()
             }
           }
@@ -74,8 +78,9 @@ struct CafeSearchDetailHeaderView: View {
           }
           .padding(.top, 16)
 
-          Divider()
-            .padding(.top, 20)
+          CofficeAsset.Colors.grayScale3.swiftUIColor
+            .frame(height: 1)
+            .padding(.top, 21)
         }
         .padding(EdgeInsets(top: 20, leading: 20, bottom: 16, trailing: 20))
       }
