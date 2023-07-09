@@ -45,7 +45,7 @@ struct CafeMapView: View {
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .padding(.bottom, 20)
-            if viewStore.isMovingCamera {
+            if viewStore.isMovingCameraPosition.isFalse {
               refreshButtonView
             }
             Spacer()

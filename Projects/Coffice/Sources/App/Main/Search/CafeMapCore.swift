@@ -78,7 +78,7 @@ struct CafeMapCore: ReducerProtocol {
       return cafeMarkerList.isNotEmpty && isUpdatingMarkers
     }
     var isUpdatingBookmarkState = false
-    var isMovingCamera: Bool = false
+    var isMovingCameraPosition: Bool = false
   }
 
   // MARK: - Action
@@ -104,6 +104,7 @@ struct CafeMapCore: ReducerProtocol {
     case cleardMarkers
     case refreshButtonTapped
     case cameraPositionMoved
+    case cameraPositionStopped
 
     // MARK: Search
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
@@ -221,7 +222,7 @@ struct CafeMapCore: ReducerProtocol {
 
         // MARK: NaverMapView
       case .refreshButtonTapped:
-        state.isMovingCamera = false
+        state.isMovingCameraPosition = false
         return .send(.updateCafeMarkers)
 
       case .bottomFloatingButtonTapped(let buttonType):
@@ -291,7 +292,11 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
       case .cameraPositionMoved:
-        state.isMovingCamera = true
+        state.isMovingCameraPosition = true
+        return .none
+
+      case .cameraPositionStopped:
+        state.isMovingCameraPosition = false
         return .none
 
       case .requestSearchPlaceResponse(let result, let title):
