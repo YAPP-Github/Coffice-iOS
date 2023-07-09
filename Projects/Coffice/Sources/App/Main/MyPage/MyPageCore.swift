@@ -130,7 +130,16 @@ struct MyPage: ReducerProtocol {
           )
 
         case .memberLeave:
-          return .none
+          return EffectTask(
+            value: .presentCommonBottomSheet(
+              .init(
+                title: "회원탈퇴",
+                description: "삭제된 데이터는 복구가 불가능합니다.\n등록된 리뷰, 게시물은 탈퇴 후에도 유지되니\n삭제 후 탈퇴하시길 바랍니다. ",
+                cancelButtonTitle: "닫기",
+                confirmButtonTitle: "탈퇴하기"
+              )
+            )
+          )
         }
 
       default:

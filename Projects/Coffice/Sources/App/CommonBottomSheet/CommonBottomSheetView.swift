@@ -70,6 +70,7 @@ extension CommonBottomSheetView {
           .padding(.top, 20)
 
         Text(viewStore.description)
+          .multilineTextAlignment(.center)
           .applyCofficeFont(font: .subtitle1Medium)
           .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
           .padding(.top, 12)
