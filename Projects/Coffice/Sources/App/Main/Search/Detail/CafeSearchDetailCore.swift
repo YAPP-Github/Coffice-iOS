@@ -14,6 +14,11 @@ struct CafeSearchDetail: ReducerProtocol {
     let title = "CafeSearchDetail"
     var cafeId: Int
     var cafe: Cafe?
+    var cafeTestImageAssets: [CofficeImages] = [
+      CofficeAsset.Asset.cafeImage,
+      CofficeAsset.Asset.userProfile40px,
+      CofficeAsset.Asset.errorWarningFill40px
+    ]
 
     let subMenuTypes = SubMenuType.allCases
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
@@ -34,6 +39,7 @@ struct CafeSearchDetail: ReducerProtocol {
       }
     }
 
+    let imagePageViewHeight: CGFloat = 346.0
     let homeMenuViewHeight: CGFloat = 100.0
     let openTimeDescription = """
                               화 09:00 - 21:00

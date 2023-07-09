@@ -13,3 +13,9 @@ extension CofficeImages: Equatable {
     lhs.name == rhs.name
   }
 }
+
+extension CofficeImages: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(name)
+  }
+}
