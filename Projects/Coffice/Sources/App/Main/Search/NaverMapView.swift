@@ -189,4 +189,10 @@ extension Coordinator: NMFMapViewCameraDelegate {
       self?.target.viewStore.send(.cameraPositionMoved)
     }
   }
+
+  func mapViewCameraIdle(_ mapView: NMFMapView) {
+    DispatchQueue.main.async { [weak self] in
+      self?.target.viewStore.send(.cameraPositionStopped)
+    }
+  }
 }
