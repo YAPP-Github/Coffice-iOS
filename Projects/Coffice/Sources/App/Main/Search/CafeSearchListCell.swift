@@ -55,7 +55,7 @@ struct CafeSearchListCell: View {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 0) {
             ForEach(1...10, id: \.self) { _ in
-              Image(uiImage: CofficeAsset.Asset.cafeImage.image)
+              CofficeAsset.Asset.cafeImage.swiftUIImage
                 .resizable()
                 .frame(width: 124, height: 112)
                 .cornerRadius(4, corners: .allCorners)
