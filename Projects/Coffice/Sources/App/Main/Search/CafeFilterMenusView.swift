@@ -41,18 +41,20 @@ struct CafeFilterMenusView: View {
                         .stroke(viewState.borderColorAsset.swiftUIColor, lineWidth: 1)
                     )
                 default:
-                  HStack(alignment: .center, spacing: 0) {
+                  HStack(spacing: 0) {
                     Text(viewState.menuType.title)
                       .foregroundColor(viewState.foregroundColorAsset.swiftUIColor)
                       .applyCofficeFont(font: .body1Medium)
-                    Image(asset: CofficeAsset.Asset.arrowDropDownLine18px)
+                    CofficeAsset.Asset.arrowDropDownLine18px.swiftUIImage
                       .resizable()
                       .renderingMode(.template)
                       .frame(width: 18, height: 18)
                       .foregroundColor(viewState.foregroundColorAsset.swiftUIColor)
                   }
-                  .frame(width: viewState.menuType.size.width, height: viewState.menuType.size.height)
-                  .cornerRadius(16)
+                  .frame(height: viewState.menuType.size.height)
+                  .padding(.leading, 16)
+                  .padding(.trailing, 8)
+                  .cornerRadius(18)
                   .background(viewState.backgroundColorAsset.swiftUIColor.clipShape(Capsule()))
                   .overlay(
                     RoundedRectangle(cornerRadius: 18)
@@ -63,9 +65,9 @@ struct CafeFilterMenusView: View {
               .cornerRadius(18)
             }
           }
+          .padding(.horizontal, 20)
         }
         .frame(width: 355, height: 36)
-        .padding(.horizontal, 20)
         .padding(.bottom, 16)
       }
       .onAppear {

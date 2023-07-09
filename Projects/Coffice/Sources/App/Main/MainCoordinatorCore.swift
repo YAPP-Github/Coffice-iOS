@@ -82,14 +82,14 @@ struct MainCoordinator: ReducerProtocol {
       case .filterBottomSheet(.saveCafeFilter(let information)):
         return EffectTask(
           value: .search(
-            .routeAction(1, action: .cafeSearchList(.updateCafeFilter(information: information)))
+            .routeAction(0, action: .cafeMap(.updateCafeFilter(information: information)))
           )
         )
 
       case .filterBottomSheet(.dismissWithDelay):
         return EffectTask(
           value: .search(
-            .routeAction(1, action: .cafeSearchList(.filterBottomSheetDismissed))
+            .routeAction(0, action: .cafeMap(.filterBottomSheetDismissed))
           )
         )
 
@@ -101,7 +101,7 @@ struct MainCoordinator: ReducerProtocol {
         return .none
 
       case .search(
-        .routeAction(_, .cafeSearchList(.filterMenus(action: .presentFilterBottomSheetView(let filterSheetState))))
+        .routeAction(_, .cafeMap(.cafeFilterMenus(action: .presentFilterBottomSheetView(let filterSheetState))))
       ):
         state.filterSheetState = filterSheetState
         return .none

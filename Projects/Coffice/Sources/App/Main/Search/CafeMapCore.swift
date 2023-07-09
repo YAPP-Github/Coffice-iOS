@@ -29,28 +29,6 @@ struct CafeMapCore: ReducerProtocol {
     case searchResultView
   }
 
-  enum FilterOrder: CaseIterable {
-    case runningTime
-    case outlet
-    case spaceSize
-    case personnel
-    // TODO: 테스트용 코드로 제거 예정
-    case searchDetail
-    case searchList
-
-    var title: String {
-      switch self {
-      case .runningTime: return "영업시간"
-      case .outlet: return "콘센트"
-      case .spaceSize: return "공간크기"
-      case .personnel: return "인원"
-        // TODO: 테스트용 코드로 제거 예정
-      case .searchDetail: return "검색상세"
-      case .searchList: return "검색결과"
-      }
-    }
-  }
-
   enum FloatingButton: CaseIterable {
     case currentLocationButton
     case refreshButton
@@ -78,10 +56,14 @@ struct CafeMapCore: ReducerProtocol {
     var isSelectedCafe: Bool = false
 
     // MARK: Search
+    @BindingState var searchText = ""
     var cafeSearchState = CafeSearchCore.State()
     var cafeSearchListState = CafeSearchListCore.State(filterMenusState: .mock)
-    let filterOrders = FilterOrder.allCases
-    @BindingState var searchText = ""
+    var cafeFilterMenusState: CafeFilterMenus.State = .mock
+
+    // MARK: CafeFilter
+
+    var cafeFilterInformation: CafeFilterInformation = .mock
 
     // MARK: NaverMapView
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
@@ -117,7 +99,6 @@ struct CafeMapCore: ReducerProtocol {
     case bookmarkStateUpdated
 
     // MARK: Search
-    case filterOrderMenuTapped(FilterOrder)
     case requestSearchPlaceResponse(TaskResult<[Cafe]>, String)
 
     // MARK: Temporary
@@ -130,6 +111,9 @@ struct CafeMapCore: ReducerProtocol {
     case bookmarkButtonTapped(cafe: Cafe)
     case showToast(Toast.State)
     case resetResult(ResetState)
+    case cafeFilterMenus(action: CafeFilterMenus.Action)
+    case updateCafeFilter(information: CafeFilterInformation)
+    case filterBottomSheetDismissed
     case onDisappear
   }
 
@@ -141,6 +125,13 @@ struct CafeMapCore: ReducerProtocol {
   // MARK: - Body
   var body: some ReducerProtocolOf<Self> {
     BindingReducer()
+
+    Scope(
+      state: \.cafeFilterMenusState,
+      action: /Action.cafeFilterMenus(action:)
+    ) {
+      CafeFilterMenus()
+    }
 
     Scope(state: \.cafeSearchListState, action: /CafeMapCore.Action.cafeSearchListAction) {
       CafeSearchListCore()
@@ -260,17 +251,6 @@ struct CafeMapCore: ReducerProtocol {
         state.isUpdatingBookmarkState = false
         return .none
 
-        // MARK: Search
-      case .filterOrderMenuTapped(let filterOrder):
-        switch filterOrder {
-        case .searchList:
-          return EffectTask(value: .pushToSearchListForTest)
-        case .searchDetail:
-          return EffectTask(value: .pushToSearchDetailForTest(cafeId: 1))
-        default:
-          return .none
-        }
-
       case .requestSearchPlaceResponse(let result, let title):
         switch result {
         case .success(let cafeList):
@@ -343,6 +323,15 @@ struct CafeMapCore: ReducerProtocol {
         // TODO: MapView쪽 리셋 작업 필요
         state.selectedCafe = nil
         return .none
+
+      case .updateCafeFilter(let information):
+        state.cafeFilterInformation = information
+        return EffectTask(value: .cafeFilterMenus(action: .updateCafeFilter(information: information)))
+
+      case .filterBottomSheetDismissed:
+        return EffectTask(
+          value: .cafeFilterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
+        )
 
       default:
         return .none
