@@ -118,8 +118,7 @@ struct MainCoordinator: ReducerProtocol {
         state.filterSheetState = filterSheetState
         return .none
 
-      case
-          .search(.routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))),
+      case .search(.routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))),
           .filterBottomSheet(.presentBubbleMessageView(let bubbleMessageState)):
         state.bubbleMessageState = bubbleMessageState
         return .none
