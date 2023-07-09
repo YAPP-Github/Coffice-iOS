@@ -77,7 +77,7 @@ struct CafeSearchListCore: ReducerProtocol {
         // TODO: 무한스크롤 추후 수정 예정
       case .scrollAndLoadData(let itemIndex):
         if state.hasNext ?? false && state.cafeList.count - 1 == itemIndex {
-          guard let lastCafe = state.cafeList.last else { return .none}
+          guard let lastCafe = state.cafeList.last else { return .none }
           state.lastCafeDistance = lastCafe.distanceFromUser
           return .send(.scrollAndRequestSearchPlace(state.lastCafeDistance))
         }
