@@ -73,9 +73,7 @@ extension CafeFilterBottomSheetView {
             CofficeAsset.Asset.informationLine18px.swiftUIImage
               .renderingMode(.template)
               .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
-              .padding(.top, 35)
-              .padding(.leading, 8)
-              .padding(.bottom, 27)
+              .padding(EdgeInsets(top: 35, leading: 8, bottom: 27, trailing: 0))
           }
         }
 
