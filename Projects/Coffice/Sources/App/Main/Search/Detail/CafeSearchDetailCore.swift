@@ -45,6 +45,11 @@ struct CafeSearchDetail: ReducerProtocol {
                               """
     var runningTimeDetailInfo = ""
     var needToPresentRunningTimeDetailInfo = false
+    var runningTimeDetailInfoArrowImageAsset: CofficeImages {
+      return needToPresentRunningTimeDetailInfo
+      ? CofficeAsset.Asset.arrowDropUpLine24px
+      : CofficeAsset.Asset.arrowDropDownLine24px
+    }
   }
 
   enum Action: Equatable {
@@ -253,6 +258,13 @@ extension CafeSearchDetail.State {
     let id = UUID()
     let type: SubMenuType
     let isSelected: Bool
+    var foregroundColorAsset: CofficeColors {
+      isSelected ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale5
+    }
+
+    var bottomBorderColorAsset: CofficeColors {
+      isSelected ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale1
+    }
 
     init(subMenuType: SubMenuType, isSelected: Bool = false) {
       self.type = subMenuType

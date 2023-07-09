@@ -45,14 +45,13 @@ extension CafeSearchDetailMenuView {
           } label: {
             VStack(spacing: 0) {
               Text(viewState.title)
-                .foregroundColor(viewState.isSelected ? .black : .gray)
-                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(viewState.foregroundColorAsset.swiftUIColor)
+                .applyCofficeFont(font: .header3)
                 .frame(height: 52, alignment: .center)
-                .background(.white)
+                .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
                 .padding(.horizontal, 20)
                 .overlay(alignment: .bottom) {
-                  Color.clear
-                    .background(viewState.isSelected ? .black : .white)
+                  viewState.bottomBorderColorAsset.swiftUIColor
                     .frame(height: 4)
                 }
             }
@@ -70,8 +69,8 @@ extension CafeSearchDetailMenuView {
 extension CafeSearchDetailMenuView {
   private var detailInfoHeaderView: some View {
     Text("상세정보")
-      .foregroundColor(.black)
-      .font(.system(size: 16, weight: .bold))
+      .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+      .applyCofficeFont(font: .header3)
       .frame(alignment: .leading)
       .frame(height: 52)
   }
@@ -92,15 +91,13 @@ extension CafeSearchDetailMenuView {
   private var snsInfoView: some View {
     WithViewStore(store) { viewStore in
       HStack {
-        Image(systemName: "network")
-          .resizable()
-          .frame(width: 18, height: 18)
+        CofficeAsset.Asset.globalLine18px.swiftUIImage
         Button {
           // TODO: SNS Link Action 구현 필요
         } label: {
           Text(viewStore.cafe?.homepageUrl ?? "https://www.instagram.com/hoxton_seoul최대...")
-            .foregroundColor(.brown)
-            .font(.system(size: 14))
+            .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+            .applyCofficeFont(font: .body1Medium)
             .frame(alignment: .leading)
             .frame(height: 30)
         }
@@ -110,6 +107,7 @@ extension CafeSearchDetailMenuView {
 
   private var mapInfoView: some View {
     WithViewStore(store) { _ in
+      // TODO: 지도 뷰 추가 필요
       Color.black
         .frame(height: 126)
     }
@@ -119,22 +117,18 @@ extension CafeSearchDetailMenuView {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
         HStack {
-          Image(systemName: "mappin")
-            .frame(width: 18, height: 18)
+          CofficeAsset.Asset.mapPinLine18px.swiftUIImage
 
           Text(viewStore.cafe?.address?.address ?? "서울 서대문구 연희로 91 2층")
-            .foregroundColor(.gray)
-            .font(.system(size: 14))
+            .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+            .applyCofficeFont(font: .body1Medium)
             .frame(alignment: .leading)
             .frame(height: 20)
 
           Button {
             // TODO: 좌측 텍스트 복사 이벤트
           } label: {
-            Image(systemName: "doc.on.doc")
-              .resizable()
-              .frame(width: 18, height: 18)
-              .tint(.black)
+            CofficeAsset.Asset.fileCopyLine18px.swiftUIImage
           }
 
           Spacer()
@@ -148,12 +142,10 @@ extension CafeSearchDetailMenuView {
   private var contactInfoView: some View {
     WithViewStore(store) { viewStore in
       HStack {
-        Image(systemName: "phone")
-          .resizable()
-          .frame(width: 18, height: 18)
+        CofficeAsset.Asset.phoneFill18px.swiftUIImage
         Text(viewStore.cafe?.phoneNumber ?? "02) 123-4567")
-          .foregroundColor(.brown)
-          .font(.system(size: 14))
+          .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+          .applyCofficeFont(font: .body1Medium)
           .frame(alignment: .leading)
           .frame(height: 20)
       }
@@ -167,13 +159,8 @@ extension CafeSearchDetailMenuView {
       VStack(spacing: 0) {
         HStack {
           VStack {
-            Image(systemName: "clock")
-              .resizable()
-              .frame(width: 18, height: 18)
-              .tint(.black)
-              .background(
-                Circle().strokeBorder(.black, lineWidth: 1)
-              )
+            CofficeAsset.Asset.timeLine18px.swiftUIImage
+              .padding(.top, 5)
             Spacer()
           }
 
@@ -181,37 +168,36 @@ extension CafeSearchDetailMenuView {
             Button {
               viewStore.send(.toggleToPresentTextForTest)
             } label: {
-              HStack {
+              HStack(alignment: .top) {
                 Text("월 09:00 - 21:00")
-                  .foregroundColor(.gray)
-                  .font(.system(size: 14))
+                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                  .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
                   .frame(height: 20)
                   .frame(alignment: .leading)
-
-                Image(systemName: viewStore.needToPresentRunningTimeDetailInfo ? "chevron.up" : "chevron.down")
-                  .resizable()
-                  .scaledToFit()
-                  .frame(width: 9.5)
-                  .tint(.gray)
+                  .padding(.top, 4)
+                viewStore.runningTimeDetailInfoArrowImageAsset.swiftUIImage
+                  .padding(.top, 2)
               }
             }
 
-            // TODO: 실제 API 연동 시에 운영시간 정보 관련 뷰 모델 구성 예정
+            // TODO: 실제 API 연동 시에 운영시간 정보 관련 뷰 모델 구성 및 레이아웃 수정 예정
             if viewStore.needToPresentRunningTimeDetailInfo {
               Text(viewStore.runningTimeDetailInfo)
-                .foregroundColor(.gray)
-                .font(.system(size: 14))
+                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
                 .lineSpacing(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 4)
+                .padding(.top, 2)
             }
 
-            HStack {
+            HStack(alignment: .top) {
               VStack(spacing: 0) {
                 Text("- 브레이크 타임 :")
-                  .foregroundColor(.gray)
-                  .font(.system(size: 14))
+                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                  .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
+                  .frame(height: 20)
+                  .padding(.top, 1)
                 Spacer()
               }
 
@@ -222,41 +208,23 @@ extension CafeSearchDetailMenuView {
                   주말) 15:00 ~ 16:00
                   """
                 )
-                .foregroundColor(.gray)
-                .font(.system(size: 14))
+                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
+                .frame(height: 40)
                 Spacer()
               }
             }
             .padding(.top, 5)
 
-            HStack {
-              VStack {
-                Text("- 주문마감 :")
-                  .foregroundColor(.gray)
-                  .font(.system(size: 14))
-                Spacer()
-              }
-
-              VStack {
-                Text(
-                  """
-                  주중) 마감 1시간 전
-                  주말) 마감 30분 전
-                  """
-                )
-                .foregroundColor(.gray)
-                .font(.system(size: 14))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
-                Spacer()
-              }
-            }
+            Text("- 주문마감 : 21:00")
+              .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+              .applyCofficeFontWithoutLineSpacing(font: .body1Medium)
+              .frame(height: 20)
           }
         }
       }
-      .padding(.top, 10)
+      .padding(.top, 4)
     }
   }
 }
