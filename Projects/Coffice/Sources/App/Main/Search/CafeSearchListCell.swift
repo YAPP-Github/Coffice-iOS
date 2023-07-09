@@ -32,7 +32,7 @@ struct CafeSearchListCell: View {
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
             }
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-              Text(cafe.isOpened ?? false ? "영업중" : "영업종료")
+              Text(cafe.openingInformation?.isOpened ?? false ? "영업중" : "영업종료")
                 .applyCofficeFont(font: .button)
                 .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
               Text("월: 11:00 ~ 23:00")

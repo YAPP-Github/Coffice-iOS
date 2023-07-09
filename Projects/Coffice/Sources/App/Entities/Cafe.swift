@@ -24,7 +24,7 @@ struct Cafe: Hashable {
     imageUrls: [],
     homepageUrl: nil,
     crowdednessList: nil,
-    isOpened: nil,
+    openingInformation: nil,
     capcityLevel: nil,
     drinkTypes: nil,
     foodTypes: nil,
@@ -45,7 +45,7 @@ struct Cafe: Hashable {
   let imageUrls: [String]?
   let homepageUrl: String?
   let crowdednessList: [CrowdednessResponse]?
-  let isOpened: Bool?
+  let openingInformation: OpeningInformation?
   let capcityLevel: CapacityLevel?
   let drinkTypes: [DrinkType]?
   let foodTypes: [FoodType]?
@@ -69,7 +69,7 @@ extension SearchPlaceResponseDTO {
       imageUrls: imageUrls,
       homepageUrl: homepageUrl,
       crowdednessList: crowdednessList?.map { $0.toEntity() },
-      isOpened: nil,
+      openingInformation: OpeningInformation(dayOpenInformations: openingHours?.map { $0.toEntity() } ?? []),
       capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
@@ -95,7 +95,7 @@ extension PlaceResponseDTO {
       imageUrls: imageUrls,
       homepageUrl: homepageUrl,
       crowdednessList: crowdednessList?.map { $0.toEntity() },
-      isOpened: nil,
+      openingInformation: OpeningInformation(dayOpenInformations: openingHours?.map { $0.toEntity() } ?? []),
       capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
