@@ -32,12 +32,13 @@ struct CafeMapView: View {
                 if viewStore.selectedCafe != nil {
                   VStack {
                     Spacer()
+
                     CafeCardView(store: store)
                       .frame(width: geometry.size.width, height: 260)
                       .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
                   }
                 } else {
-                  EmptyView()
+                  floatingTestButtonView
                 }
               }
 
@@ -95,6 +96,34 @@ extension CafeMapView {
           }
           .buttonStyle(.plain)
         }
+      }
+    }
+  }
+
+  @available(*, deprecated, message: "테스트용 UI로, 상제 리스트뷰 진입점 추가 후 제거 예정")
+  var floatingTestButtonView: some View {
+    WithViewStore(store) { viewStore in
+      VStack {
+        Spacer()
+
+        HStack {
+          Button {
+            viewStore.send(.pushToSearchDetailForTest(cafeId: 1))
+          } label: {
+            ZStack(alignment: .center) {
+              Circle()
+                .foregroundColor(.white)
+                .shadow(color: .gray, radius: 2, x: 0, y: 2)
+                .frame(width: 48, height: 48)
+              Text("검색상세")
+                .applyCofficeFont(font: .button)
+            }
+          }
+          .buttonStyle(.plain)
+          Spacer()
+        }
+        .padding(.leading, 24)
+        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height + 24)
       }
     }
   }

@@ -53,7 +53,7 @@ struct CafeSearchDetail: ReducerProtocol {
     case popView
     case subMenuTapped(State.SubMenuType)
     case toggleToPresentTextForTest
-    case infoGuideButtonTapped
+    case infoGuideButtonTapped(CafeFilter.GuideType)
     case presentBubbleMessageView(BubbleMessage.State)
     case presentCafeReviewWriteView
   }
@@ -89,9 +89,12 @@ struct CafeSearchDetail: ReducerProtocol {
         }
         return .none
 
-      case .infoGuideButtonTapped:
-        // TODO: 선택한 버튼에 맞게 맞춤형 정보가 있는 말풍선 표출 필요
-        return EffectTask(value: .presentBubbleMessageView(.mock))
+      case .infoGuideButtonTapped(let guideType):
+        return EffectTask(
+          value: .presentBubbleMessageView(
+            .init(guideType: guideType)
+          )
+        )
 
       default:
         return .none
@@ -189,6 +192,14 @@ extension CafeSearchDetail.State {
       case .outletState: return "power"
       case .spaceSize: return "house"
       case .groupSeat: return "person"
+      }
+    }
+
+    var guideType: CafeFilter.GuideType {
+      switch type {
+      case .outletState: return .outletState
+      case .spaceSize: return .spaceSize
+      case .groupSeat: return .groupSeat
       }
     }
   }

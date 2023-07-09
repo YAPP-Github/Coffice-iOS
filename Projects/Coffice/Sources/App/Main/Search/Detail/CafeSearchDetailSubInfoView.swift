@@ -52,7 +52,7 @@ extension CafeSearchDetailSubInfoView {
                 .frame(width: 30, height: 30)
                 .overlay(alignment: .topTrailing) {
                   Button {
-                    viewStore.send(.infoGuideButtonTapped)
+                    viewStore.send(.infoGuideButtonTapped(viewState.guideType))
                   } label: {
                     Image(asset: CofficeAsset.Asset.informationLine18px)
                       .resizable()
