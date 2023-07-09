@@ -72,6 +72,22 @@ struct SearchPlaceAPIClient: DependencyKey {
     let response: PlaceResponseDTO = try await coreNetwork.dataTask(request: request)
     return response.toCafeEntity()
   }
+
+  func fetchWaypoints(name: String) async throws -> [WayPoint] {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/waypoints"
+    urlComponents?.queryItems = [
+      .init(name: "name", value: name)
+    ]
+    guard let request = urlComponents?.toURLRequest(method: .get)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    let response: (dto: [WayPointDTO], hasNext: Bool) = try await coreNetwork
+      .pageableDataTask(request: request)
+
+    return response.dto.map { $0.toEntity() }
+  }
 }
 
 extension DependencyValues {
