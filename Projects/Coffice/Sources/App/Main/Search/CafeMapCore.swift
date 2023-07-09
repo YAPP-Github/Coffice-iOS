@@ -103,7 +103,7 @@ struct CafeMapCore: ReducerProtocol {
     case bookmarkStateUpdated
     case cleardMarkers
     case refreshButtonTapped
-    case movedCameraPosition
+    case cameraPositionMoved
 
     // MARK: Search
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
@@ -290,7 +290,7 @@ struct CafeMapCore: ReducerProtocol {
         state.isUpdatingBookmarkState = false
         return .none
 
-      case .movedCameraPosition:
+      case .cameraPositionMoved:
         state.isMovingCamera = true
         return .none
 
