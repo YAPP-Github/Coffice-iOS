@@ -20,18 +20,24 @@ struct CafeSearchDetailHeaderView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
-        // TODO: 이미지 여러장 들어오는 경우 스크롤 필요
-        if let imageUrl = viewStore.cafe?.imageUrls?.first {
-          KFImage.url(URL(string: imageUrl))
-            .resizable()
-            .frame(height: 200 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0))
-            .scaledToFit()
-        } else {
-          Image("cafeImage")
-            .resizable()
-            .frame(height: 200 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0))
-            .scaledToFit()
+        TabView {
+          if let imageUrls = viewStore.cafe?.imageUrls,
+             imageUrls.isNotEmpty {
+            ForEach(imageUrls, id: \.self) { imageUrl in
+              KFImage.url(URL(string: imageUrl))
+                .resizable()
+                .scaledToFill()
+            }
+          } else {
+            ForEach(viewStore.cafeTestImageAssets, id: \.self) { imageAsset in
+              imageAsset.swiftUIImage
+                .resizable()
+                .scaledToFill()
+            }
+          }
         }
+        .frame(height: 200 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0))
+        .tabViewStyle(PageTabViewStyle())
 
         VStack(spacing: 0) {
           HStack {

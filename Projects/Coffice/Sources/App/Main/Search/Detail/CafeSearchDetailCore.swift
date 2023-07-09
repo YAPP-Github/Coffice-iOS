@@ -14,6 +14,11 @@ struct CafeSearchDetail: ReducerProtocol {
     let title = "CafeSearchDetail"
     var cafeId: Int
     var cafe: Cafe?
+    var cafeTestImageAssets: [CofficeImages] = [
+      CofficeAsset.Asset.cafeImage,
+      CofficeAsset.Asset.userProfile40px,
+      CofficeAsset.Asset.errorWarningFill40px
+    ]
 
     let subMenuTypes = SubMenuType.allCases
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
