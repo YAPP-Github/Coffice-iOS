@@ -25,7 +25,7 @@ struct CafeSearchDetailSubInfoView: View {
         }
         .padding(.horizontal, 20)
 
-        Color(UIColor.lightGray)
+        CofficeAsset.Colors.grayScale3.swiftUIColor
           .frame(height: 4)
           .padding(.top, 20)
       }
@@ -38,11 +38,11 @@ extension CafeSearchDetailSubInfoView {
     WithViewStore(store, observe: \.subPrimaryInfoViewStates) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         Text("카페정보")
-          .foregroundColor(.black)
-          .font(.system(size: 16, weight: .bold))
+          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+          .applyCofficeFont(font: .header3)
           .frame(alignment: .leading)
           .frame(height: 20)
-          .padding(.top, 16)
+          .padding(.top, 15)
 
         HStack {
           ForEach(viewStore.state) { viewState in
@@ -62,12 +62,12 @@ extension CafeSearchDetailSubInfoView {
                 }
               HStack(spacing: 8) {
                 Text(viewState.title)
-                  .foregroundColor(.black)
-                  .font(.system(size: 14))
+                  .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
+                  .applyCofficeFont(font: .button)
                   .frame(height: 20)
                 Text(viewState.description)
-                  .foregroundColor(.gray)
-                  .font(.system(size: 14))
+                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                  .applyCofficeFont(font: .body1Medium)
                   .frame(height: 20)
               }
               .fixedSize(horizontal: true, vertical: true)
@@ -93,8 +93,8 @@ extension CafeSearchDetailSubInfoView {
           VStack(spacing: 0) {
             ForEach(viewStore.state) { viewState in
               Text(viewState.title)
-                .foregroundColor(.black)
-                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                .applyCofficeFont(font: .button)
                 .frame(height: 20)
                 .frame(maxWidth: 50, alignment: .leading)
                 .padding(.bottom, 16)
@@ -105,8 +105,8 @@ extension CafeSearchDetailSubInfoView {
             ForEach(viewStore.state) { viewState in
               HStack {
                 Text(viewState.description)
-                  .foregroundColor(.gray)
-                  .font(.system(size: 14))
+                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                  .applyCofficeFont(font: .body1Medium)
                   .frame(alignment: .leading)
 
                 if viewState.type == .congestion {
@@ -117,8 +117,8 @@ extension CafeSearchDetailSubInfoView {
                   Spacer()
 
                   Text("6월 22일 16:00 기준")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 12))
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                    .applyCofficeFont(font: .body2Medium)
                     .frame(alignment: .trailing)
                 }
               }
