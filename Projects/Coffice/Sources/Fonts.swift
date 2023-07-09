@@ -231,25 +231,8 @@ struct FontModifier: ViewModifier {
   }
 }
 
-struct FontWithoutLineSpacingViewModifier: ViewModifier {
-  var font: CofficeFont
-
-  init(font: CofficeFont) {
-    self.font = font
-  }
-
-  func body(content: Content) -> some View {
-    content
-      .font(.custom(font.name, size: font.size))
-  }
-}
-
 extension View {
   func applyCofficeFont(font: CofficeFont) -> some View {
     modifier(FontModifier(font: font))
-  }
-
-  func applyCofficeFontWithoutLineSpacing(font: CofficeFont) -> some View {
-    modifier(FontWithoutLineSpacingViewModifier(font: font))
   }
 }
