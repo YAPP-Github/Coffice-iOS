@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CafeSearchResponse {
+struct CafeSearchResponse: Equatable {
   let cafes: [Cafe]
   let filters: CafeSearchFilters?
   let hasNext: Bool

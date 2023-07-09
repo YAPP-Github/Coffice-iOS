@@ -38,7 +38,7 @@ extension CafeCellView {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack {
         ForEach(defaultCafe.cafeThumbnail, id: \.self) { _ in
-          Image(uiImage: CofficeAsset.Asset.cafeImage.image)
+          CofficeAsset.Asset.cafeImage.swiftUIImage
           .resizable()
           .frame(width: 150, height: 150)
         }

@@ -48,6 +48,11 @@ struct CafeMapCore: ReducerProtocol {
 
   // MARK: - State
   struct State: Equatable {
+    // MARK: CardViewUI
+    var maxScreenWidth: CGFloat = .zero
+    var fixedImageSize: CGFloat { (maxScreenWidth - 56) / 3 }
+    var fixedCardTitleSize: CGFloat { maxScreenWidth - 48 }
+
     // MARK: ViewType
     var displayViewType: ViewType = .mainMapView
 
@@ -69,6 +74,7 @@ struct CafeMapCore: ReducerProtocol {
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
     var cafeMarkerList: [Cafe] = []
     var cafeList: [Cafe] = []
+    var shouldClearMarkers: Bool = false
     let floatingButtons = FloatingButton.allCases
     var isMovingToCurrentPosition = false
     var isUpdatingMarkers = false
@@ -82,6 +88,7 @@ struct CafeMapCore: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     // MARK: ViewType
     case updateDisplayType(ViewType)
+    case updateMaxScreenWidth(CGFloat)
 
     // MARK: Sub-Core Actions
     case cafeSearchListAction(CafeSearchListCore.Action)
@@ -97,9 +104,11 @@ struct CafeMapCore: ReducerProtocol {
     case movedToCurrentPosition
     case markersUpdated
     case bookmarkStateUpdated
+    case cleardMarkers
 
     // MARK: Search
-    case requestSearchPlaceResponse(TaskResult<[Cafe]>, String)
+    case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
+    case requestSearchPlaceResponse(TaskResult<CafeSearchResponse>, String)
 
     // MARK: Temporary
     case pushToSearchDetailForTest(cafeId: Int)
@@ -149,6 +158,10 @@ struct CafeMapCore: ReducerProtocol {
         state.cafeSearchState.previousViewType = .mainMapView
         return .none
 
+      case .updateMaxScreenWidth(let width):
+        state.maxScreenWidth = width
+        return .none
+
         // MARK: Sub-Core Actions
       case .cafeSearchAction(.dismiss):
         switch state.cafeSearchState.previousViewType {
@@ -172,20 +185,39 @@ struct CafeMapCore: ReducerProtocol {
 
       case .cafeSearchAction(.requestSearchPlace(let searchText)):
         let title = searchText
-        let latitude = state.currentCameraPosition.latitude
-        let longitude = state.currentCameraPosition.longitude
+        let cameraPosition = state.currentCameraPosition
+        state.cafeSearchState.searchTextSnapshot = searchText
+        state.cafeSearchState.searchCameraPositionSnapshot = state.currentCameraPosition
         return .run { send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
-              searchText: searchText, userLatitude: latitude, userLongitude: longitude,
-              maximumSearchDistance: 2000, isOpened: nil, hasCommunalTable: nil,
-              filters: nil, pageSize: 10, pageableKey: nil
+              searchText: searchText, userLatitude: cameraPosition.latitude,
+              userLongitude: cameraPosition.longitude, maximumSearchDistance: 2000,
+              isOpened: nil, hasCommunalTable: nil, filters: nil, pageSize: 10, pageableKey: nil
             )
-
-            let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
-            return cafeListData.cafes
+            let cafeSearchResponose = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
+            return cafeSearchResponose
           }
           await send(.requestSearchPlaceResponse(result, title))
+        }
+
+      case .cafeSearchListAction(.scrollAndRequestSearchPlace(let lastDistance)):
+        guard let cameraPosition = state.cafeSearchState.searchCameraPositionSnapshot
+        else { return .none }
+        let pageSize = state.cafeSearchListState.pageSize
+        let searchText = state.cafeSearchState.searchTextSnapshot
+        return .run { send in
+          let result = await TaskResult {
+            let cafeRequest = SearchPlaceRequestValue(
+              searchText: searchText, userLatitude: cameraPosition.latitude,
+              userLongitude: cameraPosition.longitude, maximumSearchDistance: 2000,
+              isOpened: nil, hasCommunalTable: nil, filters: nil,
+              pageSize: pageSize, pageableKey: PageableKey(lastCafeDistance: lastDistance)
+            )
+            let cafeSearchResponse = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
+            return cafeSearchResponse
+          }
+          await send(.infiniteScrollSearchPlaceResponse(result))
         }
 
         // MARK: NaverMapView
@@ -233,10 +265,12 @@ struct CafeMapCore: ReducerProtocol {
 
       case .markerTapped(let cafe):
         state.selectedCafe = cafe
+        state.isSelectedCafe = true
         return .none
 
       case .mapViewTapped:
         state.selectedCafe = nil
+        state.isSelectedCafe = false
         return .none
 
       case .movedToCurrentPosition:
@@ -247,25 +281,33 @@ struct CafeMapCore: ReducerProtocol {
         state.isUpdatingMarkers = false
         return .none
 
+      case .cleardMarkers:
+        state.shouldClearMarkers = false
+        return .none
+
       case .bookmarkStateUpdated:
         state.isUpdatingBookmarkState = false
         return .none
 
       case .requestSearchPlaceResponse(let result, let title):
         switch result {
-        case .success(let cafeList):
-          if cafeList.isEmpty {
+        case .success(let searchResponse):
+          if searchResponse.cafes.isEmpty {
             return .send(.resetResult(.searchResultIsEmpty))
           }
-          state.cafeList = cafeList
-          state.cafeSearchListState.cafeList = cafeList
-          guard let cafe = cafeList.first else { return .none }
+          state.cafeList = searchResponse.cafes
+          state.cafeMarkerList = searchResponse.cafes
+          state.isUpdatingMarkers = true
+          state.cafeSearchListState.cafeList = searchResponse.cafes
+          state.cafeSearchListState.hasNext = searchResponse.hasNext
+          guard let cafe = searchResponse.cafes.first else { return .none }
           state.selectedCafe = cafe
           state.isSelectedCafe = true
           state.currentCameraPosition = CLLocationCoordinate2D(
             latitude: cafe.latitude,
             longitude: cafe.longitude
           )
+          state.isMovingToCurrentPosition = true
           state.cafeSearchListState.title = title
           state.displayViewType = .searchResultView
           state.cafeSearchState.previousViewType = .searchResultView
@@ -277,10 +319,31 @@ struct CafeMapCore: ReducerProtocol {
           return .none
         }
 
+      case .infiniteScrollSearchPlaceResponse(let result):
+             switch result {
+             case .success(let cafeSearchResponse):
+               state.cafeSearchListState.hasNext = cafeSearchResponse.hasNext
+               let removedDuplicationCafes = cafeSearchResponse.cafes.filter {
+                 state.cafeSearchListState.cafeList.contains($0).isFalse
+               }
+               if removedDuplicationCafes.isNotEmpty {
+                 state.cafeSearchListState.cafeList += cafeSearchResponse.cafes
+                 state.cafeMarkerList += cafeSearchResponse.cafes
+                 state.isUpdatingMarkers = true
+               }
+               return .none
+             case .failure(let error):
+               debugPrint(error)
+               return .none
+             }
+
         // MARK: Common
       case .resetResult(let resetState):
         state.cafeList = []
         state.cafeMarkerList = []
+        state.cafeSearchListState.cafeList = []
+        state.cafeSearchListState.hasNext = nil
+        state.shouldClearMarkers = true
         state.isSelectedCafe = false
         state.selectedCafe = nil
         switch resetState {

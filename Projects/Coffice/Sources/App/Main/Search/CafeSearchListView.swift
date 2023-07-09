@@ -16,15 +16,15 @@ struct CafeSearchListView: View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
         headerView
-          .padding(EdgeInsets(top: 0, leading: 20, bottom: 16, trailing: 16))
           .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
         switch viewStore.viewType {
         case .listView:
           ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 0) {
-              ForEach(0..<viewStore.cafeList.count, id: \.self) { index in
-                CafeSearchListCell(store: store, cafe: viewStore.state.cafeList[index])
-                  .onTapGesture { }
+              ForEach(viewStore.cafeList, id: \.placeId) { cafe in
+                CafeSearchListCell(store: store, cafe: cafe)
+                  .onAppear { viewStore.send(.scrollAndLoadData(cafe)) }
+                  .onTapGesture {}
                   .padding(.bottom, 40)
               }
             }
@@ -35,6 +35,9 @@ struct CafeSearchListView: View {
           Spacer()
         }
       }
+      .onAppear {
+        viewStore.send(.onAppear)
+      }
     }
     .navigationBarBackButtonHidden(true)
   }
@@ -43,44 +46,47 @@ struct CafeSearchListView: View {
 extension CafeSearchListView {
   var headerView: some View {
     WithViewStore(store) { viewStore in
-      VStack(alignment: .leading, spacing: 8) {
+      VStack(spacing: 8) {
         headLine
         filterMenusView
       }
+      .padding(.horizontal, 20)
       .navigationBarHidden(true)
     }
   }
 
   var headLine: some View {
     WithViewStore(store) { viewStore in
-        HStack(spacing: 0) {
-          Button {
-            viewStore.send(.backbuttonTapped)
-          } label: {
-            CofficeAsset.Asset.arrowLeftTopbarLine24px.swiftUIImage
-              .resizable()
-              .frame(width: 24, height: 24)
+      HStack(spacing: 0) {
+        Button {
+          viewStore.send(.backbuttonTapped)
+        } label: {
+          CofficeAsset.Asset.arrowLeftTopbarLine24px.swiftUIImage
+            .resizable()
+            .frame(width: 24, height: 24)
+        }
+        .padding(.trailing, 12)
+
+        Text(viewStore.title)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
+          .onTapGesture { viewStore.send(.titleLabelTapped) }
+          .lineLimit(1)
+        Spacer()
+        Button {
+          if viewStore.viewType == .mapView {
+            viewStore.send(.updateViewType(.listView))
+          } else {
+            viewStore.send(.updateViewType(.mapView))
           }
-          .padding(.trailing, 12)
-          Text(viewStore.title)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .lineLimit(1)
-            .onTapGesture { viewStore.send(.titleLabelTapped) }
-          Button {
-            if viewStore.viewType == .mapView {
-              viewStore.send(.updateViewType(.listView))
-            } else {
-              viewStore.send(.updateViewType(.mapView))
-            }
-          } label: {
-            switch viewStore.viewType {
-            case .mapView:
-              CofficeAsset.Asset.list24px.swiftUIImage
-            case .listView:
-              CofficeAsset.Asset.mapLine24px.swiftUIImage
-            }
+        } label: {
+          switch viewStore.viewType {
+          case .mapView:
+            CofficeAsset.Asset.list24px.swiftUIImage
+          case .listView:
+            CofficeAsset.Asset.mapLine24px.swiftUIImage
           }
-          .padding(.trailing, 20)
+        }
       }
       .frame(height: 48)
     }
