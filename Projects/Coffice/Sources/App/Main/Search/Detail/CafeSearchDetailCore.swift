@@ -39,6 +39,7 @@ struct CafeSearchDetail: ReducerProtocol {
       }
     }
 
+    let imagePageViewHeight: CGFloat = 346.0
     let homeMenuViewHeight: CGFloat = 100.0
     let openTimeDescription = """
                               화 09:00 - 21:00

@@ -20,24 +20,7 @@ struct CafeSearchDetailHeaderView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
-        TabView {
-          if let imageUrls = viewStore.cafe?.imageUrls,
-             imageUrls.isNotEmpty {
-            ForEach(imageUrls, id: \.self) { imageUrl in
-              KFImage.url(URL(string: imageUrl))
-                .resizable()
-                .scaledToFill()
-            }
-          } else {
-            ForEach(viewStore.cafeTestImageAssets, id: \.self) { imageAsset in
-              imageAsset.swiftUIImage
-                .resizable()
-                .scaledToFill()
-            }
-          }
-        }
-        .frame(height: 200 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0))
-        .tabViewStyle(PageTabViewStyle())
+        imagePageView
 
         VStack(spacing: 0) {
           HStack {
@@ -90,6 +73,29 @@ struct CafeSearchDetailHeaderView: View {
         }
         .padding(EdgeInsets(top: 20, leading: 20, bottom: 16, trailing: 20))
       }
+    }
+  }
+
+  var imagePageView: some View {
+    WithViewStore(store) { viewStore in
+      TabView {
+        if let imageUrls = viewStore.cafe?.imageUrls,
+           imageUrls.isNotEmpty {
+          ForEach(imageUrls, id: \.self) { imageUrl in
+            KFImage.url(URL(string: imageUrl))
+              .resizable()
+              .scaledToFill()
+          }
+        } else {
+          ForEach(viewStore.cafeTestImageAssets, id: \.self) { imageAsset in
+            imageAsset.swiftUIImage
+              .resizable()
+              .scaledToFill()
+          }
+        }
+      }
+      .frame(height: viewStore.imagePageViewHeight)
+      .tabViewStyle(PageTabViewStyle())
     }
   }
 }
