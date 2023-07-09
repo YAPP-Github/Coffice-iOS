@@ -16,12 +16,26 @@ struct OpeningInformation: Hashable {
     let currentDateComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: currentTime)
     let currentTimeValue = (currentDateComponents.hour ?? 0) * 60 + (currentDateComponents.minute ?? 0)
 
-    guard let today = dayOpenInformations.first(where: { $0.weekDaySymbol.weekDayValue == currentDateComponents.weekday })
+    guard let today = dayOpenInformations
+      .first(where: { $0.weekDaySymbol.weekDayValue == currentDateComponents.weekday })
     else { return false }
+
+    if is24Open { return true }
 
     let openTimeValue = today.openAt.hour * 60 + today.openAt.minute
     let closeTimeValue = today.closeAt.hour * 60 + today.closeAt.minute
     return openTimeValue < currentTimeValue && currentTimeValue < closeTimeValue
+  }
+
+  var is24Open: Bool {
+    let currentTime = Date.now
+    let currentDateComponents = Calendar.current.dateComponents([.weekday], from: currentTime)
+
+    guard let today = dayOpenInformations
+      .first(where: { $0.weekDaySymbol.weekDayValue == currentDateComponents.weekday })
+    else { return false }
+
+    return today.openAt == today.closeAt
   }
 }
 
