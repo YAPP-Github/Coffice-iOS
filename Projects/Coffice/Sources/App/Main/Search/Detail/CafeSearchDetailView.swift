@@ -38,22 +38,28 @@ struct CafeSearchDetailView: View {
       }
       .navigationBarHidden(true)
       .ignoresSafeArea(.all, edges: .top)
-      .overlay(alignment: .topLeading, content: {
-        Button {
-          viewStore.send(.popView)
-        } label: {
-          ZStack(alignment: .center) {
-            Color.clear
-              .frame(width: 40, height: 40)
-            Image(systemName: "chevron.left")
-              .resizable()
-              .scaledToFit()
-              .frame(height: 21)
-              .tint(.white)
+      .overlay(alignment: .top, content: {
+        HStack {
+          Button {
+            viewStore.send(.popView)
+          } label: {
+            CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
+              .renderingMode(.template)
+              .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
           }
-          .padding(.top, 4)
-          .padding(.leading, 8)
+
+          Spacer()
+
+          Button {
+            // TODO: 공유하기 기능 추가 필요
+          } label: {
+            CofficeAsset.Asset.shareBoxFill40px.swiftUIImage
+              .renderingMode(.template)
+              .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+          }
         }
+        .padding(.top, 4)
+        .padding(.horizontal, 8)
       })
       .onAppear {
         viewStore.send(.onAppear)

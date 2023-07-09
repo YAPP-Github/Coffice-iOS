@@ -45,6 +45,11 @@ struct CafeSearchDetail: ReducerProtocol {
                               """
     var runningTimeDetailInfo = ""
     var needToPresentRunningTimeDetailInfo = false
+    var runningTimeDetailInfoArrowImageAsset: CofficeImages {
+      return needToPresentRunningTimeDetailInfo
+      ? CofficeAsset.Asset.arrowDropUpLine24px
+      : CofficeAsset.Asset.arrowDropDownLine24px
+    }
   }
 
   enum Action: Equatable {
@@ -139,22 +144,11 @@ extension CafeSearchDetail.State {
     var title: String {
       switch self {
       case .enoughOutlets:
-        return "콘센트 넉넉해요"
+        return "🔌 콘센트 넉넉해요"
       case .fastWifi:
-        return "와이파이 빨라요"
+        return "📶 와이파이 빨라요"
       case .quiet:
-        return "조용해요"
-      }
-    }
-
-    var iconName: String {
-      switch self {
-      case .enoughOutlets:
-        return "power"
-      case .fastWifi:
-        return "wifi"
-      case .quiet:
-        return "speaker.wave.1"
+        return "🔊 조용해요"
       }
     }
   }
@@ -253,6 +247,13 @@ extension CafeSearchDetail.State {
     let id = UUID()
     let type: SubMenuType
     let isSelected: Bool
+    var foregroundColorAsset: CofficeColors {
+      isSelected ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale5
+    }
+
+    var bottomBorderColorAsset: CofficeColors {
+      isSelected ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale1
+    }
 
     init(subMenuType: SubMenuType, isSelected: Bool = false) {
       self.type = subMenuType
