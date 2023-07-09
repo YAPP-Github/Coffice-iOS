@@ -123,7 +123,7 @@ extension CafeMapView {
                 .resizable()
                 .frame(width: 36, height: 36)
                 .scaledToFill()
-                .padding([.horizontal, .vertical], 6)
+                .padding(.all, 6)
             }
             .buttonStyle(.plain)
             .background {
