@@ -322,7 +322,7 @@ struct CafeMapCore: ReducerProtocol {
              case .success(let cafeSearchResponse):
                state.cafeSearchListState.hasNext = cafeSearchResponse.hasNext
                let removeDuplicateCafe = cafeSearchResponse.cafes.filter {
-                 !state.cafeSearchListState.cafeList.contains($0)
+                 state.cafeSearchListState.cafeList.contains($0).isFalse
                }
                if removeDuplicateCafe.isNotEmpty {
                  state.cafeSearchListState.cafeList += cafeSearchResponse.cafes
