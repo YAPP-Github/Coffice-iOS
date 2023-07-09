@@ -48,9 +48,13 @@ struct CafeMapCore: ReducerProtocol {
 
   // MARK: - State
   struct State: Equatable {
+    // MARK: CardViewUI
+    var maxScreenWidth: CGFloat = .zero
+    var fixedImageSize: CGFloat { (maxScreenWidth - 56) / 3 }
+    var fixedCardTitleSize: CGFloat { maxScreenWidth - 48 }
+
     // MARK: ViewType
     var displayViewType: ViewType = .mainMapView
-    var maxScreenWidth: CGFloat = .zero
 
     // MARK: Selecting Cafe
     var selectedCafe: Cafe?

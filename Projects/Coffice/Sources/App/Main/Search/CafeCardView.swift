@@ -37,7 +37,7 @@ struct CafeCardView: View {
             }
           }
           .frame(
-            maxWidth: viewStore.maxScreenWidth - 48,
+            maxWidth: viewStore.fixedCardTitleSize,
             alignment: .leading
           )
           Spacer()
@@ -61,8 +61,8 @@ struct CafeCardView: View {
               Image(uiImage: CofficeAsset.Asset.cafeImage.image)
                 .resizable()
                 .frame(
-                  width: (viewStore.maxScreenWidth - 56) / 3,
-                  height: (viewStore.maxScreenWidth - 56) / 3
+                  width: viewStore.fixedImageSize,
+                  height: viewStore.fixedImageSize
                 )
                 .scaledToFit()
                 .cornerRadius(4, corners: .allCorners)
