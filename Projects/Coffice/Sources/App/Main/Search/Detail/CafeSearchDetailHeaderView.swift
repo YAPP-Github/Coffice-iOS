@@ -37,40 +37,39 @@ struct CafeSearchDetailHeaderView: View {
           HStack {
             VStack(spacing: 0) {
               Text("카페")
-                .foregroundColor(.black)
-                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                .applyCofficeFont(font: .button)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 20)
+                .frame(height: 20)
               Text(viewStore.cafe?.name ?? "훅스턴")
-                .foregroundColor(.black)
-                .font(.system(size: 26, weight: .bold))
+                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                .applyCofficeFont(font: .header0)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 36)
                 .padding(.top, 8)
               Text(viewStore.cafe?.address?.address ?? "서울 서대문구 연희로 91 2층")
-                .foregroundColor(.gray)
+                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                .applyCofficeFont(font: .body1Medium)
                 .font(.system(size: 14))
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 20)
                 .padding(.top, 4)
             }
 
             VStack {
-              CofficeAsset.Asset.bookmarkLine24px.swiftUIImage
-                .resizable()
-                .frame(width: 20, height: 24)
-                .padding(.top, 10)
+              CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
               Spacer()
             }
           }
 
           HStack(spacing: 8) {
             Text("영업중")
-              .foregroundColor(.brown)
-              .font(.system(size: 14, weight: .bold))
+              .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+              .applyCofficeFont(font: .button)
               .frame(alignment: .leading)
             Text("목 09:00 ~ 21:00")
-              .foregroundColor(.gray)
-              .font(.system(size: 14))
+              .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+              .applyCofficeFont(font: .body1Medium)
             Spacer()
           }
           .padding(.top, 16)
@@ -78,8 +77,7 @@ struct CafeSearchDetailHeaderView: View {
           Divider()
             .padding(.top, 20)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 10)
+        .padding(EdgeInsets(top: 20, leading: 20, bottom: 16, trailing: 20))
       }
     }
   }
