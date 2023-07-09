@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "navigation-fill-36px.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "navigation-fill@2x-36px.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "navigation-fill@3x-36px.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
