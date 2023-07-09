@@ -29,19 +29,16 @@ struct CafeMapCore: ReducerProtocol {
     case searchResultView
   }
 
-  enum FloatingButton: CaseIterable {
-    case currentLocationButton
-    case refreshButton
+  enum BottomFloatingButton: CaseIterable {
     case bookmarkButton
+    case currentLocationButton
 
-    var image: String {
+    var image: Image {
       switch self {
-      case .currentLocationButton:
-        return "scope"
       case .bookmarkButton:
-        return "bookmark"
-      case .refreshButton:
-        return "arrow.triangle.2.circlepath"
+        return CofficeAsset.Asset.bookmarkFill36px.swiftUIImage
+      case .currentLocationButton:
+        return CofficeAsset.Asset.navigationFill36px.swiftUIImage
       }
     }
   }
@@ -67,7 +64,6 @@ struct CafeMapCore: ReducerProtocol {
     var cafeFilterMenusState: CafeFilterMenus.State = .mock
 
     // MARK: CafeFilter
-
     var cafeFilterInformation: CafeFilterInformation = .mock
 
     // MARK: NaverMapView
@@ -75,13 +71,14 @@ struct CafeMapCore: ReducerProtocol {
     var cafeMarkerList: [Cafe] = []
     var cafeList: [Cafe] = []
     var shouldClearMarkers: Bool = false
-    let floatingButtons = FloatingButton.allCases
+    let bottomFloatingButtons = BottomFloatingButton.allCases
     var isMovingToCurrentPosition = false
     var isUpdatingMarkers = false
     var shouldUpdateMarkers: Bool {
       return cafeMarkerList.isNotEmpty && isUpdatingMarkers
     }
     var isUpdatingBookmarkState = false
+    var isMovingCamera: Bool = false
   }
 
   // MARK: - Action
@@ -95,7 +92,7 @@ struct CafeMapCore: ReducerProtocol {
     case cafeSearchAction(CafeSearchCore.Action)
 
     // MARK: NaverMapView
-    case floatingButtonTapped(FloatingButton)
+    case bottomFloatingButtonTapped(BottomFloatingButton)
     case updateCurrentLocation
     case updateCafeMarkers
     case cafeListResponse(TaskResult<[Cafe]>)
@@ -105,6 +102,8 @@ struct CafeMapCore: ReducerProtocol {
     case markersUpdated
     case bookmarkStateUpdated
     case cleardMarkers
+    case refreshButtonTapped
+    case movedCameraPosition
 
     // MARK: Search
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
@@ -221,13 +220,15 @@ struct CafeMapCore: ReducerProtocol {
         }
 
         // MARK: NaverMapView
-      case .floatingButtonTapped(let buttonType):
+      case .refreshButtonTapped:
+        state.isMovingCamera = false
+        return .send(.updateCafeMarkers)
+
+      case .bottomFloatingButtonTapped(let buttonType):
         switch buttonType {
         case .currentLocationButton:
           state.isMovingToCurrentPosition = true
           return .send(.updateCurrentLocation)
-        case .refreshButton:
-          return .send(.updateCafeMarkers)
         case .bookmarkButton:
           return .none
         }
@@ -289,6 +290,10 @@ struct CafeMapCore: ReducerProtocol {
         state.isUpdatingBookmarkState = false
         return .none
 
+      case .movedCameraPosition:
+        state.isMovingCamera = true
+        return .none
+
       case .requestSearchPlaceResponse(let result, let title):
         switch result {
         case .success(let searchResponse):
@@ -320,22 +325,22 @@ struct CafeMapCore: ReducerProtocol {
         }
 
       case .infiniteScrollSearchPlaceResponse(let result):
-             switch result {
-             case .success(let cafeSearchResponse):
-               state.cafeSearchListState.hasNext = cafeSearchResponse.hasNext
-               let removedDuplicationCafes = cafeSearchResponse.cafes.filter {
-                 state.cafeSearchListState.cafeList.contains($0).isFalse
-               }
-               if removedDuplicationCafes.isNotEmpty {
-                 state.cafeSearchListState.cafeList += cafeSearchResponse.cafes
-                 state.cafeMarkerList += cafeSearchResponse.cafes
-                 state.isUpdatingMarkers = true
-               }
-               return .none
-             case .failure(let error):
-               debugPrint(error)
-               return .none
-             }
+        switch result {
+        case .success(let cafeSearchResponse):
+          state.cafeSearchListState.hasNext = cafeSearchResponse.hasNext
+          let removedDuplicationCafes = cafeSearchResponse.cafes.filter {
+            state.cafeSearchListState.cafeList.contains($0).isFalse
+          }
+          if removedDuplicationCafes.isNotEmpty {
+            state.cafeSearchListState.cafeList += cafeSearchResponse.cafes
+            state.cafeMarkerList += cafeSearchResponse.cafes
+            state.isUpdatingMarkers = true
+          }
+          return .none
+        case .failure(let error):
+          debugPrint(error)
+          return .none
+        }
 
         // MARK: Common
       case .resetResult(let resetState):
