@@ -60,7 +60,6 @@ struct CafeMapCore: ReducerProtocol {
     @BindingState var searchText = ""
     var cafeSearchState = CafeSearchCore.State()
     var cafeSearchListState = CafeSearchListCore.State(filterMenusState: .mock)
-    let filterOrders = FilterOrder.allCases
     var cafeFilterMenusState: CafeFilterMenus.State = .mock
 
     // MARK: CafeFilter
@@ -104,7 +103,6 @@ struct CafeMapCore: ReducerProtocol {
     case cleardMarkers
 
     // MARK: Search
-    case filterOrderMenuTapped(FilterOrder)
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
     case requestSearchPlaceResponse(TaskResult<CafeSearchResponse>, String)
 
