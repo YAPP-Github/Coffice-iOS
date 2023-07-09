@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 struct TabBarSizePreferenceKey: PreferenceKey {
-  static var defaultValue: CGSize = .zero
+  static var defaultValue: CGSize = .init(width: UIScreen.main.bounds.width, height: 65)
   static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
     value = nextValue()
   }

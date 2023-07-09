@@ -15,5 +15,6 @@ public struct CoordinateDTO: Decodable {
 
 public struct AddressDTO: Decodable, Equatable {
   public let value: String?
+  public let simpleValue: String?
   public let postalCode: String?
 }

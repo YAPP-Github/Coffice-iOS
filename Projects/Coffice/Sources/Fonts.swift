@@ -231,7 +231,7 @@ struct FontModifier: ViewModifier {
   }
 }
 
-struct TextFieldFontModifier: ViewModifier {
+struct FontWithoutLineSpacingViewModifier: ViewModifier {
   var font: CofficeFont
 
   init(font: CofficeFont) {
@@ -249,7 +249,7 @@ extension View {
     modifier(FontModifier(font: font))
   }
 
-  func applyCofficeFontForTextField(font: CofficeFont) -> some View {
-    modifier(TextFieldFontModifier(font: font))
+  func applyCofficeFontWithoutLineSpacing(font: CofficeFont) -> some View {
+    modifier(FontWithoutLineSpacingViewModifier(font: font))
   }
 }

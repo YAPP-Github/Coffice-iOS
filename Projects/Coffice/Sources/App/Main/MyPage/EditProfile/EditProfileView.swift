@@ -59,7 +59,7 @@ struct EditProfileView: View {
               "닉네임을 입력해주세요",
               text: viewStore.binding(\.$nicknameTextField)
             )
-            .applyCofficeFontForTextField(font: .subtitle1Medium)
+            .applyCofficeFontWithoutLineSpacing(font: .subtitle1Medium)
             .keyboardType(.default)
             .textFieldStyle(.plain)
             .padding(20)

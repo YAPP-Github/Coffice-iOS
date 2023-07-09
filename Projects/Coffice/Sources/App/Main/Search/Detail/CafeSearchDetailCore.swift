@@ -45,6 +45,11 @@ struct CafeSearchDetail: ReducerProtocol {
                               """
     var runningTimeDetailInfo = ""
     var needToPresentRunningTimeDetailInfo = false
+    var runningTimeDetailInfoArrowImageAsset: CofficeImages {
+      return needToPresentRunningTimeDetailInfo
+      ? CofficeAsset.Asset.arrowDropUpLine24px
+      : CofficeAsset.Asset.arrowDropDownLine24px
+    }
   }
 
   enum Action: Equatable {
@@ -53,7 +58,7 @@ struct CafeSearchDetail: ReducerProtocol {
     case popView
     case subMenuTapped(State.SubMenuType)
     case toggleToPresentTextForTest
-    case infoGuideButtonTapped
+    case infoGuideButtonTapped(CafeFilter.GuideType)
     case presentBubbleMessageView(BubbleMessage.State)
     case presentCafeReviewWriteView
   }
@@ -89,9 +94,12 @@ struct CafeSearchDetail: ReducerProtocol {
         }
         return .none
 
-      case .infoGuideButtonTapped:
-        // TODO: 선택한 버튼에 맞게 맞춤형 정보가 있는 말풍선 표출 필요
-        return EffectTask(value: .presentBubbleMessageView(.mock))
+      case .infoGuideButtonTapped(let guideType):
+        return EffectTask(
+          value: .presentBubbleMessageView(
+            .init(guideType: guideType)
+          )
+        )
 
       default:
         return .none
@@ -136,22 +144,11 @@ extension CafeSearchDetail.State {
     var title: String {
       switch self {
       case .enoughOutlets:
-        return "콘센트 넉넉해요"
+        return "🔌 콘센트 넉넉해요"
       case .fastWifi:
-        return "와이파이 빨라요"
+        return "📶 와이파이 빨라요"
       case .quiet:
-        return "조용해요"
-      }
-    }
-
-    var iconName: String {
-      switch self {
-      case .enoughOutlets:
-        return "power"
-      case .fastWifi:
-        return "wifi"
-      case .quiet:
-        return "speaker.wave.1"
+        return "🔊 조용해요"
       }
     }
   }
@@ -189,6 +186,14 @@ extension CafeSearchDetail.State {
       case .outletState: return "power"
       case .spaceSize: return "house"
       case .groupSeat: return "person"
+      }
+    }
+
+    var guideType: CafeFilter.GuideType {
+      switch type {
+      case .outletState: return .outletState
+      case .spaceSize: return .spaceSize
+      case .groupSeat: return .groupSeat
       }
     }
   }
@@ -242,6 +247,13 @@ extension CafeSearchDetail.State {
     let id = UUID()
     let type: SubMenuType
     let isSelected: Bool
+    var foregroundColorAsset: CofficeColors {
+      isSelected ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale5
+    }
+
+    var bottomBorderColorAsset: CofficeColors {
+      isSelected ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale1
+    }
 
     init(subMenuType: SubMenuType, isSelected: Bool = false) {
       self.type = subMenuType

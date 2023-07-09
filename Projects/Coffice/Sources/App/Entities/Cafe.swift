@@ -13,7 +13,7 @@ struct Cafe: Hashable {
   static let dummy = Cafe(
     placeId: 0,
     name: "name",
-    address: .init(address: "address", postalCode: "00000"),
+    address: .init(address: "address", simpleAddress: "simpleAddress", postalCode: "00000"),
     latitude: 37,
     longitude: 125,
     distanceFromUser: 100,

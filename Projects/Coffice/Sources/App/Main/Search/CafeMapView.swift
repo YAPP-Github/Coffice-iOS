@@ -18,58 +18,65 @@ struct CafeMapView: View {
         ZStack {
           NaverMapView(viewStore: viewStore)
             .ignoresSafeArea()
-          ZStack {
-            switch viewStore.displayViewType {
-            case .searchResultView:
-              CafeSearchListView(store: store.scope(
-                state: \.cafeSearchListState,
-                action: CafeMapCore.Action.cafeSearchListAction)
-              )
-              .zIndex(1)
+          switch viewStore.displayViewType {
+          case .searchResultView:
+            CafeSearchListView(store: store.scope(
+              state: \.cafeSearchListState,
+              action: CafeMapCore.Action.cafeSearchListAction)
+            )
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .zIndex(1)
 
-            case .mainMapView:
-              Group {
-                if viewStore.selectedCafe != nil {
-                  VStack {
-                    Spacer()
-                    CafeCardView(store: store)
-                      .frame(width: geometry.size.width, height: 260)
-                      .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
-                  }
-                } else {
-                  EmptyView()
-                }
-              }
+          case .mainMapView:
+            Color.clear
 
-            case .searchView:
-              CafeSearchView(store: store.scope(
-                state: \.cafeSearchState,
-                action: CafeMapCore.Action.cafeSearchAction)
-              )
+          case .searchView:
+            CafeSearchView(store: store.scope(
+              state: \.cafeSearchState,
+              action: CafeMapCore.Action.cafeSearchAction)
+            )
+            .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .zIndex(1)
+          }
+
+          VStack(alignment: .trailing, spacing: 0) {
+            headerView
+              .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-              .zIndex(1)
-            }
-            VStack(alignment: .trailing, spacing: 0) {
-              header
-                .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
-                .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-              floatingButtonView
-                .padding()
-              Spacer()
-              if viewStore.isSelectedCafe {
-                CafeCardView(store: store)
-                  .frame(height: 260)
-                  .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
-              }
+            floatingButtonView
+              .padding()
+            Spacer()
+            floatingTestButtonView
+              .padding(
+                .bottom,
+                viewStore.selectedCafe == nil ?
+                TabBarSizePreferenceKey.defaultValue.height + 20
+                : 20
+              )
+            if viewStore.selectedCafe != nil {
+              CafeCardView(store: store)
+                .frame(width: geometry.size.width)
+                .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
             }
           }
-          .navigationBarHidden(true)
+          .frame(
+            width: geometry.size.width,
+            height: geometry.size.height
+          )
         }
         .onAppear {
-          viewStore.send(.requestLocationAuthorization)
+          if geometry.size.width == 0 {
+            viewStore.send(.updateMaxScreenWidth(UIScreen.main.bounds.width))
+          } else {
+            viewStore.send(.updateMaxScreenWidth(geometry.size.width))
+          }
         }
       }
-      .ignoresSafeArea(.keyboard)
+      .navigationBarHidden(true)
+      .onAppear {
+        viewStore.send(.requestLocationAuthorization)
+      }
       .onDisappear {
         viewStore.send(.onDisappear)
       }
@@ -99,71 +106,61 @@ extension CafeMapView {
     }
   }
 
-  var header: some View {
+  @available(*, deprecated, message: "테스트용 UI로, 상제 리스트뷰 진입점 추가 후 제거 예정")
+  var floatingTestButtonView: some View {
+    WithViewStore(store) { viewStore in
+      HStack {
+        Button {
+          viewStore.send(.pushToSearchDetailForTest(cafeId: 1))
+        } label: {
+          ZStack(alignment: .center) {
+            Circle()
+              .foregroundColor(.white)
+              .shadow(color: .gray, radius: 2, x: 0, y: 2)
+              .frame(width: 48, height: 48)
+            Text("검색상세")
+              .applyCofficeFont(font: .button)
+          }
+        }
+        .buttonStyle(.plain)
+        Spacer()
+      }
+      .padding(.leading, 24)
+    }
+  }
+
+  var headerView: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
-        searchTextField
+        searchDescriptionView
         orderFilterView
       }
     }
   }
 
-  var searchTextField: some View {
+  var searchDescriptionView: some View {
     WithViewStore(store) { viewStore in
-      ZStack {
-        TextField(
-          "🔍  지역, 지하철로 검색",
-          text: viewStore.binding(\.$searchText)
-        )
-        .textFieldStyle(.plain)
-        .applyCofficeFont(font: .subtitle1Medium)
-        .frame(height: 35)
-        .padding(.leading, 5)
-        .padding(.trailing, 25)
-        .overlay {
-          RoundedRectangle(cornerRadius: 5)
-            .stroke(.gray, lineWidth: 1)
-        }
-        .onSubmit {
-        }
-
-        HStack {
-          Spacer()
-          Button {
-          } label: {
-            Image(systemName: "xmark.circle.fill")
-              .foregroundColor(.gray)
-              .padding(.trailing, 5)
-          }
-        }
+      HStack(spacing: 12) {
+        CofficeAsset.Asset.searchLine24px.swiftUIImage
+          .padding(.vertical, 12)
+        Text("지하철, 카페 이름으로 검색")
+          .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+          .applyCofficeFont(font: .subtitle1Medium)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .frame(height: 20)
+          .padding(.vertical, 14)
       }
-      .padding(.horizontal, 16)
+      .padding(.horizontal, 20)
     }
   }
 
   var orderFilterView: some View {
-    WithViewStore(store) { viewStore in
-      ScrollView(.horizontal, showsIndicators: false) {
-        HStack(spacing: 8) {
-          ForEach(viewStore.filterOrders, id: \.self) { order in
-            Button {
-              viewStore.send(.filterOrderMenuTapped(order))
-            } label: {
-              Text(order.title)
-                .font(.subheadline)
-                .foregroundColor(.black)
-                .lineLimit(1)
-                .padding(EdgeInsets(top: 7, leading: 12, bottom: 7, trailing: 12))
-                .overlay {
-                  RoundedRectangle(cornerRadius: 20)
-                    .stroke(.gray, lineWidth: 1)
-                }
-                .frame(height: 60)
-            }
-          }
-        }
-        .padding(.horizontal, 16)
-      }
-    }
+    CafeFilterMenusView(
+      store: store.scope(
+        state: \.cafeFilterMenusState,
+        action: CafeMapCore.Action.cafeFilterMenus(action:)
+      )
+    )
+    .padding(.top, 8)
   }
 }

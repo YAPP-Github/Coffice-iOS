@@ -19,6 +19,23 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     }
 
     let filterType: CafeFilter.MenuType
+    var guideType: CafeFilter.GuideType? {
+      switch filterType {
+      case .outlet:
+        return .outletState
+      case .spaceSize:
+        return .spaceSize
+      case .personnel:
+        return .groupSeat
+      default:
+        return nil
+      }
+    }
+
+    var shouldShowGuideButton: Bool {
+      return guideType != nil
+    }
+
     /// 기존 필터 설정 상태
     var originCafeFilterInformation: CafeFilterInformation
     var cafeFilterInformation: CafeFilterInformation
@@ -121,8 +138,14 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         return EffectTask(value: .updateMainViewState)
 
       case .infoGuideButtonTapped:
-        // TODO: 상세 필터 타입에 맞게 말풍선뷰 표출 필요
-        return EffectTask(value: .presentBubbleMessageView(.mock))
+        guard let guideType = state.guideType
+        else { return .none }
+
+        return EffectTask(
+          value: .presentBubbleMessageView(
+            .init(guideType: guideType)
+          )
+        )
 
       case .updateMainViewState:
         state.updateMainViewState()
