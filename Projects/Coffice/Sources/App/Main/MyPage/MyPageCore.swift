@@ -74,6 +74,13 @@ struct MyPage: ReducerProtocol {
     case pushToContactView
     case pushToEditProfile
     case presentLoginPage
+    case showCommonBottomSheet(
+      title: String,
+      description: String,
+      cancelButtonTitle: String,
+      confirmButtonTitle: String
+    )
+    case presentCommonBottomSheet(CommonBottomSheet.State)
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -100,14 +107,28 @@ struct MyPage: ReducerProtocol {
         switch menuItem.menuType {
         case .privacyPolicy:
           return EffectTask(value: .pushToPrivacyPolicy)
+
         case .locationServiceTerms:
           return EffectTask(value: .pushToLocationServiceTermsView)
+
         case .contact:
           return EffectTask(value: .pushToContactView)
+
         case .versionInformation:
           return .none
+
         case .logout:
-          return .none
+          return EffectTask(
+            value: .presentCommonBottomSheet(
+              .init(
+                title: "로그아웃",
+                description: "정말 로그아웃 하시겠어요?",
+                cancelButtonTitle: "나가기",
+                confirmButtonTitle: "로그아웃"
+              )
+            )
+          )
+
         case .memberLeave:
           return .none
         }

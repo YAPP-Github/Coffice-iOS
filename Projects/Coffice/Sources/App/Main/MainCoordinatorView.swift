@@ -34,6 +34,14 @@ struct MainCoordinatorView: View {
 
         IfLetStore(
           store.scope(
+            state: \.commonBottomSheetState,
+            action: MainCoordinator.Action.commonBottomSheet
+          ),
+          then: CommonBottomSheetView.init
+        )
+
+        IfLetStore(
+          store.scope(
             state: \.toastMessageState,
             action: MainCoordinator.Action.toastMessage
           ),

@@ -32,6 +32,7 @@ struct MainCoordinator: ReducerProtocol {
     }
 
     var filterSheetState: CafeFilterBottomSheet.State?
+    var commonBottomSheetState: CommonBottomSheet.State?
     var bubbleMessageState: BubbleMessage.State?
     var toastMessageState: Toast.State?
 
@@ -45,6 +46,7 @@ struct MainCoordinator: ReducerProtocol {
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
     case filterBottomSheet(action: CafeFilterBottomSheet.Action)
+    case commonBottomSheet(action: CommonBottomSheet.Action)
     case bubbleMessage(BubbleMessage.Action)
     case toastMessage(Toast.Action)
     case dismissToastMessageView
@@ -92,6 +94,16 @@ struct MainCoordinator: ReducerProtocol {
             .routeAction(1, action: .cafeSearchList(.filterBottomSheetDismissed))
           )
         )
+
+      case .commonBottomSheet(.dismiss):
+        state.commonBottomSheetState = nil
+        return .none
+
+      case .myPage(
+        .routeAction(_, .myPage(action: .presentCommonBottomSheet(let commonBottomSheetState)))
+      ):
+        state.commonBottomSheetState = commonBottomSheetState
+        return .none
 
       case .onAppear:
         return .none
@@ -146,6 +158,12 @@ struct MainCoordinator: ReducerProtocol {
       action: /Action.filterBottomSheet
     ) {
       CafeFilterBottomSheet()
+    }
+    .ifLet(
+      \.commonBottomSheetState,
+      action: /Action.commonBottomSheet
+    ) {
+      CommonBottomSheet()
     }
   }
 }
