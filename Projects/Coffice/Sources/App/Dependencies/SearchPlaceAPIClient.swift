@@ -25,13 +25,36 @@ struct SearchPlaceAPIClient: DependencyKey {
       method: .post,
       httpBody: requestBody
     ) else {
-      throw LoginError.emptyAccessToken
+      throw CoreNetworkError.requestConvertFailed
     }
     let response: (dto: [SearchPlaceResponseDTO], hasNext: Bool) = try await coreNetwork
       .pageableDataTask(request: request)
     let cafeSearchResponse = CafeSearchResponse(
       cafes: response.dto.map { $0.toCafeEntity() },
       filters: requestValue.filters,
+      hasNext: response.hasNext
+    )
+
+    return cafeSearchResponse
+  }
+
+  func fetchPlaces(requestValue: PlaceRequestValue) async throws -> CafeSearchResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/places"
+    urlComponents?.queryItems = [
+      .init(name: "name", value: requestValue.name),
+      .init(name: "page", value: String(requestValue.page)),
+      .init(name: "sort", value: requestValue.sort.name)
+    ]
+    guard let request = urlComponents?.toURLRequest(method: .get)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    let response: (dto: [SearchPlaceResponseDTO], hasNext: Bool) = try await coreNetwork
+      .pageableDataTask(request: request)
+    let cafeSearchResponse = CafeSearchResponse(
+      cafes: response.dto.map { $0.toCafeEntity() },
+      filters: nil,
       hasNext: response.hasNext
     )
 
