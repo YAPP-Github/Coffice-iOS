@@ -25,11 +25,12 @@ struct CommonBottomSheetView: View {
             informationView
             footerView
           }
-          .scaledToFit()
+          .frame(maxWidth: .infinity)
           .padding(.bottom, UIApplication.keyWindow?.safeAreaInsets.bottom)
           .padding(.top, 20)
           .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
           .cornerRadius(12, corners: [.topLeft, .topRight])
+          .transition(.move(edge: .bottom))
         }
       }
       .ignoresSafeArea()
@@ -49,9 +50,6 @@ extension CommonBottomSheetView {
         .ignoresSafeArea()
         .onTapGesture {
           viewStore.send(.backgroundViewTapped)
-        }
-        .onAppear {
-          viewStore.send(.presentBottomSheet)
         }
     }
   }
