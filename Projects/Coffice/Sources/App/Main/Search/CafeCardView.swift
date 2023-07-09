@@ -11,7 +11,6 @@ import SwiftUI
 
 struct CafeCardView: View {
   let store: StoreOf<CafeMapCore>
-  @State var screendWidth: CGFloat = .zero
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -37,7 +36,10 @@ struct CafeCardView: View {
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
             }
           }
-          .frame(maxWidth: screendWidth - 48, alignment: .leading)
+          .frame(
+            maxWidth: viewStore.maxScreenWidth - 48,
+            alignment: .leading
+          )
           Spacer()
           Button {
             viewStore.send(.bookmarkButtonTapped(cafe: viewStore.selectedCafe ?? .dummy))
@@ -59,8 +61,8 @@ struct CafeCardView: View {
               Image(uiImage: CofficeAsset.Asset.cafeImage.image)
                 .resizable()
                 .frame(
-                  width: (screendWidth - 56) / 3,
-                  height: (screendWidth - 56) / 3
+                  width: (viewStore.maxScreenWidth - 56) / 3,
+                  height: (viewStore.maxScreenWidth - 56) / 3
                 )
                 .scaledToFit()
                 .cornerRadius(4, corners: .allCorners)

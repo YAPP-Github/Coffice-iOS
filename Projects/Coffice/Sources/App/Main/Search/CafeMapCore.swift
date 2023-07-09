@@ -50,6 +50,7 @@ struct CafeMapCore: ReducerProtocol {
   struct State: Equatable {
     // MARK: ViewType
     var displayViewType: ViewType = .mainMapView
+    var maxScreenWidth: CGFloat = .zero
 
     // MARK: Selecting Cafe
     var selectedCafe: Cafe?
@@ -84,6 +85,7 @@ struct CafeMapCore: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     // MARK: ViewType
     case updateDisplayType(ViewType)
+    case updateMaxScreenWidth(CGFloat)
 
     // MARK: Sub-Core Actions
     case cafeSearchListAction(CafeSearchListCore.Action)
@@ -152,6 +154,10 @@ struct CafeMapCore: ReducerProtocol {
       case .updateDisplayType(let displayType):
         state.displayViewType = displayType
         state.cafeSearchState.previousViewType = .mainMapView
+        return .none
+
+      case .updateMaxScreenWidth(let width):
+        state.maxScreenWidth = width
         return .none
 
         // MARK: Sub-Core Actions

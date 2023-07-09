@@ -61,10 +61,13 @@ struct CafeMapView: View {
             Spacer()
             floatingTestButtonView
             if viewStore.selectedCafe != nil {
-              CafeCardView(store: store, screendWidth: geometry.size.width)
+              CafeCardView(store: store)
                 .frame(width: geometry.size.width)
                 .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
             }
+          }
+          .onAppear {
+            viewStore.send(.updateMaxScreenWidth(geometry.size.width))
           }
         }
       }
