@@ -168,6 +168,7 @@ extension NaverMapView {
 
 class Coordinator: NSObject, NMFMapViewOptionDelegate {
   var target: NaverMapView
+
   init(target: NaverMapView) {
     self.target = target
   }
