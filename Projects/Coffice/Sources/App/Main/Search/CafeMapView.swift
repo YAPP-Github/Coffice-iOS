@@ -15,10 +15,9 @@ struct CafeMapView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       GeometryReader { geometry in
-        ZStack(alignment: .center) {
+        ZStack {
           NaverMapView(viewStore: viewStore)
             .ignoresSafeArea()
-
           switch viewStore.displayViewType {
           case .searchResultView:
             CafeSearchListView(store: store.scope(
@@ -36,10 +35,11 @@ struct CafeMapView: View {
               state: \.cafeSearchState,
               action: CafeMapCore.Action.cafeSearchAction)
             )
-            .frame(width: geometry.size.width, height: geometry.size.height)
             .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+            .frame(width: geometry.size.width, height: geometry.size.height)
             .zIndex(1)
           }
+
           VStack(alignment: .trailing, spacing: 0) {
             headerView
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
@@ -48,13 +48,27 @@ struct CafeMapView: View {
               .padding()
             Spacer()
             floatingTestButtonView
+              .padding(
+                .bottom,
+                viewStore.selectedCafe == nil ?
+                TabBarSizePreferenceKey.defaultValue.height + 20
+                : 20
+              )
             if viewStore.selectedCafe != nil {
               CafeCardView(store: store)
                 .frame(width: geometry.size.width)
                 .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
             }
           }
-          .onAppear {
+          .frame(
+            width: geometry.size.width,
+            height: geometry.size.height
+          )
+        }
+        .onAppear {
+          if geometry.size.width == 0 {
+            viewStore.send(.updateMaxScreenWidth(UIScreen.main.bounds.width))
+          } else {
             viewStore.send(.updateMaxScreenWidth(geometry.size.width))
           }
         }
@@ -95,28 +109,23 @@ extension CafeMapView {
   @available(*, deprecated, message: "테스트용 UI로, 상제 리스트뷰 진입점 추가 후 제거 예정")
   var floatingTestButtonView: some View {
     WithViewStore(store) { viewStore in
-      VStack {
-        Spacer()
-
-        HStack {
-          Button {
-            viewStore.send(.pushToSearchDetailForTest(cafeId: 1))
-          } label: {
-            ZStack(alignment: .center) {
-              Circle()
-                .foregroundColor(.white)
-                .shadow(color: .gray, radius: 2, x: 0, y: 2)
-                .frame(width: 48, height: 48)
-              Text("검색상세")
-                .applyCofficeFont(font: .button)
-            }
+      HStack {
+        Button {
+          viewStore.send(.pushToSearchDetailForTest(cafeId: 1))
+        } label: {
+          ZStack(alignment: .center) {
+            Circle()
+              .foregroundColor(.white)
+              .shadow(color: .gray, radius: 2, x: 0, y: 2)
+              .frame(width: 48, height: 48)
+            Text("검색상세")
+              .applyCofficeFont(font: .button)
           }
-          .buttonStyle(.plain)
-          Spacer()
         }
-        .padding(.leading, 24)
-        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height + 24)
+        .buttonStyle(.plain)
+        Spacer()
       }
+      .padding(.leading, 24)
     }
   }
 
