@@ -186,13 +186,33 @@ extension Coordinator: NMFMapViewTouchDelegate {
 extension Coordinator: NMFMapViewCameraDelegate {
   func mapView(_ mapView: NMFMapView, cameraWillChangeByReason reason: Int, animated: Bool) {
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.updateCameraMovementState(.move, reason))
+      let updateReason = NaverMapCameraUpdateReason.toNMFUpdateReason(reason: reason)
+      self?.target.viewStore.send(.updateCameraUpdateReason(updateReason))
     }
   }
 
   func mapViewCameraIdle(_ mapView: NMFMapView) {
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.updateCameraMovementState(.stop, nil))
+      self?.target.viewStore.send(.cameraPositionMoved)
+    }
+  }
+}
+
+enum NaverMapCameraUpdateReason: Int {
+  case changedByDeveloper = 0
+  case changedByGesture = -1
+  case changedByControl = -2
+  case changedByLocation = -3
+
+  static func toNMFUpdateReason(reason: Int) -> NaverMapCameraUpdateReason {
+    if reason == 0 {
+      return NaverMapCameraUpdateReason.changedByDeveloper
+    } else if reason == -1 {
+      return NaverMapCameraUpdateReason.changedByGesture
+    } else if reason == -2 {
+      return NaverMapCameraUpdateReason.changedByControl
+    } else {
+      return NaverMapCameraUpdateReason.changedByLocation
     }
   }
 }
