@@ -186,13 +186,13 @@ extension Coordinator: NMFMapViewTouchDelegate {
 extension Coordinator: NMFMapViewCameraDelegate {
   func mapView(_ mapView: NMFMapView, cameraWillChangeByReason reason: Int, animated: Bool) {
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.cameraPositionMoved)
+      self?.target.viewStore.send(.updateCameraMovementState(.move, reason))
     }
   }
 
   func mapViewCameraIdle(_ mapView: NMFMapView) {
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.cameraPositionStopped)
+      self?.target.viewStore.send(.updateCameraMovementState(.stop, nil))
     }
   }
 }

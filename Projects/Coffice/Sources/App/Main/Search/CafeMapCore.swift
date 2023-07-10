@@ -18,6 +18,16 @@ extension CLLocationCoordinate2D: Equatable {
 }
 
 struct CafeMapCore: ReducerProtocol {
+  enum CameraMovementReason {
+    case userSearch
+    case userDrag
+  }
+
+  enum CameraMovementState {
+    case move
+    case stop
+  }
+
   enum ResetState {
     case searchResultIsEmpty
     case dismissSearchResultView
@@ -78,7 +88,9 @@ struct CafeMapCore: ReducerProtocol {
       return cafeMarkerList.isNotEmpty && isUpdatingMarkers
     }
     var isUpdatingBookmarkState = false
-    var isMovingCameraPosition: Bool = false
+    var shouldShowRefreshButtonView: Bool = false
+    var cameraMovementState: CameraMovementState = .stop
+    var cameraMovementReason: Int = .zero
   }
 
   // MARK: - Action
@@ -103,8 +115,7 @@ struct CafeMapCore: ReducerProtocol {
     case bookmarkStateUpdated
     case cleardMarkers
     case refreshButtonTapped
-    case cameraPositionMoved
-    case cameraPositionStopped
+    case updateCameraMovementState(CameraMovementState, Int?)
 
     // MARK: Search
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
@@ -222,7 +233,7 @@ struct CafeMapCore: ReducerProtocol {
 
         // MARK: NaverMapView
       case .refreshButtonTapped:
-        state.isMovingCameraPosition = false
+        state.shouldShowRefreshButtonView = false
         return .send(.updateCafeMarkers)
 
       case .bottomFloatingButtonTapped(let buttonType):
@@ -291,13 +302,19 @@ struct CafeMapCore: ReducerProtocol {
         state.isUpdatingBookmarkState = false
         return .none
 
-      case .cameraPositionMoved:
-        state.isMovingCameraPosition = true
-        return .none
-
-      case .cameraPositionStopped:
-        state.isMovingCameraPosition = false
-        return .none
+      case .updateCameraMovementState(let movementState, let reason):
+        state.cameraMovementState = movementState
+        if let reason { state.cameraMovementReason = reason }
+        switch movementState {
+        case .stop:
+          if state.cameraMovementReason == -1 {
+            state.shouldShowRefreshButtonView = true
+          }
+          return .none
+        case .move:
+          state.shouldShowRefreshButtonView = false
+          return .none
+        }
 
       case .requestSearchPlaceResponse(let result, let title):
         switch result {
@@ -353,6 +370,7 @@ struct CafeMapCore: ReducerProtocol {
         state.cafeMarkerList = []
         state.cafeSearchListState.cafeList = []
         state.cafeSearchListState.hasNext = nil
+        state.shouldShowRefreshButtonView = false
         state.shouldClearMarkers = true
         state.isSelectedCafe = false
         state.selectedCafe = nil
