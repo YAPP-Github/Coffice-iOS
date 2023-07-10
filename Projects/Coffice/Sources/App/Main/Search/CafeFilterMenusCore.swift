@@ -11,6 +11,7 @@ import Foundation
 
 struct CafeFilterMenus: ReducerProtocol {
   struct State: Equatable {
+    static let initialState: State = .init(filterInformation: .initialState)
     static let mock: State = .init(filterInformation: .mock)
     var buttonViewStates: [ButtonViewState] = []
     var filterInformation: CafeFilterInformation

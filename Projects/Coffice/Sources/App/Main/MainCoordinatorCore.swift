@@ -89,10 +89,15 @@ struct MainCoordinator: ReducerProtocol {
         )
 
       case .filterBottomSheet(.dismissWithDelay):
-        return EffectTask(
-          value: .search(
-            .routeAction(0, action: .cafeMap(.filterBottomSheetDismissed))
-          )
+        return .merge(
+          EffectTask(value: .search(.routeAction(
+            0,
+            action: .cafeMap(.filterBottomSheetDismissed)
+          ))),
+          EffectTask(value: .search(.routeAction(
+            0,
+            action: .cafeMap(.cafeSearchListAction(.filterBottomSheetDismissed))
+          )))
         )
 
       case .commonBottomSheet(.dismiss):

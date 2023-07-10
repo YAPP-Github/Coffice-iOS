@@ -60,7 +60,7 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: Search
     @BindingState var searchText = ""
     var cafeSearchState = CafeSearchCore.State()
-    var cafeSearchListState = CafeSearchListCore.State(filterMenusState: .mock)
+    var cafeSearchListState: CafeSearchListCore.State = .init()
     var cafeFilterMenusState: CafeFilterMenus.State = .mock
 
     // MARK: CafeFilter
@@ -405,7 +405,13 @@ struct CafeMapCore: ReducerProtocol {
 
       case .updateCafeFilter(let information):
         state.cafeFilterInformation = information
-        return EffectTask(value: .cafeFilterMenus(action: .updateCafeFilter(information: information)))
+        state.cafeSearchListState.cafeFilterInformation = information
+        return .merge(
+          EffectTask(value: .cafeFilterMenus(action: .updateCafeFilter(information: information))),
+          EffectTask(value: .cafeSearchListAction(
+            .cafeFilterMenus(action: .updateCafeFilter(information: information))
+          ))
+        )
 
       case .filterBottomSheetDismissed:
         return EffectTask(

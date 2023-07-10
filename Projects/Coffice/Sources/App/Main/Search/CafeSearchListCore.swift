@@ -18,15 +18,19 @@ struct CafeSearchListCore: ReducerProtocol {
   }
 
   struct State: Equatable {
+    static var mock: Self {
+      .init(cafeFilterInformation: .mock)
+    }
+
     var filterBottomSheetState: CafeFilterBottomSheet.State = .mock
-    var filterMenusState: CafeFilterMenus.State = .mock
+    var filterMenusState: CafeFilterMenus.State = .initialState
     var title: String = ""
     var hasNext: Bool?
     var lastCafeDistance: Double = .zero
     var viewType: ViewType = .mapView
     var cafeList: [Cafe] = []
     var pageSize: Int = 10
-    var cafeFilterInformation: CafeFilterInformation = .mock
+    var cafeFilterInformation: CafeFilterInformation = .initialState
   }
 
   enum Action: Equatable {
