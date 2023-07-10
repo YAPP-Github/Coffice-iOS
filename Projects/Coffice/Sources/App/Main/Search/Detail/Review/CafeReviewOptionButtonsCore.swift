@@ -10,9 +10,10 @@ import ComposableArchitecture
 import Foundation
 
 struct CafeReviewOptionButtons: ReducerProtocol {
-  struct State: Equatable {
+  struct State: Equatable, Identifiable {
     static let mock: State = .init(optionType: .outletState(.enough))
 
+    let id = UUID()
     var optionButtonViewStates: [OptionButtonViewState] = []
     var optionType: OptionType {
       didSet {

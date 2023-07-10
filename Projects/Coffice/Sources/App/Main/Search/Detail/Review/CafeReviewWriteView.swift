@@ -128,10 +128,10 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
   var reviewOptionMenuView: some View {
     WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
-        ForEach(viewStore.optionButtonStates.indices, id: \.self) { buttonIndex in
+        ForEach(viewStore.optionButtonStates) { buttonState in
           CafeReviewOptionButtonsView(
             store: store.scope(
-              state: \.optionButtonStates[buttonIndex],
+              state: { _ in buttonState },
               action: CafeReviewWrite.Action.optionButtonsAction
             )
           )
