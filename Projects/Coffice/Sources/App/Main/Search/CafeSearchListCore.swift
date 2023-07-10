@@ -34,7 +34,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case onAppear
     case scrollAndRequestSearchPlace(Double)
     case searchPlaceResponse(TaskResult<[Cafe]>)
-    case filterMenus(action: CafeFilterMenus.Action)
+    case cafeFilterMenus(action: CafeFilterMenus.Action)
     case scrollAndLoadData(Cafe)
     case backbuttonTapped
     case dismiss
@@ -49,7 +49,7 @@ struct CafeSearchListCore: ReducerProtocol {
   var body: some ReducerProtocolOf<CafeSearchListCore> {
     Scope(
       state: \.filterMenusState,
-      action: /Action.filterMenus(action:)
+      action: /Action.cafeFilterMenus(action:)
     ) {
       CafeFilterMenus()
     }
@@ -92,11 +92,11 @@ struct CafeSearchListCore: ReducerProtocol {
 
       case .updateCafeFilter(let information):
         state.cafeFilterInformation = information
-        return EffectTask(value: .filterMenus(action: .updateCafeFilter(information: information)))
+        return EffectTask(value: .cafeFilterMenus(action: .updateCafeFilter(information: information)))
 
       case .filterBottomSheetDismissed:
         return EffectTask(
-          value: .filterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
+          value: .cafeFilterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
         )
 
       default:

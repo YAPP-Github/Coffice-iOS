@@ -112,9 +112,13 @@ struct MainCoordinator: ReducerProtocol {
         debugPrint("selectedTab : \(itemType)")
         return .none
 
-      case .search(
-        .routeAction(_, .cafeMap(.cafeFilterMenus(action: .presentFilterBottomSheetView(let filterSheetState))))
-      ):
+      case
+          .search(.routeAction(_, .cafeMap(.cafeFilterMenus(
+            action: .presentFilterBottomSheetView(let filterSheetState)
+          )))),
+          .search(.routeAction(_, .cafeMap(.cafeSearchListAction(.cafeFilterMenus(
+            action: .presentFilterBottomSheetView(let filterSheetState)
+          ))))):
         state.filterSheetState = filterSheetState
         return .none
 
