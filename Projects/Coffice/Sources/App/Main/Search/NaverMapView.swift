@@ -166,8 +166,9 @@ extension NaverMapView {
   }
 }
 
-class Coordinator: NSObject, NMFMapViewCameraDelegate, NMFMapViewOptionDelegate {
+class Coordinator: NSObject, NMFMapViewOptionDelegate {
   var target: NaverMapView
+
   init(target: NaverMapView) {
     self.target = target
   }
@@ -180,4 +181,27 @@ extension Coordinator: NMFMapViewTouchDelegate {
       self?.target.viewStore.send(.mapViewTapped)
     }
   }
+}
+
+extension Coordinator: NMFMapViewCameraDelegate {
+  func mapView(_ mapView: NMFMapView, cameraWillChangeByReason reason: Int, animated: Bool) {
+    DispatchQueue.main.async { [weak self] in
+      guard let updateReason = NaverMapCameraUpdateReason(rawValue: reason)
+      else { return }
+      self?.target.viewStore.send(.updateCameraUpdateReason(updateReason))
+    }
+  }
+
+  func mapViewCameraIdle(_ mapView: NMFMapView) {
+    DispatchQueue.main.async { [weak self] in
+      self?.target.viewStore.send(.cameraPositionMoved)
+    }
+  }
+}
+
+enum NaverMapCameraUpdateReason: Int {
+  case changedByDeveloper = 0
+  case changedByGesture = -1
+  case changedByControl = -2
+  case changedByLocation = -3
 }
