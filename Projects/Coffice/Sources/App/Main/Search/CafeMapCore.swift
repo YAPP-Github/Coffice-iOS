@@ -61,10 +61,10 @@ struct CafeMapCore: ReducerProtocol {
     @BindingState var searchText = ""
     var cafeSearchState = CafeSearchCore.State()
     var cafeSearchListState: CafeSearchListCore.State = .init()
-    var cafeFilterMenusState: CafeFilterMenus.State = .mock
+    var cafeFilterMenusState: CafeFilterMenus.State = .initialState
 
     // MARK: CafeFilter
-    var cafeFilterInformation: CafeFilterInformation = .mock
+    var cafeFilterInformation: CafeFilterInformation = .initialState
 
     // MARK: NaverMapView
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
