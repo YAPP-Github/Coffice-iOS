@@ -35,7 +35,7 @@ struct CafeSearchCore: ReducerProtocol {
     var places: [Cafe] = []
     var waypoints: [WayPoint] = []
     var selectedWaypoints: WayPoint?
-    var isSubmitfasterThanDebounce = false
+    var isSubmitFasterThanFetchResponse = false
   }
 
   enum Action: Equatable, BindableAction {
@@ -54,7 +54,7 @@ struct CafeSearchCore: ReducerProtocol {
     case fetchPlacesAndWaypoints(searchText: String)
     case recentSearchWordsResponse(TaskResult<[RecentSearchWord]>)
     case fetchPlacesAndWaypointsResponse(CafeSearchResponse, [WayPoint])
-    case checkTimingFetchPlaceResponse(CafeSearchResponse, [WayPoint], String)
+    case checkFetchPlaceResponse(CafeSearchResponse, [WayPoint], String)
   }
 
   @Dependency(\.searchWordClient) private var searchWordClient
@@ -66,16 +66,16 @@ struct CafeSearchCore: ReducerProtocol {
       switch action {
       case .fetchPlacesAndWaypoints(let searchText):
         if searchText.isEmpty { return .none }
-        let isSubmitfasterThanDebounce = state.isSubmitfasterThanDebounce
+        let isSubmitFasterThanFetchResponse = state.isSubmitFasterThanFetchResponse
         return .run { send in
           async let fetchPlaces = try placeAPIClient.fetchPlaces(
             requestValue: PlaceRequestValue(name: searchText, page: 0, size: 10, sort: .ascending)
           )
           async let fetchWaypoints = try placeAPIClient.fetchWaypoints(name: searchText)
           let (places, waypoints) = try await (fetchPlaces, fetchWaypoints)
-          switch isSubmitfasterThanDebounce {
+          switch isSubmitFasterThanFetchResponse {
           case true:
-            await send(.checkTimingFetchPlaceResponse(places, waypoints, searchText))
+            await send(.checkFetchPlaceResponse(places, waypoints, searchText))
           case false:
             await send(.fetchPlacesAndWaypointsResponse(places, waypoints))
           }
@@ -83,8 +83,8 @@ struct CafeSearchCore: ReducerProtocol {
           debugPrint(error)
         }
 
-      case .checkTimingFetchPlaceResponse(let places, let waypoints, let searchText):
-        state.isSubmitfasterThanDebounce = false
+      case .checkFetchPlaceResponse(let places, let waypoints, let searchText):
+        state.isSubmitFasterThanFetchResponse = false
         if waypoints.isNotEmpty && places.cafes.isEmpty {
           guard let waypoint = waypoints.first
           else { return .send(.requestSearchPlace(searchText: searchText)) }
@@ -174,7 +174,7 @@ struct CafeSearchCore: ReducerProtocol {
           }
           return .send(.requestSearchPlace(searchText: state.searchText))
         } else {
-          state.isSubmitfasterThanDebounce = true
+          state.isSubmitFasterThanFetchResponse = true
           return .send(.fetchPlacesAndWaypoints(searchText: state.searchText))
         }
 
