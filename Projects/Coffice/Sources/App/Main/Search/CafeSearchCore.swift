@@ -31,7 +31,7 @@ struct CafeSearchCore: ReducerProtocol {
     var previousViewType: CafeMapCore.ViewType = .mainMapView
     var currentBodyType: CafeSearchViewBodyType = .searchResultListView
 
-    // MARK: quickSearch
+    // MARK: QuickSearch
     var places: [Cafe] = []
     var waypoints: [WayPoint] = []
     var selectedWaypoints: WayPoint?
