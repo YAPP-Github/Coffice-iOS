@@ -17,7 +17,6 @@ struct CafeMapView: View {
       GeometryReader { geometry in
         ZStack {
           NaverMapView(viewStore: viewStore)
-            .ignoresSafeArea()
           switch viewStore.displayViewType {
           case .searchResultView:
             CafeSearchListView(store: store.scope(

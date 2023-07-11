@@ -27,9 +27,6 @@ struct MainCoordinator: ReducerProtocol {
     var savedListState: SavedListCoordinator.State
     var myPageState: MyPageCoordinator.State
     var tabBarState: TabBar.State
-    var selectedTab: TabBar.State.TabBarItemType {
-      tabBarState.selectedTab
-    }
 
     var filterSheetState: CafeFilterBottomSheet.State?
     var commonBottomSheetState: CommonBottomSheet.State?
@@ -39,7 +36,8 @@ struct MainCoordinator: ReducerProtocol {
     var shouldShowTabBarView = true
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
     case home(HomeCoordinator.Action)
     case search(SearchCoordinator.Action)
     case savedList(SavedListCoordinator.Action)
@@ -55,6 +53,7 @@ struct MainCoordinator: ReducerProtocol {
   }
 
   var body: some ReducerProtocolOf<MainCoordinator> {
+    BindingReducer()
     Scope(state: \State.homeState, action: /Action.home) {
       HomeCoordinator()
     }
@@ -71,7 +70,7 @@ struct MainCoordinator: ReducerProtocol {
       MyPageCoordinator()
     }
 
-    Scope(state: \.tabBarState, action: /Action.tabBar) {
+    Scope(state: \State.tabBarState, action: /Action.tabBar) {
       TabBar()
     }
 
@@ -108,7 +107,7 @@ struct MainCoordinator: ReducerProtocol {
       case .onAppear:
         return .none
 
-      case let .tabBar(.selectTab(itemType)):
+      case .tabBar(.selectTab(let itemType)):
         debugPrint("selectedTab : \(itemType)")
         return .none
 
