@@ -98,13 +98,19 @@ extension CafeSearchView {
 
   var searchResultListView: some View {
     WithViewStore(store) { viewStore in
-      VStack {
         ScrollView {
-          ForEach(viewStore.cafeList, id: \.self) { _ in
-            Text("")
+          VStack(spacing: 0) {
+            ForEach(viewStore.waypoints, id: \.self) { waypoint in
+              WaypointCellView(waypoint: waypoint)
+                .onTapGesture { }
+            }
+            ForEach(viewStore.places, id: \.self) { place in
+              PlaceCellView(place: place)
+                .onTapGesture { }
+            }
           }
+          .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
         }
-      }
     }
   }
 
