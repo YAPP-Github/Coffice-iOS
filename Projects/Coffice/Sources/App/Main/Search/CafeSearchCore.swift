@@ -91,8 +91,8 @@ struct CafeSearchCore: ReducerProtocol {
           return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
         } else if waypoints.isNotEmpty && places.cafes.isNotEmpty {
           for waypoint in waypoints {
-            if waypoint.name == state.searchText ||
-                waypoint.name == state.searchText + waypoint.name.suffix(1) {
+            if state.searchText == waypoint.name ||
+                state.searchText + waypoint.name.suffix(1) == waypoint.name {
               return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
             }
           }
@@ -167,8 +167,8 @@ struct CafeSearchCore: ReducerProtocol {
           return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
         } else if state.waypoints.isNotEmpty && state.places.isNotEmpty {
           for waypoint in state.waypoints {
-            if waypoint.name == state.searchText ||
-                waypoint.name == state.searchText + waypoint.name.suffix(1) {
+            if state.searchText == waypoint.name ||
+                state.searchText + waypoint.name.suffix(1) == waypoint.name {
               return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
             }
           }
