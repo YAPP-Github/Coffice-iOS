@@ -35,8 +35,7 @@ struct CafeSearchCore: ReducerProtocol {
     var places: [Cafe] = []
     var waypoints: [WayPoint] = []
     var selectedWaypoints: WayPoint?
-    /// debounce보다 검색이 먼저 이루어졌는지, CheckFlag
-    var timingCheckFlag = false
+    var isSubmitfasterThanDebounce = false
   }
 
   enum Action: Equatable, BindableAction {
@@ -68,7 +67,7 @@ struct CafeSearchCore: ReducerProtocol {
       switch action {
       case .fetchPlacesAndWaypoints(let searchText):
         if searchText.isEmpty { return .none }
-        let timingCheckFlag = state.timingCheckFlag
+        let isSubmitfasterThanDebounce = state.isSubmitfasterThanDebounce
         return .run { send in
           async let fetchPlaces = try placeAPIClient.fetchPlaces(
             requestValue: PlaceRequestValue(name: searchText, page: 0, size: 10, sort: .ascending)
@@ -76,7 +75,7 @@ struct CafeSearchCore: ReducerProtocol {
           async let fetchWaypoints = try placeAPIClient.fetchWaypoints(name: searchText)
           let (places, waypoints) = try await (fetchPlaces, fetchWaypoints)
           /// debounce로 연관검색어목록을 불러오는 것보다, 검색어 submit이 더 빠르게 진행된 경우
-          switch timingCheckFlag {
+          switch isSubmitfasterThanDebounce {
           case true:
             await send(.checkTimingFetchPlaceResponse(places, waypoints, searchText))
           case false:
@@ -89,7 +88,7 @@ struct CafeSearchCore: ReducerProtocol {
       /// debounce로 api가 호출되기전에 유저가 검색어를 done한 경우,
       /// 검색어가 "역"에 해당하는지, 카페목록이 존재하는지 판단
       case .checkTimingFetchPlaceResponse(let places, let waypoints, let searchText):
-        state.timingCheckFlag = false
+        state.isSubmitfasterThanDebounce = false
         if waypoints.isNotEmpty && places.cafes.isEmpty {
           guard let waypoint = waypoints.first
           else { return .send(.requestSearchPlace(searchText)) }
@@ -180,7 +179,7 @@ struct CafeSearchCore: ReducerProtocol {
           }
           return .send(.requestSearchPlace(state.searchText))
         } else {
-          state.timingCheckFlag = true
+          state.isSubmitfasterThanDebounce = true
           return .send(.fetchPlacesAndWaypoints(state.searchText))
         }
 
