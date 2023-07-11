@@ -35,7 +35,7 @@ struct CafeSearchCore: ReducerProtocol {
     var places: [Cafe] = []
     var waypoints: [WayPoint] = []
     var selectedWaypoints: WayPoint?
-    var isSubmitFasterThanFetchResponse = false
+    var needToRetryFetchResponse = false
   }
 
   enum Action: Equatable, BindableAction {
@@ -66,14 +66,14 @@ struct CafeSearchCore: ReducerProtocol {
       switch action {
       case .fetchPlacesAndWaypoints(let searchText):
         if searchText.isEmpty { return .none }
-        let isSubmitFasterThanFetchResponse = state.isSubmitFasterThanFetchResponse
+        let needToRetryFetchResponse = state.needToRetryFetchResponse
         return .run { send in
           async let fetchPlaces = try placeAPIClient.fetchPlaces(
             requestValue: PlaceRequestValue(name: searchText, page: 0, size: 10, sort: .ascending)
           )
           async let fetchWaypoints = try placeAPIClient.fetchWaypoints(name: searchText)
           let (places, waypoints) = try await (fetchPlaces, fetchWaypoints)
-          switch isSubmitFasterThanFetchResponse {
+          switch needToRetryFetchResponse {
           case true:
             await send(.checkFetchPlaceResponse(places, waypoints, searchText))
           case false:
@@ -84,7 +84,7 @@ struct CafeSearchCore: ReducerProtocol {
         }
 
       case .checkFetchPlaceResponse(let places, let waypoints, let searchText):
-        state.isSubmitFasterThanFetchResponse = false
+        state.needToRetryFetchResponse = false
         if waypoints.isNotEmpty && places.cafes.isEmpty {
           guard let waypoint = waypoints.first
           else { return .send(.requestSearchPlace(searchText: searchText)) }
@@ -175,7 +175,7 @@ struct CafeSearchCore: ReducerProtocol {
           }
           return .send(.requestSearchPlace(searchText: state.searchText))
         } else {
-          state.isSubmitFasterThanFetchResponse = true
+          state.needToRetryFetchResponse = true
           return .send(.fetchPlacesAndWaypoints(searchText: state.searchText))
         }
 
