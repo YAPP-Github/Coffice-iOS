@@ -18,15 +18,19 @@ struct CafeSearchListCore: ReducerProtocol {
   }
 
   struct State: Equatable {
+    static var mock: Self {
+      .init(cafeFilterInformation: .mock)
+    }
+
     var filterBottomSheetState: CafeFilterBottomSheet.State = .mock
-    var filterMenusState: CafeFilterMenus.State = .mock
+    var filterMenusState: CafeFilterMenus.State = .initialState
     var title: String = ""
     var hasNext: Bool?
     var lastCafeDistance: Double = .zero
     var viewType: ViewType = .mapView
     var cafeList: [Cafe] = []
     var pageSize: Int = 10
-    var cafeFilterInformation: CafeFilterInformation = .mock
+    var cafeFilterInformation: CafeFilterInformation = .initialState
   }
 
   enum Action: Equatable {
@@ -34,7 +38,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case onAppear
     case scrollAndRequestSearchPlace(Double)
     case searchPlaceResponse(TaskResult<[Cafe]>)
-    case filterMenus(action: CafeFilterMenus.Action)
+    case cafeFilterMenus(action: CafeFilterMenus.Action)
     case scrollAndLoadData(Cafe)
     case backbuttonTapped
     case dismiss
@@ -49,7 +53,7 @@ struct CafeSearchListCore: ReducerProtocol {
   var body: some ReducerProtocolOf<CafeSearchListCore> {
     Scope(
       state: \.filterMenusState,
-      action: /Action.filterMenus(action:)
+      action: /Action.cafeFilterMenus(action:)
     ) {
       CafeFilterMenus()
     }
@@ -92,11 +96,11 @@ struct CafeSearchListCore: ReducerProtocol {
 
       case .updateCafeFilter(let information):
         state.cafeFilterInformation = information
-        return EffectTask(value: .filterMenus(action: .updateCafeFilter(information: information)))
+        return EffectTask(value: .cafeFilterMenus(action: .updateCafeFilter(information: information)))
 
       case .filterBottomSheetDismissed:
         return EffectTask(
-          value: .filterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
+          value: .cafeFilterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
         )
 
       default:

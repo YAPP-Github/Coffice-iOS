@@ -10,6 +10,8 @@ import Foundation
 
 /// 카페 필터 정보 공용 처리용 모델
 struct CafeFilterInformation: Equatable {
+  static let initialState: Self = .init()
+
   static var mock: Self {
     .init(
       outletOptionSet: .init([.many]),
@@ -22,11 +24,11 @@ struct CafeFilterInformation: Equatable {
     )
   }
 
-  var outletOptionSet: Set<CafeFilter.OutletOption>
-  var runningTimeOptionSet: Set<CafeFilter.RunningTimeOption>
-  var spaceSizeOptionSet: Set<CafeFilter.SpaceSizeOption>
-  var personnelOptionSet: Set<CafeFilter.PersonnelOption>
-  var foodOptionSet: Set<CafeFilter.FoodOption>
-  var toiletOptionSet: Set<CafeFilter.ToiletOption>
-  var drinkOptionSet: Set<CafeFilter.DrinkOption>
+  var outletOptionSet: Set<CafeFilter.OutletOption> = []
+  var runningTimeOptionSet: Set<CafeFilter.RunningTimeOption> = []
+  var spaceSizeOptionSet: Set<CafeFilter.SpaceSizeOption> = []
+  var personnelOptionSet: Set<CafeFilter.PersonnelOption> = []
+  var foodOptionSet: Set<CafeFilter.FoodOption> = []
+  var toiletOptionSet: Set<CafeFilter.ToiletOption> = []
+  var drinkOptionSet: Set<CafeFilter.DrinkOption> = []
 }

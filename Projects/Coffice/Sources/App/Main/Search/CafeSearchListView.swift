@@ -96,7 +96,7 @@ extension CafeSearchListView {
     CafeFilterMenusView(
       store: store.scope(
         state: \.filterMenusState,
-        action: CafeSearchListCore.Action.filterMenus(action:)
+        action: CafeSearchListCore.Action.cafeFilterMenus(action:)
       )
     )
   }
