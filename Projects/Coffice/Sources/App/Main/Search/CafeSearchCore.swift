@@ -74,7 +74,6 @@ struct CafeSearchCore: ReducerProtocol {
           )
           async let fetchWaypoints = try placeAPIClient.fetchWaypoints(name: searchText)
           let (places, waypoints) = try await (fetchPlaces, fetchWaypoints)
-          /// debounce로 연관검색어목록을 불러오는 것보다, 검색어 submit이 더 빠르게 진행된 경우
           switch isSubmitfasterThanDebounce {
           case true:
             await send(.checkTimingFetchPlaceResponse(places, waypoints, searchText))
@@ -85,8 +84,6 @@ struct CafeSearchCore: ReducerProtocol {
           debugPrint(error)
         }
 
-      /// debounce로 api가 호출되기전에 유저가 검색어를 done한 경우,
-      /// 검색어가 "역"에 해당하는지, 카페목록이 존재하는지 판단
       case .checkTimingFetchPlaceResponse(let places, let waypoints, let searchText):
         state.isSubmitfasterThanDebounce = false
         if waypoints.isNotEmpty && places.cafes.isEmpty {
@@ -171,7 +168,6 @@ struct CafeSearchCore: ReducerProtocol {
           return .send(.requestWaypointSearchPlace(waypoint))
         } else if state.waypoints.isNotEmpty && state.places.isNotEmpty {
           for waypoint in state.waypoints {
-            /// ex) "강남" 또는 "강남역"인 경우에만 -> waypoint 검색
             if waypoint.name == state.searchText ||
                 waypoint.name == state.searchText + waypoint.name.suffix(1) {
               return .send(.requestWaypointSearchPlace(waypoint))

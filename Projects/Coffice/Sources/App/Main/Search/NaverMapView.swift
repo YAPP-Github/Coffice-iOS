@@ -197,7 +197,6 @@ extension Coordinator: NMFMapViewCameraDelegate {
     DispatchQueue.main.async { [weak self] in
       self?.target.viewStore.send(
         .cameraPositionMoved(
-          //지도 cameraPosition -> viewStore CurrentCameraPosition 동기화 작업
           CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         )
       )
