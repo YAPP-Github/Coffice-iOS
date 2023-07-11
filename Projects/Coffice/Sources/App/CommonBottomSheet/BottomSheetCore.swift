@@ -6,8 +6,6 @@
 //  Copyright © 2023 kr.co.yapp. All rights reserved.
 //
 
-import Foundation
-
 import ComposableArchitecture
 import SwiftUI
 

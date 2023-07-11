@@ -101,7 +101,6 @@ struct SavedListView: View {
           }
           .padding(.horizontal, 20)
         }
-        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
       }
     }
   }

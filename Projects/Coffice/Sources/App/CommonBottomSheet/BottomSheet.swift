@@ -55,7 +55,6 @@ struct BottomSheetView: View {
     .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
     .cornerRadius(12, corners: [.topLeft, .topRight])
     .transition(.move(edge: .bottom))
-
   }
 }
 
@@ -79,7 +78,6 @@ extension BottomSheetView {
         .padding(.top, 12)
     }
     .padding(.vertical, 20)
-
   }
 
   private var footerView: some View {
@@ -88,7 +86,6 @@ extension BottomSheetView {
       confirmButton
     }
     .padding(.horizontal, 20)
-
   }
 
   private var cancelButton: some View {
