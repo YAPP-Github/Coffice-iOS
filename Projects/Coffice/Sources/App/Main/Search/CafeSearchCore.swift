@@ -46,7 +46,7 @@ struct CafeSearchCore: ReducerProtocol {
     case requestSearchPlace(searchText: String)
     case deleteRecentSearchWord(recentWordId: Int)
     case binding(BindingAction<State>)
-    case tappedRecentSearchWord(recentWord: String)
+    case recentSearchWordCellTapped(recentWord: String)
     case requestSearchPlacesByWaypoint(waypoint: WayPoint)
     case placeCellTapped
     case waypointCellTapped
@@ -110,7 +110,7 @@ struct CafeSearchCore: ReducerProtocol {
         state.currentBodyType = .recentSearchListView
         return .none
 
-      case .tappedRecentSearchWord(let recentWord):
+      case .recentSearchWordCellTapped(let recentWord):
         return .send(.requestSearchPlace(searchText: recentWord))
 
       case .binding(\.$searchText):
