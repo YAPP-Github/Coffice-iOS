@@ -167,7 +167,7 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
         // MARK: Sub-Core Actions
-      case .cafeSearchAction(.requestWaypointSearchPlace(let waypoint)):
+      case .cafeSearchAction(.requestSearchPlacesByWaypoint(let waypoint)):
         state.cafeSearchListState.title = waypoint.name
         state.currentCameraPosition = CLLocationCoordinate2D(
           latitude: waypoint.latitude, longitude: waypoint.longitude

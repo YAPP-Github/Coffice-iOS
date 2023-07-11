@@ -48,7 +48,7 @@ struct CafeSearchCore: ReducerProtocol {
     case binding(BindingAction<State>)
     case tappedRecentSearchWord(String)
     case fetchWaypoints(String)
-    case requestWaypointSearchPlace(WayPoint)
+    case requestSearchPlacesByWaypoint(waypoint: WayPoint)
     case placeCellTapped
     case waypointCellTapped
     case fetchRecentSearchWords
@@ -89,12 +89,12 @@ struct CafeSearchCore: ReducerProtocol {
         if waypoints.isNotEmpty && places.cafes.isEmpty {
           guard let waypoint = waypoints.first
           else { return .send(.requestSearchPlace(searchText)) }
-          return .send(.requestWaypointSearchPlace(waypoint))
+          return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
         } else if waypoints.isNotEmpty && places.cafes.isNotEmpty {
           for waypoint in waypoints {
             if waypoint.name == state.searchText ||
                 waypoint.name == state.searchText + waypoint.name.suffix(1) {
-              return .send(.requestWaypointSearchPlace(waypoint))
+              return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
             }
           }
         }
@@ -165,12 +165,12 @@ struct CafeSearchCore: ReducerProtocol {
         if state.waypoints.isNotEmpty && state.places.isEmpty {
           guard let waypoint = state.waypoints.first
           else { return .send(.requestSearchPlace(state.searchText)) }
-          return .send(.requestWaypointSearchPlace(waypoint))
+          return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
         } else if state.waypoints.isNotEmpty && state.places.isNotEmpty {
           for waypoint in state.waypoints {
             if waypoint.name == state.searchText ||
                 waypoint.name == state.searchText + waypoint.name.suffix(1) {
-              return .send(.requestWaypointSearchPlace(waypoint))
+              return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
             }
           }
           return .send(.requestSearchPlace(state.searchText))
