@@ -13,7 +13,7 @@ import Network
 import SwiftUI
 
 struct CafeSearchCore: ReducerProtocol {
-  struct CancelID: Hashable {}
+  struct DebouncingCancelId: Hashable {}
 
   enum CafeSearchViewBodyType {
     case recentSearchListView
@@ -125,7 +125,7 @@ struct CafeSearchCore: ReducerProtocol {
         state.places = []
         state.waypoints = []
         return EffectTask(value: .fetchPlacesAndWaypoints(state.searchText))
-          .debounce(id: CancelID(), for: 0.2, scheduler: DispatchQueue.main)
+          .debounce(id: DebouncingCancelId(), for: 0.2, scheduler: DispatchQueue.main)
           .eraseToEffect()
 
       case .deleteRecentSearchWord(let id):
