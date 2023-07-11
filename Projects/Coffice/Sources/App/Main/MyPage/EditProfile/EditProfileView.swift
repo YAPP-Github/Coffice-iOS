@@ -115,7 +115,7 @@ struct EditProfileView_Previews: PreviewProvider {
   static var previews: some View {
     EditProfileView(
       store: .init(
-        initialState: .init(),
+        initialState: .initialState,
         reducer: EditProfile()
       )
     )

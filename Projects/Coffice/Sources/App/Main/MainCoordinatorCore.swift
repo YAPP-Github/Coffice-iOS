@@ -98,12 +98,6 @@ struct MainCoordinator: ReducerProtocol {
         state.commonBottomSheetState = nil
         return .none
 
-      case .myPage(
-        .routeAction(_, .myPage(action: .presentCommonBottomSheet(let commonBottomSheetState)))
-      ):
-        state.commonBottomSheetState = commonBottomSheetState
-        return .none
-
       case .onAppear:
         return .none
 
@@ -137,14 +131,6 @@ struct MainCoordinator: ReducerProtocol {
 
       case .dismissToastMessageView:
         state.toastMessageState = nil
-        return .none
-
-      case .myPage(.hideTabBar):
-        state.shouldShowTabBarView = false
-        return .none
-
-      case .myPage(.showTabBar):
-        state.shouldShowTabBarView = true
         return .none
 
       default:

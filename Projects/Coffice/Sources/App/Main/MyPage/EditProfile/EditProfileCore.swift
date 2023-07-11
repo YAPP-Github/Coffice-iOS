@@ -11,11 +11,15 @@ import SwiftUI
 
 struct EditProfile: ReducerProtocol {
   struct State: Equatable {
-    static let initialState: State = .init()
+    static let initialState: State = .init(nickname: "기존닉네임")
 
     let title = "프로필 수정"
-    @BindingState var nicknameTextField = "기존닉네임"
+    @BindingState var nicknameTextField: String
     var isNicknameValid = false
+
+    init(nickname: String) {
+      nicknameTextField = nickname
+    }
   }
 
   enum Action: Equatable, BindableAction {

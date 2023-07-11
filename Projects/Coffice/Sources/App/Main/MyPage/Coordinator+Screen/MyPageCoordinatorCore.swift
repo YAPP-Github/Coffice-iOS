@@ -21,27 +21,26 @@ struct MyPageCoordinator: ReducerProtocol {
   enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: MyPageScreen.Action)
     case updateRoutes([Route<MyPageScreen.State>])
-    case hideTabBar
-    case showTabBar
   }
 
   var body: some ReducerProtocolOf<MyPageCoordinator> {
     Reduce<State, Action> { state, action in
       switch action {
-      case .routeAction(_, action: .myPage(.pushToLocationServiceTermsView)):
-        state.routes.push(.locationServiceTerms(.initialState))
+      case .routeAction(_, action: .myPage(.menuButtonTapped(let menuItem))):
+        switch menuItem.menuType {
+        case .privacyPolicy:
+          state.routes.push(.privacyPolicy(.initialState))
+        case .locationServiceTerms:
+          state.routes.push(.locationServiceTerms(.initialState))
+        case .contact:
+          state.routes.push(.contact(.initialState))
+        default:
+          break
+        }
         return .none
 
-      case .routeAction(_, action: .myPage(.pushToPrivacyPolicy)):
-        state.routes.push(.privacyPolicy(.initialState))
-        return .none
-
-      case .routeAction(_, action: .myPage(.pushToContactView)):
-        state.routes.push(.contact(.initialState))
-        return .none
-
-      case .routeAction(_, action: .myPage(.pushToEditProfile)):
-        state.routes.push(.editProfile(.initialState))
+      case .routeAction(_, action: .myPage(.editProfileButtonTapped(let nickname))):
+        state.routes.push(.editProfile(.init(nickname: nickname)))
         return .none
 
       case .routeAction(_, action: .locationServiceTerms(.popView)),
@@ -50,12 +49,6 @@ struct MyPageCoordinator: ReducerProtocol {
           .routeAction(_, action: .editProfile(.popView)):
         state.routes.pop()
         return .none
-
-      case .routeAction(_, action: .editProfile(.hideTabBar)):
-        return EffectTask(value: .hideTabBar)
-
-      case .routeAction(_, action: .editProfile(.showTabBar)):
-        return EffectTask(value: .showTabBar)
 
       default:
         return .none
