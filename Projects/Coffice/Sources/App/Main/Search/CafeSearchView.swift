@@ -179,7 +179,7 @@ extension CafeSearchView {
         .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 16))
         Spacer()
         Button {
-          viewStore.send(.deleteRecentSearchWord(id))
+          viewStore.send(.deleteRecentSearchWord(recentWordId: id))
         } label: {
           CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
             .renderingMode(.template)

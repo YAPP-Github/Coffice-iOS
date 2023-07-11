@@ -44,7 +44,7 @@ struct CafeSearchCore: ReducerProtocol {
     case submitText
     case clearText
     case requestSearchPlace(searchText: String)
-    case deleteRecentSearchWord(Int)
+    case deleteRecentSearchWord(recentWordId: Int)
     case binding(BindingAction<State>)
     case tappedRecentSearchWord(recentWord: String)
     case requestSearchPlacesByWaypoint(waypoint: WayPoint)
