@@ -16,7 +16,7 @@ struct CafeReviewOptionButtonsView: View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
         Text(viewStore.title)
-          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale8))
+          .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
           .applyCofficeFont(font: .button)
           .frame(height: 20)
           .frame(maxWidth: .infinity, alignment: .leading)
@@ -29,13 +29,13 @@ struct CafeReviewOptionButtonsView: View {
                 viewStore.send(.optionButtonTapped(optionType: viewState.optionType, index: viewStateIndex))
               } label: {
                 Text(viewState.title)
-                  .foregroundColor(Color(asset: viewState.textColorAsset))
+                  .foregroundColor(viewState.textColorAsset.swiftUIColor)
                   .applyCofficeFont(font: .body2Medium)
                   .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                  .background(Color(asset: viewState.backgroundColorAsset).clipShape(Capsule()))
+                  .background(viewState.backgroundColorAsset.swiftUIColor.clipShape(Capsule()))
                   .overlay {
                     RoundedRectangle(cornerRadius: 18)
-                      .stroke(Color(asset: viewState.borderColorAsset), lineWidth: 1)
+                      .stroke(viewState.borderColorAsset.swiftUIColor, lineWidth: 1)
                   }
                   .frame(height: 34)
                   .padding(.leading, 1)

@@ -11,7 +11,7 @@ import SwiftUI
 struct CafeReviewTextView: UIViewRepresentable {
   private let textView: UITextView = {
     let textView = UITextView()
-    textView.textColor = UIColor(Color(asset: CofficeAsset.Colors.grayScale9))
+    textView.textColor = UIColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
     textView.applyCoffice(font: .paragraph)
     return textView
   }()
@@ -34,7 +34,7 @@ struct CafeReviewTextView: UIViewRepresentable {
   class Coordinator: NSObject {
     @Binding private(set) var text: String
     let maxTextLength: Int = 200
-    let maxNumberOfLine: Int = 11
+    let maxNumberOfLines: Int = 11
 
     init(_ text: Binding<String>) {
       self._text = text
@@ -71,8 +71,8 @@ extension CafeReviewTextView.Coordinator: UITextViewDelegate {
     textWidth -= 2.0 * textView.textContainer.lineFragmentPadding
 
     let boundingRect = sizeOf(string: newText, constrainedToWidth: Double(textWidth), font: font)
-    let numberOfLines = boundingRect.height / font.lineHeight
+    let numberOfLines = Int(boundingRect.height / font.lineHeight)
 
-    return numberOfLines <= 11
+    return numberOfLines <= maxNumberOfLines
   }
 }

@@ -87,10 +87,15 @@ struct MainCoordinator: ReducerProtocol {
         )
 
       case .filterBottomSheet(.dismissWithDelay):
-        return EffectTask(
-          value: .search(
-            .routeAction(0, action: .cafeMap(.filterBottomSheetDismissed))
-          )
+        return .merge(
+          EffectTask(value: .search(.routeAction(
+            0,
+            action: .cafeMap(.filterBottomSheetDismissed)
+          ))),
+          EffectTask(value: .search(.routeAction(
+            0,
+            action: .cafeMap(.cafeSearchListAction(.filterBottomSheetDismissed))
+          )))
         )
 
       case .commonBottomSheet(.dismiss):
@@ -104,9 +109,13 @@ struct MainCoordinator: ReducerProtocol {
         debugPrint("selectedTab : \(itemType)")
         return .none
 
-      case .search(
-        .routeAction(_, .cafeMap(.cafeFilterMenus(action: .presentFilterBottomSheetView(let filterSheetState))))
-      ):
+      case
+          .search(.routeAction(_, .cafeMap(.cafeFilterMenus(
+            action: .presentFilterBottomSheetView(let filterSheetState)
+          )))),
+          .search(.routeAction(_, .cafeMap(.cafeSearchListAction(.cafeFilterMenus(
+            action: .presentFilterBottomSheetView(let filterSheetState)
+          ))))):
         state.shouldShowTabBarView = false
         state.filterSheetState = filterSheetState
         return .none
