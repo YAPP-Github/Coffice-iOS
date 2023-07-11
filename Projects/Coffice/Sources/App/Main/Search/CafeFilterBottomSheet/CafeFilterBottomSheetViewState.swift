@@ -195,9 +195,9 @@ enum CafeFilter {
   }
 
   enum SpaceSizeOption: Int, Equatable, CaseIterable {
-    case large
-    case midium
     case small
+    case medium
+    case large
 
     var sectionTitle: String {
       return "공간크기"
@@ -207,7 +207,7 @@ enum CafeFilter {
       switch self {
       case .large:
         return "대형카페"
-      case .midium:
+      case .medium:
         return "중형카페"
       case .small:
         return "소형카페"
