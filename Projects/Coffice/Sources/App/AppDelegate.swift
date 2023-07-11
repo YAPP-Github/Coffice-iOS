@@ -26,8 +26,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
   }
 
   private func checkIsFirstLaunch() {
-    if UserDefaults.standard.bool(forKey: "alreadyLaunched").isFalse {
-      KeychainManager.shared.deleteUserToken()
+    if UserDefaults.standard.bool(forKey: "alreadyLaunched").isFalse && CoreNetwork.shared.token == nil {
       Task {
         let loginClient = LoginClient()
         try await loginClient.login(loginType: .anonymous, accessToken: nil)

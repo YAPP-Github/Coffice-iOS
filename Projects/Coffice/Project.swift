@@ -42,6 +42,7 @@ let project = Project.app(
     .external(name: "Kingfisher"),
     .external(name: "NMapsMap"),
     .project(target: "Network", path: .relativeToRoot("Projects/Network")),
+    .external(name: "PopupView"),
     .external(name: "TCACoordinators")
   ],
   settings: .settings(

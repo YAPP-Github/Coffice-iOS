@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import NMapsMap
 import SwiftUI
+import PopupView
 
 struct CafeMapView: View {
   let store: StoreOf<CafeMapCore>
@@ -17,7 +18,6 @@ struct CafeMapView: View {
       GeometryReader { geometry in
         ZStack {
           NaverMapView(viewStore: viewStore)
-            .ignoresSafeArea()
           switch viewStore.displayViewType {
           case .searchResultView:
             CafeSearchListView(store: store.scope(
@@ -56,7 +56,6 @@ struct CafeMapView: View {
             if viewStore.selectedCafe != nil {
               CafeCardView(store: store)
                 .frame(width: geometry.size.width)
-                .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
             }
           }
           .frame(
@@ -78,6 +77,17 @@ struct CafeMapView: View {
       }
       .onDisappear {
         viewStore.send(.onDisappear)
+      }
+      .popup(isPresented: viewStore.$shouldShowToast) {
+        ToastView(
+          title: "장소가 저장되었습니다.",
+          image: CofficeAsset.Asset.checkboxCircleFill18px,
+          config: ToastConfiguration.default
+        )
+      } customize: {
+        $0
+          .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: false))
+          .autohideIn(2)
       }
     }
   }

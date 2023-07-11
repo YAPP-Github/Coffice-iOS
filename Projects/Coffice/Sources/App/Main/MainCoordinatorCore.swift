@@ -27,19 +27,16 @@ struct MainCoordinator: ReducerProtocol {
     var savedListState: SavedListCoordinator.State
     var myPageState: MyPageCoordinator.State
     var tabBarState: TabBar.State
-    var selectedTab: TabBar.State.TabBarItemType {
-      tabBarState.selectedTab
-    }
 
     var filterSheetState: CafeFilterBottomSheet.State?
     var commonBottomSheetState: CommonBottomSheet.State?
     var bubbleMessageState: BubbleMessage.State?
-    var toastMessageState: Toast.State?
 
     var shouldShowTabBarView = true
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
     case home(HomeCoordinator.Action)
     case search(SearchCoordinator.Action)
     case savedList(SavedListCoordinator.Action)
@@ -48,13 +45,13 @@ struct MainCoordinator: ReducerProtocol {
     case filterBottomSheet(action: CafeFilterBottomSheet.Action)
     case commonBottomSheet(action: CommonBottomSheet.Action)
     case bubbleMessage(BubbleMessage.Action)
-    case toastMessage(Toast.Action)
     case dismissToastMessageView
     case dismissBubbleMessageView
     case onAppear
   }
 
   var body: some ReducerProtocolOf<MainCoordinator> {
+    BindingReducer()
     Scope(state: \State.homeState, action: /Action.home) {
       HomeCoordinator()
     }
@@ -71,13 +68,14 @@ struct MainCoordinator: ReducerProtocol {
       MyPageCoordinator()
     }
 
-    Scope(state: \.tabBarState, action: /Action.tabBar) {
+    Scope(state: \State.tabBarState, action: /Action.tabBar) {
       TabBar()
     }
 
     Reduce { state, action in
       switch action {
       case .filterBottomSheet(.dismiss):
+        state.shouldShowTabBarView = true
         state.filterSheetState = nil
         return .none
 
@@ -104,16 +102,10 @@ struct MainCoordinator: ReducerProtocol {
         state.commonBottomSheetState = nil
         return .none
 
-      case .myPage(
-        .routeAction(_, .myPage(action: .presentCommonBottomSheet(let commonBottomSheetState)))
-      ):
-        state.commonBottomSheetState = commonBottomSheetState
-        return .none
-
       case .onAppear:
         return .none
 
-      case let .tabBar(.selectTab(itemType)):
+      case .tabBar(.selectTab(let itemType)):
         debugPrint("selectedTab : \(itemType)")
         return .none
 
@@ -124,36 +116,25 @@ struct MainCoordinator: ReducerProtocol {
           .search(.routeAction(_, .cafeMap(.cafeSearchListAction(.cafeFilterMenus(
             action: .presentFilterBottomSheetView(let filterSheetState)
           ))))):
+        state.shouldShowTabBarView = false
         state.filterSheetState = filterSheetState
         return .none
 
       case .search(.routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))),
           .filterBottomSheet(.presentBubbleMessageView(let bubbleMessageState)):
+        state.shouldShowTabBarView = false
         state.bubbleMessageState = bubbleMessageState
         return .none
 
-      case .search(
-        .routeAction(_, .cafeMap(.showToast(let toastMessageState)))
-      ):
-        state.toastMessageState = toastMessageState
-        return .run { send in
-          try await Task.sleep(nanoseconds: 2_000_000_000) // 2초
-          await send(.dismissToastMessageView)
-        }
-
       case .dismissBubbleMessageView:
+        state.shouldShowTabBarView = true
         state.bubbleMessageState = nil
         return .none
-
-      case .dismissToastMessageView:
-        state.toastMessageState = nil
-        return .none
-
-      case .myPage(.hideTabBar):
+      case .myPage(.routeAction(_, .editProfile(.hideTabBar))):
         state.shouldShowTabBarView = false
         return .none
 
-      case .myPage(.showTabBar):
+      case .myPage(.routeAction(_, .editProfile(.showTabBar))):
         state.shouldShowTabBarView = true
         return .none
 

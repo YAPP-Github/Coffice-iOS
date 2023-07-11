@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import PopupView
 import SwiftUI
 
 struct MyPageView: View {
@@ -22,6 +23,19 @@ struct MyPageView: View {
         .onAppear {
           viewStore.send(.onAppear)
         }
+        .popup(
+          isPresented: viewStore.$shouldShowBottomSheet,
+          view: {
+            BottomSheetView(
+              store: store.scope(
+                state: \.bottomSheetState,
+                action: MyPage.Action.bottomSheet
+              ),
+              bottomSheetContent: viewStore.bottomSheetType.content
+            )
+          },
+          customize: { BottomSheetContent.customize($0) }
+        )
     }
   }
 
@@ -61,7 +75,7 @@ struct MyPageView: View {
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
         Spacer()
         Button {
-          viewStore.send(.editProfileButtonTapped)
+          viewStore.send(.editProfileButtonTapped(nickname: viewStore.user?.name ?? "기존닉네임"))
         } label: {
           HStack(spacing: 0) {
             Text("SNS 로그인")
@@ -131,6 +145,7 @@ struct MyPageView: View {
             }
             .tint(menuItem.textColor)
           }
+          .disabled(menuItem.menuType == .versionInformation)
         }
       }
     }

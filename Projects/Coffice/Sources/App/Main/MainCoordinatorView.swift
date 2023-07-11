@@ -16,97 +16,87 @@ struct MainCoordinatorView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       ZStack {
-        NavigationView {
-          mainView
+        TabView(
+          selection: viewStore.binding(\MainCoordinator.State.tabBarState.$bindableSelectedTab)
+        ) {
+          NavigationView {
+            SearchCoordinatorView(
+              store: store.scope(
+                state: \.searchState,
+                action: MainCoordinator.Action.search
+              )
+            )
+          }
+          .tag(TabBar.State.TabBarItemType.search)
+
+          NavigationView {
+            SavedListCoordinatorView(
+              store: store.scope(
+                state: \.savedListState,
+                action: MainCoordinator.Action.savedList
+              )
+            )
+          }
+          .tag(TabBar.State.TabBarItemType.savedList)
+
+          NavigationView {
+            MyPageCoordinatorView(
+              store: store.scope(
+                state: \.myPageState,
+                action: MainCoordinator.Action.myPage
+              )
+            )
+          }
+          .tag(TabBar.State.TabBarItemType.myPage)
         }
+        .overlay(alignment: .bottom) {
+          if viewStore.shouldShowTabBarView {
+            TabBarView(
+              store: store.scope(
+                state: \.tabBarState,
+                action: MainCoordinator.Action.tabBar
+              )
+            )
+          } else {
+            tabBarTouchBlockerView
+          }
 
-        if viewStore.shouldShowTabBarView {
-          tabBarView
+          IfLetStore(
+            store.scope(
+              state: \.filterSheetState,
+              action: MainCoordinator.Action.filterBottomSheet
+            ),
+            then: CafeFilterBottomSheetView.init
+          )
+
+          IfLetStore(
+            store.scope(
+              state: \.commonBottomSheetState,
+              action: MainCoordinator.Action.commonBottomSheet
+            ),
+            then: CommonBottomSheetView.init
+          )
+
+          IfLetStore(
+            store.scope(
+              state: \.bubbleMessageState,
+              action: MainCoordinator.Action.bubbleMessage
+            ),
+            then: BubbleMessageView.init
+          )
+          .onTapGesture {
+            viewStore.send(.dismissBubbleMessageView)
+          }
         }
-
-        IfLetStore(
-          store.scope(
-            state: \.filterSheetState,
-            action: MainCoordinator.Action.filterBottomSheet
-          ),
-          then: CafeFilterBottomSheetView.init
-        )
-
-        IfLetStore(
-          store.scope(
-            state: \.commonBottomSheetState,
-            action: MainCoordinator.Action.commonBottomSheet
-          ),
-          then: CommonBottomSheetView.init
-        )
-
-        IfLetStore(
-          store.scope(
-            state: \.toastMessageState,
-            action: MainCoordinator.Action.toastMessage
-          ),
-          then: ToastView.init
-        )
-
-        IfLetStore(
-          store.scope(
-            state: \.bubbleMessageState,
-            action: MainCoordinator.Action.bubbleMessage
-          ),
-          then: BubbleMessageView.init
-        )
-        .onTapGesture {
-          viewStore.send(.dismissBubbleMessageView)
+        .onAppear {
+          viewStore.send(.onAppear)
         }
-      }
-      .onAppear {
-        viewStore.send(.onAppear)
       }
     }
   }
-
-  var mainView: some View {
-    WithViewStore(store, observe: \.selectedTab) { viewStore in
-      Group {
-        switch viewStore.state {
-        case .search:
-          SearchCoordinatorView(
-            store: store.scope(
-              state: \.searchState,
-              action: MainCoordinator.Action.search
-            )
-          )
-        case .savedList:
-          SavedListCoordinatorView(
-            store: store.scope(
-              state: \.savedListState,
-              action: MainCoordinator.Action.savedList
-            )
-          )
-        case .myPage:
-          MyPageCoordinatorView(
-            store: store.scope(
-              state: \.myPageState,
-              action: MainCoordinator.Action.myPage
-            )
-          )
-        }
-      }
-    }
-  }
-
-  var tabBarView: some View {
-    WithViewStore(store) { viewStore in
-      VStack {
-        Spacer()
-        TabBarView(
-          store: store.scope(
-            state: \.tabBarState,
-            action: MainCoordinator.Action.tabBar
-          )
-        )
-      }
-    }
+  private var tabBarTouchBlockerView: some View {
+    Color.white.opacity(0.0001)
+      .frame(height: 65)
   }
 }
 

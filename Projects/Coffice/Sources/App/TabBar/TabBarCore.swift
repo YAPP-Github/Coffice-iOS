@@ -21,25 +21,27 @@ struct TabBar: ReducerProtocol {
       .init(type: .myPage, isSelected: false)
     ]
 
-    var selectedTab: TabBarItemType = .search {
+    @BindingState var bindableSelectedTab: TabBarItemType = .search {
       didSet {
         tabBarItemViewStates = tabBarItemTypes.map {
-          TabBarItemViewState(type: $0, isSelected: selectedTab == $0)
+          TabBarItemViewState(type: $0, isSelected: bindableSelectedTab == $0)
         }
       }
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
     case selectTab(TabBar.State.TabBarItemType)
     case tabBarView(isPresented: Bool)
   }
 
   var body: some ReducerProtocolOf<TabBar> {
+    BindingReducer()
     Reduce { state, action in
       switch action {
       case .selectTab(let itemType):
-        state.selectedTab = itemType
+        state.bindableSelectedTab = itemType
         return .none
 
       default:
@@ -50,7 +52,7 @@ struct TabBar: ReducerProtocol {
 }
 
 extension TabBar.State {
-  enum TabBarItemType: CaseIterable {
+  enum TabBarItemType: CaseIterable, Hashable {
     case search
     case savedList
     case myPage
