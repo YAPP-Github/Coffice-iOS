@@ -77,6 +77,7 @@ struct MainCoordinator: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .filterBottomSheet(.dismiss):
+        state.shouldShowTabBarView = true
         state.filterSheetState = nil
         return .none
 
@@ -108,17 +109,20 @@ struct MainCoordinator: ReducerProtocol {
       case .search(
         .routeAction(_, .cafeMap(.cafeFilterMenus(action: .presentFilterBottomSheetView(let filterSheetState))))
       ):
+        state.shouldShowTabBarView = false
         state.filterSheetState = filterSheetState
         return .none
 
       case .search(.routeAction(_, .cafeSearchDetail(.presentBubbleMessageView(let bubbleMessageState)))),
           .filterBottomSheet(.presentBubbleMessageView(let bubbleMessageState)):
+        state.shouldShowTabBarView = false
         state.bubbleMessageState = bubbleMessageState
         return .none
 
       case .search(
         .routeAction(_, .cafeMap(.showToast(let toastMessageState)))
       ):
+        state.shouldShowTabBarView = false
         state.toastMessageState = toastMessageState
         return .run { send in
           try await Task.sleep(nanoseconds: 2_000_000_000) // 2초
@@ -126,10 +130,12 @@ struct MainCoordinator: ReducerProtocol {
         }
 
       case .dismissBubbleMessageView:
+        state.shouldShowTabBarView = true
         state.bubbleMessageState = nil
         return .none
 
       case .dismissToastMessageView:
+        state.shouldShowTabBarView = true
         state.toastMessageState = nil
         return .none
 
