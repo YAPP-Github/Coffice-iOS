@@ -31,7 +31,6 @@ struct MainCoordinator: ReducerProtocol {
     var filterSheetState: CafeFilterBottomSheet.State?
     var commonBottomSheetState: CommonBottomSheet.State?
     var bubbleMessageState: BubbleMessage.State?
-    var toastMessageState: Toast.State?
 
     var shouldShowTabBarView = true
   }
@@ -46,7 +45,6 @@ struct MainCoordinator: ReducerProtocol {
     case filterBottomSheet(action: CafeFilterBottomSheet.Action)
     case commonBottomSheet(action: CommonBottomSheet.Action)
     case bubbleMessage(BubbleMessage.Action)
-    case toastMessage(Toast.Action)
     case dismissToastMessageView
     case dismissBubbleMessageView
     case onAppear
@@ -119,26 +117,10 @@ struct MainCoordinator: ReducerProtocol {
         state.bubbleMessageState = bubbleMessageState
         return .none
 
-      case .search(
-        .routeAction(_, .cafeMap(.showToast(let toastMessageState)))
-      ):
-        state.shouldShowTabBarView = false
-        state.toastMessageState = toastMessageState
-        return .run { send in
-          try await Task.sleep(nanoseconds: 2_000_000_000) // 2초
-          await send(.dismissToastMessageView)
-        }
-
       case .dismissBubbleMessageView:
         state.shouldShowTabBarView = true
         state.bubbleMessageState = nil
         return .none
-
-      case .dismissToastMessageView:
-        state.shouldShowTabBarView = true
-        state.toastMessageState = nil
-        return .none
-
       case .myPage(.routeAction(_, .editProfile(.hideTabBar))):
         state.shouldShowTabBarView = false
         return .none

@@ -49,7 +49,7 @@ struct CafeMapCore: ReducerProtocol {
     var maxScreenWidth: CGFloat = .zero
     var fixedImageSize: CGFloat { (maxScreenWidth - 56) / 3 }
     var fixedCardTitleSize: CGFloat { maxScreenWidth - 48 }
-
+    @BindingState var shouldShowToast = false
     // MARK: ViewType
     var displayViewType: ViewType = .mainMapView
 
@@ -122,7 +122,6 @@ struct CafeMapCore: ReducerProtocol {
     case binding(BindingAction<State>)
     case requestLocationAuthorization
     case bookmarkButtonTapped(cafe: Cafe)
-    case showToast(Toast.State)
     case resetResult(ResetState)
     case cafeFilterMenus(action: CafeFilterMenus.Action)
     case updateCafeFilter(information: CafeFilterInformation)
@@ -379,21 +378,15 @@ struct CafeMapCore: ReducerProtocol {
       case .bookmarkButtonTapped(let cafe):
         state.selectedCafe?.isBookmarked.toggle()
         state.isUpdatingBookmarkState = true
+        if state.selectedCafe?.isBookmarked == true {
+          state.shouldShowToast = true
+        }
         return .run { [isBookmarked = state.selectedCafe?.isBookmarked] send in
           if isBookmarked == true {
             try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
           } else {
             try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
           }
-          await send(
-            .showToast(
-              Toast.State(
-                title: isBookmarked ?? false ? "장소가 저장되었습니다." : "장소가 저장해제되었습니다.",
-                image: CofficeAsset.Asset.checkboxCircleFill18px,
-                config: Config.default
-              )
-            )
-          )
         } catch: { error, send in
           debugPrint(error)
         }

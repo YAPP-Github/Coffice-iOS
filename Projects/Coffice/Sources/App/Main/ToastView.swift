@@ -6,46 +6,40 @@
 //  Copyright © 2023 kr.co.yapp. All rights reserved.
 //
 
-import ComposableArchitecture
 import SwiftUI
 
 struct ToastView: View {
-  private let store: StoreOf<Toast>
-
-  init(store: StoreOf<Toast>) {
-    self.store = store
-  }
+  let title: String
+  let image: CofficeImages
+  let config: ToastConfiguration
 
   var body: some View {
-    WithViewStore(store) { viewStore in
-      VStack {
-        Spacer()
-        HStack {
-          viewStore.state.image.swiftUIImage
-            .renderingMode(.template)
-            .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          Text(viewStore.state.title)
-            .multilineTextAlignment(.center)
-            .foregroundColor(viewStore.state.config.textColor)
-            .applyCofficeFont(font: viewStore.state.config.font)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 13)
-        .background(viewStore.state.config.backgroundColor)
-        .cornerRadius(8)
+    VStack {
+      Spacer()
+      HStack {
+        image.swiftUIImage
+          .renderingMode(.template)
+          .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+        Text(title)
+          .multilineTextAlignment(.center)
+          .foregroundColor(config.textColor)
+          .applyCofficeFont(font: config.font)
       }
-      .padding(.bottom, 100)
+      .padding(.horizontal, 16)
+      .padding(.vertical, 13)
+      .background(config.backgroundColor)
+      .cornerRadius(8)
     }
+    .padding(.bottom, 100)
   }
 }
 
 struct ToastView_Previews: PreviewProvider {
   static var previews: some View {
     ToastView(
-      store: .init(
-        initialState: .mock,
-        reducer: Toast()
-      )
+      title: "장소가 저장되었습니다.",
+      image: CofficeAsset.Asset.checkboxCircleFill18px,
+      config: ToastConfiguration.default
     )
   }
 }
