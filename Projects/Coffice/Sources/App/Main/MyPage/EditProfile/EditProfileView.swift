@@ -11,6 +11,7 @@ import SwiftUI
 
 struct EditProfileView: View {
   private let store: StoreOf<EditProfile>
+  @FocusState private var isFocused: Bool?
 
   init(store: StoreOf<EditProfile>) {
     self.store = store
@@ -64,6 +65,7 @@ struct EditProfileView: View {
             .textFieldStyle(.plain)
             .padding(20)
             .tint(CofficeAsset.Colors.grayScale9.swiftUIColor)
+            .focused($isFocused, equals: true)
 
             if viewStore.nicknameTextField.isNotEmpty {
               Button {

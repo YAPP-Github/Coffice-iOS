@@ -13,12 +13,16 @@ struct EditProfile: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init(nickname: "기존닉네임")
 
+    let oldNickname: String
     let title = "프로필 수정"
     @BindingState var nicknameTextField: String
-    var isNicknameValid = false
+    var isNicknameValid: Bool {
+      return oldNickname != nicknameTextField && nicknameTextField.isNotEmpty
+    }
 
     init(nickname: String) {
-      nicknameTextField = nickname
+      oldNickname = nickname
+      nicknameTextField = oldNickname
     }
   }
 
@@ -50,7 +54,7 @@ struct EditProfile: ReducerProtocol {
         return .none
 
       case .confirmButtonTapped:
-        return .none
+        return EffectTask(value: .popView) // TODO: 서버 나오면 기능 연결 (닉네임 수정 확인)
 
       case .clearText:
         state.nicknameTextField.removeAll()

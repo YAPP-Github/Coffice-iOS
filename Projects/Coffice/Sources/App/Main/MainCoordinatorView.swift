@@ -50,53 +50,61 @@ struct MainCoordinatorView: View {
           .tag(TabBar.State.TabBarItemType.myPage)
         }
         .overlay(alignment: .bottom) {
-          TabBarView(
-            store: store.scope(
-              state: \.tabBarState,
-              action: MainCoordinator.Action.tabBar
+          if viewStore.shouldShowTabBarView {
+            TabBarView(
+              store: store.scope(
+                state: \.tabBarState,
+                action: MainCoordinator.Action.tabBar
+              )
             )
+          } else {
+            tabBarTouchBlockerView
+          }
+
+          IfLetStore(
+            store.scope(
+              state: \.filterSheetState,
+              action: MainCoordinator.Action.filterBottomSheet
+            ),
+            then: CafeFilterBottomSheetView.init
           )
+
+          IfLetStore(
+            store.scope(
+              state: \.commonBottomSheetState,
+              action: MainCoordinator.Action.commonBottomSheet
+            ),
+            then: CommonBottomSheetView.init
+          )
+
+          IfLetStore(
+            store.scope(
+              state: \.toastMessageState,
+              action: MainCoordinator.Action.toastMessage
+            ),
+            then: ToastView.init
+          )
+
+          IfLetStore(
+            store.scope(
+              state: \.bubbleMessageState,
+              action: MainCoordinator.Action.bubbleMessage
+            ),
+            then: BubbleMessageView.init
+          )
+          .onTapGesture {
+            viewStore.send(.dismissBubbleMessageView)
+          }
         }
-
-        IfLetStore(
-          store.scope(
-            state: \.filterSheetState,
-            action: MainCoordinator.Action.filterBottomSheet
-          ),
-          then: CafeFilterBottomSheetView.init
-        )
-
-        IfLetStore(
-          store.scope(
-            state: \.commonBottomSheetState,
-            action: MainCoordinator.Action.commonBottomSheet
-          ),
-          then: CommonBottomSheetView.init
-        )
-
-        IfLetStore(
-          store.scope(
-            state: \.toastMessageState,
-            action: MainCoordinator.Action.toastMessage
-          ),
-          then: ToastView.init
-        )
-
-        IfLetStore(
-          store.scope(
-            state: \.bubbleMessageState,
-            action: MainCoordinator.Action.bubbleMessage
-          ),
-          then: BubbleMessageView.init
-        )
-        .onTapGesture {
-          viewStore.send(.dismissBubbleMessageView)
+        .onAppear {
+          viewStore.send(.onAppear)
         }
-      }
-      .onAppear {
-        viewStore.send(.onAppear)
       }
     }
+  }
+  private var tabBarTouchBlockerView: some View {
+    Color.white.opacity(0.0001)
+      .frame(height: 65)
   }
 }
 
