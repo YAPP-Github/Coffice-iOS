@@ -82,8 +82,8 @@ extension NaverMapView: UIViewRepresentable {
     }
 
     if viewStore.shouldUpdateMarkers
-        && NaverMapView.storage.cafes != viewStore.cafeMarkerList {
-      NaverMapView.storage.cafes = viewStore.cafeMarkerList
+        && NaverMapView.storage.cafes != viewStore.cafes {
+      NaverMapView.storage.cafes = viewStore.cafes
       DispatchQueue.main.async {
         addMarker(
           naverMapView: uiView,

@@ -68,14 +68,13 @@ struct CafeMapCore: ReducerProtocol {
 
     // MARK: NaverMapView
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
-    var cafeMarkerList: [Cafe] = []
-    var cafeList: [Cafe] = []
+    var cafes: [Cafe] = []
     var shouldClearMarkers: Bool = false
     let bottomFloatingButtons = BottomFloatingButton.allCases
     var isMovingToCurrentPosition = false
     var isUpdatingMarkers = false
     var shouldUpdateMarkers: Bool {
-      return cafeMarkerList.isNotEmpty && isUpdatingMarkers
+      return cafes.isNotEmpty && isUpdatingMarkers
     }
     var isUpdatingBookmarkState = false
     var shouldShowRefreshButtonView: Bool {
@@ -283,7 +282,7 @@ struct CafeMapCore: ReducerProtocol {
       case .cafeListResponse(let result):
         switch result {
         case .success(let cafeList):
-          state.cafeMarkerList = cafeList
+          state.cafes = cafeList
           return .none
         case .failure(let error):
           debugPrint(error)
@@ -333,8 +332,7 @@ struct CafeMapCore: ReducerProtocol {
           if searchResponse.cafes.isEmpty {
             return .send(.resetResult(.searchResultIsEmpty))
           }
-          state.cafeList = searchResponse.cafes
-          state.cafeMarkerList = searchResponse.cafes
+          state.cafes = searchResponse.cafes
           state.isUpdatingMarkers = true
           state.cafeSearchListState.cafeList = searchResponse.cafes
           state.cafeSearchListState.hasNext = searchResponse.hasNext
@@ -366,7 +364,7 @@ struct CafeMapCore: ReducerProtocol {
           }
           if removedDuplicationCafes.isNotEmpty {
             state.cafeSearchListState.cafeList += cafeSearchResponse.cafes
-            state.cafeMarkerList += cafeSearchResponse.cafes
+            state.cafes += cafeSearchResponse.cafes
             state.isUpdatingMarkers = true
           }
           return .none
@@ -382,8 +380,7 @@ struct CafeMapCore: ReducerProtocol {
           if searchResponse.cafes.isEmpty {
             return .send(.resetResult(.searchResultIsEmpty))
           }
-          state.cafeList = searchResponse.cafes
-          state.cafeMarkerList = searchResponse.cafes
+          state.cafes = searchResponse.cafes
           state.selectedCafe = nil
           state.isUpdatingMarkers = true
           state.cafeSearchListState.cafeList = searchResponse.cafes
@@ -399,8 +396,7 @@ struct CafeMapCore: ReducerProtocol {
 
         // MARK: Common
       case .resetResult(let resetState):
-        state.cafeList = []
-        state.cafeMarkerList = []
+        state.cafes = []
         state.cafeSearchListState.cafeList = []
         state.cafeSearchListState.hasNext = nil
         state.cameraUpdateReason = .changedByDeveloper
