@@ -49,7 +49,7 @@ struct CafeSearchCore: ReducerProtocol {
     case binding(BindingAction<State>)
     case tappedRecentSearchWord(String)
     case fetchWaypoints(String)
-    case requestWaypointCafes(WayPoint)
+    case requestWaypointSearchPlace(WayPoint)
     case placeCellTapped
     case waypointCellTapped
     case fetchRecentSearchWords
@@ -93,12 +93,12 @@ struct CafeSearchCore: ReducerProtocol {
         if waypoints.isNotEmpty && places.cafes.isEmpty {
           guard let waypoint = waypoints.first
           else { return .send(.requestSearchPlace(searchText)) }
-          return .send(.requestWaypointCafes(waypoint))
+          return .send(.requestWaypointSearchPlace(waypoint))
         } else if waypoints.isNotEmpty && places.cafes.isNotEmpty {
           for waypoint in waypoints {
             if waypoint.name == state.searchText ||
                 waypoint.name == state.searchText + waypoint.name.suffix(1) {
-              return .send(.requestWaypointCafes(waypoint))
+              return .send(.requestWaypointSearchPlace(waypoint))
             }
           }
         }
@@ -169,13 +169,13 @@ struct CafeSearchCore: ReducerProtocol {
         if state.waypoints.isNotEmpty && state.places.isEmpty {
           guard let waypoint = state.waypoints.first
           else { return .send(.requestSearchPlace(state.searchText)) }
-          return .send(.requestWaypointCafes(waypoint))
+          return .send(.requestWaypointSearchPlace(waypoint))
         } else if state.waypoints.isNotEmpty && state.places.isNotEmpty {
           for waypoint in state.waypoints {
             /// ex) "강남" 또는 "강남역"인 경우에만 -> waypoint 검색
             if waypoint.name == state.searchText ||
                 waypoint.name == state.searchText + waypoint.name.suffix(1) {
-              return .send(.requestWaypointCafes(waypoint))
+              return .send(.requestWaypointSearchPlace(waypoint))
             }
           }
           return .send(.requestSearchPlace(state.searchText))
