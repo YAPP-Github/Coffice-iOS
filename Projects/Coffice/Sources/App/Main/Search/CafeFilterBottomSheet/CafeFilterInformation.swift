@@ -31,4 +31,92 @@ struct CafeFilterInformation: Equatable {
   var foodOptionSet: Set<CafeFilter.FoodOption> = []
   var toiletOptionSet: Set<CafeFilter.ToiletOption> = []
   var drinkOptionSet: Set<CafeFilter.DrinkOption> = []
+
+  var isOpened: Bool {
+    runningTimeOptionSet.contains(.running) && runningTimeOptionSet.contains(.twentyFourHours)
+  }
+
+  var cafeSearchFilters: CafeSearchFilters {
+    let capacityLevels = CafeFilter.SpaceSizeOption.allCases.compactMap { option -> CapacityLevel? in
+      guard spaceSizeOptionSet.contains(option)
+      else { return nil }
+
+      switch option {
+      case .small:
+        return .low
+      case .medium:
+        return .medium
+      case .large:
+        return .high
+      }
+    }
+
+    let drinkTypes = CafeFilter.DrinkOption.allCases.compactMap { option -> DrinkType? in
+      guard drinkOptionSet.contains(option)
+      else { return nil }
+
+      switch option {
+      case .decaf:
+        return .decaffeinated
+      case .soyMilk:
+        return .soyMilk
+      }
+    }
+
+    let foodTypes = CafeFilter.FoodOption.allCases.compactMap { option -> FoodType? in
+      guard foodOptionSet.contains(option)
+      else { return nil }
+
+      switch option {
+      case .desert:
+        return .glutenFree
+      case .mealAvailable:
+        return .mealWorthy
+      }
+    }
+
+    let restroomTypes = CafeFilter.ToiletOption.allCases.compactMap { option -> RestroomType? in
+      guard toiletOptionSet.contains(option)
+      else { return nil }
+
+      switch option {
+      case .indoors:
+        return .indoors
+      case .genderSeparated:
+        return .genderSeperated
+      }
+    }
+
+    let electricOutletTypes = CafeFilter.OutletOption.allCases.compactMap { option -> ElectricOutletType? in
+      guard outletOptionSet.contains(option)
+      else { return nil }
+
+      switch option {
+      case .few:
+        return .few
+      case .several:
+        return .several
+      case .many:
+        return .many
+      }
+    }
+
+    return CafeSearchFilters(
+      capacityLevels: capacityLevels,
+      drinkTypes: drinkTypes,
+      foodTypes: foodTypes,
+      restroomTypes: restroomTypes,
+      electricOutletLevels: electricOutletTypes
+    )
+  }
+
+  var hasCommunalTable: Bool {
+    guard let personnelOption = personnelOptionSet.first
+    else { return false }
+
+    switch personnelOption {
+    case .groupSeat:
+      return true
+    }
+  }
 }

@@ -190,14 +190,23 @@ struct CafeMapCore: ReducerProtocol {
       case .cafeSearchAction(.requestSearchPlace(let searchText)):
         let title = searchText
         let cameraPosition = state.currentCameraPosition
+        let isOpened = state.cafeFilterInformation.isOpened
+        let cafeSearchFilters = state.cafeFilterInformation.cafeSearchFilters
+        let hasCommunalTable = state.cafeFilterInformation.hasCommunalTable
         state.cafeSearchState.searchTextSnapshot = searchText
         state.cafeSearchState.searchCameraPositionSnapshot = state.currentCameraPosition
         return .run { send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
-              searchText: searchText, userLatitude: cameraPosition.latitude,
-              userLongitude: cameraPosition.longitude, maximumSearchDistance: 2000,
-              isOpened: nil, hasCommunalTable: nil, filters: nil, pageSize: 10, pageableKey: nil
+              searchText: searchText,
+              userLatitude: cameraPosition.latitude,
+              userLongitude: cameraPosition.longitude,
+              maximumSearchDistance: 2000,
+              isOpened: isOpened,
+              hasCommunalTable: hasCommunalTable,
+              filters: cafeSearchFilters,
+              pageSize: 10,
+              pageableKey: nil
             )
             let cafeSearchResponose = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
             return cafeSearchResponose
