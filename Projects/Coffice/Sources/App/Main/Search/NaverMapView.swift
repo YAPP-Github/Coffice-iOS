@@ -62,7 +62,7 @@ extension NaverMapView: UIViewRepresentable {
   }
 
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if viewStore.isMovingToCurrentPosition {
+    if viewStore.isUpdatingCameraPosition {
       let nmgLocation = NMGLatLng(
         lat: viewStore.currentCameraPosition.latitude,
         lng: viewStore.currentCameraPosition.longitude

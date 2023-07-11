@@ -71,7 +71,7 @@ struct CafeMapCore: ReducerProtocol {
     var cafes: [Cafe] = []
     var shouldClearMarkers: Bool = false
     let bottomFloatingButtons = BottomFloatingButton.allCases
-    var isMovingToCurrentPosition = false
+    var isUpdatingCameraPosition = false
     var isUpdatingMarkers = false
     var shouldUpdateMarkers: Bool {
       return cafes.isNotEmpty && isUpdatingMarkers
@@ -252,7 +252,7 @@ struct CafeMapCore: ReducerProtocol {
       case .bottomFloatingButtonTapped(let buttonType):
         switch buttonType {
         case .currentLocationButton:
-          state.isMovingToCurrentPosition = true
+          state.isUpdatingCameraPosition = true
           return .send(.updateCurrentLocation)
         case .bookmarkButton:
           return .none
@@ -300,7 +300,7 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
       case .movedToCurrentPosition:
-        state.isMovingToCurrentPosition = false
+        state.isUpdatingCameraPosition = false
         return .none
 
       case .markersUpdated:
@@ -343,7 +343,7 @@ struct CafeMapCore: ReducerProtocol {
             latitude: cafe.latitude,
             longitude: cafe.longitude
           )
-          state.isMovingToCurrentPosition = true
+          state.isUpdatingCameraPosition = true
           state.cafeSearchListState.title = title
           state.displayViewType = .searchResultView
           state.cafeSearchState.previousViewType = .searchResultView
@@ -385,7 +385,7 @@ struct CafeMapCore: ReducerProtocol {
           state.isUpdatingMarkers = true
           state.cafeSearchListState.cafeList = searchResponse.cafes
           state.cafeSearchListState.hasNext = searchResponse.hasNext
-          state.isMovingToCurrentPosition = true
+          state.isUpdatingCameraPosition = true
           state.displayViewType = .searchResultView
           state.cafeSearchState.previousViewType = .searchResultView
           return .send(.cafeSearchAction(.dismiss))
