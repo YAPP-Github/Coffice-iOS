@@ -155,7 +155,6 @@ extension NaverMapView {
 
   func moveCameraTo(naverMapView: NMFNaverMapView, location: CLLocationCoordinate2D, zoomLevel: Double? = nil) {
     let nmgLocation = NMGLatLng(lat: location.latitude, lng: location.longitude)
-
     if let zoomLevel {
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
       naverMapView.mapView.moveCamera(cameraUpdate)
@@ -193,8 +192,15 @@ extension Coordinator: NMFMapViewCameraDelegate {
   }
 
   func mapViewCameraIdle(_ mapView: NMFMapView) {
+    let latitude = mapView.cameraPosition.target.lat
+    let longitude = mapView.cameraPosition.target.lng
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.cameraPositionMoved)
+      self?.target.viewStore.send(
+        .cameraPositionMoved(
+          //지도 cameraPosition -> viewStore CurrentCameraPosition 동기화 작업
+          CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        )
+      )
     }
   }
 }
