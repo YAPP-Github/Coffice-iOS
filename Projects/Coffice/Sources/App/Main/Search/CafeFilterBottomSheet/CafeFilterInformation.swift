@@ -10,9 +10,8 @@ import Foundation
 
 /// 카페 필터 정보 공용 처리용 모델
 struct CafeFilterInformation: Equatable {
-  static var initialState: Self {
-    .init()
-  }
+  static let initialState: Self = .init()
+
   static var mock: Self {
     .init(
       outletOptionSet: .init([.many]),
