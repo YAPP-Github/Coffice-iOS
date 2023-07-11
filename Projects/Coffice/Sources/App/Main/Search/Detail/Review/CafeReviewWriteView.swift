@@ -22,13 +22,13 @@ struct CafeReviewWriteView: View {
         HStack {
           Text("리뷰 쓰기")
             .applyCofficeFont(font: .header1)
-            .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
             .padding(.vertical, 4)
           Spacer()
           Button {
             viewStore.send(.dismissView)
           } label: {
-            Image(asset: CofficeAsset.Asset.close40px)
+            CofficeAsset.Asset.close40px.swiftUIImage
           }
         }
         .padding(.top, 24)
@@ -36,14 +36,14 @@ struct CafeReviewWriteView: View {
         .padding(.bottom, 16)
 
         HStack {
-          Image(asset: CofficeAsset.Asset.cafeImage)
+          CofficeAsset.Asset.cafeImage.swiftUIImage
             .resizable()
             .frame(width: 48, height: 48)
             .cornerRadius(4, corners: .allCorners)
 
           VStack(spacing: 0) {
             Text("훅스턴")
-              .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+              .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
               .applyCofficeFont(font: .subtitleSemiBold)
               .frame(maxWidth: .infinity, alignment: .leading)
               .frame(height: 20, alignment: .center)
@@ -51,7 +51,7 @@ struct CafeReviewWriteView: View {
             Spacer()
 
             Text("서울 서대문구 연희로 91 2층")
-              .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale7))
+              .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
               .applyCofficeFont(font: .body1Medium)
               .frame(maxWidth: .infinity, alignment: .leading)
               .frame(height: 20, alignment: .center)
@@ -62,8 +62,7 @@ struct CafeReviewWriteView: View {
         .padding(.bottom, 16)
         .padding(.horizontal, 20)
 
-        Divider()
-          .background(Color(asset: CofficeAsset.Colors.grayScale3))
+        CofficeAsset.Colors.grayScale3.swiftUIColor
           .frame(height: 1)
           .padding(.horizontal, 20)
 
@@ -73,15 +72,15 @@ struct CafeReviewWriteView: View {
           Button {
             // TODO: 등록, 수정하기 버튼 이벤트 구현 필요
           } label: {
-            Text("등록하기")
-              .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale1))
+            Text(viewStore.saveButtonTitle)
+              .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .applyCofficeFont(font: .button)
               .frame(maxWidth: .infinity)
           }
           .disabled(viewStore.isSaveButtonEnabled.isFalse)
         }
         .frame(height: 44)
-        .background(Color(asset: viewStore.saveButtonBackgroundColorAsset))
+        .background(viewStore.saveButtonBackgroundColorAsset.swiftUIColor)
         .cornerRadius(4, corners: .allCorners)
         .padding(.horizontal, 20)
       }
@@ -110,7 +109,6 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
               .id(viewStore.textViewDidBeginEditingScrollId)
               .padding(.horizontal, 20)
           }
-          .padding(.horizontal, 20)
         }
         .onReceive(keyboardEventPublisher) { isKeyboardShowing in
           viewStore.send(.updateTextViewBottomPadding(isTextViewEditing: isKeyboardShowing))
@@ -128,10 +126,10 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
   var reviewOptionMenuView: some View {
     WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
-        ForEach(viewStore.optionButtonStates.indices, id: \.self) { buttonIndex in
+        ForEach(viewStore.optionButtonStates) { buttonState in
           CafeReviewOptionButtonsView(
             store: store.scope(
-              state: \.optionButtonStates[buttonIndex],
+              state: { _ in buttonState },
               action: CafeReviewWrite.Action.optionButtonsAction
             )
           )
@@ -148,13 +146,14 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
             .textFieldStyle(.plain)
             .frame(height: 206)
             .overlay(
-              textDescriptionView, alignment: .bottomTrailing
+              textDescriptionView,
+              alignment: .bottomTrailing
             )
             .padding(13)
             .overlay {
               RoundedRectangle(cornerRadius: 8)
                 .stroke(
-                  Color(asset: CofficeAsset.Colors.grayScale3),
+                  CofficeAsset.Colors.grayScale3.swiftUIColor,
                   lineWidth: 1
                 )
             }
@@ -169,7 +168,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
             카페에서 작업하며 느꼈던 점들을 공유해주세요!
             """
           )
-          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale6))
+          .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
           .applyCofficeFont(font: .paragraph)
           .padding(.top, 36)
           .padding(.leading, 20)
@@ -184,10 +183,10 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     WithViewStore(store) { viewStore in
       HStack(alignment: .bottom, spacing: 0) {
         Text(viewStore.currentTextLengthDescription)
-          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
+          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
           .applyCofficeFont(font: .body3Medium)
         Text(viewStore.maximumTextLengthDescription)
-          .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale5))
+          .foregroundColor(CofficeAsset.Colors.grayScale5.swiftUIColor)
           .applyCofficeFont(font: .body3Medium)
       }
     }

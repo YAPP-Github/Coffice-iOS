@@ -32,13 +32,16 @@ struct CafeReviewWrite: ReducerProtocol {
     let maximumTextLength = 200
 
     var textViewBottomPadding: CGFloat = 0.0
-    var saveButtonBackgroundColorAsset: CofficeColors {
-      return isSaveButtonEnabled ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale6
-    }
     var currentTextLengthDescription: String { "\(reviewText.count)" }
     var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
     var shouldPresentTextViewPlaceholder: Bool {
       reviewText.isEmpty
+    }
+    var saveButtonTitle: String {
+      return reviewOption == .create ? "등록하기" : "수정하기"
+    }
+    var saveButtonBackgroundColorAsset: CofficeColors {
+      return isSaveButtonEnabled ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale6
     }
 
     init(reviewOption: ReviewOption) {
