@@ -54,7 +54,7 @@ struct CafeSearchCore: ReducerProtocol {
     case fetchPlacesAndWaypoints(searchText: String)
     case recentSearchWordsResponse(TaskResult<[RecentSearchWord]>)
     case fetchPlacesAndWaypointsResponse(CafeSearchResponse, [WayPoint])
-    case checkFetchPlaceResponse(CafeSearchResponse, [WayPoint], String)
+    case retryFetchPlacesAndWaypointsResponse(CafeSearchResponse, [WayPoint], searchText: String)
   }
 
   @Dependency(\.searchWordClient) private var searchWordClient
@@ -75,7 +75,7 @@ struct CafeSearchCore: ReducerProtocol {
           let (places, waypoints) = try await (fetchPlaces, fetchWaypoints)
           switch needToRetryFetchResponse {
           case true:
-            await send(.checkFetchPlaceResponse(places, waypoints, searchText))
+            await send(.retryFetchPlacesAndWaypointsResponse(places, waypoints, searchText: searchText))
           case false:
             await send(.fetchPlacesAndWaypointsResponse(places, waypoints))
           }
@@ -83,7 +83,7 @@ struct CafeSearchCore: ReducerProtocol {
           debugPrint(error)
         }
 
-      case .checkFetchPlaceResponse(let places, let waypoints, let searchText):
+      case .retryFetchPlacesAndWaypointsResponse(let places, let waypoints, let searchText):
         state.needToRetryFetchResponse = false
         if waypoints.isNotEmpty && places.cafes.isEmpty {
           guard let waypoint = waypoints.first
