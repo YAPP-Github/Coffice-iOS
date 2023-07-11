@@ -107,7 +107,7 @@ struct CafeMapCore: ReducerProtocol {
     case cleardMarkers
     case refreshButtonTapped
     case updateCameraUpdateReason(NaverMapCameraUpdateReason)
-    case cameraPositionMoved(CLLocationCoordinate2D)
+    case cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D)
 
     // MARK: Search
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)

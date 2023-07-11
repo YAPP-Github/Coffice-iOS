@@ -43,16 +43,15 @@ struct CafeSearchCore: ReducerProtocol {
     case onAppear
     case submitText
     case clearText
-    case requestSearchPlace(String)
+    case requestSearchPlace(searchText: String)
     case deleteRecentSearchWord(Int)
     case binding(BindingAction<State>)
-    case tappedRecentSearchWord(String)
-    case fetchWaypoints(String)
+    case tappedRecentSearchWord(recentWord: String)
     case requestSearchPlacesByWaypoint(waypoint: WayPoint)
     case placeCellTapped
     case waypointCellTapped
     case fetchRecentSearchWords
-    case fetchPlacesAndWaypoints(String)
+    case fetchPlacesAndWaypoints(searchText: String)
     case recentSearchWordsResponse(TaskResult<[RecentSearchWord]>)
     case fetchPlacesAndWaypointsResponse(CafeSearchResponse, [WayPoint])
     case checkTimingFetchPlaceResponse(CafeSearchResponse, [WayPoint], String)
@@ -88,7 +87,7 @@ struct CafeSearchCore: ReducerProtocol {
         state.isSubmitfasterThanDebounce = false
         if waypoints.isNotEmpty && places.cafes.isEmpty {
           guard let waypoint = waypoints.first
-          else { return .send(.requestSearchPlace(searchText)) }
+          else { return .send(.requestSearchPlace(searchText: searchText)) }
           return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
         } else if waypoints.isNotEmpty && places.cafes.isNotEmpty {
           for waypoint in waypoints {
@@ -98,7 +97,7 @@ struct CafeSearchCore: ReducerProtocol {
             }
           }
         }
-        return .send(.requestSearchPlace(searchText))
+        return .send(.requestSearchPlace(searchText: searchText))
 
       case .fetchPlacesAndWaypointsResponse(let places, let waypoints):
         state.places = places.cafes
@@ -111,7 +110,7 @@ struct CafeSearchCore: ReducerProtocol {
         return .none
 
       case .tappedRecentSearchWord(let recentWord):
-        return .send(.requestSearchPlace(recentWord))
+        return .send(.requestSearchPlace(searchText: recentWord))
 
       case .binding(\.$searchText):
         if state.searchText.isEmpty {
@@ -121,7 +120,7 @@ struct CafeSearchCore: ReducerProtocol {
         }
         state.places = []
         state.waypoints = []
-        return EffectTask(value: .fetchPlacesAndWaypoints(state.searchText))
+        return EffectTask(value: .fetchPlacesAndWaypoints(searchText: state.searchText))
           .debounce(id: DebouncingCancelId(), for: 0.2, scheduler: DispatchQueue.main)
           .eraseToEffect()
 
@@ -164,7 +163,7 @@ struct CafeSearchCore: ReducerProtocol {
         if state.searchText.isEmpty { return .none }
         if state.waypoints.isNotEmpty && state.places.isEmpty {
           guard let waypoint = state.waypoints.first
-          else { return .send(.requestSearchPlace(state.searchText)) }
+          else { return .send(.requestSearchPlace(searchText: state.searchText)) }
           return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
         } else if state.waypoints.isNotEmpty && state.places.isNotEmpty {
           for waypoint in state.waypoints {
@@ -173,10 +172,10 @@ struct CafeSearchCore: ReducerProtocol {
               return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
             }
           }
-          return .send(.requestSearchPlace(state.searchText))
+          return .send(.requestSearchPlace(searchText: state.searchText))
         } else {
           state.isSubmitfasterThanDebounce = true
-          return .send(.fetchPlacesAndWaypoints(state.searchText))
+          return .send(.fetchPlacesAndWaypoints(searchText: state.searchText))
         }
 
       case .dismiss:

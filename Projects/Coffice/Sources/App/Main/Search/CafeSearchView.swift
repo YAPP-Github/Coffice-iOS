@@ -153,7 +153,7 @@ extension CafeSearchView {
           VStack(spacing: 0) {
             ForEach(viewStore.recentSearchWordList, id: \.searchWordId) { searchWord in
               listCell(searchWord.text, searchWord.searchWordId)
-                .onTapGesture { viewStore.send(.tappedRecentSearchWord(searchWord.text)) }
+                .onTapGesture { viewStore.send(.tappedRecentSearchWord(recentWord: searchWord.text)) }
             }
           }
         }
