@@ -107,10 +107,9 @@ extension CafeSearchDetailMenuView {
   }
 
   private var mapInfoView: some View {
-    WithViewStore(store) { _ in
-      // TODO: 지도 뷰 추가 필요
-      Color.black
-        .frame(height: 126)
+    WithViewStore(store) { viewStore in
+      CafeDetailNaverMapView(viewStore: viewStore)
+        .frame(height: 123)
     }
   }
 

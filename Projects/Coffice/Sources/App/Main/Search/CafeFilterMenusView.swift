@@ -67,7 +67,8 @@ struct CafeFilterMenusView: View {
           }
           .padding(.horizontal, 20)
         }
-        .frame(width: 355, height: 36)
+        .frame(maxWidth: .infinity)
+        .frame(height: 36)
         .padding(.bottom, 16)
       }
       .onAppear {
