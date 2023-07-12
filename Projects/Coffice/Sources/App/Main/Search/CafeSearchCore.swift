@@ -43,18 +43,24 @@ struct CafeSearchCore: ReducerProtocol {
     case onAppear
     case submitText
     case clearText
-    case requestSearchPlace(searchText: String)
     case deleteRecentSearchWord(recentWordId: Int)
     case binding(BindingAction<State>)
     case recentSearchWordCellTapped(recentWord: String)
-    case requestSearchPlacesByWaypoint(waypoint: WayPoint)
+
     case placeCellTapped
     case waypointCellTapped
+
+    case searchPlacesByWaypoint(waypoint: WayPoint)
+    case searchPlacesByRequestValue(searchText: String)
     case fetchRecentSearchWords
     case fetchPlacesAndWaypoints(searchText: String)
     case recentSearchWordsResponse(TaskResult<[RecentSearchWord]>)
     case fetchPlacesAndWaypointsResponse(CafeSearchResponse, [WayPoint])
     case retryFetchPlacesAndWaypointsResponse(CafeSearchResponse, [WayPoint], searchText: String)
+  }
+
+  func isSearchTextEqualToWaypoint(_ searchText: String, _ waypointName: String) -> Bool {
+    return (searchText == waypointName || "\(searchText)역" == waypointName) ? true : false
   }
 
   @Dependency(\.searchWordClient) private var searchWordClient
@@ -68,15 +74,12 @@ struct CafeSearchCore: ReducerProtocol {
         if searchText.isEmpty { return .none }
         let needToRetryFetchResponse = state.needToRetryFetchResponse
         return .run { send in
-          async let fetchPlaces = try placeAPIClient.fetchPlaces(
-            requestValue: PlaceRequestValue(name: searchText, page: 0, size: 10, sort: .ascending)
-          )
+          async let fetchPlaces = try placeAPIClient.searchPlaces(by: searchText)
           async let fetchWaypoints = try placeAPIClient.fetchWaypoints(name: searchText)
           let (places, waypoints) = try await (fetchPlaces, fetchWaypoints)
-          switch needToRetryFetchResponse {
-          case true:
+          if needToRetryFetchResponse {
             await send(.retryFetchPlacesAndWaypointsResponse(places, waypoints, searchText: searchText))
-          case false:
+          } else {
             await send(.fetchPlacesAndWaypointsResponse(places, waypoints))
           }
         } catch: { error, send in
@@ -87,18 +90,16 @@ struct CafeSearchCore: ReducerProtocol {
         state.needToRetryFetchResponse = false
         if waypoints.isNotEmpty && places.cafes.isEmpty {
           guard let waypoint = waypoints.first
-          else { return .send(.requestSearchPlace(searchText: searchText)) }
-          return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
+          else { return .send(.searchPlacesByRequestValue(searchText: searchText)) }
+          return .send(.searchPlacesByWaypoint(waypoint: waypoint))
         } else if waypoints.isNotEmpty && places.cafes.isNotEmpty {
           for waypoint in waypoints {
-            let isSearchTextEqualToWaypoint = state.searchText == waypoint.name
-            || "\(state.searchText)역" == waypoint.name
-            if isSearchTextEqualToWaypoint {
-              return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
+            if isSearchTextEqualToWaypoint(state.searchText, waypoint.name) {
+              return .send(.searchPlacesByWaypoint(waypoint: waypoint))
             }
           }
         }
-        return .send(.requestSearchPlace(searchText: searchText))
+        return .send(.searchPlacesByRequestValue(searchText: searchText))
 
       case .fetchPlacesAndWaypointsResponse(let places, let waypoints):
         state.places = places.cafes
@@ -111,7 +112,7 @@ struct CafeSearchCore: ReducerProtocol {
         return .none
 
       case .recentSearchWordCellTapped(let recentWord):
-        return .send(.requestSearchPlace(searchText: recentWord))
+        return .send(.searchPlacesByRequestValue(searchText: recentWord))
 
       case .binding(\.$searchText):
         if state.searchText.isEmpty {
@@ -164,17 +165,15 @@ struct CafeSearchCore: ReducerProtocol {
         if state.searchText.isEmpty { return .none }
         if state.waypoints.isNotEmpty && state.places.isEmpty {
           guard let waypoint = state.waypoints.first
-          else { return .send(.requestSearchPlace(searchText: state.searchText)) }
-          return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
+          else { return .send(.searchPlacesByRequestValue(searchText: state.searchText)) }
+          return .send(.searchPlacesByWaypoint(waypoint: waypoint))
         } else if state.waypoints.isNotEmpty && state.places.isNotEmpty {
           for waypoint in state.waypoints {
-            let isSearchTextEqualToWaypoint = state.searchText == waypoint.name
-            || "\(state.searchText)역" == waypoint.name
-            if isSearchTextEqualToWaypoint {
-              return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
+            if isSearchTextEqualToWaypoint(state.searchText, waypoint.name) {
+              return .send(.searchPlacesByWaypoint(waypoint: waypoint))
             }
           }
-          return .send(.requestSearchPlace(searchText: state.searchText))
+          return .send(.searchPlacesByRequestValue(searchText: state.searchText))
         } else {
           state.needToRetryFetchResponse = true
           return .send(.fetchPlacesAndWaypoints(searchText: state.searchText))
