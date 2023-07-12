@@ -144,12 +144,7 @@ extension CafeMapView {
           }
         }
       }
-      .padding(
-        .bottom,
-        viewStore.selectedCafe == nil
-        ? TabBarSizePreferenceKey.defaultValue.height + 24
-        : 24
-      )
+      .padding(.bottom, 24)
     }
   }
 

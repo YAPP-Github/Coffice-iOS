@@ -29,10 +29,6 @@ struct CafeSearchDetailView: View {
             CafeSearchDetailSubInfoView(store: store)
             CafeSearchDetailMenuView(store: store)
           }
-          .padding(
-            .bottom,
-            (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
-          )
         }
       }
       .navigationBarHidden(true)
