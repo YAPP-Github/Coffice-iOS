@@ -56,6 +56,7 @@ struct CafeMapView: View {
             if viewStore.selectedCafe != nil {
               CafeCardView(store: store)
                 .frame(width: geometry.size.width)
+                .onTapGesture { viewStore.send(.cardViewTapped) }
             }
           }
           .frame(

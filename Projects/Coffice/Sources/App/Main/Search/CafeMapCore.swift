@@ -102,6 +102,7 @@ struct CafeMapCore: ReducerProtocol {
     case updateCafeFilter(information: CafeFilterInformation)
     case filterBottomSheetDismissed
     case onDisappear
+    case cardViewTapped
   }
 
   // MARK: - Dependencies
@@ -394,7 +395,6 @@ struct CafeMapCore: ReducerProtocol {
 
       case .onDisappear:
         // TODO: MapView쪽 리셋 작업 필요
-        state.selectedCafe = nil
         return .none
 
       case .updateCafeFilter(let information):
@@ -412,6 +412,10 @@ struct CafeMapCore: ReducerProtocol {
           value: .cafeFilterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
         )
 
+      case .cardViewTapped:
+        guard let cafe = state.selectedCafe
+        else { return .none }
+        return EffectTask(value: .pushToSearchDetailForTest(cafeId: cafe.placeId))
       default:
         return .none
       }
