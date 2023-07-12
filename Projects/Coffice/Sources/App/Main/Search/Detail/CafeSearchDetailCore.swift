@@ -27,6 +27,10 @@ struct CafeSearchDetail: ReducerProtocol {
       .map(SubPrimaryInfoViewState.init)
     var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = SubSecondaryInfoType.allCases
       .map(SubSecondaryInfoViewState.init)
+    var userReviewCellViewStates: [UserReviewCellViewState] = []
+    var userReviewHeaderTitle: String {
+      return "리뷰 \(userReviewCellViewStates.count)"
+    }
 
     var selectedSubMenuType: SubMenuType = .detailInfo {
       didSet {
@@ -117,6 +121,20 @@ struct CafeSearchDetail: ReducerProtocol {
 // MARK: - Sub Views State
 
 extension CafeSearchDetail.State {
+  struct UserReviewCellViewState: Equatable, Identifiable {
+    let id = UUID()
+    let userName: String
+    let date: Date
+    let content: String
+    let tagTypes: [ReviewTagType]
+
+    var dateDescription: String {
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = "M.dd E"
+      return dateFormatter.string(from: date)
+    }
+  }
+
   enum SubMenuType: CaseIterable {
     case detailInfo
     case review
