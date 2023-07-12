@@ -18,31 +18,6 @@ extension CLLocationCoordinate2D: Equatable {
 }
 
 struct CafeMapCore: ReducerProtocol {
-  enum ResetState {
-    case searchResultIsEmpty
-    case dismissSearchResultView
-  }
-
-  enum ViewType {
-    case mainMapView
-    case searchView
-    case searchResultView
-  }
-
-  enum BottomFloatingButton: CaseIterable {
-    case bookmarkButton
-    case currentLocationButton
-
-    var image: Image {
-      switch self {
-      case .bookmarkButton:
-        return CofficeAsset.Asset.bookmarkFill36px.swiftUIImage
-      case .currentLocationButton:
-        return CofficeAsset.Asset.navigationFill36px.swiftUIImage
-      }
-    }
-  }
-
   // MARK: - State
   struct State: Equatable {
     // MARK: CardViewUI
@@ -218,13 +193,21 @@ struct CafeMapCore: ReducerProtocol {
         else { return .none }
         let pageSize = state.cafeSearchListState.pageSize
         let searchText = state.cafeSearchState.searchTextSnapshot
+        let isOpened = state.cafeFilterInformation.isOpened
+        let cafeSearchFilters = state.cafeFilterInformation.cafeSearchFilters
+        let hasCommunalTable = state.cafeFilterInformation.hasCommunalTable
         return .run { send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
-              searchText: searchText, userLatitude: cameraPosition.latitude,
-              userLongitude: cameraPosition.longitude, maximumSearchDistance: 2000,
-              isOpened: nil, hasCommunalTable: nil, filters: nil,
-              pageSize: pageSize, pageableKey: PageableKey(lastCafeDistance: lastDistance)
+              searchText: searchText,
+              userLatitude: cameraPosition.latitude,
+              userLongitude: cameraPosition.longitude,
+              maximumSearchDistance: 2000,
+              isOpened: isOpened,
+              hasCommunalTable: hasCommunalTable,
+              filters: cafeSearchFilters,
+              pageSize: pageSize,
+              pageableKey: PageableKey(lastCafeDistance: lastDistance)
             )
             let cafeSearchResponse = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
             return cafeSearchResponse
@@ -252,13 +235,22 @@ struct CafeMapCore: ReducerProtocol {
 
       case .updateCafeMarkers:
         state.isUpdatingMarkers = true
+        let isOpened = state.cafeFilterInformation.isOpened
+        let cafeSearchFilters = state.cafeFilterInformation.cafeSearchFilters
+        let hasCommunalTable = state.cafeFilterInformation.hasCommunalTable
         return .run { send in
           let result = await TaskResult {
             // TODO: Sample Value를 실제 요청값으로 바꾸기
             let cafeRequest = SearchPlaceRequestValue(
-              searchText: "", userLatitude: 37.498768, userLongitude: 127.0277985,
-              maximumSearchDistance: 1000000, isOpened: nil, hasCommunalTable: nil,
-              filters: nil, pageSize: 1000, pageableKey: nil
+              searchText: "",
+              userLatitude: 37.498768,
+              userLongitude: 127.0277985,
+              maximumSearchDistance: 1000000,
+              isOpened: isOpened,
+              hasCommunalTable: hasCommunalTable,
+              filters: cafeSearchFilters,
+              pageSize: 1000,
+              pageableKey: nil
             )
 
             let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
@@ -422,6 +414,33 @@ struct CafeMapCore: ReducerProtocol {
 
       default:
         return .none
+      }
+    }
+  }
+}
+
+extension CafeMapCore {
+  enum ResetState {
+    case searchResultIsEmpty
+    case dismissSearchResultView
+  }
+
+  enum ViewType {
+    case mainMapView
+    case searchView
+    case searchResultView
+  }
+
+  enum BottomFloatingButton: CaseIterable {
+    case bookmarkButton
+    case currentLocationButton
+
+    var image: Image {
+      switch self {
+      case .bookmarkButton:
+        return CofficeAsset.Asset.bookmarkFill36px.swiftUIImage
+      case .currentLocationButton:
+        return CofficeAsset.Asset.navigationFill36px.swiftUIImage
       }
     }
   }
