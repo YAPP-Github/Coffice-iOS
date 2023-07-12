@@ -207,6 +207,7 @@ extension CafeSearchDetail.State {
       guard let date else { return "-" }
 
       let dateFormatter = DateFormatter()
+      dateFormatter.locale = Locale(identifier: "ko_KR")
       dateFormatter.dateFormat = "M.dd E"
       return dateFormatter.string(from: date)
     }

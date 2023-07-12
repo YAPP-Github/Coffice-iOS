@@ -66,6 +66,7 @@ struct ReviewResponse: Equatable {
 
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS+09:00"
+    dateFormatter.locale = Locale(identifier: "ko_KR")
     createdDate = dateFormatter.date(from: createdAt)
     updatedDate = dateFormatter.date(from: updatedAt)
   }
