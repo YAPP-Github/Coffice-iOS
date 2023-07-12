@@ -31,8 +31,7 @@ struct CafeSearchDetailView: View {
           }
           .padding(
             .bottom,
-            TabBarSizePreferenceKey.defaultValue.height
-            + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
+            (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
           )
         }
       }
