@@ -10,23 +10,6 @@ import Dependencies
 import Foundation
 import Network
 
-struct GetReviewsRequestValue {
-  let placeId: Int
-  let pageSize: Int
-  let lastSeenReviewId: Int?
-
-  init(placeId: Int, pageSize: Int = 10, lastSeenReviewId: Int? = nil) {
-    self.placeId = placeId
-    self.pageSize = pageSize
-    self.lastSeenReviewId = lastSeenReviewId
-  }
-}
-
-public struct GetReviewsRequestDTO: Encodable {
-  public let pageSize: Int
-  public let lastSeenReviewId: Int?
-}
-
 struct ReviewAPIClient: DependencyKey {
   static var liveValue: ReviewAPIClient = .liveValue
 
