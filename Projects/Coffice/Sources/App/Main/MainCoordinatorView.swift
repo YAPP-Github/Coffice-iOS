@@ -49,6 +49,7 @@ struct MainCoordinatorView: View {
           }
           .tag(TabBar.State.TabBarItemType.myPage)
         }
+        .padding(.bottom, 16)
         .overlay(alignment: .bottom) {
           if viewStore.shouldShowTabBarView {
             TabBarView(
