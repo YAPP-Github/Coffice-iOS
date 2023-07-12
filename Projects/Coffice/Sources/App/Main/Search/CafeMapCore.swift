@@ -422,7 +422,7 @@ struct CafeMapCore: ReducerProtocol {
 
       case .cardViewTapped:
         guard let cafe = state.selectedCafe
-        else { return .none}
+        else { return .none }
         return EffectTask(value: .pushToSearchDetailForTest(cafeId: cafe.placeId))
       default:
         return .none
