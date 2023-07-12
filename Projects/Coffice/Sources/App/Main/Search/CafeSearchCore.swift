@@ -168,8 +168,9 @@ struct CafeSearchCore: ReducerProtocol {
           return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
         } else if state.waypoints.isNotEmpty && state.places.isNotEmpty {
           for waypoint in state.waypoints {
-            if state.searchText == waypoint.name ||
-                state.searchText + waypoint.name.suffix(1) == waypoint.name {
+            let isSearchTextEqualToWaypoint = state.searchText == waypoint.name
+            || "\(state.searchText)역" == waypoint.name
+            if isSearchTextEqualToWaypoint {
               return .send(.requestSearchPlacesByWaypoint(waypoint: waypoint))
             }
           }
