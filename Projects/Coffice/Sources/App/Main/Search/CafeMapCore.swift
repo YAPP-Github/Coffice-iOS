@@ -167,7 +167,7 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
         // MARK: Sub-Core Actions
-      case .cafeSearchAction(.requestSearchPlacesByWaypoint(let waypoint)):
+      case .cafeSearchAction(.searchPlacesByWaypoint(let waypoint)):
         state.cafeSearchListState.title = waypoint.name
         state.currentCameraPosition = CLLocationCoordinate2D(
           latitude: waypoint.latitude, longitude: waypoint.longitude
@@ -181,7 +181,7 @@ struct CafeMapCore: ReducerProtocol {
               maximumSearchDistance: 2000, isOpened: nil, hasCommunalTable: nil,
               filters: nil, pageSize: 10, pageableKey: nil
             )
-            let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
+            let cafeListData = try await placeAPIClient.searchPlaces(by: cafeRequest)
             return cafeListData
           }
           await send(.requestWaypointSearchPlaceResponse(result))
@@ -207,7 +207,7 @@ struct CafeMapCore: ReducerProtocol {
       case .cafeSearchListAction(.dismiss):
         return .send(.resetResult(.dismissSearchResultView))
 
-      case .cafeSearchAction(.requestSearchPlace(let searchText)):
+      case .cafeSearchAction(.searchPlacesByRequestValue(let searchText)):
         let title = searchText
         let cameraPosition = state.currentCameraPosition
         state.cafeSearchState.searchTextSnapshot = searchText
@@ -219,7 +219,7 @@ struct CafeMapCore: ReducerProtocol {
               userLongitude: cameraPosition.longitude, maximumSearchDistance: 2000,
               isOpened: nil, hasCommunalTable: nil, filters: nil, pageSize: 10, pageableKey: nil
             )
-            let cafeSearchResponose = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
+            let cafeSearchResponose = try await placeAPIClient.searchPlaces(by: cafeRequest)
             return cafeSearchResponose
           }
           await send(.requestSearchPlaceResponse(result, title))
@@ -238,7 +238,7 @@ struct CafeMapCore: ReducerProtocol {
               isOpened: nil, hasCommunalTable: nil, filters: nil,
               pageSize: pageSize, pageableKey: PageableKey(lastCafeDistance: lastDistance)
             )
-            let cafeSearchResponse = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
+            let cafeSearchResponse = try await placeAPIClient.searchPlaces(by: cafeRequest)
             return cafeSearchResponse
           }
           await send(.infiniteScrollSearchPlaceResponse(result))
@@ -273,7 +273,7 @@ struct CafeMapCore: ReducerProtocol {
               filters: nil, pageSize: 1000, pageableKey: nil
             )
 
-            let cafeListData = try await placeAPIClient.searchPlaces(requestValue: cafeRequest)
+            let cafeListData = try await placeAPIClient.searchPlaces(by: cafeRequest)
             return cafeListData.cafes
           }
           await send(.cafeListResponse(result))
