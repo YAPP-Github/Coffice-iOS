@@ -74,6 +74,7 @@ struct CafeSearchDetail: ReducerProtocol {
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
+  @Dependency(\.reviewAPIClient) private var reviewAPIClient
 
   var body: some ReducerProtocolOf<CafeSearchDetail> {
     Reduce { state, action in

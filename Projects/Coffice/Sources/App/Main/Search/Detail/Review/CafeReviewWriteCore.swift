@@ -79,7 +79,7 @@ struct CafeReviewWrite: ReducerProtocol {
     case postReview
   }
 
-  @Dependency(\.reviewClient) private var reviewClient
+  @Dependency(\.reviewAPIClient) private var reviewClient
 
   var body: some ReducerProtocolOf<CafeReviewWrite> {
     BindingReducer()
