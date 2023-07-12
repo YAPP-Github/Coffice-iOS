@@ -253,7 +253,7 @@ extension CafeSearchDetailMenuView {
         Spacer()
 
         Button {
-          viewStore.send(.presentCafeReviewWriteView)
+          viewStore.send(.reviewWriteButtonTapped)
         } label: {
           HStack(spacing: 5) {
             Text("리뷰 쓰기")

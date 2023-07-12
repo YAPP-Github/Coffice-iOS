@@ -9,14 +9,10 @@
 import Foundation
 
 public struct GetReviewResponseDTO: Decodable {
-  public let data: [Datum]
-
-  public struct Datum: Decodable {
-    public let reviewId: Int
-    public let member: Member
-    public let electricOutletLevel, wifiLevel, noiseLevel, content: String
-    public let createdAt, updatedAt: String
-  }
+  public let reviewId: Int
+  public let member: Member
+  public let electricOutletLevel, wifiLevel, noiseLevel, content: String
+  public let createdAt, updatedAt: String
 
   public struct Member: Decodable {
     public let memberId: Int

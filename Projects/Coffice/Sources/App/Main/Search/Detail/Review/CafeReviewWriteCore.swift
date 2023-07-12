@@ -19,9 +19,10 @@ struct CafeReviewWrite: ReducerProtocol {
   typealias WifiStateOption = ReviewOption.WifiOption
   typealias NoiseOption = ReviewOption.NoiseOption
 
-  struct State: Equatable {
+  struct State: Equatable, Identifiable {
     static let mock: Self = .init(reviewType: .create, placeId: 1)
 
+    let id = UUID()
     var optionButtonStates: [CafeReviewOptionButtons.State]
     var reviewType: ReviewType
     let placeId: Int
@@ -77,6 +78,7 @@ struct CafeReviewWrite: ReducerProtocol {
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
     case saveButtonTapped
     case postReview
+    case postReviewResponse(TaskResult<HTTPURLResponse>)
   }
 
   @Dependency(\.reviewAPIClient) private var reviewClient
@@ -139,11 +141,20 @@ struct CafeReviewWrite: ReducerProtocol {
         )
 
         return .run { send in
-          try await reviewClient.postReview(requestValue: requestValue)
-          await send(.dismissView)
+          let response = try await reviewClient.postReview(requestValue: requestValue)
+          await send(.postReviewResponse(.success(response)))
         } catch: { error, send in
+          await send(.postReviewResponse(.failure(error)))
+        }
+
+      case .postReviewResponse(let result):
+        switch result {
+        case .success:
+          return EffectTask(value: .dismissView)
+        case .failure(let error):
           debugPrint(error.localizedDescription)
         }
+        return .none
 
       default:
         return .none

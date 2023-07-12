@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ReviewResponse {
+struct ReviewResponse: Equatable {
   let reviewId: Int
   let memberId: Int
   let memberName: String
