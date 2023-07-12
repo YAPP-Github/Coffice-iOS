@@ -2,6 +2,7 @@
 # Default Rules에서 비활성화할 규칙
 disabled_rules:
 - unused_closure_parameter
+- type_body_length
 
 # Default Rules에 없지만 활성화하고 싶은 규칙
 opt_in_rules:

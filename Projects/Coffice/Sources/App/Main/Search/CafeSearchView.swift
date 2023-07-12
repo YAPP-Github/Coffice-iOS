@@ -98,13 +98,19 @@ extension CafeSearchView {
 
   var searchResultListView: some View {
     WithViewStore(store) { viewStore in
-      VStack {
         ScrollView {
-          ForEach(viewStore.cafeList, id: \.self) { _ in
-            Text("")
+          VStack(spacing: 0) {
+            ForEach(viewStore.waypoints, id: \.self) { waypoint in
+              WaypointCellView(waypoint: waypoint)
+                .onTapGesture { }
+            }
+            ForEach(viewStore.places, id: \.self) { place in
+              PlaceCellView(place: place)
+                .onTapGesture { }
+            }
           }
+          .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
         }
-      }
     }
   }
 
@@ -147,7 +153,7 @@ extension CafeSearchView {
           VStack(spacing: 0) {
             ForEach(viewStore.recentSearchWordList, id: \.searchWordId) { searchWord in
               listCell(searchWord.text, searchWord.searchWordId)
-                .onTapGesture { viewStore.send(.tappedRecentSearchWord(searchWord.text)) }
+                .onTapGesture { viewStore.send(.recentSearchWordCellTapped(recentWord: searchWord.text)) }
             }
           }
         }
@@ -173,7 +179,7 @@ extension CafeSearchView {
         .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 16))
         Spacer()
         Button {
-          viewStore.send(.deleteRecentSearchWord(id))
+          viewStore.send(.deleteRecentSearchWord(recentWordId: id))
         } label: {
           CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
             .renderingMode(.template)

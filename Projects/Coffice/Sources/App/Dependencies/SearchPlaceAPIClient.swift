@@ -13,7 +13,7 @@ import Network
 struct SearchPlaceAPIClient: DependencyKey {
   static var liveValue: SearchPlaceAPIClient = .liveValue
 
-  func searchPlaces(requestValue: SearchPlaceRequestValue) async throws -> CafeSearchResponse {
+  func searchPlaces(by requestValue: SearchPlaceRequestValue) async throws -> CafeSearchResponse {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places/search"
@@ -38,14 +38,14 @@ struct SearchPlaceAPIClient: DependencyKey {
     return cafeSearchResponse
   }
 
-  func fetchPlaces(requestValue: PlaceRequestValue) async throws -> CafeSearchResponse {
+  func searchPlaces(by text: String) async throws -> CafeSearchResponse {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places"
     urlComponents?.queryItems = [
-      .init(name: "name", value: requestValue.name),
-      .init(name: "page", value: String(requestValue.page)),
-      .init(name: "sort", value: requestValue.sort.name)
+      .init(name: "name", value: text),
+      .init(name: "page", value: String(0)),
+      .init(name: "sort", value: SortDescriptor.ascending.name)
     ]
     guard let request = urlComponents?.toURLRequest(method: .get)
     else { throw CoreNetworkError.requestConvertFailed }

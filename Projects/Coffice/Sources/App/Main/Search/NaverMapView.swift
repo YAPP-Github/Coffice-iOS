@@ -62,7 +62,7 @@ extension NaverMapView: UIViewRepresentable {
   }
 
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if viewStore.isMovingToCurrentPosition {
+    if viewStore.isUpdatingCameraPosition {
       let nmgLocation = NMGLatLng(
         lat: viewStore.currentCameraPosition.latitude,
         lng: viewStore.currentCameraPosition.longitude
@@ -82,8 +82,8 @@ extension NaverMapView: UIViewRepresentable {
     }
 
     if viewStore.shouldUpdateMarkers
-        && NaverMapView.storage.cafes != viewStore.cafeMarkerList {
-      NaverMapView.storage.cafes = viewStore.cafeMarkerList
+        && NaverMapView.storage.cafes != viewStore.cafes {
+      NaverMapView.storage.cafes = viewStore.cafes
       DispatchQueue.main.async {
         addMarker(
           naverMapView: uiView,
@@ -155,7 +155,6 @@ extension NaverMapView {
 
   func moveCameraTo(naverMapView: NMFNaverMapView, location: CLLocationCoordinate2D, zoomLevel: Double? = nil) {
     let nmgLocation = NMGLatLng(lat: location.latitude, lng: location.longitude)
-
     if let zoomLevel {
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
       naverMapView.mapView.moveCamera(cameraUpdate)
@@ -193,8 +192,14 @@ extension Coordinator: NMFMapViewCameraDelegate {
   }
 
   func mapViewCameraIdle(_ mapView: NMFMapView) {
+    let latitude = mapView.cameraPosition.target.lat
+    let longitude = mapView.cameraPosition.target.lng
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.cameraPositionMoved)
+      self?.target.viewStore.send(
+        .cameraPositionMoved(newCameraPosition:
+          CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        )
+      )
     }
   }
 }
