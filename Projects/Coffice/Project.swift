@@ -31,6 +31,9 @@ let project = Project.app(
         "CFBundleTypeRole": "Editor",
         "CFBundleURLSchemes": ["kakao$(KAKAO_NATIVE_APP_KEY)"]
       ]
+    ],
+    "NSAppTransportSecurity": [
+      "NSAllowsArbitraryLoads": true
     ]
   ],
   dependencies: [
