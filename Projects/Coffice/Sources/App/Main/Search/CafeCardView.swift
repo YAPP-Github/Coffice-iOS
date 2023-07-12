@@ -89,7 +89,7 @@ struct CafeCardView: View {
         Rectangle()
           .foregroundColor(.white)
           .cornerRadius(12, corners: [.topLeft, .topRight])
-          .shadow(color: .gray, radius: 1, x: 1, y: 1)
+          .shadow(color: .black.opacity(0.16), radius: 5, x: 0, y: 0)
       }
     }
   }
