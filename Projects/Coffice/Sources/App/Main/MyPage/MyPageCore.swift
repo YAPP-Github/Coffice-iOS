@@ -12,6 +12,7 @@ import SwiftUI
 
 struct MyPage: ReducerProtocol {
   struct State: Equatable {
+    @BindingState var contactEmailViewState: ContactEmailViewState?
     var user: User?
     var menuItems: [MenuItem] = MenuType.allCases.map(MenuItem.init)
     var versionNumber: String {
@@ -26,6 +27,7 @@ struct MyPage: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
     case bottomSheet(BottomSheetReducer.Action)
+    case contactEmailView(isPresented: Bool)
     case onAppear
     case menuButtonTapped(MenuItem)
     case editProfileButtonTapped(nickname: String)
@@ -71,6 +73,9 @@ struct MyPage: ReducerProtocol {
           case .memberLeave:
             await send(.memberLeaveButtonTapped)
 
+          case .contact:
+            await send(.contactEmailView(isPresented: true))
+
           default:
             break
           }
@@ -99,6 +104,22 @@ struct MyPage: ReducerProtocol {
 
       case .bottomSheet(.cancelButtonTapped):
         state.shouldShowBottomSheet = false
+        return .none
+
+      case .contactEmailView(let isPresented):
+        if isPresented {
+          state.contactEmailViewState = .init(
+            toAddress: "yapp.22nd.ios.1st@gmail.com",
+            subject: "[Coffice] Feedback",
+            messageHeader: """
+            ✓ 이슈나 제안사항을 아래에 작성해주세요.
+            도움주셔서 감사합니다. 🤗
+            (Please describe your issue or feedback below.)
+            """
+          )
+        } else {
+          state.contactEmailViewState = nil
+        }
         return .none
 
       default:
