@@ -68,7 +68,7 @@ struct NaverMapCore: ReducerProtocol {
     case moveCameraToUserPosition
 
     case removeAllMarkers
-    case appednMarker(marker: MapMarker)
+    case appendMarker(marker: MapMarker)
 
     // MARK: Event Completed
     case cameraMovedToUserPosition
@@ -188,7 +188,7 @@ struct NaverMapCore: ReducerProtocol {
         state.selectedCafe = nil
         return .none
 
-      case .appednMarker(let marker):
+      case .appendMarker(let marker):
         state.markers.append(marker)
         return .none
 

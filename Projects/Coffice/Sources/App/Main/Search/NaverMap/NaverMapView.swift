@@ -142,7 +142,7 @@ extension NaverMapView {
       marker.captionRequestedWidth = 90
 
       marker.mapView = naverMapView.mapView
-      viewStore.send(.naverMapAction(.appednMarker(marker: marker)))
+      viewStore.send(.naverMapAction(.appendMarker(marker: marker)))
     }
     DispatchQueue.main.async {
       viewStore.send(.naverMapAction(.markersUpdated))
