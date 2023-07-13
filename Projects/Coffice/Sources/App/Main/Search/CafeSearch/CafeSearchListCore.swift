@@ -34,6 +34,7 @@ struct CafeSearchListCore: ReducerProtocol {
   }
 
   enum Action: Equatable {
+    case updateCafeSearchListState(title: String, cafeList: [Cafe])
     case updateViewType(ViewType)
     case onAppear
     case scrollAndRequestSearchPlace(Double)
@@ -62,6 +63,11 @@ struct CafeSearchListCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .updateCafeSearchListState(let title, let cafeList):
+        state.title = title
+        state.cafeList = cafeList
+        return .none
+
       case .cafeSearchListCellTapped(let cafe):
         state.viewType = .mapView
         return .send(.focusSelectedCafe(selectedCafe: cafe))
