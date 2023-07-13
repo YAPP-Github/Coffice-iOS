@@ -245,7 +245,7 @@ extension CafeSearchDetailMenuView {
   private var reviewHeaderView: some View {
     WithViewStore(store) { viewStore in
       HStack {
-        Text("리뷰 10")
+        Text(viewStore.userReviewHeaderTitle)
           .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
           .applyCofficeFont(font: .header3)
           .frame(height: 52)
@@ -253,7 +253,7 @@ extension CafeSearchDetailMenuView {
         Spacer()
 
         Button {
-          viewStore.send(.presentCafeReviewWriteView)
+          viewStore.send(.reviewWriteButtonTapped)
         } label: {
           HStack(spacing: 5) {
             Text("리뷰 쓰기")
@@ -278,93 +278,87 @@ extension CafeSearchDetailMenuView {
 
   private var userReviewListView: some View {
     WithViewStore(store) { _ in
-      LazyVStack(spacing: 0) {
-        // TODO: 실제 리뷰 데이터 표출 필요
-        ForEach(0..<10) { _ in
-          userReviewCell
-        }
-      }
+      userReviewsView
     }
   }
 
-  private var userReviewCell: some View {
-    WithViewStore(store) { _ in
-      VStack(alignment: .leading, spacing: 0) {
-        VStack(spacing: 0) {
-          HStack {
-            VStack {
-              CofficeAsset.Asset.userProfile40px.swiftUIImage
-              Spacer()
-            }
+  private var userReviewsView: some View {
+    WithViewStore(store) { viewStore in
+      LazyVStack(spacing: 0) {
+        ForEach(viewStore.userReviewCellViewStates) { viewState in
+          VStack(alignment: .leading, spacing: 0) {
+            VStack(spacing: 0) {
+              HStack {
+                VStack {
+                  CofficeAsset.Asset.userProfile40px.swiftUIImage
+                  Spacer()
+                }
 
-            VStack(spacing: 4) {
-              Text("수민")
-                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-                .applyCofficeFont(font: .subtitleSemiBold)
-                .frame(maxWidth: .infinity, alignment: .leading)
-              Text("5.24 토")
-                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                .applyCofficeFont(font: .body2Medium)
-                .frame(maxWidth: .infinity, alignment: .leading)
-              Spacer()
-            }
-
-            Spacer()
-
-            VStack {
-              Button {
-                // TODO: 수정/삭제 & 신고하기 이벤트 구현 필요
-              } label: {
-                if Int.random(in: 0...1) == 0 {
-                  CofficeAsset.Asset.more2Fill24px.swiftUIImage
-                } else {
-                  Text("수정/삭제")
+                VStack(spacing: 4) {
+                  Text(viewState.userName)
+                    .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                    .applyCofficeFont(font: .subtitleSemiBold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                  Text(viewState.dateDescription)
                     .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                     .applyCofficeFont(font: .body2Medium)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                  Spacer()
+                }
+
+                Spacer()
+
+                VStack {
+                  Button {
+                    // TODO: 수정/삭제 & 신고하기 이벤트 구현 필요
+                  } label: {
+                    if Int.random(in: 0...1) == 0 {
+                      CofficeAsset.Asset.more2Fill24px.swiftUIImage
+                    } else {
+                      Text("수정/삭제")
+                        .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                        .applyCofficeFont(font: .body2Medium)
+                    }
+                  }
+                  Spacer()
                 }
               }
-              Spacer()
             }
-          }
-        }
-        .frame(height: 42)
-        .padding(.top, 20)
+            .frame(height: 42)
+            .padding(.top, 20)
 
-        Text(
-          """
-          카페 공부 하기에 넘 좋았어요! 라떼, 버터바가 특히 맛있어요.
-          오후엔 사람이 꽉차니 일찍오는 것 추천!
-          """
-        )
-        .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-        .applyCofficeFont(font: .body1)
-        .multilineTextAlignment(.leading)
-        .padding(.top, 20)
+            Text(viewState.content)
+            .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+            .applyCofficeFont(font: .body1)
+            .multilineTextAlignment(.leading)
+            .padding(.top, 20)
 
-        // TODO: Tag기 한줄 넘어갈 경우 넘어가도록 커스텀 뷰 구현 필요
-        HStack(spacing: 8) {
-          ForEach(CafeSearchDetail.State.ReviewTagType.allCases, id: \.self) { tagType in
-            Text(tagType.title)
-              .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-              .applyCofficeFont(font: .body2Medium)
-              .frame(height: 18)
-              .padding(.vertical, 4)
-              .padding(.horizontal, 8)
-              .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                  .stroke(
-                    CofficeAsset.Colors.grayScale3.swiftUIColor,
-                    lineWidth: 1
+            // TODO: Tag기 한줄 넘어갈 경우 넘어가도록 커스텀 뷰 구현 필요
+            HStack(spacing: 8) {
+              ForEach(viewState.tagTypes, id: \.self) { tagType in
+                Text(tagType.title)
+                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                  .applyCofficeFont(font: .body2Medium)
+                  .frame(height: 18)
+                  .padding(.vertical, 4)
+                  .padding(.horizontal, 8)
+                  .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                      .stroke(
+                        CofficeAsset.Colors.grayScale3.swiftUIColor,
+                        lineWidth: 1
+                      )
                   )
-              )
+              }
+            }
+            .frame(height: 26)
+            .padding(.top, 20)
+
+            CofficeAsset.Colors.grayScale3.swiftUIColor
+              .frame(height: 1)
+              .padding(.top, 16)
           }
         }
-        .frame(height: 26)
-        .padding(.top, 20)
-
-        CofficeAsset.Colors.grayScale3.swiftUIColor
-          .frame(height: 1)
-          .padding(.top, 16)
       }
     }
   }

@@ -70,7 +70,7 @@ struct CafeReviewWriteView: View {
 
         VStack(alignment: .center) {
           Button {
-            // TODO: 등록, 수정하기 버튼 이벤트 구현 필요
+            viewStore.send(.saveButtonTapped)
           } label: {
             Text(viewStore.saveButtonTitle)
               .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)

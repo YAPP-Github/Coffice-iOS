@@ -33,32 +33,46 @@ struct CafeSearchDetailView: View {
       }
       .navigationBarHidden(true)
       .ignoresSafeArea(.all, edges: .top)
-      .overlay(alignment: .top, content: {
-        HStack {
-          Button {
-            viewStore.send(.popView)
-          } label: {
-            CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
-              .renderingMode(.template)
-              .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          }
+      .overlay(
+        alignment: .top,
+        content: {
+          HStack {
+            Button {
+              viewStore.send(.popView)
+            } label: {
+              CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
+                .renderingMode(.template)
+                .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+            }
 
-          Spacer()
+            Spacer()
 
-          Button {
-            // TODO: 공유하기 기능 추가 필요
-          } label: {
-            CofficeAsset.Asset.shareBoxFill40px.swiftUIImage
-              .renderingMode(.template)
-              .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+            Button {
+              // TODO: 공유하기 기능 추가 필요
+            } label: {
+              CofficeAsset.Asset.shareBoxFill40px.swiftUIImage
+                .renderingMode(.template)
+                .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+            }
           }
+          .padding(.top, 4)
+          .padding(.horizontal, 8)
         }
-        .padding(.top, 4)
-        .padding(.horizontal, 8)
-      })
+      )
       .onAppear {
         viewStore.send(.onAppear)
       }
+      .sheet(
+        item: viewStore.binding(\.$cafeReviewWriteState),
+        content: { viewState in
+          CafeReviewWriteView(
+            store: store.scope(
+              state: { _ in viewState },
+              action: CafeSearchDetail.Action.cafeReviewWrite(action:)
+            )
+          )
+        }
+      )
     }
   }
 }
