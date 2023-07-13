@@ -153,9 +153,11 @@ extension NaverMapView {
     let nmgLocation = NMGLatLng(lat: location.latitude, lng: location.longitude)
     if let zoomLevel {
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
+      cameraUpdate.animation = .easeIn
       naverMapView.mapView.moveCamera(cameraUpdate)
     } else {
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation)
+      cameraUpdate.animation = .easeIn
       naverMapView.mapView.moveCamera(cameraUpdate)
     }
   }
