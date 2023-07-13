@@ -24,7 +24,7 @@ struct CafeSearchListView: View {
               ForEach(viewStore.cafeList, id: \.placeId) { cafe in
                 CafeSearchListCell(store: store, cafe: cafe)
                   .onAppear { viewStore.send(.scrollAndLoadData(cafe)) }
-                  .onTapGesture {}
+                  .onTapGesture { viewStore.send(.cafeSearchListCellTapped(cafe: cafe))}
                   .padding(.bottom, 40)
               }
             }
