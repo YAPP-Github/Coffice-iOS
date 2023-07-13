@@ -277,8 +277,12 @@ extension CafeDetailMenuView {
   }
 
   private var userReviewListView: some View {
-    WithViewStore(store) { _ in
-      userReviewsView
+    WithViewStore(store) { viewStore in
+      if viewStore.userReviewCellViewStates.isNotEmpty {
+        userReviewsView
+      } else {
+        userReviewEmptyView
+      }
     }
   }
 
@@ -360,6 +364,19 @@ extension CafeDetailMenuView {
           }
         }
       }
+    }
+  }
+
+  private var userReviewEmptyView: some View {
+    WithViewStore(store, observe: \.userReviewEmptyDescription) { viewStore in
+      VStack(alignment: .center) {
+        Text(viewStore.state)
+          .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+          .applyCofficeFont(font: .body1Medium)
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+          .multilineTextAlignment(.center)
+      }
+      .frame(height: 200)
     }
   }
 }

@@ -62,6 +62,11 @@ struct CafeDetail: ReducerProtocol {
       ? CofficeAsset.Asset.arrowDropUpLine24px
       : CofficeAsset.Asset.arrowDropDownLine24px
     }
+
+    let userReviewEmptyDescription: String = """
+                                             아직 리뷰가 없어요!
+                                             첫 리뷰를 작성해볼까요?
+                                             """
   }
 
   enum Action: Equatable, BindableAction {
