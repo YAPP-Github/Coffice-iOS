@@ -45,7 +45,7 @@ struct CafeMapView: View {
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .padding(.bottom, 20)
-            if viewStore.shouldShowRefreshButtonView {
+            if viewStore.naverMapState.shouldShowRefreshButtonView {
               refreshButtonView
             }
             Spacer()
@@ -53,7 +53,7 @@ struct CafeMapView: View {
               .padding(.bottom, 16)
             bottomFloatingButtonView
               .padding(.trailing, 24)
-            if viewStore.selectedCafe != nil {
+            if viewStore.naverMapState.selectedCafe != nil {
               CafeCardView(store: store)
                 .frame(width: geometry.size.width)
                 .onTapGesture { viewStore.send(.cardViewTapped) }
@@ -98,7 +98,7 @@ extension CafeMapView {
   var refreshButtonView: some View {
     WithViewStore(store) { viewStore in
       Button {
-        viewStore.send(.refreshButtonTapped)
+        viewStore.send(.naverMapAction(.refreshButtonTapped))
       } label: {
         HStack(spacing: 8) {
           CofficeAsset.Asset.refresh18px.swiftUIImage
@@ -126,9 +126,9 @@ extension CafeMapView {
       HStack(spacing: 0) {
         Spacer()
         VStack(spacing: 16) {
-          ForEach(viewStore.bottomFloatingButtons, id: \.self) { floatingButton in
+          ForEach(viewStore.naverMapState.bottomFloatingButtons, id: \.self) { floatingButton in
             Button {
-              viewStore.send(.bottomFloatingButtonTapped(floatingButton.type))
+              viewStore.send(.naverMapAction(.bottomFloatingButtonTapped(floatingButton.type)))
             } label: {
               floatingButton.image
                 .frame(width: 48, height: 48)

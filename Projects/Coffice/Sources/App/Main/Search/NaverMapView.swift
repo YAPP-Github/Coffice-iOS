@@ -53,63 +53,63 @@ extension NaverMapView: UIViewRepresentable {
     naverMapView.mapView.minZoomLevel = 12
     naverMapView.mapView.addCameraDelegate(delegate: context.coordinator)
     naverMapView.mapView.touchDelegate = context.coordinator
-    moveCameraTo(naverMapView: naverMapView, location: viewStore.currentCameraPosition, zoomLevel: 15)
+    moveCameraTo(naverMapView: naverMapView, location: viewStore.naverMapState.currentCameraPosition, zoomLevel: 15)
     return naverMapView
   }
 
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if viewStore.isUpdatingCameraPosition {
+    if viewStore.naverMapState.isUpdatingCameraPosition {
       let nmgLocation = NMGLatLng(
-        lat: viewStore.currentCameraPosition.latitude,
-        lng: viewStore.currentCameraPosition.longitude
+        lat: viewStore.naverMapState.currentCameraPosition.latitude,
+        lng: viewStore.naverMapState.currentCameraPosition.longitude
       )
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: 15)
       DispatchQueue.main.async {
         uiView.mapView.moveCamera(cameraUpdate) { _ in
-          viewStore.send(.cameraMovedToUserPosition)
+          viewStore.send(.naverMapAction(.cameraMovedToUserPosition))
         }
       }
     }
 
-    if viewStore.shouldClearMarkers {
+    if viewStore.naverMapState.shouldClearMarkers {
       removeAllMarkers()
       NaverMapView.storage.resetValues()
-      DispatchQueue.main.async { viewStore.send(.markersCleared) }
+      DispatchQueue.main.async { viewStore.send(.naverMapAction(.markersCleared)) }
     }
 
-    if viewStore.shouldUpdateMarkers
-        && viewStore.selectedCafe != nil
-        && viewStore.selectedCafe != NaverMapView.storage.selectedMarker?.cafe {
+    if viewStore.naverMapState.shouldUpdateMarkers
+        && viewStore.naverMapState.selectedCafe != nil
+        && viewStore.naverMapState.selectedCafe != NaverMapView.storage.selectedMarker?.cafe {
       DispatchQueue.main.async {
         addMarker(
           naverMapView: uiView,
           cafeList: NaverMapView.storage.cafes,
-          selectedCafe: viewStore.selectedCafe,
+          selectedCafe: viewStore.naverMapState.selectedCafe,
           coordinator: context.coordinator
         )
       }
     }
 
-    if viewStore.shouldUpdateMarkers
-        && NaverMapView.storage.cafes != viewStore.cafes {
-      NaverMapView.storage.cafes = viewStore.cafes
-      if viewStore.shouldShowBookmarkCafesOnly {
+    if viewStore.naverMapState.shouldUpdateMarkers
+        && NaverMapView.storage.cafes != viewStore.naverMapState.cafes {
+      NaverMapView.storage.cafes = viewStore.naverMapState.cafes
+      if viewStore.naverMapState.shouldShowBookmarkCafesOnly {
         removeMarkers { $0.cafe.isBookmarked.isFalse }
       } else {
         DispatchQueue.main.async {
           addMarker(
             naverMapView: uiView,
             cafeList: NaverMapView.storage.cafes,
-            selectedCafe: viewStore.selectedCafe,
+            selectedCafe: viewStore.naverMapState.selectedCafe,
             coordinator: context.coordinator
           )
         }
       }
     }
 
-    if viewStore.isUpdatingBookmarkState {
+    if viewStore.naverMapState.isUpdatingBookmarkState {
       NaverMapView.storage.selectedMarker?.markerType.bookmarkType =
-      viewStore.selectedCafe?.isBookmarked ?? false
+      viewStore.naverMapState.selectedCafe?.isBookmarked ?? false
       ? .bookmarked
       : .nonBookmarked
     }
@@ -120,7 +120,7 @@ extension NaverMapView: UIViewRepresentable {
   }
 
   private func isCafeEqualWithStorage() -> Bool {
-    NaverMapView.storage.cafes != viewStore.cafes
+    NaverMapView.storage.cafes != viewStore.naverMapState.cafes
   }
 }
 
@@ -132,7 +132,7 @@ extension NaverMapView {
     }
 
     DispatchQueue.main.async {
-      viewStore.send(.markersUpdated)
+      viewStore.send(.naverMapAction(.markersUpdated))
     }
   }
 
@@ -163,7 +163,7 @@ extension NaverMapView {
         NaverMapView.storage.selectedMarker = marker
 
         DispatchQueue.main.async {
-          viewStore.send(.markerTapped(cafe: cafe))
+          viewStore.send(.naverMapAction(.markerTapped(cafe: cafe)))
         }
 
         return true
@@ -178,7 +178,7 @@ extension NaverMapView {
       NaverMapView.storage.markers.append(marker)
     }
     DispatchQueue.main.async {
-      viewStore.send(.markersUpdated)
+      viewStore.send(.naverMapAction(.markersUpdated))
     }
   }
 
@@ -206,7 +206,7 @@ extension Coordinator: NMFMapViewTouchDelegate {
   func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
     NaverMapView.storage.selectedMarker = nil
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.mapViewTapped)
+      self?.target.viewStore.send(.naverMapAction(.mapViewTapped))
     }
   }
 }
@@ -216,7 +216,7 @@ extension Coordinator: NMFMapViewCameraDelegate {
     DispatchQueue.main.async { [weak self] in
       guard let updateReason = NaverMapCameraUpdateReason(rawValue: reason)
       else { return }
-      self?.target.viewStore.send(.updateCameraUpdateReason(updateReason))
+      self?.target.viewStore.send(.naverMapAction(.updateCameraUpdateReason(updateReason)))
     }
   }
 
@@ -225,7 +225,11 @@ extension Coordinator: NMFMapViewCameraDelegate {
     let longitude = mapView.cameraPosition.target.lng
     DispatchQueue.main.async { [weak self] in
       self?.target.viewStore.send(
-        .cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+        .naverMapAction(
+          .cameraPositionMoved(
+            newCameraPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+          )
+        )
       )
     }
   }
