@@ -50,7 +50,7 @@ struct CafeMapView: View {
             }
             Spacer()
             floatingTestButtonView
-              .padding(.bottom, 8)
+              .padding(.bottom, 16)
             bottomFloatingButtonView
               .padding(.trailing, 24)
             if viewStore.selectedCafe != nil {
@@ -125,22 +125,13 @@ extension CafeMapView {
     WithViewStore(store) { viewStore in
       HStack(spacing: 0) {
         Spacer()
-        VStack(spacing: 10) {
+        VStack(spacing: 16) {
           ForEach(viewStore.bottomFloatingButtons, id: \.self) { floatingButton in
             Button {
-              viewStore.send(.bottomFloatingButtonTapped(floatingButton))
+              viewStore.send(.bottomFloatingButtonTapped(floatingButton.type))
             } label: {
               floatingButton.image
-                .resizable()
-                .frame(width: 36, height: 36)
-                .scaledToFill()
-                .padding(.all, 6)
-            }
-            .buttonStyle(.plain)
-            .background {
-              Circle()
-                .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-                .shadow(color: .black.opacity(0.16), radius: 4, x: 0, y: 0)
+                .frame(width: 48, height: 48)
             }
           }
         }

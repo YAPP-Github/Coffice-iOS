@@ -42,7 +42,7 @@ struct CafeCardView: View {
           )
           Spacer()
           Button {
-            viewStore.send(.bookmarkButtonTapped(cafe: viewStore.selectedCafe ?? .dummy))
+            viewStore.send(.cardViewBookmarkButtonTapped(cafe: viewStore.selectedCafe ?? .dummy))
           } label: {
             Group {
               if viewStore.selectedCafe?.isBookmarked == true {

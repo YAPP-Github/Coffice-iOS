@@ -45,12 +45,13 @@ struct CafeMapCore: ReducerProtocol {
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
     var cafes: [Cafe] = []
     var shouldClearMarkers: Bool = false
-    let bottomFloatingButtons = BottomFloatingButton.allCases
+    var bottomFloatingButtons = BottomFloatingButtonType.allCases.map(BottomFloatingButton.init)
     var isUpdatingCameraPosition = false
     var isUpdatingMarkers = false
     var shouldUpdateMarkers: Bool {
       return cafes.isNotEmpty && isUpdatingMarkers
     }
+    var shouldShowBookmarkCafesOnly = false
     var isUpdatingBookmarkState = false
     var shouldShowRefreshButtonView: Bool {
       return isMovingCameraPosition.isFalse && cameraUpdateReason != .changedByDeveloper
@@ -70,7 +71,7 @@ struct CafeMapCore: ReducerProtocol {
     case cafeSearchAction(CafeSearchCore.Action)
 
     // MARK: NaverMapView
-    case bottomFloatingButtonTapped(BottomFloatingButton)
+    case bottomFloatingButtonTapped(BottomFloatingButtonType)
     case updateCurrentLocation
     case updateCafeMarkers
     case cafeListResponse(TaskResult<[Cafe]>)
@@ -96,7 +97,7 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: Common
     case binding(BindingAction<State>)
     case requestLocationAuthorization
-    case bookmarkButtonTapped(cafe: Cafe)
+    case cardViewBookmarkButtonTapped(cafe: Cafe)
     case resetResult(ResetState)
     case cafeFilterMenus(action: CafeFilterMenus.Action)
     case updateCafeFilter(information: CafeFilterInformation)
@@ -247,6 +248,12 @@ struct CafeMapCore: ReducerProtocol {
           state.isUpdatingCameraPosition = true
           return .send(.updateCurrentLocation)
         case .bookmarkButton:
+          if let bookmarkButtonIndex = state.bottomFloatingButtons
+            .firstIndex(where: { $0.type == buttonType }) {
+            state.isUpdatingMarkers = true
+            state.bottomFloatingButtons[bookmarkButtonIndex].isSelected.toggle()
+            state.shouldShowBookmarkCafesOnly = state.bottomFloatingButtons[bookmarkButtonIndex].isSelected
+          }
           return .none
         }
 
@@ -261,16 +268,15 @@ struct CafeMapCore: ReducerProtocol {
         let hasCommunalTable = state.cafeFilterInformation.hasCommunalTable
         return .run { send in
           let result = await TaskResult {
-            // TODO: Sample Value를 실제 요청값으로 바꾸기
             let cafeRequest = SearchPlaceRequestValue(
               searchText: "",
               userLatitude: 37.498768,
               userLongitude: 127.0277985,
-              maximumSearchDistance: 1000000,
+              maximumSearchDistance: 500,
               isOpened: isOpened,
               hasCommunalTable: hasCommunalTable,
               filters: cafeSearchFilters,
-              pageSize: 1000,
+              pageSize: 100000,
               pageableKey: nil
             )
 
@@ -418,8 +424,12 @@ struct CafeMapCore: ReducerProtocol {
         locationManager.requestAuthorization()
         return .none
 
-      case .bookmarkButtonTapped(let cafe):
+      case .cardViewBookmarkButtonTapped(let cafe):
         state.selectedCafe?.isBookmarked.toggle()
+        if let selectedCafeIndex = state.cafes
+          .firstIndex(where: { $0.placeId == state.selectedCafe?.placeId }) {
+          state.cafes[selectedCafeIndex].isBookmarked.toggle()
+        }
         state.isUpdatingBookmarkState = true
         if state.selectedCafe?.isBookmarked == true {
           state.shouldShowToast = true
@@ -476,7 +486,19 @@ extension CafeMapCore {
     case searchResultView
   }
 
-  enum BottomFloatingButton: CaseIterable {
+  struct BottomFloatingButton: Hashable {
+    var type: BottomFloatingButtonType
+    var isSelected = false
+    var image: Image {
+      return isSelected ? type.selectedImage : type.unSelectedImage
+    }
+
+    init(type: BottomFloatingButtonType) {
+      self.type = type
+    }
+  }
+
+  enum BottomFloatingButtonType: CaseIterable {
     case bookmarkButton
     case currentLocationButton
 
@@ -486,6 +508,24 @@ extension CafeMapCore {
         return CofficeAsset.Asset.bookmarkFill36px.swiftUIImage
       case .currentLocationButton:
         return CofficeAsset.Asset.navigationFill36px.swiftUIImage
+      }
+    }
+
+    var selectedImage: Image {
+      switch self {
+      case .bookmarkButton:
+        return CofficeAsset.Asset.bookmarkFloatingSelected48px.swiftUIImage
+      case .currentLocationButton:
+        return CofficeAsset.Asset.currentPositionFloating48px.swiftUIImage
+      }
+    }
+
+    var unSelectedImage: Image {
+      switch self {
+      case .bookmarkButton:
+        return CofficeAsset.Asset.bookmarkFloatingUnselected48px.swiftUIImage
+      case .currentLocationButton:
+        return CofficeAsset.Asset.currentPositionFloating48px.swiftUIImage
       }
     }
   }

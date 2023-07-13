@@ -81,16 +81,19 @@ extension NaverMapView: UIViewRepresentable {
       DispatchQueue.main.async { viewStore.send(.cleardMarkers) }
     }
 
-    if viewStore.shouldUpdateMarkers
-        && NaverMapView.storage.cafes != viewStore.cafes {
+    if viewStore.shouldUpdateMarkers {
       NaverMapView.storage.cafes = viewStore.cafes
-      DispatchQueue.main.async {
-        addMarker(
-          naverMapView: uiView,
-          cafeList: NaverMapView.storage.cafes,
-          selectedCafe: viewStore.selectedCafe,
-          coordinator: context.coordinator
-        )
+      if viewStore.shouldShowBookmarkCafesOnly {
+        removeMarkers { $0.cafe.isBookmarked.isFalse }
+      } else {
+        DispatchQueue.main.async {
+          addMarker(
+            naverMapView: uiView,
+            cafeList: NaverMapView.storage.cafes,
+            selectedCafe: viewStore.selectedCafe,
+            coordinator: context.coordinator
+          )
+        }
       }
     }
 
@@ -105,9 +108,24 @@ extension NaverMapView: UIViewRepresentable {
   func makeCoordinator() -> Coordinator {
     return Coordinator(target: self)
   }
+
+  private func isCafeEqualWithStorage() -> Bool {
+    NaverMapView.storage.cafes != viewStore.cafes
+  }
 }
 
 extension NaverMapView {
+  func removeMarkers(filter: ((MapMarker) -> Bool)) {
+    NaverMapView.storage.markers.filter(filter).forEach {
+      $0.touchHandler = nil
+      $0.mapView = nil
+    }
+
+    DispatchQueue.main.async {
+      viewStore.send(.markersUpdated)
+    }
+  }
+
   func removeAllMarkers() {
     for marker in NaverMapView.storage.markers {
       marker.touchHandler = nil
