@@ -81,7 +81,21 @@ extension NaverMapView: UIViewRepresentable {
       DispatchQueue.main.async { viewStore.send(.cleardMarkers) }
     }
 
-    if viewStore.shouldUpdateMarkers {
+    if viewStore.shouldUpdateMarkers
+        && viewStore.selectedCafe != nil
+        && viewStore.selectedCafe != NaverMapView.storage.selectedMarker?.cafe {
+      DispatchQueue.main.async {
+        addMarker(
+          naverMapView: uiView,
+          cafeList: NaverMapView.storage.cafes,
+          selectedCafe: viewStore.selectedCafe,
+          coordinator: context.coordinator
+        )
+      }
+    }
+
+    if viewStore.shouldUpdateMarkers
+        && NaverMapView.storage.cafes != viewStore.cafes {
       NaverMapView.storage.cafes = viewStore.cafes
       if viewStore.shouldShowBookmarkCafesOnly {
         removeMarkers { $0.cafe.isBookmarked.isFalse }
@@ -131,6 +145,7 @@ extension NaverMapView {
       marker.touchHandler = nil
       marker.mapView = nil
     }
+    NaverMapView.storage.selectedMarker = nil
     NaverMapView.storage.markers.removeAll()
   }
 
@@ -214,9 +229,7 @@ extension Coordinator: NMFMapViewCameraDelegate {
     let longitude = mapView.cameraPosition.target.lng
     DispatchQueue.main.async { [weak self] in
       self?.target.viewStore.send(
-        .cameraPositionMoved(newCameraPosition:
-          CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        )
+        .cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
       )
     }
   }
