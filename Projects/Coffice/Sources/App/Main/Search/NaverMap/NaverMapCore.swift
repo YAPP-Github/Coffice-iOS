@@ -51,6 +51,9 @@ struct NaverMapCore: ReducerProtocol {
     case updateCafeMarkers(isOpened: Bool, cafeSearchFilters: CafeSearchFilters, hasCommunalTable: Bool)
     case moveCameraToUserPosition
 
+    case removeAllMarkers
+    case appednMarker(marker: MapMarker)
+
     // MARK: Event Completed
     case cameraMovedToUserPosition
     case markersUpdated
@@ -144,6 +147,14 @@ struct NaverMapCore: ReducerProtocol {
 
       case .markersCleared:
         state.shouldClearMarkers = false
+        return .none
+
+      case .removeAllMarkers:
+        state.markers.removeAll()
+        return .none
+
+      case .appednMarker(let marker):
+        state.markers.append(marker)
         return .none
 
       case .bookmarkStateUpdated:

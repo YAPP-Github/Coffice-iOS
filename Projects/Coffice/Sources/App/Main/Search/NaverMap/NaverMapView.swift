@@ -20,7 +20,6 @@ struct NaverMapView {
 }
 
 final class NaverMapViewStorage {
-  var markers: [MapMarker] = []
   var selectedMarker: MapMarker? {
     didSet {
       if let oldValue {
@@ -33,7 +32,6 @@ final class NaverMapViewStorage {
   }
 
   func resetValues() {
-    markers.removeAll()
     selectedMarker = nil
   }
 }
@@ -117,7 +115,7 @@ extension NaverMapView: UIViewRepresentable {
 
 extension NaverMapView {
   func removeMarkers(filter: ((MapMarker) -> Bool)) {
-    NaverMapView.storage.markers.filter(filter).forEach {
+    viewStore.naverMapState.markers.filter(filter).forEach {
       $0.touchHandler = nil
       $0.mapView = nil
     }
@@ -128,12 +126,12 @@ extension NaverMapView {
   }
 
   func removeAllMarkers() {
-    for marker in NaverMapView.storage.markers {
+    for marker in viewStore.naverMapState.markers {
       marker.touchHandler = nil
       marker.mapView = nil
     }
     NaverMapView.storage.selectedMarker = nil
-    NaverMapView.storage.markers.removeAll()
+    viewStore.send(.naverMapAction(.removeAllMarkers))
   }
 
   func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], selectedCafe: Cafe?, coordinator: Coordinator) {
@@ -166,7 +164,7 @@ extension NaverMapView {
       marker.captionRequestedWidth = 90
 
       marker.mapView = naverMapView.mapView
-      NaverMapView.storage.markers.append(marker)
+      viewStore.send(.naverMapAction(.appednMarker(marker: marker)))
     }
     DispatchQueue.main.async {
       viewStore.send(.naverMapAction(.markersUpdated))
