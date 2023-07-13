@@ -142,7 +142,7 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
         // MARK: Sub-Core Actions
-      case .cafeSearchListAction(.focusSeletedCafe(let selectedCafe)):
+      case .cafeSearchListAction(.focusSelectedCafe(let selectedCafe)):
         state.currentCameraPosition = CLLocationCoordinate2D(
           latitude: selectedCafe.latitude, longitude: selectedCafe.longitude)
         state.isUpdatingCameraPosition = true

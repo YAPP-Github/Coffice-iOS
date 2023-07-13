@@ -47,7 +47,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case updateCafeFilter(information: CafeFilterInformation)
     case filterBottomSheetDismissed
     case cafeSearchListCellTapped(cafe: Cafe)
-    case focusSeletedCafe(selectedCafe: Cafe)
+    case focusSelectedCafe(selectedCafe: Cafe)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -64,7 +64,7 @@ struct CafeSearchListCore: ReducerProtocol {
       switch action {
       case .cafeSearchListCellTapped(let cafe):
         state.viewType = .mapView
-        return .send(.focusSeletedCafe(selectedCafe: cafe))
+        return .send(.focusSelectedCafe(selectedCafe: cafe))
 
       case .titleLabelTapped:
         return .none
