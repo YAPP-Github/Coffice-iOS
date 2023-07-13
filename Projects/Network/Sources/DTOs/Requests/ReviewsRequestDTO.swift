@@ -1,5 +1,5 @@
 //
-//  GetReviewsRequestDTO.swift
+//  ReviewsRequestDTO.swift
 //  Network
 //
 //  Created by Min Min on 2023/07/13.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct GetReviewsRequestDTO: Encodable {
+public struct ReviewsRequestDTO: Encodable {
   public let pageSize: Int
   public let lastSeenReviewId: Int?
 }

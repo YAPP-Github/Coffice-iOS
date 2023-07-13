@@ -77,8 +77,8 @@ struct CafeReviewWrite: ReducerProtocol {
     case updateSaveButtonState
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
     case saveButtonTapped
-    case postReview
-    case postReviewResponse(TaskResult<HTTPURLResponse>)
+    case uploadReview
+    case uploadReviewResponse(TaskResult<HTTPURLResponse>)
   }
 
   @Dependency(\.reviewAPIClient) private var reviewClient
@@ -114,9 +114,9 @@ struct CafeReviewWrite: ReducerProtocol {
         return .none
 
       case .saveButtonTapped:
-        return EffectTask(value: .postReview)
+        return EffectTask(value: .uploadReview)
 
-      case .postReview:
+      case .uploadReview:
         var electricOutletLevel: OutletStateOption = .few
         var wifiLevel: WifiStateOption = .slow
         var noiseLevel: NoiseOption = .quiet
@@ -132,7 +132,7 @@ struct CafeReviewWrite: ReducerProtocol {
           }
         }
 
-        let requestValue = PostReviewRequestValue(
+        let requestValue = ReviewUploadRequestValue(
           placeId: state.placeId,
           electricOutletOption: electricOutletLevel,
           wifiOption: wifiLevel,
@@ -141,13 +141,13 @@ struct CafeReviewWrite: ReducerProtocol {
         )
 
         return .run { send in
-          let response = try await reviewClient.postReview(requestValue: requestValue)
-          await send(.postReviewResponse(.success(response)))
+          let response = try await reviewClient.uploadReview(requestValue: requestValue)
+          await send(.uploadReviewResponse(.success(response)))
         } catch: { error, send in
-          await send(.postReviewResponse(.failure(error)))
+          await send(.uploadReviewResponse(.failure(error)))
         }
 
-      case .postReviewResponse(let result):
+      case .uploadReviewResponse(let result):
         switch result {
         case .success:
           return EffectTask(value: .dismissView)

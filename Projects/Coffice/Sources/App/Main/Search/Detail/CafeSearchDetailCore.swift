@@ -171,7 +171,7 @@ struct CafeSearchDetail: ReducerProtocol {
 
       case .cafeReviewWrite(let action):
         switch action {
-        case .postReviewResponse(.success):
+        case .uploadReviewResponse(.success):
           return EffectTask(value: .fetchReviews)
         case .dismissView:
           state.cafeReviewWriteState = nil

@@ -14,8 +14,8 @@ struct ReviewAPIClient: DependencyKey {
   static var liveValue: ReviewAPIClient = .liveValue
 
   func fetchReviews(
-    requestValue: GetReviewsRequestValue
-  ) async throws -> [ReviewResponse] {
+    requestValue: ReviewsRequestValue
+  ) async throws -> ReviewsResponse {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places/\(requestValue.placeId)/reviews"
@@ -28,7 +28,7 @@ struct ReviewAPIClient: DependencyKey {
 
     // TODO: 페이징 업데이트 로직 추가 구현 필요
     let response: (
-      dto: [GetReviewResponseDTO],
+      dto: ReviewsResponseDTO,
       hasNext: Bool
     ) = try await coreNetwork.pageableDataTask(request: request)
     return response.dto.map { element -> ReviewResponse in
@@ -46,7 +46,7 @@ struct ReviewAPIClient: DependencyKey {
     }
   }
 
-  func postReview(requestValue: PostReviewRequestValue) async throws -> HTTPURLResponse {
+  func uploadReview(requestValue: ReviewUploadRequestValue) async throws -> HTTPURLResponse {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places/\(requestValue.placeId)/reviews"

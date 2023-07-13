@@ -1,5 +1,5 @@
 //
-//  GetReviewsRequestValue.swift
+//  ReviewsRequestValue.swift
 //  coffice
 //
 //  Created by Min Min on 2023/07/13.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct GetReviewsRequestValue {
+struct ReviewsRequestValue {
   let placeId: Int
   let pageSize: Int
   let lastSeenReviewId: Int?

@@ -1,5 +1,5 @@
 //
-//  GetReviewResponse.swift
+//  ReviewsResponse.swift
 //  coffice
 //
 //  Created by Min Min on 2023/07/13.
@@ -7,6 +7,8 @@
 //
 
 import Foundation
+
+typealias ReviewsResponse = [ReviewResponse]
 
 struct ReviewResponse: Equatable {
   let reviewId: Int

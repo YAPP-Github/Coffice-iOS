@@ -1,5 +1,5 @@
 //
-//  GetReviewResponseDTO.swift
+//  ReviewsResponseDTO.swift
 //  Network
 //
 //  Created by Min Min on 2023/07/13.
@@ -8,7 +8,9 @@
 
 import Foundation
 
-public struct GetReviewResponseDTO: Decodable {
+public typealias ReviewsResponseDTO = [ReviewResponseDTO]
+
+public struct ReviewResponseDTO: Decodable {
   public let reviewId: Int
   public let member: Member
   public let electricOutletLevel, wifiLevel, noiseLevel, content: String

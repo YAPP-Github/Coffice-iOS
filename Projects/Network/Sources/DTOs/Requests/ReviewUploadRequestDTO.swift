@@ -1,5 +1,5 @@
 //
-//  PostReviewRequestDTO.swift
+//  ReviewUploadRequestDTO.swift
 //  Network
 //
 //  Created by Min Min on 2023/07/13.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct PostReviewRequestDTO: Encodable {
+public struct ReviewUploadRequestDTO: Encodable {
   let placeId: Int
   let electricOutletLevel: String
   let wifiLevel: String

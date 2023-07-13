@@ -1,5 +1,5 @@
 //
-//  PostReviewRequestValue.swift
+//  ReviewUploadRequestValue.swift
 //  coffice
 //
 //  Created by Min Min on 2023/07/13.
@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-struct PostReviewRequestValue {
+struct ReviewUploadRequestValue {
   let placeId: Int
   let electricOutletOption: ReviewOption.OutletOption
   let wifiOption: ReviewOption.WifiOption
@@ -17,8 +17,8 @@ struct PostReviewRequestValue {
   let content: String
 }
 
-extension PostReviewRequestValue {
-  func toDTO() -> PostReviewRequestDTO {
+extension ReviewUploadRequestValue {
+  func toDTO() -> ReviewUploadRequestDTO {
     .init(
       placeId: placeId,
       electricOutletLevel: electricOutletOption.dtoName,
