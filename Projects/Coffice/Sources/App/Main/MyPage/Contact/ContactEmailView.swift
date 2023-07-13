@@ -22,18 +22,22 @@ struct ContactEmailView: UIViewControllerRepresentable {
     @Binding var viewState: ContactEmailViewState
     let callback: MailViewCallback
 
-    init(presentation: Binding<PresentationMode>,
-         data: Binding<ContactEmailViewState>,
-         callback: MailViewCallback) {
+    init(
+      presentation: Binding<PresentationMode>,
+      data: Binding<ContactEmailViewState>,
+      callback: MailViewCallback
+    ) {
       _presentation = presentation
       _viewState = data
       self.callback = callback
     }
 
-    func mailComposeController(_ controller: MFMailComposeViewController,
-                               didFinishWith result: MFMailComposeResult,
-                               error: Error?) {
-      if let error = error {
+    func mailComposeController(
+      _ controller: MFMailComposeViewController,
+      didFinishWith result: MFMailComposeResult,
+      error: Error?
+    ) {
+      if let error {
         callback?(.failure(error))
       } else {
         callback?(.success(result))
@@ -63,7 +67,7 @@ struct ContactEmailView: UIViewControllerRepresentable {
 
   func updateUIViewController(
     _ uiViewController: MFMailComposeViewController,
-                              context: UIViewControllerRepresentableContext<ContactEmailView>
+    context: UIViewControllerRepresentableContext<ContactEmailView>
   ) {}
 
   static var canSendMail: Bool {
