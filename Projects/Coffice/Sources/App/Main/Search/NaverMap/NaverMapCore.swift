@@ -15,8 +15,24 @@ struct NaverMapCore: ReducerProtocol {
 
   struct State: Equatable {
     // MARK: Selecting Cafe
-    var selectedCafe: Cafe?
-    var isSelectedCafe: Bool = false
+    var selectedCafe: Cafe? {
+      didSet {
+        if let unSelectedMarker = markers.first(where: { $0.cafe.placeId == oldValue?.placeId }) {
+          unSelectedMarker.markerType = .init(
+            bookmarkType: oldValue?.isBookmarked == true ? .bookmarked : .nonBookmarked,
+            selectType: .unSelected
+          )
+        }
+
+        if let selectedMarker = markers.first(where: { $0.cafe.placeId == selectedCafe?.placeId }) {
+          selectedMarker.markerType = .init(
+            bookmarkType: selectedCafe?.isBookmarked == true ? .bookmarked : .nonBookmarked,
+            selectType: .selected
+          )
+        }
+      }
+    }
+
     var markers: [MapMarker] = []
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
     var cafes: [Cafe] = []
@@ -29,7 +45,6 @@ struct NaverMapCore: ReducerProtocol {
       return cafes.isNotEmpty && isUpdatingMarkers
     }
     var shouldShowBookmarkCafesOnly = false
-    var isUpdatingBookmarkState = false
     var shouldShowRefreshButtonView: Bool {
       return isMovingCameraPosition.isFalse && cameraUpdateReason != .changedByDeveloper
     }
@@ -43,6 +58,7 @@ struct NaverMapCore: ReducerProtocol {
     case bottomFloatingButtonTapped(CafeMapCore.BottomFloatingButtonType)
     case markerTapped(cafe: Cafe)
     case mapViewTapped
+    case cardViewBookmarkButtonTapped(cafe: Cafe)
 
     // MARK: Network Responses
     case cafeListResponse(TaskResult<[Cafe]>)
@@ -61,6 +77,8 @@ struct NaverMapCore: ReducerProtocol {
     case markersCleared
     case updateCameraUpdateReason(NaverMapCameraUpdateReason)
     case cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D)
+
+    case showBookmarkedToast
   }
 
   // MARK: - Dependencies
@@ -89,6 +107,27 @@ struct NaverMapCore: ReducerProtocol {
             state.shouldShowBookmarkCafesOnly = state.bottomFloatingButtons[bookmarkButtonIndex].isSelected
           }
           return .none
+        }
+
+      case .cardViewBookmarkButtonTapped(let cafe):
+        if let selectedCafeIndex = state.cafes
+          .firstIndex(where: { $0.placeId == state.selectedCafe?.placeId }) {
+          state.cafes[selectedCafeIndex].isBookmarked.toggle()
+          state.selectedCafe = state.cafes[selectedCafeIndex]
+        }
+//        state.selectedCafe?.isBookmarked.toggle()
+
+//        state.isUpdatingBookmarkState = true
+
+        return .run { [isBookmarked = state.selectedCafe?.isBookmarked] send in
+          if isBookmarked == true {
+            try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+            await send(.showBookmarkedToast)
+          } else {
+            try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
+          }
+        } catch: { error, send in
+          debugPrint(error)
         }
 
       case .moveCameraToUserPosition:
@@ -129,12 +168,10 @@ struct NaverMapCore: ReducerProtocol {
 
       case .markerTapped(let cafe):
         state.selectedCafe = cafe
-        state.isSelectedCafe = true
         return .none
 
       case .mapViewTapped:
         state.selectedCafe = nil
-        state.isSelectedCafe = false
         return .none
 
       case .cameraMovedToUserPosition:
@@ -151,14 +188,11 @@ struct NaverMapCore: ReducerProtocol {
 
       case .removeAllMarkers:
         state.markers.removeAll()
+        state.selectedCafe = nil
         return .none
 
       case .appednMarker(let marker):
         state.markers.append(marker)
-        return .none
-
-      case .bookmarkStateUpdated:
-        state.isUpdatingBookmarkState = false
         return .none
 
       case .updateCameraUpdateReason(let updateReason):

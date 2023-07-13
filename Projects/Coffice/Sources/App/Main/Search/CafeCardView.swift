@@ -42,7 +42,13 @@ struct CafeCardView: View {
           )
           Spacer()
           Button {
-            viewStore.send(.cardViewBookmarkButtonTapped(cafe: viewStore.naverMapState.selectedCafe ?? .dummy))
+            viewStore.send(
+              .naverMapAction(
+                .cardViewBookmarkButtonTapped(
+                  cafe: viewStore.naverMapState.selectedCafe ?? .dummy
+                )
+              )
+            )
           } label: {
             Group {
               if viewStore.naverMapState.selectedCafe?.isBookmarked == true {

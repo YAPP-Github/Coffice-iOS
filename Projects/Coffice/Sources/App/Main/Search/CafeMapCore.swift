@@ -61,7 +61,6 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: Common
     case binding(BindingAction<State>)
     case requestLocationAuthorization
-    case cardViewBookmarkButtonTapped(cafe: Cafe)
     case resetResult(ResetState)
     case cafeFilterMenus(action: CafeFilterMenus.Action)
     case updateCafeFilter(information: CafeFilterInformation)
@@ -243,7 +242,6 @@ struct CafeMapCore: ReducerProtocol {
           state.cafeSearchListState.hasNext = searchResponse.hasNext
           guard let cafe = searchResponse.cafes.first else { return .none }
           state.naverMapState.selectedCafe = cafe
-          state.naverMapState.isSelectedCafe = true
           state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
             latitude: cafe.latitude,
             longitude: cafe.longitude
@@ -306,7 +304,6 @@ struct CafeMapCore: ReducerProtocol {
         state.cafeSearchListState.hasNext = nil
         state.naverMapState.cameraUpdateReason = .changedByDeveloper
         state.naverMapState.shouldClearMarkers = true
-        state.naverMapState.isSelectedCafe = false
         state.naverMapState.selectedCafe = nil
         switch resetState {
         case .searchResultIsEmpty:
@@ -322,25 +319,9 @@ struct CafeMapCore: ReducerProtocol {
         locationManager.requestAuthorization()
         return .none
 
-      case .cardViewBookmarkButtonTapped(let cafe):
-        state.naverMapState.selectedCafe?.isBookmarked.toggle()
-        if let selectedCafeIndex = state.naverMapState.cafes
-          .firstIndex(where: { $0.placeId == state.naverMapState.selectedCafe?.placeId }) {
-          state.naverMapState.cafes[selectedCafeIndex].isBookmarked.toggle()
-        }
-        state.naverMapState.isUpdatingBookmarkState = true
-        if state.naverMapState.selectedCafe?.isBookmarked == true {
-          state.shouldShowToast = true
-        }
-        return .run { [isBookmarked = state.naverMapState.selectedCafe?.isBookmarked] send in
-          if isBookmarked == true {
-            try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
-          } else {
-            try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
-          }
-        } catch: { error, send in
-          debugPrint(error)
-        }
+      case .naverMapAction(.showBookmarkedToast):
+        state.shouldShowToast = true
+        return .none
 
       case .onDisappear:
         // TODO: MapView쪽 리셋 작업 필요

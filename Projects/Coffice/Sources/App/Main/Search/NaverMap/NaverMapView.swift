@@ -12,27 +12,9 @@ import ComposableArchitecture
 
 struct NaverMapView {
   @ObservedObject var viewStore: ViewStoreOf<CafeMapCore>
-  static let storage = NaverMapViewStorage()
 
   init(viewStore: ViewStoreOf<CafeMapCore>) {
     self.viewStore = viewStore
-  }
-}
-
-final class NaverMapViewStorage {
-  var selectedMarker: MapMarker? {
-    didSet {
-      if let oldValue {
-        oldValue.markerType.selectType = .unSelected
-      }
-      if let selectedMarker {
-        selectedMarker.markerType.selectType = .selected
-      }
-    }
-  }
-
-  func resetValues() {
-    selectedMarker = nil
   }
 }
 
@@ -68,13 +50,11 @@ extension NaverMapView: UIViewRepresentable {
 
     if viewStore.naverMapState.shouldClearMarkers {
       removeAllMarkers()
-      NaverMapView.storage.resetValues()
       DispatchQueue.main.async { viewStore.send(.naverMapAction(.markersCleared)) }
     }
 
     if viewStore.naverMapState.shouldUpdateMarkers
-        && viewStore.naverMapState.selectedCafe != nil
-        && viewStore.naverMapState.selectedCafe != NaverMapView.storage.selectedMarker?.cafe {
+        && viewStore.naverMapState.selectedCafe != nil {
       DispatchQueue.main.async {
         addMarker(
           naverMapView: uiView,
@@ -98,13 +78,6 @@ extension NaverMapView: UIViewRepresentable {
           )
         }
       }
-    }
-
-    if viewStore.naverMapState.isUpdatingBookmarkState {
-      NaverMapView.storage.selectedMarker?.markerType.bookmarkType =
-      viewStore.naverMapState.selectedCafe?.isBookmarked ?? false
-      ? .bookmarked
-      : .nonBookmarked
     }
   }
 
@@ -130,7 +103,6 @@ extension NaverMapView {
       marker.touchHandler = nil
       marker.mapView = nil
     }
-    NaverMapView.storage.selectedMarker = nil
     viewStore.send(.naverMapAction(.removeAllMarkers))
   }
 
@@ -146,10 +118,8 @@ extension NaverMapView {
         position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
       )
       if marker.markerType.selectType == .selected {
-        NaverMapView.storage.selectedMarker = marker
       }
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-        NaverMapView.storage.selectedMarker = marker
 
         DispatchQueue.main.async {
           viewStore.send(.naverMapAction(.markerTapped(cafe: cafe)))
@@ -193,7 +163,6 @@ class Coordinator: NSObject, NMFMapViewOptionDelegate {
 
 extension Coordinator: NMFMapViewTouchDelegate {
   func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
-    NaverMapView.storage.selectedMarker = nil
     DispatchQueue.main.async { [weak self] in
       self?.target.viewStore.send(.naverMapAction(.mapViewTapped))
     }
