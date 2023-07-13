@@ -51,13 +51,13 @@ struct MapMarkerType {
   var image: CofficeImages.Image {
     switch (bookmarkType, selectType) {
     case (.nonBookmarked, .unSelected):
-      return NaverMapView.storage.unselectedIconImage
+      return CofficeAsset.Asset.unselected20px.image
     case (.nonBookmarked, .selected):
-      return NaverMapView.storage.selectedIconImage
+      return CofficeAsset.Asset.selected2836px.image
     case (.bookmarked, .unSelected):
-      return NaverMapView.storage.bookmarkUnselectedIconImage
+      return CofficeAsset.Asset.bookmarkUnselected20px.image
     case (.bookmarked, .selected):
-      return NaverMapView.storage.bookmarkSelectedIconImage
+      return CofficeAsset.Asset.bookmarkSelected2836px.image
     }
   }
 

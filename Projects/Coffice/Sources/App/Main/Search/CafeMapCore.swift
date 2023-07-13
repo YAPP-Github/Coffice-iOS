@@ -42,6 +42,7 @@ struct CafeMapCore: ReducerProtocol {
     var cafeFilterInformation: CafeFilterInformation = .initialState
 
     // MARK: NaverMapView
+    var naverMapState = NaverMapCore.State()
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
     var cafes: [Cafe] = []
     var shouldClearMarkers: Bool = false
@@ -71,16 +72,17 @@ struct CafeMapCore: ReducerProtocol {
     case cafeSearchAction(CafeSearchCore.Action)
 
     // MARK: NaverMapView
+    case naverMapAction(NaverMapCore.Action)
     case bottomFloatingButtonTapped(BottomFloatingButtonType)
-    case updateCurrentLocation
+    case moveCameraToUserPosition
     case updateCafeMarkers
     case cafeListResponse(TaskResult<[Cafe]>)
     case markerTapped(cafe: Cafe)
     case mapViewTapped
-    case movedToCurrentPosition
+    case cameraMovedToUserPosition
     case markersUpdated
     case bookmarkStateUpdated
-    case cleardMarkers
+    case markersCleared
     case refreshButtonTapped
     case updateCameraUpdateReason(NaverMapCameraUpdateReason)
     case cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D)
@@ -128,6 +130,10 @@ struct CafeMapCore: ReducerProtocol {
 
     Scope(state: \.cafeSearchState, action: /CafeMapCore.Action.cafeSearchAction) {
       CafeSearchCore()
+    }
+
+    Scope(state: \.naverMapState, action: /CafeMapCore.Action.naverMapAction) {
+      NaverMapCore()
     }
 
     Reduce { state, action in
@@ -247,25 +253,12 @@ struct CafeMapCore: ReducerProtocol {
 
         // MARK: NaverMapView
       case .refreshButtonTapped:
-        state.cameraUpdateReason = .changedByDeveloper
-        return .send(.updateCafeMarkers)
+        return EffectTask(value: .naverMapAction(.refreshButtonTapped))
 
       case .bottomFloatingButtonTapped(let buttonType):
-        switch buttonType {
-        case .currentLocationButton:
-          state.isUpdatingCameraPosition = true
-          return .send(.updateCurrentLocation)
-        case .bookmarkButton:
-          if let bookmarkButtonIndex = state.bottomFloatingButtons
-            .firstIndex(where: { $0.type == buttonType }) {
-            state.isUpdatingMarkers = true
-            state.bottomFloatingButtons[bookmarkButtonIndex].isSelected.toggle()
-            state.shouldShowBookmarkCafesOnly = state.bottomFloatingButtons[bookmarkButtonIndex].isSelected
-          }
-          return .none
-        }
+        return EffectTask(value: .naverMapAction(.bottomFloatingButtonTapped(buttonType)))
 
-      case .updateCurrentLocation:
+      case .moveCameraToUserPosition:
         state.currentCameraPosition = locationManager.fetchCurrentLocation()
         return .none
 
@@ -314,7 +307,7 @@ struct CafeMapCore: ReducerProtocol {
         state.isSelectedCafe = false
         return .none
 
-      case .movedToCurrentPosition:
+      case .cameraMovedToUserPosition:
         state.isUpdatingCameraPosition = false
         return .none
 
@@ -322,7 +315,7 @@ struct CafeMapCore: ReducerProtocol {
         state.isUpdatingMarkers = false
         return .none
 
-      case .cleardMarkers:
+      case .markersCleared:
         state.shouldClearMarkers = false
         return .none
 

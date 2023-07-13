@@ -33,10 +33,6 @@ final class NaverMapViewStorage {
     }
   }
   var cafes: [Cafe] = []
-  let unselectedIconImage = CofficeAsset.Asset.unselected20px.image
-  let selectedIconImage = CofficeAsset.Asset.selected2836px.image
-  let bookmarkUnselectedIconImage = CofficeAsset.Asset.bookmarkUnselected20px.image
-  let bookmarkSelectedIconImage = CofficeAsset.Asset.bookmarkSelected2836px.image
 
   func resetValues() {
     markers.removeAll()
@@ -70,7 +66,7 @@ extension NaverMapView: UIViewRepresentable {
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: 15)
       DispatchQueue.main.async {
         uiView.mapView.moveCamera(cameraUpdate) { _ in
-          viewStore.send(.movedToCurrentPosition)
+          viewStore.send(.cameraMovedToUserPosition)
         }
       }
     }
@@ -78,7 +74,7 @@ extension NaverMapView: UIViewRepresentable {
     if viewStore.shouldClearMarkers {
       removeAllMarkers()
       NaverMapView.storage.resetValues()
-      DispatchQueue.main.async { viewStore.send(.cleardMarkers) }
+      DispatchQueue.main.async { viewStore.send(.markersCleared) }
     }
 
     if viewStore.shouldUpdateMarkers
