@@ -46,6 +46,8 @@ struct CafeSearchListCore: ReducerProtocol {
     case titleLabelTapped
     case updateCafeFilter(information: CafeFilterInformation)
     case filterBottomSheetDismissed
+    case cafeSearchListCellTapped(cafe: Cafe)
+    case focusSeletedCafe(selectedCafe: Cafe)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -60,6 +62,10 @@ struct CafeSearchListCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .cafeSearchListCellTapped(let cafe):
+        state.viewType = .mapView
+        return .send(.focusSeletedCafe(selectedCafe: cafe))
+
       case .titleLabelTapped:
         return .none
 
