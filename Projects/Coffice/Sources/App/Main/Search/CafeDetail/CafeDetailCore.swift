@@ -11,6 +11,7 @@ import Foundation
 
 struct CafeDetail: ReducerProtocol {
   struct State: Equatable {
+    @BindingState var cafeReviewWriteState: CafeReviewWrite.State?
     let title = "CafeDetail"
     var cafeId: Int
     var cafe: Cafe?
@@ -27,6 +28,10 @@ struct CafeDetail: ReducerProtocol {
       .map(SubPrimaryInfoViewState.init)
     var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = SubSecondaryInfoType.allCases
       .map(SubSecondaryInfoViewState.init)
+    var userReviewCellViewStates: [UserReviewCellViewState] = []
+    var userReviewHeaderTitle: String {
+      return "리뷰 \(userReviewCellViewStates.count)"
+    }
 
     var selectedSubMenuType: SubMenuType = .detailInfo {
       didSet {
@@ -58,23 +63,39 @@ struct CafeDetail: ReducerProtocol {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
     case onAppear
     case placeResponse(cafe: Cafe)
     case popView
     case subMenuTapped(State.SubMenuType)
+    case reviewWriteButtonTapped
     case toggleToPresentTextForTest
     case infoGuideButtonTapped(CafeFilter.GuideType)
     case presentBubbleMessageView(BubbleMessage.State)
-    case presentCafeReviewWriteView
+    case presentCafeReviewWriteView(CafeReviewWrite.State)
+    case cafeReviewWrite(action: CafeReviewWrite.Action)
+    case fetchPlace
+    case fetchReviews
+    case fetchReviewsResponse(TaskResult<[ReviewResponse]>)
+    case updateReviewCellViewStates(reviews: [ReviewResponse])
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
+  @Dependency(\.reviewAPIClient) private var reviewAPIClient
 
   var body: some ReducerProtocolOf<CafeDetail> {
+    BindingReducer()
+
     Reduce { state, action in
       switch action {
       case .onAppear:
+        return .merge(
+          EffectTask(value: .fetchPlace),
+          EffectTask(value: .fetchReviews)
+        )
+
+      case .fetchPlace:
         return .run { [cafeId = state.cafeId] send in
           let cafe = try await placeAPIClient.fetchPlace(placeId: cafeId)
           await send(.placeResponse(cafe: cafe))
@@ -82,12 +103,52 @@ struct CafeDetail: ReducerProtocol {
           debugPrint(error)
         }
 
+      case .fetchReviews:
+        return .run { [placeId = state.cafeId] send in
+          let reviews = try await reviewAPIClient.fetchReviews(requestValue: .init(placeId: placeId))
+          await send(.fetchReviewsResponse(.success(reviews)))
+        } catch: { error, send in
+          await send(.fetchReviewsResponse(.failure(error)))
+        }
+
+      case .fetchReviewsResponse(let result):
+        switch result {
+        case .success(let reviews):
+          return EffectTask(value: .updateReviewCellViewStates(reviews: reviews))
+        case .failure(let error):
+          debugPrint(error.localizedDescription)
+        }
+        return .none
+
+      case .updateReviewCellViewStates(let reviews):
+        state.userReviewCellViewStates = reviews.compactMap { review in
+          return .init(
+            userName: review.memberName,
+            date: review.createdDate,
+            content: review.content,
+            tagTypes: [
+              review.outletOption == .enough ? .enoughOutlets : nil,
+              review.wifiOption == .fast ? .fastWifi : nil,
+              review.noiseOption == .quiet ? .quiet : nil
+            ]
+            .compactMap { $0 }
+          )
+        }
+        return .none
+
       case .placeResponse(let cafe):
         state.cafe = cafe
         return .none
 
       case .subMenuTapped(let menuType):
         state.selectedSubMenuType = menuType
+        return .none
+
+      case .reviewWriteButtonTapped:
+        return EffectTask(value: .presentCafeReviewWriteView(.init(reviewType: .create, placeId: state.cafeId)))
+
+      case .presentCafeReviewWriteView(let viewState):
+        state.cafeReviewWriteState = viewState
         return .none
 
       case .toggleToPresentTextForTest:
@@ -107,9 +168,26 @@ struct CafeDetail: ReducerProtocol {
           )
         )
 
+      case .cafeReviewWrite(let action):
+        switch action {
+        case .uploadReviewResponse(.success):
+          return EffectTask(value: .fetchReviews)
+        case .dismissView:
+          state.cafeReviewWriteState = nil
+        default:
+          return .none
+        }
+        return .none
+
       default:
         return .none
       }
+    }
+    .ifLet(
+      \.cafeReviewWriteState,
+      action: /Action.cafeReviewWrite(action:)
+    ) {
+      CafeReviewWrite()
     }
   }
 }
@@ -117,6 +195,23 @@ struct CafeDetail: ReducerProtocol {
 // MARK: - Sub Views State
 
 extension CafeDetail.State {
+  struct UserReviewCellViewState: Equatable, Identifiable {
+    let id = UUID()
+    let userName: String
+    let date: Date?
+    let content: String
+    let tagTypes: [ReviewTagType]
+
+    var dateDescription: String {
+      guard let date else { return "-" }
+
+      let dateFormatter = DateFormatter()
+      dateFormatter.locale = Locale(identifier: "ko_KR")
+      dateFormatter.dateFormat = "M.dd E"
+      return dateFormatter.string(from: date)
+    }
+  }
+
   enum SubMenuType: CaseIterable {
     case detailInfo
     case review
