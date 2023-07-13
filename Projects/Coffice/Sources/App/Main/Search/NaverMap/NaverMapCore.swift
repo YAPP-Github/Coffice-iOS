@@ -185,7 +185,6 @@ struct NaverMapCore: ReducerProtocol {
 
       case .removeAllMarkers:
         state.markers.removeAll()
-        state.selectedCafe = nil
         return .none
 
       case .appendMarker(let marker):
