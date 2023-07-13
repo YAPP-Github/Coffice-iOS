@@ -47,7 +47,7 @@ struct ReviewResponse: Equatable {
     }
 
     wifiOption = .slow
-    switch electricOutletLevel {
+    switch wifiLevel {
     case "FAST":
       wifiOption = .fast
     default:
@@ -55,7 +55,7 @@ struct ReviewResponse: Equatable {
     }
 
     noiseOption = .quiet
-    switch electricOutletLevel {
+    switch noiseLevel {
     case "NOISY":
       noiseOption = .loud
     case "NORMAL":
