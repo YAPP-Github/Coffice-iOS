@@ -16,19 +16,19 @@ struct MapMarkerType {
 
   enum MarkerSelectType {
     case selected
-    case unSelected
+    case unselected
   }
 
   var bookmarkType: MarkerBookmarkType = .nonBookmarked
-  var selectType: MarkerSelectType = .unSelected
+  var selectType: MarkerSelectType = .unselected
 
   var width: CGFloat {
     switch (bookmarkType, selectType) {
-    case (.nonBookmarked, .unSelected):
+    case (.nonBookmarked, .unselected):
       return 20
     case (.nonBookmarked, .selected):
       return 28
-    case (.bookmarked, .unSelected):
+    case (.bookmarked, .unselected):
       return 20
     case (.bookmarked, .selected):
       return 28
@@ -37,11 +37,11 @@ struct MapMarkerType {
 
   var height: CGFloat {
     switch (bookmarkType, selectType) {
-    case (.nonBookmarked, .unSelected):
+    case (.nonBookmarked, .unselected):
       return 20
     case (.nonBookmarked, .selected):
       return 36
-    case (.bookmarked, .unSelected):
+    case (.bookmarked, .unselected):
       return 20
     case (.bookmarked, .selected):
       return 36
@@ -50,11 +50,11 @@ struct MapMarkerType {
 
   var image: CofficeImages.Image {
     switch (bookmarkType, selectType) {
-    case (.nonBookmarked, .unSelected):
+    case (.nonBookmarked, .unselected):
       return CofficeAsset.Asset.unselected20px.image
     case (.nonBookmarked, .selected):
       return CofficeAsset.Asset.selected2836px.image
-    case (.bookmarked, .unSelected):
+    case (.bookmarked, .unselected):
       return CofficeAsset.Asset.bookmarkUnselected20px.image
     case (.bookmarked, .selected):
       return CofficeAsset.Asset.bookmarkSelected2836px.image

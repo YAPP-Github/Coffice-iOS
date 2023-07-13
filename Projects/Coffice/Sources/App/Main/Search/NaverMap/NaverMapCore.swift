@@ -17,10 +17,10 @@ struct NaverMapCore: ReducerProtocol {
     // MARK: Selecting Cafe
     var selectedCafe: Cafe? {
       didSet {
-        if let unSelectedMarker = markers.first(where: { $0.cafe.placeId == oldValue?.placeId }) {
-          unSelectedMarker.markerType = .init(
+        if let unselectedMarker = markers.first(where: { $0.cafe.placeId == oldValue?.placeId }) {
+          unselectedMarker.markerType = .init(
             bookmarkType: oldValue?.isBookmarked == true ? .bookmarked : .nonBookmarked,
-            selectType: .unSelected
+            selectType: .unselected
           )
         }
 

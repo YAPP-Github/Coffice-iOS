@@ -121,7 +121,7 @@ extension NaverMapView {
         cafe: cafe,
         markerType: .init(
           bookmarkType: cafe.isBookmarked ? .bookmarked : .nonBookmarked,
-          selectType: selectedCafe?.placeId == cafe.placeId ? .selected : .unSelected
+          selectType: selectedCafe?.placeId == cafe.placeId ? .selected : .unselected
         ),
         position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
       )

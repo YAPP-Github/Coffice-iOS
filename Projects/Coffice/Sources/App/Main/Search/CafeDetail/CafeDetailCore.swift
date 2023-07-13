@@ -12,7 +12,6 @@ import Foundation
 struct CafeDetail: ReducerProtocol {
   struct State: Equatable {
     @BindingState var cafeReviewWriteState: CafeReviewWrite.State?
-    let title = "CafeDetail"
     var cafeId: Int
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [

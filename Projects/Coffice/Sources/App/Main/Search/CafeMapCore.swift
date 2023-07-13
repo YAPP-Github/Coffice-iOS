@@ -369,7 +369,7 @@ extension CafeMapCore {
     var type: BottomFloatingButtonType
     var isSelected = false
     var image: Image {
-      return isSelected ? type.selectedImage : type.unSelectedImage
+      return isSelected ? type.selectedImage : type.unselectedImage
     }
 
     init(type: BottomFloatingButtonType) {
@@ -399,7 +399,7 @@ extension CafeMapCore {
       }
     }
 
-    var unSelectedImage: Image {
+    var unselectedImage: Image {
       switch self {
       case .bookmarkButton:
         return CofficeAsset.Asset.bookmarkFloatingUnselected48px.swiftUIImage
