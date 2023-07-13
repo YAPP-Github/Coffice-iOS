@@ -90,6 +90,17 @@ struct ReviewAPIClient: DependencyKey {
 
     return try await coreNetwork.dataTask(request: request)
   }
+
+  func reportReview(placeId: Int, reviewId: Int) async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/places/\(placeId)/reviews/\(reviewId)/report"
+
+    guard let request = urlComponents?.toURLRequest(method: .post)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    return try await coreNetwork.dataTask(request: request)
+  }
 }
 
 extension DependencyValues {
