@@ -45,15 +45,15 @@ struct CafeMapView: View {
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .padding(.bottom, 20)
-            if viewStore.shouldShowRefreshButtonView {
+            if viewStore.naverMapState.shouldShowRefreshButtonView {
               refreshButtonView
             }
             Spacer()
             floatingTestButtonView
-              .padding(.bottom, 8)
+              .padding(.bottom, 16)
             bottomFloatingButtonView
               .padding(.trailing, 24)
-            if viewStore.selectedCafe != nil {
+            if viewStore.naverMapState.selectedCafe != nil {
               CafeCardView(store: store)
                 .frame(width: geometry.size.width)
                 .onTapGesture { viewStore.send(.cardViewTapped) }
@@ -98,7 +98,7 @@ extension CafeMapView {
   var refreshButtonView: some View {
     WithViewStore(store) { viewStore in
       Button {
-        viewStore.send(.refreshButtonTapped)
+        viewStore.send(.naverMapAction(.refreshButtonTapped))
       } label: {
         HStack(spacing: 8) {
           CofficeAsset.Asset.refresh18px.swiftUIImage
@@ -125,22 +125,13 @@ extension CafeMapView {
     WithViewStore(store) { viewStore in
       HStack(spacing: 0) {
         Spacer()
-        VStack(spacing: 10) {
-          ForEach(viewStore.bottomFloatingButtons, id: \.self) { floatingButton in
+        VStack(spacing: 16) {
+          ForEach(viewStore.naverMapState.bottomFloatingButtons, id: \.self) { floatingButton in
             Button {
-              viewStore.send(.bottomFloatingButtonTapped(floatingButton))
+              viewStore.send(.naverMapAction(.bottomFloatingButtonTapped(floatingButton.type)))
             } label: {
               floatingButton.image
-                .resizable()
-                .frame(width: 36, height: 36)
-                .scaledToFill()
-                .padding(.all, 6)
-            }
-            .buttonStyle(.plain)
-            .background {
-              Circle()
-                .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-                .shadow(color: .black.opacity(0.16), radius: 4, x: 0, y: 0)
+                .frame(width: 48, height: 48)
             }
           }
         }

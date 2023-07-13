@@ -9,10 +9,10 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct CafeSearchDetailView: View {
-  private let store: StoreOf<CafeSearchDetail>
+struct CafeDetailView: View {
+  private let store: StoreOf<CafeDetail>
 
-  init(store: StoreOf<CafeSearchDetail>) {
+  init(store: StoreOf<CafeDetail>) {
     self.store = store
   }
 
@@ -25,9 +25,9 @@ struct CafeSearchDetailView: View {
       VStack(spacing: 0) {
         ScrollView(.vertical) {
           VStack(spacing: 0) {
-            CafeSearchDetailHeaderView(store: store)
-            CafeSearchDetailSubInfoView(store: store)
-            CafeSearchDetailMenuView(store: store)
+            CafeDetailHeaderView(store: store)
+            CafeDetailSubInfoView(store: store)
+            CafeDetailMenuView(store: store)
           }
         }
       }
@@ -68,7 +68,7 @@ struct CafeSearchDetailView: View {
           CafeReviewWriteView(
             store: store.scope(
               state: { _ in viewState },
-              action: CafeSearchDetail.Action.cafeReviewWrite(action:)
+              action: CafeDetail.Action.cafeReviewWrite(action:)
             )
           )
         }
@@ -79,10 +79,10 @@ struct CafeSearchDetailView: View {
 
 struct CafeSearchDetailView_Previews: PreviewProvider {
   static var previews: some View {
-    CafeSearchDetailView(
+    CafeDetailView(
       store: .init(
         initialState: .init(cafeId: 1),
-        reducer: CafeSearchDetail()
+        reducer: CafeDetail()
       )
     )
   }

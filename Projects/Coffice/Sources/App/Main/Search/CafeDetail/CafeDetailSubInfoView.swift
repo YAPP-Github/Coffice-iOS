@@ -9,10 +9,10 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct CafeSearchDetailSubInfoView: View {
-  private let store: StoreOf<CafeSearchDetail>
+struct CafeDetailSubInfoView: View {
+  private let store: StoreOf<CafeDetail>
 
-  init(store: StoreOf<CafeSearchDetail>) {
+  init(store: StoreOf<CafeDetail>) {
     self.store = store
   }
 
@@ -33,7 +33,7 @@ struct CafeSearchDetailSubInfoView: View {
   }
 }
 
-extension CafeSearchDetailSubInfoView {
+extension CafeDetailSubInfoView {
   private var cafeSubPrimaryInfoView: some View {
     WithViewStore(store, observe: \.subPrimaryInfoViewStates) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
@@ -136,10 +136,10 @@ extension CafeSearchDetailSubInfoView {
 
 struct CafeSearchDetailSubInfoView_Previews: PreviewProvider {
   static var previews: some View {
-    CafeSearchDetailSubInfoView(
+    CafeDetailSubInfoView(
       store: .init(
         initialState: .init(cafeId: 1),
-        reducer: CafeSearchDetail()
+        reducer: CafeDetail()
       )
     )
   }

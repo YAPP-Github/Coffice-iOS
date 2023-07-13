@@ -18,11 +18,11 @@ struct CafeCardView: View {
         HStack(alignment: .top, spacing: 0) {
           VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-              Text(viewStore.selectedCafe?.name ?? "")
+              Text(viewStore.naverMapState.selectedCafe?.name ?? "")
                 .lineLimit(1)
                 .applyCofficeFont(font: .header2)
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-              Text(viewStore.selectedCafe?.address?.simpleAddress ?? "")
+              Text(viewStore.naverMapState.selectedCafe?.address?.simpleAddress ?? "")
                 .lineLimit(1)
                 .applyCofficeFont(font: .body2Medium)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
@@ -42,10 +42,16 @@ struct CafeCardView: View {
           )
           Spacer()
           Button {
-            viewStore.send(.bookmarkButtonTapped(cafe: viewStore.selectedCafe ?? .dummy))
+            viewStore.send(
+              .naverMapAction(
+                .cardViewBookmarkButtonTapped(
+                  cafe: viewStore.naverMapState.selectedCafe ?? .dummy
+                )
+              )
+            )
           } label: {
             Group {
-              if viewStore.selectedCafe?.isBookmarked == true {
+              if viewStore.naverMapState.selectedCafe?.isBookmarked == true {
                 CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
               } else {
                 CofficeAsset.Asset.bookmarkLine40px.swiftUIImage

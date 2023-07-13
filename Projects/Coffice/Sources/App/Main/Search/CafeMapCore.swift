@@ -7,15 +7,8 @@
 //
 
 import ComposableArchitecture
-import CoreLocation
 import NMapsMap
 import SwiftUI
-
-extension CLLocationCoordinate2D: Equatable {
-  public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
-    return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
-  }
-}
 
 struct CafeMapCore: ReducerProtocol {
   // MARK: - State
@@ -28,10 +21,6 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: ViewType
     var displayViewType: ViewType = .mainMapView
 
-    // MARK: Selecting Cafe
-    var selectedCafe: Cafe?
-    var isSelectedCafe: Bool = false
-
     // MARK: Search
     @BindingState var searchText = ""
     var cafeSearchState = CafeSearchCore.State()
@@ -42,21 +31,7 @@ struct CafeMapCore: ReducerProtocol {
     var cafeFilterInformation: CafeFilterInformation = .initialState
 
     // MARK: NaverMapView
-    var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
-    var cafes: [Cafe] = []
-    var shouldClearMarkers: Bool = false
-    let bottomFloatingButtons = BottomFloatingButton.allCases
-    var isUpdatingCameraPosition = false
-    var isUpdatingMarkers = false
-    var shouldUpdateMarkers: Bool {
-      return cafes.isNotEmpty && isUpdatingMarkers
-    }
-    var isUpdatingBookmarkState = false
-    var shouldShowRefreshButtonView: Bool {
-      return isMovingCameraPosition.isFalse && cameraUpdateReason != .changedByDeveloper
-    }
-    var isMovingCameraPosition = false
-    var cameraUpdateReason: NaverMapCameraUpdateReason = .changedByDeveloper
+    var naverMapState = NaverMapCore.State()
   }
 
   // MARK: - Action
@@ -70,19 +45,9 @@ struct CafeMapCore: ReducerProtocol {
     case cafeSearchAction(CafeSearchCore.Action)
 
     // MARK: NaverMapView
-    case bottomFloatingButtonTapped(BottomFloatingButton)
-    case updateCurrentLocation
+    case naverMapAction(NaverMapCore.Action)
     case updateCafeMarkers
-    case cafeListResponse(TaskResult<[Cafe]>)
-    case markerTapped(cafe: Cafe)
-    case mapViewTapped
-    case movedToCurrentPosition
-    case markersUpdated
-    case bookmarkStateUpdated
-    case cleardMarkers
     case refreshButtonTapped
-    case updateCameraUpdateReason(NaverMapCameraUpdateReason)
-    case cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D)
 
     // MARK: Search
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
@@ -96,7 +61,6 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: Common
     case binding(BindingAction<State>)
     case requestLocationAuthorization
-    case bookmarkButtonTapped(cafe: Cafe)
     case resetResult(ResetState)
     case cafeFilterMenus(action: CafeFilterMenus.Action)
     case updateCafeFilter(information: CafeFilterInformation)
@@ -129,6 +93,10 @@ struct CafeMapCore: ReducerProtocol {
       CafeSearchCore()
     }
 
+    Scope(state: \.naverMapState, action: /CafeMapCore.Action.naverMapAction) {
+      NaverMapCore()
+    }
+
     Reduce { state, action in
       switch action {
         // MARK: ViewType
@@ -143,20 +111,20 @@ struct CafeMapCore: ReducerProtocol {
 
         // MARK: Sub-Core Actions
       case .cafeSearchListAction(.focusSelectedCafe(let selectedCafe)):
-        state.currentCameraPosition = CLLocationCoordinate2D(
+        state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
           latitude: selectedCafe.latitude, longitude: selectedCafe.longitude)
-        state.isUpdatingCameraPosition = true
-        state.selectedCafe = selectedCafe
-        state.isUpdatingMarkers = true
+        state.naverMapState.isUpdatingCameraPosition = true
+        state.naverMapState.selectedCafe = selectedCafe
+        state.naverMapState.isUpdatingMarkers = true
         return .none
 
       case .cafeSearchAction(.searchPlacesByWaypoint(let waypoint)):
         state.cafeSearchListState.title = waypoint.name
-        state.currentCameraPosition = CLLocationCoordinate2D(
+        state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
           latitude: waypoint.latitude, longitude: waypoint.longitude
         )
         state.cafeSearchState.searchTextSnapshot = ""
-        state.cafeSearchState.searchCameraPositionSnapshot = state.currentCameraPosition
+        state.cafeSearchState.searchCameraPositionSnapshot = state.naverMapState.currentCameraPosition
         return .run { send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
@@ -192,12 +160,12 @@ struct CafeMapCore: ReducerProtocol {
 
       case .cafeSearchAction(.searchPlacesByRequestValue(let searchText)):
         let title = searchText
-        let cameraPosition = state.currentCameraPosition
+        let cameraPosition = state.naverMapState.currentCameraPosition
         let isOpened = state.cafeFilterInformation.isOpened
         let cafeSearchFilters = state.cafeFilterInformation.cafeSearchFilters
         let hasCommunalTable = state.cafeFilterInformation.hasCommunalTable
         state.cafeSearchState.searchTextSnapshot = searchText
-        state.cafeSearchState.searchCameraPositionSnapshot = state.currentCameraPosition
+        state.cafeSearchState.searchCameraPositionSnapshot = state.naverMapState.currentCameraPosition
         return .run { send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
@@ -245,94 +213,21 @@ struct CafeMapCore: ReducerProtocol {
         }
 
         // MARK: NaverMapView
-      case .refreshButtonTapped:
-        state.cameraUpdateReason = .changedByDeveloper
-        return .send(.updateCafeMarkers)
-
-      case .bottomFloatingButtonTapped(let buttonType):
-        switch buttonType {
-        case .currentLocationButton:
-          state.isUpdatingCameraPosition = true
-          return .send(.updateCurrentLocation)
-        case .bookmarkButton:
-          return .none
-        }
-
-      case .updateCurrentLocation:
-        state.currentCameraPosition = locationManager.fetchCurrentLocation()
-        return .none
+      case .naverMapAction(.refreshButtonTapped):
+        return EffectTask(value: .updateCafeMarkers)
 
       case .updateCafeMarkers:
-        state.isUpdatingMarkers = true
         let isOpened = state.cafeFilterInformation.isOpened
         let cafeSearchFilters = state.cafeFilterInformation.cafeSearchFilters
         let hasCommunalTable = state.cafeFilterInformation.hasCommunalTable
-        return .run { send in
-          let result = await TaskResult {
-            // TODO: Sample Value를 실제 요청값으로 바꾸기
-            let cafeRequest = SearchPlaceRequestValue(
-              searchText: "",
-              userLatitude: 37.498768,
-              userLongitude: 127.0277985,
-              maximumSearchDistance: 1000000,
-              isOpened: isOpened,
-              hasCommunalTable: hasCommunalTable,
-              filters: cafeSearchFilters,
-              pageSize: 1000,
-              pageableKey: nil
-            )
 
-            let cafeListData = try await placeAPIClient.searchPlaces(by: cafeRequest)
-            return cafeListData.cafes
-          }
-          await send(.cafeListResponse(result))
-        }
-
-      case .cafeListResponse(let result):
-        switch result {
-        case .success(let cafeList):
-          state.cafes = cafeList
-          return .none
-        case .failure(let error):
-          debugPrint(error)
-          return .none
-        }
-
-      case .markerTapped(let cafe):
-        state.selectedCafe = cafe
-        state.isSelectedCafe = true
-        return .none
-
-      case .mapViewTapped:
-        state.selectedCafe = nil
-        state.isSelectedCafe = false
-        return .none
-
-      case .movedToCurrentPosition:
-        state.isUpdatingCameraPosition = false
-        return .none
-
-      case .markersUpdated:
-        state.isUpdatingMarkers = false
-        return .none
-
-      case .cleardMarkers:
-        state.shouldClearMarkers = false
-        return .none
-
-      case .bookmarkStateUpdated:
-        state.isUpdatingBookmarkState = false
-        return .none
-
-      case .updateCameraUpdateReason(let updateReason):
-        state.isMovingCameraPosition = true
-        state.cameraUpdateReason = updateReason
-        return .none
-
-      case .cameraPositionMoved(let newCameraPosition):
-        state.currentCameraPosition = newCameraPosition
-        state.isMovingCameraPosition = false
-        return .none
+        return EffectTask(value: .naverMapAction(
+          .updateCafeMarkers(
+            isOpened: isOpened,
+            cafeSearchFilters: cafeSearchFilters,
+            hasCommunalTable: hasCommunalTable
+          )
+        ))
 
       // MARK: Search
       case .requestSearchPlaceResponse(let result, let title):
@@ -341,18 +236,17 @@ struct CafeMapCore: ReducerProtocol {
           if searchResponse.cafes.isEmpty {
             return .send(.resetResult(.searchResultIsEmpty))
           }
-          state.cafes = searchResponse.cafes
-          state.isUpdatingMarkers = true
+          state.naverMapState.cafes = searchResponse.cafes
+          state.naverMapState.isUpdatingMarkers = true
           state.cafeSearchListState.cafeList = searchResponse.cafes
           state.cafeSearchListState.hasNext = searchResponse.hasNext
           guard let cafe = searchResponse.cafes.first else { return .none }
-          state.selectedCafe = cafe
-          state.isSelectedCafe = true
-          state.currentCameraPosition = CLLocationCoordinate2D(
+          state.naverMapState.selectedCafe = cafe
+          state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
             latitude: cafe.latitude,
             longitude: cafe.longitude
           )
-          state.isUpdatingCameraPosition = true
+          state.naverMapState.isUpdatingCameraPosition = true
           state.cafeSearchListState.title = title
           state.displayViewType = .searchResultView
           state.cafeSearchState.previousViewType = .searchResultView
@@ -373,8 +267,8 @@ struct CafeMapCore: ReducerProtocol {
           }
           if removedDuplicationCafes.isNotEmpty {
             state.cafeSearchListState.cafeList += cafeSearchResponse.cafes
-            state.cafes += cafeSearchResponse.cafes
-            state.isUpdatingMarkers = true
+            state.naverMapState.cafes += cafeSearchResponse.cafes
+            state.naverMapState.isUpdatingMarkers = true
           }
           return .none
         case .failure(let error):
@@ -389,12 +283,12 @@ struct CafeMapCore: ReducerProtocol {
           if searchResponse.cafes.isEmpty {
             return .send(.resetResult(.searchResultIsEmpty))
           }
-          state.cafes = searchResponse.cafes
-          state.selectedCafe = nil
-          state.isUpdatingMarkers = true
+          state.naverMapState.cafes = searchResponse.cafes
+          state.naverMapState.selectedCafe = nil
+          state.naverMapState.isUpdatingMarkers = true
           state.cafeSearchListState.cafeList = searchResponse.cafes
           state.cafeSearchListState.hasNext = searchResponse.hasNext
-          state.isUpdatingCameraPosition = true
+          state.naverMapState.isUpdatingCameraPosition = true
           state.displayViewType = .searchResultView
           state.cafeSearchState.previousViewType = .searchResultView
           return .send(.cafeSearchAction(.dismiss))
@@ -405,13 +299,12 @@ struct CafeMapCore: ReducerProtocol {
 
         // MARK: Common
       case .resetResult(let resetState):
-        state.cafes = []
+        state.naverMapState.cafes = []
         state.cafeSearchListState.cafeList = []
         state.cafeSearchListState.hasNext = nil
-        state.cameraUpdateReason = .changedByDeveloper
-        state.shouldClearMarkers = true
-        state.isSelectedCafe = false
-        state.selectedCafe = nil
+        state.naverMapState.cameraUpdateReason = .changedByDeveloper
+        state.naverMapState.shouldClearMarkers = true
+        state.naverMapState.selectedCafe = nil
         switch resetState {
         case .searchResultIsEmpty:
           state.cafeSearchState.previousViewType = .mainMapView
@@ -426,21 +319,9 @@ struct CafeMapCore: ReducerProtocol {
         locationManager.requestAuthorization()
         return .none
 
-      case .bookmarkButtonTapped(let cafe):
-        state.selectedCafe?.isBookmarked.toggle()
-        state.isUpdatingBookmarkState = true
-        if state.selectedCafe?.isBookmarked == true {
-          state.shouldShowToast = true
-        }
-        return .run { [isBookmarked = state.selectedCafe?.isBookmarked] send in
-          if isBookmarked == true {
-            try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
-          } else {
-            try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
-          }
-        } catch: { error, send in
-          debugPrint(error)
-        }
+      case .naverMapAction(.showBookmarkedToast):
+        state.shouldShowToast = true
+        return .none
 
       case .onDisappear:
         // TODO: MapView쪽 리셋 작업 필요
@@ -462,7 +343,7 @@ struct CafeMapCore: ReducerProtocol {
         )
 
       case .cardViewTapped:
-        guard let cafe = state.selectedCafe
+        guard let cafe = state.naverMapState.selectedCafe
         else { return .none }
         return EffectTask(value: .pushToSearchDetailForTest(cafeId: cafe.placeId))
       default:
@@ -484,7 +365,19 @@ extension CafeMapCore {
     case searchResultView
   }
 
-  enum BottomFloatingButton: CaseIterable {
+  struct BottomFloatingButton: Hashable {
+    var type: BottomFloatingButtonType
+    var isSelected = false
+    var image: Image {
+      return isSelected ? type.selectedImage : type.unselectedImage
+    }
+
+    init(type: BottomFloatingButtonType) {
+      self.type = type
+    }
+  }
+
+  enum BottomFloatingButtonType: CaseIterable {
     case bookmarkButton
     case currentLocationButton
 
@@ -494,6 +387,24 @@ extension CafeMapCore {
         return CofficeAsset.Asset.bookmarkFill36px.swiftUIImage
       case .currentLocationButton:
         return CofficeAsset.Asset.navigationFill36px.swiftUIImage
+      }
+    }
+
+    var selectedImage: Image {
+      switch self {
+      case .bookmarkButton:
+        return CofficeAsset.Asset.bookmarkFloatingSelected48px.swiftUIImage
+      case .currentLocationButton:
+        return CofficeAsset.Asset.currentPositionFloating48px.swiftUIImage
+      }
+    }
+
+    var unselectedImage: Image {
+      switch self {
+      case .bookmarkButton:
+        return CofficeAsset.Asset.bookmarkFloatingUnselected48px.swiftUIImage
+      case .currentLocationButton:
+        return CofficeAsset.Asset.currentPositionFloating48px.swiftUIImage
       }
     }
   }

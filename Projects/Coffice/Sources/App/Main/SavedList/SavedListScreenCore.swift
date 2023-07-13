@@ -13,12 +13,12 @@ struct SavedListScreen: ReducerProtocol {
   enum State: Equatable {
     /// 메인 페이지
     case savedList(SavedList.State)
-    case cafeSearchDetail(CafeSearchDetail.State)
+    case cafeSearchDetail(CafeDetail.State)
   }
 
   enum Action: Equatable {
     case savedList(SavedList.Action)
-    case cafeSearchDetail(CafeSearchDetail.Action)
+    case cafeSearchDetail(CafeDetail.Action)
   }
 
   var body: some ReducerProtocolOf<SavedListScreen> {
@@ -33,7 +33,7 @@ struct SavedListScreen: ReducerProtocol {
       state: /State.cafeSearchDetail,
       action: /Action.cafeSearchDetail
     ) {
-      CafeSearchDetail()
+      CafeDetail()
     }
   }
 }

@@ -10,10 +10,10 @@ import ComposableArchitecture
 import Kingfisher
 import SwiftUI
 
-struct CafeSearchDetailHeaderView: View {
-  private let store: StoreOf<CafeSearchDetail>
+struct CafeDetailHeaderView: View {
+  private let store: StoreOf<CafeDetail>
 
-  init(store: StoreOf<CafeSearchDetail>) {
+  init(store: StoreOf<CafeDetail>) {
     self.store = store
   }
 

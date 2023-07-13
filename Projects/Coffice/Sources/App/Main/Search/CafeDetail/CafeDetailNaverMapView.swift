@@ -11,9 +11,9 @@ import NMapsMap
 import SwiftUI
 
 struct CafeDetailNaverMapView {
-  @ObservedObject var viewStore: ViewStoreOf<CafeSearchDetail>
+  @ObservedObject var viewStore: ViewStoreOf<CafeDetail>
 
-  init(viewStore: ViewStoreOf<CafeSearchDetail>) {
+  init(viewStore: ViewStoreOf<CafeDetail>) {
     self.viewStore = viewStore
   }
 }

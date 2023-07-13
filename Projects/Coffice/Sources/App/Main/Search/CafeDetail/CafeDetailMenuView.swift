@@ -9,10 +9,10 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct CafeSearchDetailMenuView: View {
-  private let store: StoreOf<CafeSearchDetail>
+struct CafeDetailMenuView: View {
+  private let store: StoreOf<CafeDetail>
 
-  init(store: StoreOf<CafeSearchDetail>) {
+  init(store: StoreOf<CafeDetail>) {
     self.store = store
   }
 
@@ -35,7 +35,7 @@ struct CafeSearchDetailMenuView: View {
 
 // MARK: Menu Button
 
-extension CafeSearchDetailMenuView {
+extension CafeDetailMenuView {
   private var cafeSubMenuButtonView: some View {
     WithViewStore(store, observe: \.subMenuViewStates) { viewStore in
       HStack(spacing: 0) {
@@ -67,7 +67,7 @@ extension CafeSearchDetailMenuView {
 
 // MARK: - Detail Info Menu View
 
-extension CafeSearchDetailMenuView {
+extension CafeDetailMenuView {
   private var detailInfoHeaderView: some View {
     Text("상세정보")
       .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -231,7 +231,7 @@ extension CafeSearchDetailMenuView {
 
 // MARK: - Review Menu View
 
-extension CafeSearchDetailMenuView {
+extension CafeDetailMenuView {
   private var reviewMenuView: some View {
     WithViewStore(store) { _ in
       VStack(alignment: .leading, spacing: 0) {
@@ -366,10 +366,10 @@ extension CafeSearchDetailMenuView {
 
 struct CafeSearchDetailMenuView_Previews: PreviewProvider {
   static var previews: some View {
-    CafeSearchDetailMenuView(
+    CafeDetailMenuView(
       store: .init(
         initialState: .init(cafeId: 1),
-        reducer: CafeSearchDetail()
+        reducer: CafeDetail()
       )
     )
   }
