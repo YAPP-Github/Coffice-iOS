@@ -17,7 +17,6 @@ struct NaverMapCore: ReducerProtocol {
     // MARK: Selecting Cafe
     var selectedCafe: Cafe?
     var isSelectedCafe: Bool = false
-
     var markers: [MapMarker] = []
     var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
     var cafes: [Cafe] = []

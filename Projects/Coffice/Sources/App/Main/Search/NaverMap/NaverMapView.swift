@@ -20,7 +20,6 @@ struct NaverMapView {
 }
 
 final class NaverMapViewStorage {
-  var location = CLLocationCoordinate2D(latitude: 0, longitude: 0)
   var markers: [MapMarker] = []
   var selectedMarker: MapMarker? {
     didSet {
@@ -32,12 +31,10 @@ final class NaverMapViewStorage {
       }
     }
   }
-  var cafes: [Cafe] = []
 
   func resetValues() {
     markers.removeAll()
     selectedMarker = nil
-    cafes.removeAll()
   }
 }
 
@@ -83,23 +80,21 @@ extension NaverMapView: UIViewRepresentable {
       DispatchQueue.main.async {
         addMarker(
           naverMapView: uiView,
-          cafeList: NaverMapView.storage.cafes,
+          cafeList: viewStore.naverMapState.cafes,
           selectedCafe: viewStore.naverMapState.selectedCafe,
           coordinator: context.coordinator
         )
       }
     }
 
-    if viewStore.naverMapState.shouldUpdateMarkers
-        && NaverMapView.storage.cafes != viewStore.naverMapState.cafes {
-      NaverMapView.storage.cafes = viewStore.naverMapState.cafes
+    if viewStore.naverMapState.shouldUpdateMarkers {
       if viewStore.naverMapState.shouldShowBookmarkCafesOnly {
         removeMarkers { $0.cafe.isBookmarked.isFalse }
       } else {
         DispatchQueue.main.async {
           addMarker(
             naverMapView: uiView,
-            cafeList: NaverMapView.storage.cafes,
+            cafeList: viewStore.naverMapState.cafes,
             selectedCafe: viewStore.naverMapState.selectedCafe,
             coordinator: context.coordinator
           )
@@ -117,10 +112,6 @@ extension NaverMapView: UIViewRepresentable {
 
   func makeCoordinator() -> Coordinator {
     return Coordinator(target: self)
-  }
-
-  private func isCafeEqualWithStorage() -> Bool {
-    NaverMapView.storage.cafes != viewStore.naverMapState.cafes
   }
 }
 
