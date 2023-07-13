@@ -210,9 +210,7 @@ extension Coordinator: NMFMapViewCameraDelegate {
     let longitude = mapView.cameraPosition.target.lng
     DispatchQueue.main.async { [weak self] in
       self?.target.viewStore.send(
-        .cameraPositionMoved(newCameraPosition:
-                              CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                            )
+        .cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
       )
     }
   }
