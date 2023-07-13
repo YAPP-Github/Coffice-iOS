@@ -115,9 +115,6 @@ struct NaverMapCore: ReducerProtocol {
           state.cafes[selectedCafeIndex].isBookmarked.toggle()
           state.selectedCafe = state.cafes[selectedCafeIndex]
         }
-//        state.selectedCafe?.isBookmarked.toggle()
-
-//        state.isUpdatingBookmarkState = true
 
         return .run { [isBookmarked = state.selectedCafe?.isBookmarked] send in
           if isBookmarked == true {

@@ -67,7 +67,15 @@ extension NaverMapView: UIViewRepresentable {
 
     if viewStore.naverMapState.shouldUpdateMarkers {
       if viewStore.naverMapState.shouldShowBookmarkCafesOnly {
-        removeMarkers { $0.cafe.isBookmarked.isFalse }
+        DispatchQueue.main.async {
+          removeAllMarkers()
+          addMarker(
+            naverMapView: uiView,
+            cafeList: viewStore.naverMapState.cafes.filter { $0.isBookmarked },
+            selectedCafe: viewStore.naverMapState.selectedCafe,
+            coordinator: context.coordinator
+          )
+        }
       } else {
         DispatchQueue.main.async {
           addMarker(
