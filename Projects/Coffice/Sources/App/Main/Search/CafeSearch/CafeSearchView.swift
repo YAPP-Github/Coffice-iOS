@@ -102,11 +102,11 @@ extension CafeSearchView {
           VStack(spacing: 0) {
             ForEach(viewStore.waypoints, id: \.self) { waypoint in
               WaypointCellView(waypoint: waypoint)
-                .onTapGesture { }
+                .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
             }
             ForEach(viewStore.places, id: \.self) { place in
               PlaceCellView(place: place)
-                .onTapGesture { }
+                .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
             }
           }
           .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
