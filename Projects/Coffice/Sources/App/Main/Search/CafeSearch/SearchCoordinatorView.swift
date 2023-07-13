@@ -31,7 +31,7 @@ struct SearchCoordinatorView: View {
         CaseLet(
           state: /SearchScreen.State.cafeSearchDetail,
           action: SearchScreen.Action.cafeSearchDetail,
-          then: CafeSearchDetailView.init
+          then: CafeDetailView.init
         )
 
         CaseLet(

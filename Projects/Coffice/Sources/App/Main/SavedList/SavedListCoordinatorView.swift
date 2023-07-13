@@ -25,7 +25,7 @@ struct SavedListCoordinatorView: View {
         CaseLet(
           state: /SavedListScreen.State.cafeSearchDetail,
           action: SavedListScreen.Action.cafeSearchDetail,
-          then: CafeSearchDetailView.init
+          then: CafeDetailView.init
         )
       }
     }

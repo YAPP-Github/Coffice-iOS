@@ -1,5 +1,5 @@
 //
-//  CafeSearchDetailCore.swift
+//  CafeDetailCore.swift
 //  coffice
 //
 //  Created by Min Min on 2023/06/24.
@@ -9,9 +9,9 @@
 import ComposableArchitecture
 import Foundation
 
-struct CafeSearchDetail: ReducerProtocol {
+struct CafeDetail: ReducerProtocol {
   struct State: Equatable {
-    let title = "CafeSearchDetail"
+    let title = "CafeDetail"
     var cafeId: Int
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [
@@ -71,7 +71,7 @@ struct CafeSearchDetail: ReducerProtocol {
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
 
-  var body: some ReducerProtocolOf<CafeSearchDetail> {
+  var body: some ReducerProtocolOf<CafeDetail> {
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -116,7 +116,7 @@ struct CafeSearchDetail: ReducerProtocol {
 
 // MARK: - Sub Views State
 
-extension CafeSearchDetail.State {
+extension CafeDetail.State {
   enum SubMenuType: CaseIterable {
     case detailInfo
     case review
