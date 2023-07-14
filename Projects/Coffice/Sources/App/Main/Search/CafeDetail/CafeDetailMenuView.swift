@@ -342,25 +342,27 @@ extension CafeDetailMenuView {
             .padding(.top, 20)
 
             // TODO: Tag기 한줄 넘어갈 경우 넘어가도록 커스텀 뷰 구현 필요
-            HStack(spacing: 8) {
-              ForEach(viewState.tagTypes, id: \.self) { tagType in
-                Text(tagType.title)
-                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                  .applyCofficeFont(font: .body2Medium)
-                  .frame(height: 18)
-                  .padding(.vertical, 4)
-                  .padding(.horizontal, 8)
-                  .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                      .stroke(
-                        CofficeAsset.Colors.grayScale3.swiftUIColor,
-                        lineWidth: 1
-                      )
-                  )
+            if viewState.tagTypes.isNotEmpty {
+              HStack(spacing: 8) {
+                ForEach(viewState.tagTypes, id: \.self) { tagType in
+                  Text(tagType.title)
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                    .applyCofficeFont(font: .body2Medium)
+                    .frame(height: 18)
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 8)
+                    .overlay(
+                      RoundedRectangle(cornerRadius: 4)
+                        .stroke(
+                          CofficeAsset.Colors.grayScale3.swiftUIColor,
+                          lineWidth: 1
+                        )
+                    )
+                }
               }
+              .frame(height: 26)
+              .padding(.top, 20)
             }
-            .frame(height: 26)
-            .padding(.top, 20)
 
             CofficeAsset.Colors.grayScale3.swiftUIColor
               .frame(height: 1)
