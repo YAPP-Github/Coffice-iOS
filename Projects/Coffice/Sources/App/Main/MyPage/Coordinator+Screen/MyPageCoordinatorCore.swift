@@ -32,8 +32,6 @@ struct MyPageCoordinator: ReducerProtocol {
           state.routes.push(.privacyPolicy(.initialState))
         case .locationServiceTerms:
           state.routes.push(.locationServiceTerms(.initialState))
-        case .contact:
-          state.routes.push(.contact(.initialState))
         default:
           break
         }
@@ -45,7 +43,6 @@ struct MyPageCoordinator: ReducerProtocol {
 
       case .routeAction(_, action: .locationServiceTerms(.popView)),
           .routeAction(_, action: .privacyPolicy(.popView)),
-          .routeAction(_, action: .contact(.popView)),
           .routeAction(_, action: .editProfile(.popView)):
         state.routes.pop()
         return .none

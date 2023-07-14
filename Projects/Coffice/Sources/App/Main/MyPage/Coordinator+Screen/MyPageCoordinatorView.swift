@@ -35,12 +35,6 @@ struct MyPageCoordinatorView: View {
         )
 
         CaseLet(
-          state: /MyPageScreen.State.contact,
-          action: MyPageScreen.Action.contact,
-          then: ContactView.init
-        )
-
-        CaseLet(
           state: /MyPageScreen.State.editProfile,
           action: MyPageScreen.Action.editProfile,
           then: EditProfileView.init
