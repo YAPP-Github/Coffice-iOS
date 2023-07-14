@@ -49,8 +49,10 @@ extension NaverMapView: UIViewRepresentable {
     }
 
     if viewStore.naverMapState.shouldClearMarkers {
-      removeAllMarkers()
-      DispatchQueue.main.async { viewStore.send(.naverMapAction(.markersCleared)) }
+      DispatchQueue.main.async {
+        viewStore.send(.naverMapAction(.removeAllMarkers))
+        viewStore.send(.naverMapAction(.markersCleared))
+      }
     }
 
     if viewStore.naverMapState.shouldUpdateMarkers
@@ -68,7 +70,7 @@ extension NaverMapView: UIViewRepresentable {
     if viewStore.naverMapState.shouldUpdateMarkers {
       if viewStore.naverMapState.shouldShowBookmarkCafesOnly {
         DispatchQueue.main.async {
-          removeAllMarkers()
+          viewStore.send(.naverMapAction(.removeAllMarkers))
           addMarker(
             naverMapView: uiView,
             cafeList: viewStore.naverMapState.cafes.filter { $0.isBookmarked },
@@ -95,27 +97,8 @@ extension NaverMapView: UIViewRepresentable {
 }
 
 extension NaverMapView {
-  func removeMarkers(filter: ((MapMarker) -> Bool)) {
-    viewStore.naverMapState.markers.filter(filter).forEach {
-      $0.touchHandler = nil
-      $0.mapView = nil
-    }
-
-    DispatchQueue.main.async {
-      viewStore.send(.naverMapAction(.markersUpdated))
-    }
-  }
-
-  func removeAllMarkers() {
-    for marker in viewStore.naverMapState.markers {
-      marker.touchHandler = nil
-      marker.mapView = nil
-    }
-    viewStore.send(.naverMapAction(.removeAllMarkers))
-  }
-
   func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], selectedCafe: Cafe?, coordinator: Coordinator) {
-    removeAllMarkers()
+    viewStore.send(.naverMapAction(.removeAllMarkers))
     for cafe in cafeList {
       let marker = MapMarker(
         cafe: cafe,

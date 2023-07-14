@@ -184,6 +184,10 @@ struct NaverMapCore: ReducerProtocol {
         return .none
 
       case .removeAllMarkers:
+        state.markers.forEach { marker in
+          marker.touchHandler = nil
+          marker.mapView = nil
+        }
         state.markers.removeAll()
         return .none
 
