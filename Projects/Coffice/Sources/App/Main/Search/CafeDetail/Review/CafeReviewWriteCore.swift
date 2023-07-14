@@ -23,12 +23,13 @@ struct CafeReviewWrite: ReducerProtocol {
     static let mock: Self = .init(reviewType: .create, placeId: 1)
 
     let id = UUID()
+    @BindingState var reviewText = ""
     var optionButtonStates: [CafeReviewOptionButtons.State]
     var reviewType: ReviewType
     let placeId: Int
+    let reviewId: Int?
 
     var isSaveButtonEnabled = false
-    @BindingState var reviewText = ""
     let textViewDidBeginEditingScrollId = UUID()
     let textViewDidEndEditingScrollId = UUID()
     let maximumTextLength = 200
@@ -46,9 +47,18 @@ struct CafeReviewWrite: ReducerProtocol {
       return isSaveButtonEnabled ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale6
     }
 
-    init(reviewType: ReviewType, placeId: Int) {
+    init(
+      reviewType: ReviewType,
+      placeId: Int,
+      reviewId: Int? = nil,
+      outletOption: OutletStateOption? = nil,
+      wifiOption: WifiStateOption? = nil,
+      noiseOption: NoiseOption? = nil,
+      reviewText: String = ""
+    ) {
       self.reviewType = reviewType
       self.placeId = placeId
+      self.reviewId = reviewId
 
       switch reviewType {
       case .create:
@@ -58,13 +68,13 @@ struct CafeReviewWrite: ReducerProtocol {
           .init(optionType: .noise(nil))
         ]
       case .edit:
-        // TODO: 기존 리뷰 정보를 참고해서 버튼, 텍스트뷰 상태 업데이트 필요
         optionButtonStates = [
-          .init(optionType: .outletState(nil)),
-          .init(optionType: .wifiState(nil)),
-          .init(optionType: .noise(nil))
+          .init(optionType: .outletState(outletOption)),
+          .init(optionType: .wifiState(wifiOption)),
+          .init(optionType: .noise(noiseOption))
         ]
-        reviewText = ""
+        self.reviewText = reviewText
+        isSaveButtonEnabled = true
       }
     }
   }
@@ -79,9 +89,10 @@ struct CafeReviewWrite: ReducerProtocol {
     case saveButtonTapped
     case uploadReview
     case uploadReviewResponse(TaskResult<HTTPURLResponse>)
+    case editReviewResponse(TaskResult<HTTPURLResponse>)
   }
 
-  @Dependency(\.reviewAPIClient) private var reviewClient
+  @Dependency(\.reviewAPIClient) private var reviewAPIClient
 
   var body: some ReducerProtocolOf<CafeReviewWrite> {
     BindingReducer()
@@ -132,22 +143,49 @@ struct CafeReviewWrite: ReducerProtocol {
           }
         }
 
-        let requestValue = ReviewUploadRequestValue(
-          placeId: state.placeId,
-          electricOutletOption: electricOutletLevel,
-          wifiOption: wifiLevel,
-          noiseOption: noiseLevel,
-          content: state.reviewText
-        )
-
-        return .run { send in
-          let response = try await reviewClient.uploadReview(requestValue: requestValue)
-          await send(.uploadReviewResponse(.success(response)))
-        } catch: { error, send in
-          await send(.uploadReviewResponse(.failure(error)))
+        switch state.reviewType {
+        case .create:
+          let requestValue = ReviewUploadRequestValue(
+            placeId: state.placeId,
+            electricOutletOption: electricOutletLevel,
+            wifiOption: wifiLevel,
+            noiseOption: noiseLevel,
+            content: state.reviewText
+          )
+          return .run { send in
+            let response = try await reviewAPIClient.uploadReview(requestValue: requestValue)
+            await send(.uploadReviewResponse(.success(response)))
+          } catch: { error, send in
+            await send(.uploadReviewResponse(.failure(error)))
+          }
+        case .edit:
+          guard let reviewId = state.reviewId else { return .none }
+          let requestValue = ReviewEditRequestValue(
+            placeId: state.placeId,
+            reviewId: reviewId,
+            electricOutletOption: electricOutletLevel,
+            wifiOption: wifiLevel,
+            noiseOption: noiseLevel,
+            content: state.reviewText
+          )
+          return .run { send in
+            let response = try await reviewAPIClient.editReview(requestValue: requestValue)
+            await send(.editReviewResponse(.success(response)))
+          } catch: { error, send in
+            await send(.editReviewResponse(.failure(error)))
+          }
         }
 
       case .uploadReviewResponse(let result):
+        switch result {
+        case .success:
+          return EffectTask(value: .dismissView)
+        case .failure(let error):
+          debugPrint(error.localizedDescription)
+        }
+        return .none
+
+      case .editReviewResponse(let result):
         switch result {
         case .success:
           return EffectTask(value: .dismissView)

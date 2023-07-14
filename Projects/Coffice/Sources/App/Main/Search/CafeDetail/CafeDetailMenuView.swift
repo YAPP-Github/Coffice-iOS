@@ -315,7 +315,7 @@ extension CafeDetailMenuView {
                 VStack {
                   if viewState.isMyReview {
                     Button {
-                      viewStore.send(.reviewModifyPopup(isPresented: true))
+                      viewStore.send(.reviewModifyButtonTapped(viewState: viewState))
                     } label: {
                       Text("수정/삭제")
                         .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)

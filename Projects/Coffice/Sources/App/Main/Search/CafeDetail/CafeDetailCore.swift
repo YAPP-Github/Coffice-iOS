@@ -15,6 +15,7 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var isReviewModifyPopupPresented = false
     @BindingState var isReviewReportPopupPresented = false
     var cafeId: Int
+    var selectedUserReviewCellViewState: UserReviewCellViewState?
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [
       CofficeAsset.Asset.cafeImage,
@@ -89,6 +90,7 @@ struct CafeDetail: ReducerProtocol {
     case fetchUserData
     case fetchUserDataResponse(TaskResult<User>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
+    case reviewModifyButtonTapped(viewState: State.UserReviewCellViewState)
     case reviewModifyPopup(isPresented: Bool)
     case reviewReportPopup(isPresented: Bool)
     case reviewEditButtonTapped
@@ -168,7 +170,10 @@ struct CafeDetail: ReducerProtocol {
               review.noiseOption == .quiet ? .quiet : nil
             ]
             .compactMap { $0 },
-            isMyReview: review.memberId == userId
+            isMyReview: review.memberId == userId,
+            outletOption: review.outletOption,
+            wifiOption: review.wifiOption,
+            noiseOption: review.noiseOption
           )
         }
         return .none
@@ -207,7 +212,7 @@ struct CafeDetail: ReducerProtocol {
 
       case .cafeReviewWrite(let action):
         switch action {
-        case .uploadReviewResponse(.success):
+        case .uploadReviewResponse(.success), .editReviewResponse(.success):
           return EffectTask(value: .fetchReviews)
         case .dismissView:
           state.cafeReviewWriteState = nil
@@ -224,8 +229,30 @@ struct CafeDetail: ReducerProtocol {
         state.isReviewReportPopupPresented = isPresented
         return .none
 
+      case .reviewModifyButtonTapped(let viewState):
+        state.selectedUserReviewCellViewState = viewState
+        return EffectTask(value: .reviewModifyPopup(isPresented: true))
+
       case .reviewEditButtonTapped:
-        return EffectTask(value: .reviewModifyPopup(isPresented: false))
+        guard let cellViewState = state.selectedUserReviewCellViewState
+        else { return .none }
+
+        state.isReviewModifyPopupPresented = false
+        return EffectTask(
+          value: .presentCafeReviewWriteView(
+            .init(
+              reviewType: .edit,
+              placeId: state.cafeId,
+              reviewId: cellViewState.reviewId,
+              outletOption: cellViewState.outletOption,
+              wifiOption: cellViewState.wifiOption,
+              noiseOption: cellViewState.noiseOption,
+              reviewText: cellViewState.content
+            )
+          )
+        )
+        .delay(for: 0.5, scheduler: DispatchQueue.main)
+        .eraseToEffect()
 
       case .reviewDeleteButtonTapped:
         return EffectTask(value: .reviewModifyPopup(isPresented: false))
@@ -258,6 +285,9 @@ extension CafeDetail.State {
     let content: String
     let tagTypes: [ReviewTagType]
     let isMyReview: Bool
+    let outletOption: ReviewOption.OutletOption
+    let wifiOption: ReviewOption.WifiOption
+    let noiseOption: ReviewOption.NoiseOption
 
     var dateDescription: String {
       guard let date else { return "-" }
