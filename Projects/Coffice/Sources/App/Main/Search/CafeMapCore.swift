@@ -110,6 +110,21 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
         // MARK: Sub-Core Actions
+      case .cafeSearchAction(.focusSelectedPlace(let cafe)):
+        state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
+          latitude: cafe.latitude, longitude: cafe.longitude)
+        state.naverMapState.isUpdatingCameraPosition = true
+        state.naverMapState.cafes = [cafe]
+        state.naverMapState.selectedCafe = cafe
+        state.naverMapState.isUpdatingMarkers = true
+        state.displayViewType = .searchResultView
+        return .concatenate(
+          EffectTask(value: .cafeSearchListAction(.updateCafeSearchListState(title: cafe.name, cafeList: [cafe]))),
+          EffectTask(value: .cafeSearchAction(
+            .updateCafeSearchState(text: cafe.name, cameraPosition: state.naverMapState.currentCameraPosition))
+          )
+        )
+
       case .cafeSearchListAction(.focusSelectedCafe(let selectedCafe)):
         state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
           latitude: selectedCafe.latitude, longitude: selectedCafe.longitude)

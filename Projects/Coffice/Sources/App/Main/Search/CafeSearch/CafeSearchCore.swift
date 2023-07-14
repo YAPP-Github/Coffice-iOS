@@ -46,9 +46,11 @@ struct CafeSearchCore: ReducerProtocol {
     case deleteRecentSearchWord(recentWordId: Int)
     case binding(BindingAction<State>)
     case recentSearchWordCellTapped(recentWord: String)
+    case updateCafeSearchState(text: String, cameraPosition: CLLocationCoordinate2D)
 
-    case placeCellTapped
-    case waypointCellTapped
+    case placeCellTapped(place: Cafe)
+    case waypointCellTapped(waypoint: WayPoint)
+    case focusSelectedPlace(selectedPlace: Cafe)
 
     case searchPlacesByWaypoint(waypoint: WayPoint)
     case searchPlacesByRequestValue(searchText: String)
@@ -70,6 +72,17 @@ struct CafeSearchCore: ReducerProtocol {
     BindingReducer()
     Reduce { state, action in
       switch action {
+      case .updateCafeSearchState(let text, let newCameraPosition):
+        state.searchTextSnapshot = text
+        state.searchCameraPositionSnapshot = newCameraPosition
+        return .none
+
+      case .waypointCellTapped(waypoint: let waypoint):
+        return .send(.searchPlacesByWaypoint(waypoint: waypoint))
+
+      case .placeCellTapped(place: let place):
+        return .send(.focusSelectedPlace(selectedPlace: place))
+
       case .fetchPlacesAndWaypoints(let searchText):
         if searchText.isEmpty { return .none }
         let needToRetryFetchResponse = state.needToRetryFetchResponse
