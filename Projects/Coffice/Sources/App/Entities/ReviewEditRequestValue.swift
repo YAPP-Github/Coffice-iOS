@@ -1,5 +1,5 @@
 //
-//  ReviewChangeRequestValue.swift
+//  ReviewEditRequestValue.swift
 //  coffice
 //
 //  Created by MinKyeongTae on 2023/07/14.
@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-struct ReviewChangeRequestValue {
+struct ReviewEditRequestValue {
   let placeId: Int
   let reviewId: Int
   let electricOutletOption: ReviewOption.OutletOption
@@ -18,8 +18,8 @@ struct ReviewChangeRequestValue {
   let content: String
 }
 
-extension ReviewChangeRequestValue {
-  func toDTO() -> ReviewChangeRequestDTO {
+extension ReviewEditRequestValue {
+  func toDTO() -> ReviewEditRequestDTO {
     .init(
       placeId: placeId,
       reviewId: reviewId,

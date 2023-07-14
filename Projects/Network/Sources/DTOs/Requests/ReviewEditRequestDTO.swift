@@ -1,5 +1,5 @@
 //
-//  ReviewChangeRequestDTO.swift
+//  ReviewEditRequestDTO.swift
 //  Network
 //
 //  Created by MinKyeongTae on 2023/07/14.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ReviewChangeRequestDTO: Encodable {
+public struct ReviewEditRequestDTO: Encodable {
   let placeId: Int
   let reviewId: Int
   let electricOutletLevel: String

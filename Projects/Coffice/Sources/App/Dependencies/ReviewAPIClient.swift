@@ -63,7 +63,7 @@ struct ReviewAPIClient: DependencyKey {
     return try await coreNetwork.dataTask(request: request)
   }
 
-  func changeReview(requestValue: ReviewChangeRequestValue) async throws -> HTTPURLResponse {
+  func editReview(requestValue: ReviewEditRequestValue) async throws -> HTTPURLResponse {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places/\(requestValue.placeId)/reviews/\(requestValue.reviewId)"
