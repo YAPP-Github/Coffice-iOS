@@ -6,8 +6,8 @@
 //  Copyright © 2023 kr.co.yapp. All rights reserved.
 //
 
-import SwiftUI
 import MessageUI
+import SwiftUI
 
 // Credit for this struct goes to https://swiftuirecipes.com/blog/send-mail-in-swiftui
 typealias MailViewCallback = ((Result<MFMailComposeResult, Error>) -> Void)?
