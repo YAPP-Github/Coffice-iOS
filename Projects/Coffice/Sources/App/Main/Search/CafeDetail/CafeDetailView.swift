@@ -73,6 +73,78 @@ struct CafeDetailView: View {
           )
         }
       )
+      .popup(
+        isPresented: viewStore.binding(\.$isReviewModifyPopupPresented),
+        view: {
+          VStack(spacing: 12) {
+            Button {
+              viewStore.send(.reviewEditButtonTapped)
+            } label: {
+              Text("수정하기")
+                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                .applyCofficeFont(font: .button)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 52)
+                .padding(.top, 20)
+            }
+
+            Button {
+              viewStore.send(.reviewDeleteButtonTapped)
+            } label: {
+              Text("삭제하기")
+                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                .applyCofficeFont(font: .button)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 52)
+            }
+
+            Spacer()
+          }
+          .padding(.horizontal, 20)
+          .frame(height: 196)
+          .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+          .cornerRadius(12, corners: [.topLeft, .topRight])
+        },
+        customize: { popup in
+          popup
+            .type(.toast)
+            .position(.bottom)
+            .isOpaque(true)
+            .closeOnTapOutside(true)
+            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+        }
+      )
+      .popup(
+        isPresented: viewStore.binding(\.$isReviewReportPopupPresented),
+        view: {
+          VStack(spacing: 12) {
+            Button {
+              viewStore.send(.reviewReportButtonTapped)
+            } label: {
+              Text("신고하기")
+                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                .applyCofficeFont(font: .button)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 52)
+                .padding(.top, 20)
+            }
+
+            Spacer()
+          }
+          .padding(.horizontal, 20)
+          .frame(height: 132)
+          .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
+          .cornerRadius(12, corners: [.topLeft, .topRight])
+        },
+        customize: { popup in
+          popup
+            .type(.toast)
+            .position(.bottom)
+            .isOpaque(true)
+            .closeOnTapOutside(true)
+            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+        }
+      )
     }
   }
 }

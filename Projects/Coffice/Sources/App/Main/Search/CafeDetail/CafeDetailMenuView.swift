@@ -313,15 +313,19 @@ extension CafeDetailMenuView {
                 Spacer()
 
                 VStack {
-                  Button {
-                    // TODO: 수정/삭제 & 신고하기 이벤트 구현 필요
-                  } label: {
-                    if Int.random(in: 0...1) == 0 {
-                      CofficeAsset.Asset.more2Fill24px.swiftUIImage
-                    } else {
+                  if viewState.isMyReview {
+                    Button {
+                      viewStore.send(.reviewModifyPopup(isPresented: true))
+                    } label: {
                       Text("수정/삭제")
                         .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                         .applyCofficeFont(font: .body2Medium)
+                    }
+                  } else {
+                    Button {
+                      viewStore.send(.reviewReportPopup(isPresented: true))
+                    } label: {
+                      CofficeAsset.Asset.more2Fill24px.swiftUIImage
                     }
                   }
                   Spacer()
