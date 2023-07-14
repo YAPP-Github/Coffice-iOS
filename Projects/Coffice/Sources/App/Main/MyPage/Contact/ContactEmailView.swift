@@ -69,7 +69,9 @@ struct ContactEmailView: UIViewControllerRepresentable {
     _ uiViewController: MFMailComposeViewController,
     context: UIViewControllerRepresentableContext<ContactEmailView>
   ) {}
+}
 
+extension ContactEmailView {
   static var canSendMail: Bool {
     MFMailComposeViewController.canSendMail()
   }
