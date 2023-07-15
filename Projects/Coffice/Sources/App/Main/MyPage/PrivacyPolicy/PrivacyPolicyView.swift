@@ -15,7 +15,10 @@ struct PrivacyPolicyView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 10) {
-
+        CommonWebView(store: store.scope(
+          state: \.webViewState,
+          action: PrivacyPolicy.Action.webAction)
+        )
       }
       .customNavigationBar(
         centerView: {
