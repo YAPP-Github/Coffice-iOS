@@ -166,9 +166,15 @@ struct CafeMapCore: ReducerProtocol {
         return .run { send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
-              searchText: "", userLatitude: waypoint.latitude, userLongitude: waypoint.longitude,
-              maximumSearchDistance: 2000, isOpened: nil, hasCommunalTable: nil,
-              filters: nil, pageSize: 10, pageableKey: nil
+              searchText: "",
+              userLatitude: waypoint.latitude,
+              userLongitude: waypoint.longitude,
+              maximumSearchDistance: 2000,
+              isOpened: nil,
+              hasCommunalTable: nil,
+              filters: nil,
+              pageSize: 10,
+              pageableKey: nil
             )
             let cafeListData = try await placeAPIClient.searchPlaces(by: cafeRequest)
             return cafeListData
@@ -277,8 +283,12 @@ struct CafeMapCore: ReducerProtocol {
           state.naverMapState.cafes = searchResponse.cafes
           state.naverMapState.isUpdatingMarkers = true
 
-          return .send(.cafeSearchListAction(.updateCafeSearchListState(
-            title: nil, cafeList: searchResponse.cafes, hasNext: searchResponse.hasNext)))
+          return .send(.cafeSearchListAction(
+            .updateCafeSearchListState(
+              title: nil,
+              cafeList: searchResponse.cafes,
+              hasNext: searchResponse.hasNext)
+          ))
 
         case .failure(let error):
           debugPrint(error)
