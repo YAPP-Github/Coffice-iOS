@@ -16,7 +16,7 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var isReviewReportPopupPresented = false
     var cafeId: Int
     var selectedUserReviewCellViewState: UserReviewCellViewState?
-    var selectedReviewModifyPopupButtonActionType: ReviewModifyPopupButtonActionType = .none
+    var selectedReviewModifyPopupActionType: ReviewModifyPopupButtonActionType = .none
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [
       CofficeAsset.Asset.cafeImage,
@@ -98,7 +98,7 @@ struct CafeDetail: ReducerProtocol {
     case reviewEditButtonTapped
     case reviewDeleteButtonTapped
     case reviewReportButtonTapped
-    case resetSelectedReviewModifyPopupButtonActionType
+    case resetSelectedReviewModifyPopupActionType
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -230,7 +230,7 @@ struct CafeDetail: ReducerProtocol {
 
         var popActionEffectTask: EffectTask<Action> = .none
 
-        switch state.selectedReviewModifyPopupButtonActionType {
+        switch state.selectedReviewModifyPopupActionType {
         case .edit:
           popActionEffectTask = EffectTask(
             value: .presentCafeReviewWriteView(
@@ -256,7 +256,7 @@ struct CafeDetail: ReducerProtocol {
 
         return .merge(
           popActionEffectTask,
-          EffectTask(value: .resetSelectedReviewModifyPopupButtonActionType)
+          EffectTask(value: .resetSelectedReviewModifyPopupActionType)
         )
 
       case .reviewModifyPopup(let isPresented):
@@ -272,18 +272,18 @@ struct CafeDetail: ReducerProtocol {
         return EffectTask(value: .reviewModifyPopup(isPresented: true))
 
       case .reviewEditButtonTapped:
-        state.selectedReviewModifyPopupButtonActionType = .edit
+        state.selectedReviewModifyPopupActionType = .edit
         return EffectTask(value: .reviewModifyPopup(isPresented: false))
 
       case .reviewDeleteButtonTapped:
-        state.selectedReviewModifyPopupButtonActionType = .delete
+        state.selectedReviewModifyPopupActionType = .delete
         return EffectTask(value: .reviewModifyPopup(isPresented: false))
 
       case .reviewReportButtonTapped:
         return EffectTask(value: .reviewReportPopup(isPresented: false))
 
-      case .resetSelectedReviewModifyPopupButtonActionType:
-        state.selectedReviewModifyPopupButtonActionType = .none
+      case .resetSelectedReviewModifyPopupActionType:
+        state.selectedReviewModifyPopupActionType = .none
         return .none
 
       default:
