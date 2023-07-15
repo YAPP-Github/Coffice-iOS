@@ -385,20 +385,14 @@ extension CafeMapCore {
   }
 
   enum BottomFloatingButtonType: CaseIterable {
+    case openTimeButton
     case bookmarkButton
     case currentLocationButton
 
-    var image: Image {
-      switch self {
-      case .bookmarkButton:
-        return CofficeAsset.Asset.bookmarkFill36px.swiftUIImage
-      case .currentLocationButton:
-        return CofficeAsset.Asset.navigationFill36px.swiftUIImage
-      }
-    }
-
     var selectedImage: Image {
       switch self {
+      case .openTimeButton:
+        return CofficeAsset.Asset.clockFloatingSelected48px.swiftUIImage
       case .bookmarkButton:
         return CofficeAsset.Asset.bookmarkFloatingSelected48px.swiftUIImage
       case .currentLocationButton:
@@ -408,6 +402,8 @@ extension CafeMapCore {
 
     var unselectedImage: Image {
       switch self {
+      case .openTimeButton:
+        return CofficeAsset.Asset.clockFloatingUnselected48px.swiftUIImage
       case .bookmarkButton:
         return CofficeAsset.Asset.bookmarkFloatingUnselected48px.swiftUIImage
       case .currentLocationButton:

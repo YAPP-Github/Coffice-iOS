@@ -56,6 +56,9 @@ struct Cafe: Hashable, Identifiable {
 
 extension SearchPlaceResponseDTO {
   func toCafeEntity() -> Cafe {
+    let openingInformation = openingHours?.isEmpty == true
+    ? nil
+    : OpeningInformation(dayOpenInformations: openingHours?.map { $0.toEntity() } ?? [])
     return .init(
       placeId: placeId,
       name: name,
@@ -70,7 +73,7 @@ extension SearchPlaceResponseDTO {
       imageUrls: imageUrls,
       homepageUrl: homepageUrl,
       crowdednessList: crowdednessList?.map { $0.toEntity() },
-      openingInformation: OpeningInformation(dayOpenInformations: openingHours?.map { $0.toEntity() } ?? []),
+      openingInformation: openingInformation,
       capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
@@ -82,6 +85,9 @@ extension SearchPlaceResponseDTO {
 
 extension PlaceResponseDTO {
   func toCafeEntity() -> Cafe {
+    let openingInformation = openingHours == nil
+    ? nil
+    : OpeningInformation(dayOpenInformations: openingHours?.map { $0.toEntity() } ?? [])
     return .init(
       placeId: placeId,
       name: name,
@@ -96,7 +102,7 @@ extension PlaceResponseDTO {
       imageUrls: imageUrls,
       homepageUrl: homepageUrl,
       crowdednessList: crowdednessList?.map { $0.toEntity() },
-      openingInformation: OpeningInformation(dayOpenInformations: openingHours?.map { $0.toEntity() } ?? []),
+      openingInformation: openingInformation,
       capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },

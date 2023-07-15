@@ -47,6 +47,7 @@ struct NaverMapCore: ReducerProtocol {
     fileprivate(set) var shouldUpdateMarkers = false
     fileprivate(set) var isUpdatingMarkers = false
     fileprivate(set) var shouldShowBookmarkCafesOnly = false
+    fileprivate(set) var shouldShowOpenTime = false
 
     fileprivate(set) var isMovingCameraPosition = false
     fileprivate(set) var recentCameraUpdateReason: NaverMapCameraUpdateReason = .changedByDeveloper
@@ -59,6 +60,19 @@ struct NaverMapCore: ReducerProtocol {
         $0.mapView = nil
       }
       markers.removeAll()
+    }
+
+    mutating func toggleOpenTime() {
+      if shouldShowOpenTime {
+        markers.forEach {
+          $0.subCaptionText = $0.cafe.openingInformation?.formattedString ?? "정보없음"
+          $0.subCaptionColor = CofficeAsset.Colors.secondary1.color
+        }
+      } else {
+        markers.forEach {
+          $0.subCaptionText = ""
+        }
+      }
     }
   }
 
@@ -124,6 +138,15 @@ struct NaverMapCore: ReducerProtocol {
 
       case .bottomFloatingButtonTapped(let buttonType):
         switch buttonType {
+        case .openTimeButton:
+          if let clockButtonIndex = state.bottomFloatingButtons
+            .firstIndex(where: { $0.type == buttonType }) {
+            state.shouldUpdateMarkers = true
+            state.bottomFloatingButtons[clockButtonIndex].isSelected.toggle()
+            state.shouldShowOpenTime = state.bottomFloatingButtons[clockButtonIndex].isSelected
+            state.toggleOpenTime()
+          }
+          return .none
         case .currentLocationButton:
           state.isUpdatingCameraPosition = true
           return .send(.moveCameraToUserPosition)
