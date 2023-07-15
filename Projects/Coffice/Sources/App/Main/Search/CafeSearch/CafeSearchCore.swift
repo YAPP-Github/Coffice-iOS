@@ -206,8 +206,10 @@ struct CafeSearchCore: ReducerProtocol {
         return .none
 
       case .searchPlacesWithRequestValueResponse(let cafes):
-        guard let cafe = cafes.first
-        else { return .none }
+        guard let cafe = cafes.first else {
+          state.bodyType = .searchResultEmptyView
+          return .none
+        }
         return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: cafe)))
 
       default:

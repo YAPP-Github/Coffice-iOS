@@ -263,6 +263,7 @@ struct CafeMapCore: ReducerProtocol {
         return .run { send in
           await send(.naverMapAction(.updatePinnedCafes(cafes: [cafe])))
           await send(.naverMapAction(.selectCafe(cafe: cafe)))
+          await send(.naverMapAction(.moveCameraTo(position: newCameraPosition)))
           await send(.cafeSearchListAction(
             .updateCafeSearchListState(
               title: cafe.name,
