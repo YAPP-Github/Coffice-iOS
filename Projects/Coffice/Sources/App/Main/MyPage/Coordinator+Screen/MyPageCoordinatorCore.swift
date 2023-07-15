@@ -30,6 +30,8 @@ struct MyPageCoordinator: ReducerProtocol {
         switch menuItem.menuType {
         case .privacyPolicy:
           state.routes.push(.privacyPolicy(.initialState))
+        case .appServiceTerms:
+          state.routes.push(.appServiceTerms(.initialState))
         case .locationServiceTerms:
           state.routes.push(.locationServiceTerms(.initialState))
         default:
@@ -42,6 +44,7 @@ struct MyPageCoordinator: ReducerProtocol {
         return .none
 
       case .routeAction(_, action: .locationServiceTerms(.popView)),
+          .routeAction(_, action: .appServiceTerms(.popView)),
           .routeAction(_, action: .privacyPolicy(.popView)),
           .routeAction(_, action: .editProfile(.popView)):
         state.routes.pop()

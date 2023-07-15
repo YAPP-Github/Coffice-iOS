@@ -161,6 +161,8 @@ extension MyPage {
       switch menuType {
       case .privacyPolicy:
         return "개인정보 처리방침"
+      case .appServiceTerms:
+        return "서비스 이용약관"
       case .locationServiceTerms:
         return "위치서비스 약관"
       case .contact:
@@ -176,7 +178,7 @@ extension MyPage {
 
     var textColor: Color {
       switch menuType {
-      case .privacyPolicy, .locationServiceTerms, .contact, .versionInformation:
+      case .privacyPolicy, .appServiceTerms, .locationServiceTerms, .contact, .versionInformation:
         return CofficeAsset.Colors.grayScale9.swiftUIColor
       case .logout, .memberLeave:
         return CofficeAsset.Colors.grayScale6.swiftUIColor
@@ -186,6 +188,7 @@ extension MyPage {
 
   enum MenuType: CaseIterable {
     case privacyPolicy
+    case appServiceTerms
     case locationServiceTerms
     case contact
     case versionInformation

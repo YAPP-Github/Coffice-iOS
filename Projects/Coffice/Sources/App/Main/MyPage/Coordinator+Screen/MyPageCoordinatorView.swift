@@ -29,6 +29,12 @@ struct MyPageCoordinatorView: View {
         )
 
         CaseLet(
+          state: /MyPageScreen.State.appServiceTerms,
+          action: MyPageScreen.Action.appServiceTerms,
+          then: AppServiceTermsView.init
+        )
+
+        CaseLet(
           state: /MyPageScreen.State.privacyPolicy,
           action: MyPageScreen.Action.privacyPolicy,
           then: PrivacyPolicyView.init

@@ -13,6 +13,7 @@ struct MyPageScreen: ReducerProtocol {
     /// 메인 페이지
     case myPage(MyPage.State)
     case privacyPolicy(PrivacyPolicy.State)
+    case appServiceTerms(AppServiceTermsReducer.State)
     case locationServiceTerms(LocationServiceTerms.State)
     case editProfile(EditProfile.State)
     case commonBottomSheet(CommonBottomSheet.State)
@@ -21,6 +22,7 @@ struct MyPageScreen: ReducerProtocol {
   enum Action: Equatable {
     case myPage(MyPage.Action)
     case privacyPolicy(PrivacyPolicy.Action)
+    case appServiceTerms(AppServiceTermsReducer.Action)
     case locationServiceTerms(LocationServiceTerms.Action)
     case editProfile(EditProfile.Action)
     case commonBottomSheet(CommonBottomSheet.Action)
@@ -39,6 +41,13 @@ struct MyPageScreen: ReducerProtocol {
       action: /Action.privacyPolicy
     ) {
       PrivacyPolicy()
+    }
+
+    Scope(
+      state: /State.appServiceTerms,
+      action: /Action.appServiceTerms
+    ) {
+      AppServiceTermsReducer()
     }
 
     Scope(
