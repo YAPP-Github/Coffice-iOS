@@ -8,13 +8,13 @@
 
 import Foundation
 
-struct NetworkResult<DTO: Decodable>: Decodable {
-  let code: String
-  let message: String
-  let data: DTO
-  let page: PageResponse?
+public struct NetworkResult<DTO: Decodable>: Decodable {
+  public let code: String
+  public let message: String
+  public let data: DTO?
+  public let page: PageResponse?
 
-  struct PageResponse: Decodable {
-    let hasNext: Bool?
+  public struct PageResponse: Decodable {
+    public let hasNext: Bool?
   }
 }
