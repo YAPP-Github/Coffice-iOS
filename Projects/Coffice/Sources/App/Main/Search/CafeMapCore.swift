@@ -56,7 +56,7 @@ struct CafeMapCore: ReducerProtocol {
     case searchPlacesByFiltersResponse(TaskResult<CafeSearchResponse>)
 
     // MARK: Temporary
-    case pushToSearchDetailForTest(cafeId: Int)
+    case pushToCafeDetailView(cafeId: Int)
     case pushToSearchListForTest
 
     // MARK: Common
@@ -415,7 +415,7 @@ struct CafeMapCore: ReducerProtocol {
       case .cardViewTapped:
         guard let cafe = state.naverMapState.selectedCafe
         else { return .none }
-        return EffectTask(value: .pushToSearchDetailForTest(cafeId: cafe.placeId))
+        return EffectTask(value: .pushToCafeDetailView(cafeId: cafe.placeId))
       default:
         return .none
       }
