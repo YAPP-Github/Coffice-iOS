@@ -158,18 +158,13 @@ extension Coordinator: NMFMapViewTouchDelegate {
 }
 
 extension Coordinator: NMFMapViewCameraDelegate {
-  func mapView(_ mapView: NMFMapView, cameraWillChangeByReason reason: Int, animated: Bool) {
-    DispatchQueue.main.async { [weak self] in
-      guard let updateReason = NaverMapCameraUpdateReason(rawValue: reason)
-      else { return }
-      self?.target.viewStore.send(.updateCameraUpdateReason(updateReason))
-    }
-  }
-
-  func mapViewCameraIdle(_ mapView: NMFMapView) {
+  func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
     let latitude = mapView.cameraPosition.target.lat
     let longitude = mapView.cameraPosition.target.lng
     DispatchQueue.main.async { [weak self] in
+      if let updateReason = NaverMapCameraUpdateReason(rawValue: reason) {
+        self?.target.viewStore.send(.updateCameraUpdateReason(updateReason))
+      }
       self?.target.viewStore.send(
         .cameraPositionMoved(
           newCameraPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)

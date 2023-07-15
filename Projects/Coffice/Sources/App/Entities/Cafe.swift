@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-struct Cafe: Hashable {
+struct Cafe: Hashable, Identifiable {
   static let dummy = Cafe(
     placeId: 0,
     name: "name",
@@ -32,6 +32,7 @@ struct Cafe: Hashable {
     isBookmarked: false
   )
 
+  let id = UUID() // TODO: Identifiable 채택을 위한 임시 코드
   let placeId: Int
   let name: String
   let address: Address?

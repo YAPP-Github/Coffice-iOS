@@ -16,7 +16,7 @@ struct CafeSearchFilters: Equatable {
   let electricOutletLevels: [ElectricOutletType]?
 }
 
-enum CapacityLevel {
+enum CapacityLevel: Hashable {
   case unknown
   case low
   case medium
@@ -42,7 +42,7 @@ enum CapacityLevel {
   }
 }
 
-enum DrinkType {
+enum DrinkType: Hashable {
   case decaffeinated
   case soyMilk
 
@@ -62,7 +62,7 @@ enum DrinkType {
   }
 }
 
-enum FoodType {
+enum FoodType: Hashable {
   case glutenFree
   case mealWorthy
 
@@ -82,7 +82,7 @@ enum FoodType {
   }
 }
 
-enum RestroomType {
+enum RestroomType: Hashable {
   case indoors
   case genderSeperated
 

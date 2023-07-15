@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-struct WayPoint: Hashable {
+struct WayPoint: Hashable, Identifiable {
   let id: Int
   let name: String
   let latitude: Double

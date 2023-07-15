@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-struct SearchPlaceRequestValue {
+struct SearchPlaceRequestValue: Equatable {
   let searchText: String?
   let userLatitude: Double
   let userLongitude: Double
@@ -21,7 +21,7 @@ struct SearchPlaceRequestValue {
   let pageableKey: PageableKey?
 }
 
-struct PageableKey {
+struct PageableKey: Equatable {
   let lastCafeDistance: Double // 직전 검색 결과를 통해 받은 카페 목록 중 마지막 카페의 distance값
 }
 

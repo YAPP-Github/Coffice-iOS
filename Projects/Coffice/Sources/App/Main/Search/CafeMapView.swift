@@ -199,7 +199,7 @@ extension CafeMapView {
     CafeFilterMenusView(
       store: store.scope(
         state: \.cafeFilterMenusState,
-        action: CafeMapCore.Action.cafeFilterMenus(action:)
+        action: CafeMapCore.Action.cafeFilterMenusAction
       )
     )
     .padding(.top, 8)
