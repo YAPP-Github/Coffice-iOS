@@ -210,9 +210,9 @@ struct CafeReviewWrite: ReducerProtocol {
       case .dismissConfirmBottomSheet(let action):
         switch action {
         case .confirmButtonTapped:
-          state.isDismissConfirmed = true
           return EffectTask(value: .dismissDeleteConfirmBottomSheet)
         case .cancelButtonTapped:
+          state.isDismissConfirmed = true
           return EffectTask(value: .dismissDeleteConfirmBottomSheet)
         }
 
