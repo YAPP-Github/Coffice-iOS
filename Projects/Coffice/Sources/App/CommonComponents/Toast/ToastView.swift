@@ -10,16 +10,18 @@ import SwiftUI
 
 struct ToastView: View {
   let title: String
-  let image: CofficeImages
+  let image: CofficeImages?
   let config: ToastConfiguration
 
   var body: some View {
     VStack {
       Spacer()
       HStack {
-        image.swiftUIImage
-          .renderingMode(.template)
-          .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+        if let image {
+          image.swiftUIImage
+            .renderingMode(.template)
+            .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+        }
         Text(title)
           .multilineTextAlignment(.center)
           .foregroundColor(config.textColor)

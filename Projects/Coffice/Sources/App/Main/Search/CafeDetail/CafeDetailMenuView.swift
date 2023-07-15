@@ -323,7 +323,7 @@ extension CafeDetailMenuView {
                     }
                   } else {
                     Button {
-                      viewStore.send(.reviewReportPopup(isPresented: true))
+                      viewStore.send(.reviewReportButtonTapped(viewState: viewState))
                     } label: {
                       CofficeAsset.Asset.more2Fill24px.swiftUIImage
                     }

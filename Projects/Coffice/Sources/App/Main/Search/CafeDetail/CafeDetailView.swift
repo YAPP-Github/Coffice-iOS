@@ -74,11 +74,11 @@ struct CafeDetailView: View {
         }
       )
       .popup(
-        isPresented: viewStore.binding(\.$isReviewModifyPopupPresented),
+        isPresented: viewStore.binding(\.$isReviewModifySheetPresented),
         view: {
           VStack(spacing: 12) {
             Button {
-              viewStore.send(.reviewEditButtonTapped)
+              viewStore.send(.reviewEditSheetButtonTapped)
             } label: {
               Text("수정하기")
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -89,7 +89,7 @@ struct CafeDetailView: View {
             }
 
             Button {
-              viewStore.send(.reviewDeleteButtonTapped)
+              viewStore.send(.reviewDeleteSheetButtonTapped)
             } label: {
               Text("삭제하기")
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -113,16 +113,16 @@ struct CafeDetailView: View {
             .closeOnTapOutside(true)
             .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
             .dismissCallback {
-              viewStore.send(.reviewModifyPopupDismissed)
+              viewStore.send(.reviewModifySheetDismissed)
             }
         }
       )
       .popup(
-        isPresented: viewStore.binding(\.$isReviewReportPopupPresented),
+        isPresented: viewStore.binding(\.$isReviewReportSheetPresented),
         view: {
           VStack(spacing: 12) {
             Button {
-              viewStore.send(.reviewReportButtonTapped)
+              viewStore.send(.reviewReportSheetButtonTapped)
             } label: {
               Text("신고하기")
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -146,6 +146,34 @@ struct CafeDetailView: View {
             .isOpaque(true)
             .closeOnTapOutside(true)
             .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+        }
+      )
+      .popup(
+        item: viewStore.binding(\.$deleteConfirmBottomSheetState),
+        itemView: { sheetState in
+          BottomSheetView(
+            store: store.scope(
+              state: { _ in sheetState },
+              action: CafeDetail.Action.bottomSheet
+            ),
+            bottomSheetContent: viewStore.bottomSheetType.content
+          )
+        },
+        customize: { BottomSheetContent.customize($0) }
+      )
+      .popup(
+        item: viewStore.binding(\.$toastViewMessage),
+        itemView: { message in
+          ToastView(
+            title: message,
+            image: CofficeAsset.Asset.checkboxCircleFill18px,
+            config: ToastConfiguration.default
+          )
+        },
+        customize: {
+          $0
+            .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: false))
+            .autohideIn(2)
         }
       )
     }
