@@ -12,11 +12,15 @@ import Foundation
 struct CafeDetail: ReducerProtocol {
   struct State: Equatable {
     @BindingState var cafeReviewWriteState: CafeReviewWrite.State?
-    @BindingState var isReviewModifyPopupPresented = false
-    @BindingState var isReviewReportPopupPresented = false
+    @BindingState var isReviewModifySheetPresented = false
+    @BindingState var isReviewReportSheetPresented = false
+    @BindingState var isReviewDeleteConfirmSheetPresented = false
+    @BindingState var deleteConfirmBottomSheetState: BottomSheetReducer.State?
+    var bottomSheetType: BottomSheetType = .deleteConfirm
+
     var cafeId: Int
     var selectedUserReviewCellViewState: UserReviewCellViewState?
-    var selectedReviewPopupActionType: ReviewPopupButtonActionType = .none
+    var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [
       CofficeAsset.Asset.cafeImage,
@@ -85,6 +89,8 @@ struct CafeDetail: ReducerProtocol {
     case presentBubbleMessageView(BubbleMessage.State)
     case presentCafeReviewWriteView(CafeReviewWrite.State)
     case cafeReviewWrite(action: CafeReviewWrite.Action)
+    case bottomSheet(action: BottomSheetReducer.Action)
+    case reviewDeleteConfirmBottomSheet(isPresented: Bool)
     case fetchPlace
     case fetchReviews
     case fetchReviewsResponse(TaskResult<[ReviewResponse]>)
@@ -94,14 +100,15 @@ struct CafeDetail: ReducerProtocol {
     case fetchUserDataResponse(TaskResult<User>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
     case reviewModifyButtonTapped(viewState: State.UserReviewCellViewState)
-    case reviewModifyPopup(isPresented: Bool)
-    case reviewModifyPopupDismissed
-    case reviewReportPopup(isPresented: Bool)
-    case reviewEditPopupButtonTapped
-    case reviewDeletePopupButtonTapped
-    case reviewReportPopupButtonTapped
+    case reviewModifySheet(isPresented: Bool)
+    case reviewModifySheetDismissed
+    case reviewReportSheet(isPresented: Bool)
+    case reviewDeleteConfirmSheet(isPresented: Bool)
+    case reviewEditSheetButtonTapped
+    case reviewDeleteSheetButtonTapped
+    case reviewReportSheetButtonTapped
     case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
-    case resetSelectedReviewModifyPopupActionType
+    case resetSelectedReviewModifySheetActionType
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -249,13 +256,22 @@ struct CafeDetail: ReducerProtocol {
         }
         return .none
 
-      case .reviewModifyPopupDismissed:
+      case .bottomSheet(let action):
+        switch action {
+        case .confirmButtonTapped:
+          // TODO: 삭제 API 연동 필요
+          return EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: false))
+        case .cancelButtonTapped:
+          return EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: false))
+        }
+
+      case .reviewModifySheetDismissed:
         guard let cellViewState = state.selectedUserReviewCellViewState
         else { return .none }
 
         var popActionEffectTask: EffectTask<Action> = .none
 
-        switch state.selectedReviewPopupActionType {
+        switch state.selectedReviewSheetActionType {
         case .edit:
           popActionEffectTask = EffectTask(
             value: .presentCafeReviewWriteView(
@@ -273,50 +289,63 @@ struct CafeDetail: ReducerProtocol {
           .delay(for: 0.1, scheduler: DispatchQueue.main)
           .eraseToEffect()
         case .delete:
-          // TODO: 삭제버튼 이벤트 구현 필요
-          return .none
+          return EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: true))
+            .delay(for: 0.1, scheduler: DispatchQueue.main)
+            .eraseToEffect()
         default:
           return .none
         }
 
         return .merge(
           popActionEffectTask,
-          EffectTask(value: .resetSelectedReviewModifyPopupActionType)
+          EffectTask(value: .resetSelectedReviewModifySheetActionType)
         )
 
-      case .reviewModifyPopup(let isPresented):
-        state.isReviewModifyPopupPresented = isPresented
+      case .reviewModifySheet(let isPresented):
+        state.isReviewModifySheetPresented = isPresented
         return .none
 
-      case .reviewReportPopup(let isPresented):
-        state.isReviewReportPopupPresented = isPresented
+      case .reviewReportSheet(let isPresented):
+        state.isReviewReportSheetPresented = isPresented
+        return .none
+
+      case .reviewDeleteConfirmSheet(let isPresented):
+        state.isReviewDeleteConfirmSheetPresented = isPresented
+        return .none
+
+      case .reviewDeleteConfirmBottomSheet(let isPresented):
+        if isPresented {
+          state.deleteConfirmBottomSheetState = .init()
+        } else {
+          state.deleteConfirmBottomSheetState = nil
+        }
         return .none
 
       case .reviewModifyButtonTapped(let viewState):
         state.selectedUserReviewCellViewState = viewState
-        return EffectTask(value: .reviewModifyPopup(isPresented: true))
+        return EffectTask(value: .reviewModifySheet(isPresented: true))
 
-      case .reviewEditPopupButtonTapped:
-        state.selectedReviewPopupActionType = .edit
-        return EffectTask(value: .reviewModifyPopup(isPresented: false))
+      case .reviewEditSheetButtonTapped:
+        state.selectedReviewSheetActionType = .edit
+        return EffectTask(value: .reviewModifySheet(isPresented: false))
 
-      case .reviewDeletePopupButtonTapped:
-        state.selectedReviewPopupActionType = .delete
-        return EffectTask(value: .reviewModifyPopup(isPresented: false))
+      case .reviewDeleteSheetButtonTapped:
+        state.selectedReviewSheetActionType = .delete
+        return EffectTask(value: .reviewModifySheet(isPresented: false))
 
-      case .reviewReportPopupButtonTapped:
-        state.selectedReviewPopupActionType = .report
+      case .reviewReportSheetButtonTapped:
+        state.selectedReviewSheetActionType = .report
         return .concatenate(
-          EffectTask(value: .reviewReportPopup(isPresented: false)),
+          EffectTask(value: .reviewReportSheet(isPresented: false)),
           EffectTask(value: .reportReview)
         )
 
       case .reviewReportButtonTapped(let viewState):
         state.selectedUserReviewCellViewState = viewState
-        return EffectTask(value: .reviewReportPopup(isPresented: true))
+        return EffectTask(value: .reviewReportSheet(isPresented: true))
 
-      case .resetSelectedReviewModifyPopupActionType:
-        state.selectedReviewPopupActionType = .none
+      case .resetSelectedReviewModifySheetActionType:
+        state.selectedReviewSheetActionType = .none
         return .none
 
       default:
@@ -516,8 +545,8 @@ extension CafeDetail.State {
   }
 }
 
-extension CafeDetail.State {
-  enum ReviewPopupButtonActionType {
+extension CafeDetail {
+  enum ReviewSheetButtonActionType {
     case edit
     case delete
     case report
