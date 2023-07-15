@@ -78,7 +78,7 @@ struct CafeDetailView: View {
         view: {
           VStack(spacing: 12) {
             Button {
-              viewStore.send(.reviewEditButtonTapped)
+              viewStore.send(.reviewEditPopupButtonTapped)
             } label: {
               Text("수정하기")
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -89,7 +89,7 @@ struct CafeDetailView: View {
             }
 
             Button {
-              viewStore.send(.reviewDeleteButtonTapped)
+              viewStore.send(.reviewDeletePopupButtonTapped)
             } label: {
               Text("삭제하기")
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -122,7 +122,7 @@ struct CafeDetailView: View {
         view: {
           VStack(spacing: 12) {
             Button {
-              viewStore.send(.reviewReportButtonTapped)
+              viewStore.send(.reviewReportPopupButtonTapped)
             } label: {
               Text("신고하기")
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)

@@ -16,7 +16,7 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var isReviewReportPopupPresented = false
     var cafeId: Int
     var selectedUserReviewCellViewState: UserReviewCellViewState?
-    var selectedReviewModifyPopupActionType: ReviewModifyPopupButtonActionType = .none
+    var selectedReviewPopupActionType: ReviewPopupButtonActionType = .none
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [
       CofficeAsset.Asset.cafeImage,
@@ -88,6 +88,8 @@ struct CafeDetail: ReducerProtocol {
     case fetchPlace
     case fetchReviews
     case fetchReviewsResponse(TaskResult<[ReviewResponse]>)
+    case reportReview
+    case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case fetchUserData
     case fetchUserDataResponse(TaskResult<User>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
@@ -95,9 +97,10 @@ struct CafeDetail: ReducerProtocol {
     case reviewModifyPopup(isPresented: Bool)
     case reviewModifyPopupDismissed
     case reviewReportPopup(isPresented: Bool)
-    case reviewEditButtonTapped
-    case reviewDeleteButtonTapped
-    case reviewReportButtonTapped
+    case reviewEditPopupButtonTapped
+    case reviewDeletePopupButtonTapped
+    case reviewReportPopupButtonTapped
+    case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
     case resetSelectedReviewModifyPopupActionType
   }
 
@@ -133,10 +136,32 @@ struct CafeDetail: ReducerProtocol {
           await send(.fetchReviewsResponse(.failure(error)))
         }
 
+      case .reportReview:
+        guard let reviewId = state.selectedUserReviewCellViewState?.reviewId
+        else { return .none }
+        let placeId = state.cafeId
+
+        return .run { send in
+          let response = try await reviewAPIClient.reportReview(placeId: placeId, reviewId: reviewId)
+          await send(.reportReviewResponse(.success(response)))
+        } catch: { error, send in
+          await send(.reportReviewResponse(.failure(error)))
+        }
+
       case .fetchReviewsResponse(let result):
         switch result {
         case .success(let reviews):
           return EffectTask(value: .updateReviewCellViewStates(reviews: reviews))
+        case .failure(let error):
+          debugPrint(error.localizedDescription)
+        }
+        return .none
+
+      case .reportReviewResponse(let result):
+        switch result {
+        case .success(let reviews):
+          // TODO: 신고 완료 토스트 팝업 표출 필요
+          return .none
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
@@ -230,7 +255,7 @@ struct CafeDetail: ReducerProtocol {
 
         var popActionEffectTask: EffectTask<Action> = .none
 
-        switch state.selectedReviewModifyPopupActionType {
+        switch state.selectedReviewPopupActionType {
         case .edit:
           popActionEffectTask = EffectTask(
             value: .presentCafeReviewWriteView(
@@ -271,19 +296,27 @@ struct CafeDetail: ReducerProtocol {
         state.selectedUserReviewCellViewState = viewState
         return EffectTask(value: .reviewModifyPopup(isPresented: true))
 
-      case .reviewEditButtonTapped:
-        state.selectedReviewModifyPopupActionType = .edit
+      case .reviewEditPopupButtonTapped:
+        state.selectedReviewPopupActionType = .edit
         return EffectTask(value: .reviewModifyPopup(isPresented: false))
 
-      case .reviewDeleteButtonTapped:
-        state.selectedReviewModifyPopupActionType = .delete
+      case .reviewDeletePopupButtonTapped:
+        state.selectedReviewPopupActionType = .delete
         return EffectTask(value: .reviewModifyPopup(isPresented: false))
 
-      case .reviewReportButtonTapped:
-        return EffectTask(value: .reviewReportPopup(isPresented: false))
+      case .reviewReportPopupButtonTapped:
+        state.selectedReviewPopupActionType = .report
+        return .concatenate(
+          EffectTask(value: .reviewReportPopup(isPresented: false)),
+          EffectTask(value: .reportReview)
+        )
+
+      case .reviewReportButtonTapped(let viewState):
+        state.selectedUserReviewCellViewState = viewState
+        return EffectTask(value: .reviewReportPopup(isPresented: true))
 
       case .resetSelectedReviewModifyPopupActionType:
-        state.selectedReviewModifyPopupActionType = .none
+        state.selectedReviewPopupActionType = .none
         return .none
 
       default:
@@ -484,9 +517,10 @@ extension CafeDetail.State {
 }
 
 extension CafeDetail.State {
-  enum ReviewModifyPopupButtonActionType {
+  enum ReviewPopupButtonActionType {
     case edit
     case delete
+    case report
     case none
   }
 }
