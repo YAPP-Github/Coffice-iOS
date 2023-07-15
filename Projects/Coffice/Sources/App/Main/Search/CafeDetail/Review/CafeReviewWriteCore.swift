@@ -24,12 +24,15 @@ struct CafeReviewWrite: ReducerProtocol {
 
     let id = UUID()
     @BindingState var reviewText = ""
+    @BindingState var dismissConfirmBottomSheetState: BottomSheetReducer.State?
+    var deleteConfirmBottomSheetType: BottomSheetType = .dismissConfirm
     var optionButtonStates: [CafeReviewOptionButtons.State]
     var reviewType: ReviewType
     let placeId: Int
     let reviewId: Int?
 
     var isSaveButtonEnabled = false
+    var isDismissConfirmed = false
     let textViewDidBeginEditingScrollId = UUID()
     let textViewDidEndEditingScrollId = UUID()
     let maximumTextLength = 200
@@ -83,7 +86,12 @@ struct CafeReviewWrite: ReducerProtocol {
     case binding(BindingAction<State>)
     case onAppear
     case dismissView
+    case dismissViewWithDelay
     case optionButtonsAction(CafeReviewOptionButtons.Action)
+    case dismissConfirmBottomSheet(action: BottomSheetReducer.Action)
+    case presentDeleteConfirmBottomSheet
+    case dismissDeleteConfirmBottomSheet
+    case dismissConfirmBottomSheetDismissed
     case updateSaveButtonState
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
     case saveButtonTapped
@@ -101,6 +109,11 @@ struct CafeReviewWrite: ReducerProtocol {
       switch action {
       case .onAppear:
         return .none
+
+      case .dismissViewWithDelay:
+        return EffectTask(value: .dismissView)
+          .delay(for: 0.1, scheduler: DispatchQueue.main)
+          .eraseToEffect()
 
       case .optionButtonsAction(.optionButtonTapped(let optionType, let index)):
         switch optionType {
@@ -194,8 +207,49 @@ struct CafeReviewWrite: ReducerProtocol {
         }
         return .none
 
+      case .dismissConfirmBottomSheet(let action):
+        switch action {
+        case .confirmButtonTapped:
+          state.isDismissConfirmed = true
+          return EffectTask(value: .dismissDeleteConfirmBottomSheet)
+        case .cancelButtonTapped:
+          return EffectTask(value: .dismissDeleteConfirmBottomSheet)
+        }
+
+      case .presentDeleteConfirmBottomSheet:
+        state.dismissConfirmBottomSheetState = .init()
+        return .none
+
+      case .dismissDeleteConfirmBottomSheet:
+        state.dismissConfirmBottomSheetState = nil
+        return .none
+
+      case .dismissConfirmBottomSheetDismissed:
+        if state.isDismissConfirmed {
+          return EffectTask(value: .dismissViewWithDelay)
+        }
+        return .none
+
       default:
         return .none
+      }
+    }
+  }
+}
+
+extension CafeReviewWrite {
+  enum BottomSheetType {
+    case dismissConfirm
+
+    var content: BottomSheetContent {
+      switch self {
+      case .dismissConfirm:
+        return .init(
+          title: "정말로 나가실 건가요?",
+          description: "입력하신 내용이 사라져요!",
+          confirmButtonTitle: "계속 진행하기",
+          cancelButtonTitle: "나가기"
+        )
       }
     }
   }

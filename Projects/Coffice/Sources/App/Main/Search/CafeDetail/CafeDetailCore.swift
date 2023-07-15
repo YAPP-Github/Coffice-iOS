@@ -490,3 +490,21 @@ extension CafeDetail.State {
     case none
   }
 }
+
+extension CafeDetail {
+  enum BottomSheetType {
+    case deleteConfirm
+
+    var content: BottomSheetContent {
+      switch self {
+      case .deleteConfirm:
+        return .init(
+          title: "정말로 삭제하시나요?",
+          description: "삭제한 내용은 다시 되돌릴 수 없어요!",
+          confirmButtonTitle: "삭제하기",
+          cancelButtonTitle: "취소하기"
+        )
+      }
+    }
+  }
+}
