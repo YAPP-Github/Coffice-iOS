@@ -103,14 +103,14 @@ extension CafeSearchView {
             ForEach(viewStore.waypoints, id: \.self) { waypoint in
               WaypointCellView(
                 waypoint: waypoint,
-                waypointName: waypoint.name.toAttributedString(matchText: viewStore.searchText)
+                waypointName: waypoint.name.changeMatchTextColor(matchText: viewStore.searchText)
               )
               .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
             }
             ForEach(viewStore.places, id: \.self) { place in
               PlaceCellView(
                 place: place,
-                placeName: place.name.toAttributedString(matchText: viewStore.searchText)
+                placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
               )
               .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
             }

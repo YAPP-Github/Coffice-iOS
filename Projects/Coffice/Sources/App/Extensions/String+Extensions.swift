@@ -12,7 +12,7 @@ import SwiftUI
 extension String {
   var isNotEmpty: Bool { !isEmpty }
 
-  func toAttributedString(matchText: String) -> AttributedString {
+  func changeMatchTextColor(matchText: String) -> AttributedString {
     var attributedString = AttributedString(stringLiteral: self)
     guard let range = attributedString.range(of: matchText) else { return attributedString }
     attributedString[range].foregroundColor = CofficeAsset.Colors.secondary1.swiftUIColor
