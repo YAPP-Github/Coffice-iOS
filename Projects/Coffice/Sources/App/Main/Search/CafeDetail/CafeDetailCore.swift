@@ -98,6 +98,8 @@ struct CafeDetail: ReducerProtocol {
     case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case fetchUserData
     case fetchUserDataResponse(TaskResult<User>)
+    case deleteReview
+    case deleteReviewResponse(TaskResult<HTTPURLResponse>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
     case reviewModifyButtonTapped(viewState: State.UserReviewCellViewState)
     case reviewModifySheet(isPresented: Bool)
@@ -155,6 +157,18 @@ struct CafeDetail: ReducerProtocol {
           await send(.reportReviewResponse(.failure(error)))
         }
 
+      case .deleteReview:
+        guard let reviewId = state.selectedUserReviewCellViewState?.reviewId
+        else { return .none }
+        let placeId = state.cafeId
+
+        return .run { send in
+          let response = try await reviewAPIClient.deleteReview(placeId: placeId, reviewId: reviewId)
+          await send(.deleteReviewResponse(.success(response)))
+        } catch: { error, send in
+          await send(.deleteReviewResponse(.failure(error)))
+        }
+
       case .fetchReviewsResponse(let result):
         switch result {
         case .success(let reviews):
@@ -186,6 +200,16 @@ struct CafeDetail: ReducerProtocol {
         switch result {
         case .success(let user):
           state.user = user
+        case .failure(let error):
+          debugPrint(error.localizedDescription)
+        }
+        return .none
+
+      case .deleteReviewResponse(let result):
+        switch result {
+        case .success:
+          // TODO: 삭제 완료 토스트 뷰 표출 필요
+          return EffectTask(value: .fetchReviews)
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
@@ -259,8 +283,10 @@ struct CafeDetail: ReducerProtocol {
       case .bottomSheet(let action):
         switch action {
         case .confirmButtonTapped:
-          // TODO: 삭제 API 연동 필요
-          return EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: false))
+          return .merge(
+            EffectTask(value: .deleteReview),
+            EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: false))
+          )
         case .cancelButtonTapped:
           return EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: false))
         }
