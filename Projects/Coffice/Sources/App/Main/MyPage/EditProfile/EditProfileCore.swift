@@ -36,7 +36,7 @@ struct EditProfile: ReducerProtocol {
 
     let oldNickname: String
     let title = "프로필 수정"
-    var nicknameValidationType: NicknameValidationType = .valid
+    var nicknameValidationType: NicknameValidationType = .none
     @BindingState var nicknameTextField: String
     var isNicknameValid: Bool {
       return oldNickname != nicknameTextField && nicknameTextField.isNotEmpty
