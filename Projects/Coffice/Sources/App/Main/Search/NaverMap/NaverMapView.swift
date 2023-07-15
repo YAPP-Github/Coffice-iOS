@@ -49,8 +49,9 @@ extension NaverMapView: UIViewRepresentable {
     }
 
     if viewStore.naverMapState.shouldClearMarkers {
-      removeAllMarkers()
-      DispatchQueue.main.async { viewStore.send(.naverMapAction(.markersCleared)) }
+      DispatchQueue.main.async {
+        removeAllMarkers()
+        viewStore.send(.naverMapAction(.markersCleared)) }
     }
 
     if viewStore.naverMapState.shouldUpdateMarkers
