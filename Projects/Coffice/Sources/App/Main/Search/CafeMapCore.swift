@@ -291,7 +291,8 @@ struct CafeMapCore: ReducerProtocol {
             .updateCafeSearchListState(
               title: nil,
               cafeList: searchResponse.cafes,
-              hasNext: searchResponse.hasNext)
+              hasNext: searchResponse.hasNext
+            )
           ))
 
         case .failure(let error):
