@@ -112,6 +112,9 @@ struct CafeDetailView: View {
             .isOpaque(true)
             .closeOnTapOutside(true)
             .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+            .dismissCallback {
+              viewStore.send(.reviewModifyPopupDismissed)
+            }
         }
       )
       .popup(

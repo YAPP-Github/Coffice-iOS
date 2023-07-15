@@ -16,6 +16,7 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var isReviewReportPopupPresented = false
     var cafeId: Int
     var selectedUserReviewCellViewState: UserReviewCellViewState?
+    var selectedReviewModifyPopupButtonActionType: ReviewModifyPopupButtonActionType = .none
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [
       CofficeAsset.Asset.cafeImage,
@@ -92,10 +93,12 @@ struct CafeDetail: ReducerProtocol {
     case updateReviewCellViewStates(reviews: [ReviewResponse])
     case reviewModifyButtonTapped(viewState: State.UserReviewCellViewState)
     case reviewModifyPopup(isPresented: Bool)
+    case reviewModifyPopupDismissed
     case reviewReportPopup(isPresented: Bool)
     case reviewEditButtonTapped
     case reviewDeleteButtonTapped
     case reviewReportButtonTapped
+    case resetSelectedReviewModifyPopupButtonActionType
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -221,6 +224,41 @@ struct CafeDetail: ReducerProtocol {
         }
         return .none
 
+      case .reviewModifyPopupDismissed:
+        guard let cellViewState = state.selectedUserReviewCellViewState
+        else { return .none }
+
+        var popActionEffectTask: EffectTask<Action> = .none
+
+        switch state.selectedReviewModifyPopupButtonActionType {
+        case .edit:
+          popActionEffectTask = EffectTask(
+            value: .presentCafeReviewWriteView(
+              .init(
+                reviewType: .edit,
+                placeId: state.cafeId,
+                reviewId: cellViewState.reviewId,
+                outletOption: cellViewState.outletOption,
+                wifiOption: cellViewState.wifiOption,
+                noiseOption: cellViewState.noiseOption,
+                reviewText: cellViewState.content
+              )
+            )
+          )
+          .delay(for: 0.1, scheduler: DispatchQueue.main)
+          .eraseToEffect()
+        case .delete:
+          // TODO: 삭제버튼 이벤트 구현 필요
+          return .none
+        default:
+          return .none
+        }
+
+        return .merge(
+          popActionEffectTask,
+          EffectTask(value: .resetSelectedReviewModifyPopupButtonActionType)
+        )
+
       case .reviewModifyPopup(let isPresented):
         state.isReviewModifyPopupPresented = isPresented
         return .none
@@ -234,31 +272,19 @@ struct CafeDetail: ReducerProtocol {
         return EffectTask(value: .reviewModifyPopup(isPresented: true))
 
       case .reviewEditButtonTapped:
-        guard let cellViewState = state.selectedUserReviewCellViewState
-        else { return .none }
-
-        state.isReviewModifyPopupPresented = false
-        return EffectTask(
-          value: .presentCafeReviewWriteView(
-            .init(
-              reviewType: .edit,
-              placeId: state.cafeId,
-              reviewId: cellViewState.reviewId,
-              outletOption: cellViewState.outletOption,
-              wifiOption: cellViewState.wifiOption,
-              noiseOption: cellViewState.noiseOption,
-              reviewText: cellViewState.content
-            )
-          )
-        )
-        .delay(for: 0.5, scheduler: DispatchQueue.main)
-        .eraseToEffect()
+        state.selectedReviewModifyPopupButtonActionType = .edit
+        return EffectTask(value: .reviewModifyPopup(isPresented: false))
 
       case .reviewDeleteButtonTapped:
+        state.selectedReviewModifyPopupButtonActionType = .delete
         return EffectTask(value: .reviewModifyPopup(isPresented: false))
 
       case .reviewReportButtonTapped:
         return EffectTask(value: .reviewReportPopup(isPresented: false))
+
+      case .resetSelectedReviewModifyPopupButtonActionType:
+        state.selectedReviewModifyPopupButtonActionType = .none
+        return .none
 
       default:
         return .none
@@ -454,5 +480,13 @@ extension CafeDetail.State {
       case .review: return "리뷰"
       }
     }
+  }
+}
+
+extension CafeDetail.State {
+  enum ReviewModifyPopupButtonActionType {
+    case edit
+    case delete
+    case none
   }
 }
