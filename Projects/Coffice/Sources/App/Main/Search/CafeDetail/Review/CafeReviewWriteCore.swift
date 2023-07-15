@@ -23,12 +23,16 @@ struct CafeReviewWrite: ReducerProtocol {
     static let mock: Self = .init(reviewType: .create, placeId: 1)
 
     let id = UUID()
+    @BindingState var reviewText = ""
+    @BindingState var dismissConfirmBottomSheetState: BottomSheetReducer.State?
+    var deleteConfirmBottomSheetType: BottomSheetType = .dismissConfirm
     var optionButtonStates: [CafeReviewOptionButtons.State]
     var reviewType: ReviewType
     let placeId: Int
+    let reviewId: Int?
 
     var isSaveButtonEnabled = false
-    @BindingState var reviewText = ""
+    var isDismissConfirmed = false
     let textViewDidBeginEditingScrollId = UUID()
     let textViewDidEndEditingScrollId = UUID()
     let maximumTextLength = 200
@@ -46,9 +50,18 @@ struct CafeReviewWrite: ReducerProtocol {
       return isSaveButtonEnabled ? CofficeAsset.Colors.grayScale9 : CofficeAsset.Colors.grayScale6
     }
 
-    init(reviewType: ReviewType, placeId: Int) {
+    init(
+      reviewType: ReviewType,
+      placeId: Int,
+      reviewId: Int? = nil,
+      outletOption: OutletStateOption? = nil,
+      wifiOption: WifiStateOption? = nil,
+      noiseOption: NoiseOption? = nil,
+      reviewText: String = ""
+    ) {
       self.reviewType = reviewType
       self.placeId = placeId
+      self.reviewId = reviewId
 
       switch reviewType {
       case .create:
@@ -58,13 +71,13 @@ struct CafeReviewWrite: ReducerProtocol {
           .init(optionType: .noise(nil))
         ]
       case .edit:
-        // TODO: 기존 리뷰 정보를 참고해서 버튼, 텍스트뷰 상태 업데이트 필요
         optionButtonStates = [
-          .init(optionType: .outletState(nil)),
-          .init(optionType: .wifiState(nil)),
-          .init(optionType: .noise(nil))
+          .init(optionType: .outletState(outletOption)),
+          .init(optionType: .wifiState(wifiOption)),
+          .init(optionType: .noise(noiseOption))
         ]
-        reviewText = ""
+        self.reviewText = reviewText
+        isSaveButtonEnabled = true
       }
     }
   }
@@ -73,15 +86,21 @@ struct CafeReviewWrite: ReducerProtocol {
     case binding(BindingAction<State>)
     case onAppear
     case dismissView
+    case dismissViewWithDelay
     case optionButtonsAction(CafeReviewOptionButtons.Action)
+    case dismissConfirmBottomSheet(action: BottomSheetReducer.Action)
+    case presentDeleteConfirmBottomSheet
+    case dismissDeleteConfirmBottomSheet
+    case dismissConfirmBottomSheetDismissed
     case updateSaveButtonState
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
     case saveButtonTapped
     case uploadReview
     case uploadReviewResponse(TaskResult<HTTPURLResponse>)
+    case editReviewResponse(TaskResult<HTTPURLResponse>)
   }
 
-  @Dependency(\.reviewAPIClient) private var reviewClient
+  @Dependency(\.reviewAPIClient) private var reviewAPIClient
 
   var body: some ReducerProtocolOf<CafeReviewWrite> {
     BindingReducer()
@@ -90,6 +109,11 @@ struct CafeReviewWrite: ReducerProtocol {
       switch action {
       case .onAppear:
         return .none
+
+      case .dismissViewWithDelay:
+        return EffectTask(value: .dismissView)
+          .delay(for: 0.1, scheduler: DispatchQueue.main)
+          .eraseToEffect()
 
       case .optionButtonsAction(.optionButtonTapped(let optionType, let index)):
         switch optionType {
@@ -132,19 +156,37 @@ struct CafeReviewWrite: ReducerProtocol {
           }
         }
 
-        let requestValue = ReviewUploadRequestValue(
-          placeId: state.placeId,
-          electricOutletOption: electricOutletLevel,
-          wifiOption: wifiLevel,
-          noiseOption: noiseLevel,
-          content: state.reviewText
-        )
-
-        return .run { send in
-          let response = try await reviewClient.uploadReview(requestValue: requestValue)
-          await send(.uploadReviewResponse(.success(response)))
-        } catch: { error, send in
-          await send(.uploadReviewResponse(.failure(error)))
+        switch state.reviewType {
+        case .create:
+          let requestValue = ReviewUploadRequestValue(
+            placeId: state.placeId,
+            electricOutletOption: electricOutletLevel,
+            wifiOption: wifiLevel,
+            noiseOption: noiseLevel,
+            content: state.reviewText
+          )
+          return .run { send in
+            let response = try await reviewAPIClient.uploadReview(requestValue: requestValue)
+            await send(.uploadReviewResponse(.success(response)))
+          } catch: { error, send in
+            await send(.uploadReviewResponse(.failure(error)))
+          }
+        case .edit:
+          guard let reviewId = state.reviewId else { return .none }
+          let requestValue = ReviewEditRequestValue(
+            placeId: state.placeId,
+            reviewId: reviewId,
+            electricOutletOption: electricOutletLevel,
+            wifiOption: wifiLevel,
+            noiseOption: noiseLevel,
+            content: state.reviewText
+          )
+          return .run { send in
+            let response = try await reviewAPIClient.editReview(requestValue: requestValue)
+            await send(.editReviewResponse(.success(response)))
+          } catch: { error, send in
+            await send(.editReviewResponse(.failure(error)))
+          }
         }
 
       case .uploadReviewResponse(let result):
@@ -156,8 +198,58 @@ struct CafeReviewWrite: ReducerProtocol {
         }
         return .none
 
+      case .editReviewResponse(let result):
+        switch result {
+        case .success:
+          return EffectTask(value: .dismissView)
+        case .failure(let error):
+          debugPrint(error.localizedDescription)
+        }
+        return .none
+
+      case .dismissConfirmBottomSheet(let action):
+        switch action {
+        case .confirmButtonTapped:
+          return EffectTask(value: .dismissDeleteConfirmBottomSheet)
+        case .cancelButtonTapped:
+          state.isDismissConfirmed = true
+          return EffectTask(value: .dismissDeleteConfirmBottomSheet)
+        }
+
+      case .presentDeleteConfirmBottomSheet:
+        state.dismissConfirmBottomSheetState = .init()
+        return .none
+
+      case .dismissDeleteConfirmBottomSheet:
+        state.dismissConfirmBottomSheetState = nil
+        return .none
+
+      case .dismissConfirmBottomSheetDismissed:
+        if state.isDismissConfirmed {
+          return EffectTask(value: .dismissViewWithDelay)
+        }
+        return .none
+
       default:
         return .none
+      }
+    }
+  }
+}
+
+extension CafeReviewWrite {
+  enum BottomSheetType {
+    case dismissConfirm
+
+    var content: BottomSheetContent {
+      switch self {
+      case .dismissConfirm:
+        return .init(
+          title: "정말로 나가실 건가요?",
+          description: "입력하신 내용이 사라져요!",
+          confirmButtonTitle: "계속 진행하기",
+          cancelButtonTitle: "나가기"
+        )
       }
     }
   }

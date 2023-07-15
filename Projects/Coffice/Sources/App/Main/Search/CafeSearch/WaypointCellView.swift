@@ -10,9 +10,10 @@ import SwiftUI
 
 struct WaypointCellView: View {
   var waypoint: WayPoint?
+  var waypointName: AttributedString = ""
   var body: some View {
     HStack(spacing: 0) {
-      Text(waypoint?.name ?? "")
+      Text(waypointName)
         .applyCofficeFont(font: .subtitleSemiBold)
         .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
         .lineLimit(1)

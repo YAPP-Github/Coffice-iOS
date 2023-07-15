@@ -12,7 +12,16 @@ import Foundation
 struct CafeDetail: ReducerProtocol {
   struct State: Equatable {
     @BindingState var cafeReviewWriteState: CafeReviewWrite.State?
+    @BindingState var isReviewModifySheetPresented = false
+    @BindingState var isReviewReportSheetPresented = false
+    @BindingState var isReviewDeleteConfirmSheetPresented = false
+    @BindingState var deleteConfirmBottomSheetState: BottomSheetReducer.State?
+    @BindingState var toastViewMessage: String?
+    var bottomSheetType: BottomSheetType = .deleteConfirm
+
     var cafeId: Int
+    var selectedUserReviewCellViewState: UserReviewCellViewState?
+    var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [
       CofficeAsset.Asset.cafeImage,
@@ -63,10 +72,14 @@ struct CafeDetail: ReducerProtocol {
       : CofficeAsset.Asset.arrowDropDownLine24px
     }
 
-    let userReviewEmptyDescription: String = """
-                                             아직 리뷰가 없어요!
-                                             첫 리뷰를 작성해볼까요?
-                                             """
+    let userReviewEmptyDescription = """
+                                     아직 리뷰가 없어요!
+                                     첫 리뷰를 작성해볼까요?
+                                     """
+    let reviewUploadFinishedMessage = "리뷰가 등록되었습니다."
+    let reviewEditFinishedMessage = "리뷰가 수정되었습니다."
+    let reviewDeleteFinishedMessage = "리뷰가 삭제되었습니다."
+    let reviewReportFinishedMessage = "신고가 접수되었습니다."
   }
 
   enum Action: Equatable, BindableAction {
@@ -80,13 +93,30 @@ struct CafeDetail: ReducerProtocol {
     case infoGuideButtonTapped(CafeFilter.GuideType)
     case presentBubbleMessageView(BubbleMessage.State)
     case presentCafeReviewWriteView(CafeReviewWrite.State)
+    case presentToastView(message: String)
     case cafeReviewWrite(action: CafeReviewWrite.Action)
+    case bottomSheet(action: BottomSheetReducer.Action)
+    case reviewDeleteConfirmBottomSheet(isPresented: Bool)
     case fetchPlace
     case fetchReviews
     case fetchReviewsResponse(TaskResult<[ReviewResponse]>)
+    case reportReview
+    case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case fetchUserData
     case fetchUserDataResponse(TaskResult<User>)
+    case deleteReview
+    case deleteReviewResponse(TaskResult<HTTPURLResponse>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
+    case reviewModifyButtonTapped(viewState: State.UserReviewCellViewState)
+    case reviewModifySheet(isPresented: Bool)
+    case reviewModifySheetDismissed
+    case reviewReportSheet(isPresented: Bool)
+    case reviewDeleteConfirmSheet(isPresented: Bool)
+    case reviewEditSheetButtonTapped
+    case reviewDeleteSheetButtonTapped
+    case reviewReportSheetButtonTapped
+    case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
+    case resetSelectedReviewModifySheetActionType
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -121,10 +151,43 @@ struct CafeDetail: ReducerProtocol {
           await send(.fetchReviewsResponse(.failure(error)))
         }
 
+      case .reportReview:
+        guard let reviewId = state.selectedUserReviewCellViewState?.reviewId
+        else { return .none }
+        let placeId = state.cafeId
+
+        return .run { send in
+          let response = try await reviewAPIClient.reportReview(placeId: placeId, reviewId: reviewId)
+          await send(.reportReviewResponse(.success(response)))
+        } catch: { error, send in
+          await send(.reportReviewResponse(.failure(error)))
+        }
+
+      case .deleteReview:
+        guard let reviewId = state.selectedUserReviewCellViewState?.reviewId
+        else { return .none }
+        let placeId = state.cafeId
+
+        return .run { send in
+          let response = try await reviewAPIClient.deleteReview(placeId: placeId, reviewId: reviewId)
+          await send(.deleteReviewResponse(.success(response)))
+        } catch: { error, send in
+          await send(.deleteReviewResponse(.failure(error)))
+        }
+
       case .fetchReviewsResponse(let result):
         switch result {
         case .success(let reviews):
           return EffectTask(value: .updateReviewCellViewStates(reviews: reviews))
+        case .failure(let error):
+          debugPrint(error.localizedDescription)
+        }
+        return .none
+
+      case .reportReviewResponse(let result):
+        switch result {
+        case .success(let reviews):
+          return EffectTask(value: .presentToastView(message: state.reviewReportFinishedMessage))
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
@@ -147,9 +210,23 @@ struct CafeDetail: ReducerProtocol {
         }
         return .none
 
+      case .deleteReviewResponse(let result):
+        switch result {
+        case .success:
+          return .merge(
+            EffectTask(value: .presentToastView(message: state.reviewDeleteFinishedMessage)),
+            EffectTask(value: .fetchReviews)
+          )
+        case .failure(let error):
+          debugPrint(error.localizedDescription)
+        }
+        return .none
+
       case .updateReviewCellViewStates(let reviews):
-        state.userReviewCellViewStates = reviews.compactMap { review in
+        state.userReviewCellViewStates = reviews.compactMap { [userId = state.user?.id] review in
           return .init(
+            reviewId: review.reviewId,
+            memberId: review.memberId,
             userName: review.memberName,
             date: review.createdDate,
             content: review.content,
@@ -158,7 +235,11 @@ struct CafeDetail: ReducerProtocol {
               review.wifiOption == .fast ? .fastWifi : nil,
               review.noiseOption == .quiet ? .quiet : nil
             ]
-            .compactMap { $0 }
+            .compactMap { $0 },
+            isMyReview: review.memberId == userId,
+            outletOption: review.outletOption,
+            wifiOption: review.wifiOption,
+            noiseOption: review.noiseOption
           )
         }
         return .none
@@ -176,6 +257,10 @@ struct CafeDetail: ReducerProtocol {
 
       case .presentCafeReviewWriteView(let viewState):
         state.cafeReviewWriteState = viewState
+        return .none
+
+      case .presentToastView(let message):
+        state.toastViewMessage = message
         return .none
 
       case .toggleToPresentTextForTest:
@@ -198,12 +283,114 @@ struct CafeDetail: ReducerProtocol {
       case .cafeReviewWrite(let action):
         switch action {
         case .uploadReviewResponse(.success):
-          return EffectTask(value: .fetchReviews)
+          return .merge(
+            EffectTask(value: .presentToastView(message: state.reviewUploadFinishedMessage)),
+            EffectTask(value: .fetchReviews)
+          )
+        case .editReviewResponse(.success):
+          return .merge(
+            EffectTask(value: .presentToastView(message: state.reviewEditFinishedMessage)),
+            EffectTask(value: .fetchReviews)
+          )
         case .dismissView:
           state.cafeReviewWriteState = nil
         default:
           return .none
         }
+        return .none
+
+      case .bottomSheet(let action):
+        switch action {
+        case .confirmButtonTapped:
+          return .merge(
+            EffectTask(value: .deleteReview),
+            EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: false))
+          )
+        case .cancelButtonTapped:
+          return EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: false))
+        }
+
+      case .reviewModifySheetDismissed:
+        guard let cellViewState = state.selectedUserReviewCellViewState
+        else { return .none }
+
+        var popActionEffectTask: EffectTask<Action> = .none
+
+        switch state.selectedReviewSheetActionType {
+        case .edit:
+          popActionEffectTask = EffectTask(
+            value: .presentCafeReviewWriteView(
+              .init(
+                reviewType: .edit,
+                placeId: state.cafeId,
+                reviewId: cellViewState.reviewId,
+                outletOption: cellViewState.outletOption,
+                wifiOption: cellViewState.wifiOption,
+                noiseOption: cellViewState.noiseOption,
+                reviewText: cellViewState.content
+              )
+            )
+          )
+          .delay(for: 0.1, scheduler: DispatchQueue.main)
+          .eraseToEffect()
+        case .delete:
+          return EffectTask(value: .reviewDeleteConfirmBottomSheet(isPresented: true))
+            .delay(for: 0.1, scheduler: DispatchQueue.main)
+            .eraseToEffect()
+        default:
+          return .none
+        }
+
+        return .merge(
+          popActionEffectTask,
+          EffectTask(value: .resetSelectedReviewModifySheetActionType)
+        )
+
+      case .reviewModifySheet(let isPresented):
+        state.isReviewModifySheetPresented = isPresented
+        return .none
+
+      case .reviewReportSheet(let isPresented):
+        state.isReviewReportSheetPresented = isPresented
+        return .none
+
+      case .reviewDeleteConfirmSheet(let isPresented):
+        state.isReviewDeleteConfirmSheetPresented = isPresented
+        return .none
+
+      case .reviewDeleteConfirmBottomSheet(let isPresented):
+        if isPresented {
+          state.deleteConfirmBottomSheetState = .init()
+        } else {
+          state.deleteConfirmBottomSheetState = nil
+        }
+        return .none
+
+      case .reviewModifyButtonTapped(let viewState):
+        state.selectedUserReviewCellViewState = viewState
+        return EffectTask(value: .reviewModifySheet(isPresented: true))
+
+      case .reviewEditSheetButtonTapped:
+        state.selectedReviewSheetActionType = .edit
+        return EffectTask(value: .reviewModifySheet(isPresented: false))
+
+      case .reviewDeleteSheetButtonTapped:
+        state.selectedReviewSheetActionType = .delete
+        return EffectTask(value: .reviewModifySheet(isPresented: false))
+
+      case .reviewReportSheetButtonTapped:
+        state.selectedReviewSheetActionType = .report
+        return .merge(
+          EffectTask(value: .reviewReportSheet(isPresented: false)),
+          EffectTask(value: .reportReview)
+        )
+
+      case .reviewReportButtonTapped(let viewState):
+        state.selectedUserReviewCellViewState = viewState
+        return EffectTask(value: .reviewReportSheet(isPresented: true))
+
+      case .resetSelectedReviewModifySheetActionType:
+        state.selectedReviewSheetActionType = .none
         return .none
 
       default:
@@ -222,12 +409,18 @@ struct CafeDetail: ReducerProtocol {
 // MARK: - Sub Views State
 
 extension CafeDetail.State {
-  struct UserReviewCellViewState: Equatable, Identifiable {
+  struct UserReviewCellViewState: Hashable, Identifiable {
     let id = UUID()
+    let reviewId: Int
+    let memberId: Int
     let userName: String
     let date: Date?
     let content: String
     let tagTypes: [ReviewTagType]
+    let isMyReview: Bool
+    let outletOption: ReviewOption.OutletOption
+    let wifiOption: ReviewOption.WifiOption
+    let noiseOption: ReviewOption.NoiseOption
 
     var dateDescription: String {
       guard let date else { return "-" }
@@ -392,6 +585,33 @@ extension CafeDetail.State {
       switch type {
       case .detailInfo: return "세부정보"
       case .review: return "리뷰"
+      }
+    }
+  }
+}
+
+extension CafeDetail {
+  enum ReviewSheetButtonActionType {
+    case edit
+    case delete
+    case report
+    case none
+  }
+}
+
+extension CafeDetail {
+  enum BottomSheetType {
+    case deleteConfirm
+
+    var content: BottomSheetContent {
+      switch self {
+      case .deleteConfirm:
+        return .init(
+          title: "정말로 삭제하시나요?",
+          description: "삭제한 내용은 다시 되돌릴 수 없어요!",
+          confirmButtonTitle: "삭제하기",
+          cancelButtonTitle: "취소하기"
+        )
       }
     }
   }
