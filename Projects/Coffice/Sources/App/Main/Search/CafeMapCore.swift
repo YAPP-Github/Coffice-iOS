@@ -140,8 +140,12 @@ struct CafeMapCore: ReducerProtocol {
         state.naverMapState.isUpdatingMarkers = true
         state.displayViewType = .searchResultView
         return .merge(
-          EffectTask(value: .cafeSearchListAction(.updateCafeSearchListState(
-            title: cafe.name, cafeList: [cafe], hasNext: false)
+          EffectTask(value: .cafeSearchListAction(
+            .updateCafeSearchListState(
+              title: cafe.name,
+              cafeList: [cafe],
+              hasNext: false
+            )
           )),
           EffectTask(value: .cafeSearchAction(
             .updateCafeSearchState(text: cafe.name, cameraPosition: state.naverMapState.currentCameraPosition))
