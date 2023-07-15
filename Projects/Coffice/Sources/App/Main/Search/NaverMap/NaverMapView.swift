@@ -18,6 +18,13 @@ struct NaverMapView {
   }
 }
 
+final class NaverMapViewProgressChecker {
+  static let shared = NaverMapViewProgressChecker()
+  var isUpdatingMarkers = false
+
+  private init() {}
+}
+
 extension NaverMapView: UIViewRepresentable {
   func makeUIView(context: Context) -> NMFNaverMapView {
     let naverMapView = NMFNaverMapView()
@@ -52,19 +59,8 @@ extension NaverMapView: UIViewRepresentable {
       DispatchQueue.main.async { viewStore.send(.markersCleared) }
     }
 
-    if viewStore.shouldUpdateMarkers
-        && viewStore.selectedCafe != nil {
-      DispatchQueue.main.async {
-        addMarker(
-          naverMapView: uiView,
-          cafeList: viewStore.cafes,
-          selectedCafe: viewStore.selectedCafe,
-          coordinator: context.coordinator
-        )
-      }
-    }
-
-    if viewStore.shouldUpdateMarkers {
+    if viewStore.shouldUpdateMarkers && NaverMapViewProgressChecker.shared.isUpdatingMarkers.isFalse {
+      NaverMapViewProgressChecker.shared.isUpdatingMarkers = true
       if viewStore.shouldShowBookmarkCafesOnly {
         DispatchQueue.main.async {
           addMarker(
@@ -94,6 +90,9 @@ extension NaverMapView: UIViewRepresentable {
 
 extension NaverMapView {
   func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], selectedCafe: Cafe?, coordinator: Coordinator) {
+    viewStore.send(.markersUpdated)
+
+    var markers = [MapMarker]()
     for cafe in cafeList {
       let marker = MapMarker(
         cafe: cafe,
@@ -106,11 +105,9 @@ extension NaverMapView {
       if marker.markerType.selectType == .selected {
       }
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-
         DispatchQueue.main.async {
           viewStore.send(.markerTapped(cafe: cafe))
         }
-
         return true
       }
       marker.captionText = cafe.name
@@ -120,10 +117,10 @@ extension NaverMapView {
       marker.captionRequestedWidth = 90
 
       marker.mapView = naverMapView.mapView
-      viewStore.send(.appendMarker(marker: marker))
+      markers.append(marker)
     }
     DispatchQueue.main.async {
-      viewStore.send(.markersUpdated)
+      viewStore.send(.appendMarkers(markers: markers))
     }
   }
 
@@ -163,13 +160,13 @@ extension Coordinator: NMFMapViewCameraDelegate {
     let longitude = mapView.cameraPosition.target.lng
     DispatchQueue.main.async { [weak self] in
       if let updateReason = NaverMapCameraUpdateReason(rawValue: reason) {
-        self?.target.viewStore.send(.updateCameraUpdateReason(updateReason))
-      }
-      self?.target.viewStore.send(
-        .cameraPositionMoved(
-          newCameraPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        self?.target.viewStore.send(
+          .cameraPositionUpdated(
+            toPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+            byReason: updateReason
+          )
         )
-      )
+      }
     }
   }
 }

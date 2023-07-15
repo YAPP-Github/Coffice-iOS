@@ -67,7 +67,8 @@ struct CafeSearchCore: ReducerProtocol {
   }
 
   enum CafeSearchCoreDelegate: Equatable {
-    case requestToCallSearchWithRequestValue(searchText: String)
+    case callSearchWithRequestValueByText(searchText: String)
+    case searchWithRequestValueByWaypoint(waypoint: WayPoint)
     case focusSelectedPlace(selectedPlace: Cafe)
     case dismiss
   }
@@ -114,7 +115,7 @@ struct CafeSearchCore: ReducerProtocol {
         // MARK: - View Tap Events
 
       case .waypointCellTapped(let waypoint):
-        return EffectTask(value: .searchPlacesWithoutFilters)
+        return EffectTask(value: .delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint)))
 
       case .placeCellTapped(let place):
         return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: place)))
@@ -125,7 +126,7 @@ struct CafeSearchCore: ReducerProtocol {
         return .none
 
       case .recentSearchWordCellTapped(let recentWord):
-        return EffectTask(value: .delegate(.requestToCallSearchWithRequestValue(searchText: recentWord)))
+        return EffectTask(value: .delegate(.callSearchWithRequestValueByText(searchText: recentWord)))
 
       case .deleteRecentSearchWordButtonTapped(let id):
         return .run { send in
@@ -138,27 +139,13 @@ struct CafeSearchCore: ReducerProtocol {
       case .submitText:
         guard state.searchText.isNotEmpty else { return .none }
 
-        switch (state.cafes.isEmpty, state.waypoints.isEmpty) {
-        case (true, false):
-          guard let waypoint = state.waypoints.first
-          else { return EffectTask(value: .searchPlacesWithoutFilters) }
-          return EffectTask(value: .delegate(.requestToCallSearchWithRequestValue(searchText: waypoint.name)))
-
-        case (false, false):
-          let waypointsToSearch = state.waypoints.filter {
-            state.isSearchTextEqualToWaypoint(waypointName: $0.name)
+        return .run { [searchText = state.searchText] send in
+          let waypoints = try await placeAPIClient.fetchWaypoints(name: searchText)
+          if let waypoint = waypoints.first {
+            await send(.delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint)))
+          } else {
+            await send(.delegate(.callSearchWithRequestValueByText(searchText: searchText)))
           }
-
-          return .run { [searchText = state.searchText] send in
-            for waypoint in waypointsToSearch {
-              // FIXME: async하게 못보내나?
-              await send(.delegate(.requestToCallSearchWithRequestValue(searchText: waypoint.name)))
-            }
-            await send(.delegate(.requestToCallSearchWithRequestValue(searchText: searchText)))
-          }
-
-        case (_, true):
-          return EffectTask(value: .delegate(.requestToCallSearchWithRequestValue(searchText: state.searchText)))
         }
 
         // MARK: - Network Requests
@@ -194,6 +181,7 @@ struct CafeSearchCore: ReducerProtocol {
       case .searchPlacesWithRequestValue(let requestValue):
         return .run { send in
           let result = try await placeAPIClient.searchPlaces(by: requestValue)
+          await send(.searchPlacesWithRequestValueResponse(cafes: result.cafes))
         }
 
         // MARK: - Network Responses

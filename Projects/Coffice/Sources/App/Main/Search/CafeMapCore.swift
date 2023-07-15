@@ -46,7 +46,6 @@ struct CafeMapCore: ReducerProtocol {
 
     // MARK: NaverMapView
     case naverMapAction(NaverMapCore.Action)
-    case updateCafeMarkers
     case refreshButtonTapped
 
     // MARK: Search
@@ -78,10 +77,7 @@ struct CafeMapCore: ReducerProtocol {
   var body: some ReducerProtocolOf<Self> {
     BindingReducer()
 
-    Scope(
-      state: \.cafeFilterMenusState,
-      action: /Action.cafeFilterMenusAction
-    ) {
+    Scope(state: \.cafeFilterMenusState, action: /Action.cafeFilterMenusAction) {
       CafeFilterMenus()
     }
 
@@ -137,12 +133,14 @@ struct CafeMapCore: ReducerProtocol {
 //        )
 
       case .cafeSearchListAction(.focusSelectedCafe(let selectedCafe)):
-        state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
-          latitude: selectedCafe.latitude, longitude: selectedCafe.longitude)
-        state.naverMapState.isUpdatingCameraPosition = true
-        state.naverMapState.selectedCafe = selectedCafe
-        state.naverMapState.isUpdatingMarkers = true
-        return .none
+        let newCameraPosition = CLLocationCoordinate2D(
+          latitude: selectedCafe.latitude,
+          longitude: selectedCafe.longitude
+        )
+        return .concatenate(
+          EffectTask(value: .naverMapAction(.selectCafe(cafe: selectedCafe))),
+          EffectTask(value: .naverMapAction(.moveCameraTo(position: newCameraPosition)))
+        )
 
         // MARK: CafeSearch Delegate
       case .cafeSearchAction(.delegate(.dismiss)):
@@ -191,23 +189,21 @@ struct CafeMapCore: ReducerProtocol {
         }
 
         // MARK: NaverMapAction
-      case .naverMapAction(.refreshButtonTapped):
-        return EffectTask(value: .updateCafeMarkers)
-
-      case .updateCafeMarkers:
-        let isOpened = state.cafeFilterInformation.isOpened
-        let cafeSearchFilters = state.cafeFilterInformation.cafeSearchFilters
-        let hasCommunalTable = state.cafeFilterInformation.hasCommunalTable
-
-        return EffectTask(
-          value: .naverMapAction(
-            .updateCafeMarkers(
-              isOpened: isOpened,
-              cafeSearchFilters: cafeSearchFilters,
-              hasCommunalTable: hasCommunalTable
-            )
-          )
+      case .naverMapAction(.delegate(.callSearchPlacesWithRequestValue)):
+        let cameraPosition = state.naverMapState.currentCameraPosition
+        let filterInformation = state.cafeFilterInformation
+        let requestValue = SearchPlaceRequestValue(
+          searchText: "",
+          userLatitude: cameraPosition.latitude,
+          userLongitude: cameraPosition.longitude,
+          maximumSearchDistance: 500,
+          isOpened: filterInformation.isOpened,
+          hasCommunalTable: filterInformation.hasCommunalTable,
+          filters: filterInformation.cafeSearchFilters,
+          pageSize: 9999999,
+          pageableKey: nil
         )
+        return EffectTask(value: .naverMapAction(.searchPlacesWithRequestValue(requestValue: requestValue)))
 
       case .naverMapAction(.showBookmarkedToast):
         state.shouldShowToast = true
@@ -215,7 +211,7 @@ struct CafeMapCore: ReducerProtocol {
 
       // MARK: Search Delegate
 
-      case .cafeSearchAction(.delegate(.requestToCallSearchWithRequestValue(let searchText))):
+      case .cafeSearchAction(.delegate(.callSearchWithRequestValueByText(let searchText))):
         let currentCameraPosition = state.naverMapState.currentCameraPosition
         let filterInformation = state.cafeFilterInformation
         let requestValue = SearchPlaceRequestValue(
@@ -231,46 +227,69 @@ struct CafeMapCore: ReducerProtocol {
         )
         return EffectTask(value: .cafeSearchAction(.searchPlacesWithRequestValue(requestValue: requestValue)))
 
+      case .cafeSearchAction(.delegate(.searchWithRequestValueByWaypoint(let waypoint))):
+        let filterInformation = state.cafeFilterInformation
+        let requestValue = SearchPlaceRequestValue(
+          searchText: "",
+          userLatitude: waypoint.latitude,
+          userLongitude: waypoint.longitude,
+          maximumSearchDistance: 9999999, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
+          isOpened: filterInformation.isOpened,
+          hasCommunalTable: filterInformation.hasCommunalTable,
+          filters: filterInformation.cafeSearchFilters,
+          pageSize: 9999999, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
+          pageableKey: nil
+        )
+        return .run { send in
+          let cafeResponse = try await placeAPIClient.searchPlaces(by: requestValue)
+          await send(
+            .naverMapAction(
+              .updatePinnedCafes(cafes: cafeResponse.cafes)
+            )
+          )
+          await send(
+            .naverMapAction(
+              .moveCameraTo(position: .init(latitude: waypoint.latitude, longitude: waypoint.longitude))
+            )
+          )
+        }
+
       case .cafeSearchAction(.delegate(.focusSelectedPlace(let cafe))):
-        state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
+        let newCameraPosition = CLLocationCoordinate2D(
           latitude: cafe.latitude,
           longitude: cafe.longitude
         )
-        state.naverMapState.isUpdatingCameraPosition = true
-        state.naverMapState.cafes = [cafe]
-        state.naverMapState.selectedCafe = cafe
-        state.naverMapState.isUpdatingMarkers = true
         state.displayViewType = .searchResultView
-        return EffectTask(
-          value: .cafeSearchListAction(
+        return .run { send in
+          await send(.naverMapAction(.updatePinnedCafes(cafes: [cafe])))
+          await send(.naverMapAction(.selectCafe(cafe: cafe)))
+          await send(.cafeSearchListAction(
             .updateCafeSearchListState(
               title: cafe.name,
               cafeList: [cafe],
               hasNext: false
             )
-          )
-        )
+          ))
+        }
 
         // MARK: Search
 
       case .searchPlacesByRequestValueResponse(let result):
         switch result {
         case .success(let searchResponse):
-          state.naverMapState.selectedCafe = nil
-          state.naverMapState.shouldClearMarkers = true
-
-          state.naverMapState.cafes = searchResponse.cafes
-          state.naverMapState.isUpdatingMarkers = true
-
-          return .send(
-            .cafeSearchListAction(
-              .updateCafeSearchListState(
-                title: nil,
-                cafeList: searchResponse.cafes,
-                hasNext: searchResponse.hasNext
+          return .run { send in
+            await send(.naverMapAction(.unselectCafe))
+            await send(.naverMapAction(.updatePinnedCafes(cafes: searchResponse.cafes)))
+            await send(
+              .cafeSearchListAction(
+                .updateCafeSearchListState(
+                  title: nil,
+                  cafeList: searchResponse.cafes,
+                  hasNext: searchResponse.hasNext
+                )
               )
             )
-          )
+          }
 
         case .failure(let error):
           debugPrint(error)
@@ -286,10 +305,12 @@ struct CafeMapCore: ReducerProtocol {
           }
           if removedDuplicationCafes.isNotEmpty {
             state.cafeSearchListState.cafeList += cafeSearchResponse.cafes
-            state.naverMapState.cafes += cafeSearchResponse.cafes
-            state.naverMapState.isUpdatingMarkers = true
           }
-          return .none
+          return .run { send in
+            if removedDuplicationCafes.isNotEmpty {
+              await send(.naverMapAction(.addCafes(cafes: cafeSearchResponse.cafes)))
+            }
+          }
         case .failure(let error):
           debugPrint(error)
           return .none
@@ -297,17 +318,13 @@ struct CafeMapCore: ReducerProtocol {
 
         // MARK: Common
       case .resetCafes(let resetState):
-        state.naverMapState.cafes = []
         state.cafeSearchListState.cafeList = []
         state.cafeSearchListState.hasNext = nil
-        state.naverMapState.cameraUpdateReason = .changedByDeveloper
-        state.naverMapState.shouldClearMarkers = true
-        state.naverMapState.selectedCafe = nil
         switch resetState {
         case .searchResultIsEmpty:
           state.cafeSearchState.previousViewType = .mainMapView
           state.cafeSearchState.bodyType = .searchResultEmptyView
-          return .none
+          return EffectTask(value: .naverMapAction(.removeAllMarkers))
         case .dismissSearchResultView:
           state.displayViewType = .mainMapView
           return .none
