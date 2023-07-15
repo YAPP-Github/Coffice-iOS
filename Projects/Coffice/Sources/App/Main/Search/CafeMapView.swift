@@ -49,8 +49,6 @@ struct CafeMapView: View {
               refreshButtonView
             }
             Spacer()
-            floatingTestButtonView
-              .padding(.bottom, 16)
             bottomFloatingButtonView
               .padding(.trailing, 24)
             if viewStore.naverMapState.selectedCafe != nil {
@@ -137,29 +135,6 @@ extension CafeMapView {
         }
       }
       .padding(.bottom, 24)
-    }
-  }
-
-  @available(*, deprecated, message: "테스트용 UI로, 상제 리스트뷰 진입점 추가 후 제거 예정")
-  var floatingTestButtonView: some View {
-    WithViewStore(store) { viewStore in
-      HStack {
-        Spacer()
-        Button {
-          viewStore.send(.pushToSearchDetailForTest(cafeId: 1))
-        } label: {
-          ZStack(alignment: .center) {
-            Circle()
-              .foregroundColor(.white)
-              .shadow(color: .gray, radius: 2, x: 0, y: 2)
-              .frame(width: 48, height: 48)
-            Text("검색상세")
-              .applyCofficeFont(font: .button)
-          }
-        }
-        .buttonStyle(.plain)
-      }
-      .padding(.trailing, 24)
     }
   }
 
