@@ -34,6 +34,7 @@ struct CafeSearchListCore: ReducerProtocol {
   }
 
   enum Action: Equatable {
+    case updateCafeSearchListState(title: String?, cafeList: [Cafe], hasNext: Bool)
     case updateViewType(ViewType)
     case onAppear
     case scrollAndRequestSearchPlace(Double)
@@ -48,6 +49,7 @@ struct CafeSearchListCore: ReducerProtocol {
     case filterBottomSheetDismissed
     case cafeSearchListCellTapped(cafe: Cafe)
     case focusSelectedCafe(selectedCafe: Cafe)
+    case searchPlacesByFilter
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -62,6 +64,12 @@ struct CafeSearchListCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .updateCafeSearchListState(let title, let cafeList, let hasNext):
+        if let title { state.title = title }
+        state.hasNext = hasNext
+        state.cafeList = cafeList
+        return .none
+
       case .cafeSearchListCellTapped(let cafe):
         state.viewType = .mapView
         return .send(.focusSelectedCafe(selectedCafe: cafe))
@@ -105,8 +113,11 @@ struct CafeSearchListCore: ReducerProtocol {
         return EffectTask(value: .cafeFilterMenus(action: .updateCafeFilter(information: information)))
 
       case .filterBottomSheetDismissed:
-        return EffectTask(
-          value: .cafeFilterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
+        return .concatenate(
+          EffectTask(
+            value: .cafeFilterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
+          ),
+          EffectTask(value: .searchPlacesByFilter)
         )
 
       default:

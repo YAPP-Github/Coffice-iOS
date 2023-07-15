@@ -38,7 +38,7 @@ extension SearchPlaceRequestValue {
       drinkType: filters?.drinkTypes?.compactMap { $0.dtoName },
       foodType: filters?.foodTypes?.compactMap { $0.dtoName },
       restroomTypes: filters?.restroomTypes?.compactMap { $0.dtoName },
-      electricOutletLevels: filters?.restroomTypes?.compactMap { $0.dtoName },
+      electricOutletLevels: filters?.electricOutletLevels?.compactMap { $0.dtoName },
       pageSize: pageSize,
       lastSeenDistance: pageableKey?.lastCafeDistance
     )

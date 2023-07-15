@@ -14,7 +14,6 @@ struct MyPageScreen: ReducerProtocol {
     case myPage(MyPage.State)
     case privacyPolicy(PrivacyPolicy.State)
     case locationServiceTerms(LocationServiceTerms.State)
-    case contact(Contact.State)
     case editProfile(EditProfile.State)
     case commonBottomSheet(CommonBottomSheet.State)
   }
@@ -23,7 +22,6 @@ struct MyPageScreen: ReducerProtocol {
     case myPage(MyPage.Action)
     case privacyPolicy(PrivacyPolicy.Action)
     case locationServiceTerms(LocationServiceTerms.Action)
-    case contact(Contact.Action)
     case editProfile(EditProfile.Action)
     case commonBottomSheet(CommonBottomSheet.Action)
   }
@@ -48,13 +46,6 @@ struct MyPageScreen: ReducerProtocol {
       action: /Action.locationServiceTerms
     ) {
       LocationServiceTerms()
-    }
-
-    Scope(
-      state: /State.contact,
-      action: /Action.contact
-    ) {
-      Contact()
     }
 
     Scope(

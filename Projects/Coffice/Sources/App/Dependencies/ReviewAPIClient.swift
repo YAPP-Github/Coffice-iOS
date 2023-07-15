@@ -62,6 +62,45 @@ struct ReviewAPIClient: DependencyKey {
 
     return try await coreNetwork.dataTask(request: request)
   }
+
+  func editReview(requestValue: ReviewEditRequestValue) async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/places/\(requestValue.placeId)/reviews/\(requestValue.reviewId)"
+
+    guard let requestBody = try? JSONEncoder().encode(requestValue.toDTO())
+    else { throw CoreNetworkError.jsonEncodeFailed }
+
+    guard let request = urlComponents?.toURLRequest(
+      method: .put,
+      httpBody: requestBody
+    )
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    return try await coreNetwork.dataTask(request: request)
+  }
+
+  func deleteReview(placeId: Int, reviewId: Int) async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/places/\(placeId)/reviews/\(reviewId)"
+
+    guard let request = urlComponents?.toURLRequest(method: .delete)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    return try await coreNetwork.dataTask(request: request)
+  }
+
+  func reportReview(placeId: Int, reviewId: Int) async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/places/\(placeId)/reviews/\(reviewId)/report"
+
+    guard let request = urlComponents?.toURLRequest(method: .post)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    return try await coreNetwork.dataTask(request: request)
+  }
 }
 
 extension DependencyValues {

@@ -53,6 +53,7 @@ struct CafeMapCore: ReducerProtocol {
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
     case requestSearchPlaceResponse(TaskResult<CafeSearchResponse>, String)
     case requestWaypointSearchPlaceResponse(TaskResult<CafeSearchResponse>)
+    case searchPlacesByFiltersResponse(TaskResult<CafeSearchResponse>)
 
     // MARK: Temporary
     case pushToSearchDetailForTest(cafeId: Int)
@@ -110,6 +111,47 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
         // MARK: Sub-Core Actions
+      case .cafeSearchListAction(.searchPlacesByFilter):
+        if state.displayViewType == .mainMapView { return .none }
+        let isOpened = state.cafeSearchListState.cafeFilterInformation.isOpened
+        let cafeSearchFilters = state.cafeSearchListState.cafeFilterInformation.cafeSearchFilters
+        let hasCommunalTable = state.cafeSearchListState.cafeFilterInformation.hasCommunalTable
+        let searchText = state.cafeSearchState.searchTextSnapshot
+        guard let cameraPosition = state.cafeSearchState.searchCameraPositionSnapshot
+        else { return .none }
+        return .run { send in
+          let result = await TaskResult {
+            let cafe = try await placeAPIClient.searchPlaces(by: SearchPlaceRequestValue(
+              searchText: searchText, userLatitude: cameraPosition.latitude, userLongitude: cameraPosition.longitude,
+              maximumSearchDistance: 2000, isOpened: isOpened,
+              hasCommunalTable: hasCommunalTable, filters: cafeSearchFilters, pageSize: 10, pageableKey: nil)
+            )
+            return cafe
+          }
+          await send(.searchPlacesByFiltersResponse(result))
+        }
+
+      case .cafeSearchAction(.focusSelectedPlace(let cafe)):
+        state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
+          latitude: cafe.latitude, longitude: cafe.longitude)
+        state.naverMapState.isUpdatingCameraPosition = true
+        state.naverMapState.cafes = [cafe]
+        state.naverMapState.selectedCafe = cafe
+        state.naverMapState.isUpdatingMarkers = true
+        state.displayViewType = .searchResultView
+        return .merge(
+          EffectTask(value: .cafeSearchListAction(
+            .updateCafeSearchListState(
+              title: cafe.name,
+              cafeList: [cafe],
+              hasNext: false
+            )
+          )),
+          EffectTask(value: .cafeSearchAction(
+            .updateCafeSearchState(text: cafe.name, cameraPosition: state.naverMapState.currentCameraPosition))
+          )
+        )
+
       case .cafeSearchListAction(.focusSelectedCafe(let selectedCafe)):
         state.naverMapState.currentCameraPosition = CLLocationCoordinate2D(
           latitude: selectedCafe.latitude, longitude: selectedCafe.longitude)
@@ -128,9 +170,15 @@ struct CafeMapCore: ReducerProtocol {
         return .run { send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
-              searchText: "", userLatitude: waypoint.latitude, userLongitude: waypoint.longitude,
-              maximumSearchDistance: 2000, isOpened: nil, hasCommunalTable: nil,
-              filters: nil, pageSize: 10, pageableKey: nil
+              searchText: "",
+              userLatitude: waypoint.latitude,
+              userLongitude: waypoint.longitude,
+              maximumSearchDistance: 2000,
+              isOpened: nil,
+              hasCommunalTable: nil,
+              filters: nil,
+              pageSize: 10,
+              pageableKey: nil
             )
             let cafeListData = try await placeAPIClient.searchPlaces(by: cafeRequest)
             return cafeListData
@@ -229,7 +277,29 @@ struct CafeMapCore: ReducerProtocol {
           )
         ))
 
-      // MARK: Search
+        // MARK: Search
+      case .searchPlacesByFiltersResponse(let result):
+        switch result {
+        case .success(let searchResponse):
+          state.naverMapState.selectedCafe = nil
+          state.naverMapState.shouldClearMarkers = true
+
+          state.naverMapState.cafes = searchResponse.cafes
+          state.naverMapState.isUpdatingMarkers = true
+
+          return .send(.cafeSearchListAction(
+            .updateCafeSearchListState(
+              title: nil,
+              cafeList: searchResponse.cafes,
+              hasNext: searchResponse.hasNext
+            )
+          ))
+
+        case .failure(let error):
+          debugPrint(error)
+          return .none
+        }
+
       case .requestSearchPlaceResponse(let result, let title):
         switch result {
         case .success(let searchResponse):

@@ -19,6 +19,8 @@ struct CafeDetail: ReducerProtocol {
       CofficeAsset.Asset.userProfile40px,
       CofficeAsset.Asset.errorWarningFill40px
     ]
+    // TODO: User data 처리방식 고민 필요
+    var user: User?
 
     let subMenuTypes = SubMenuType.allCases
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
@@ -60,6 +62,11 @@ struct CafeDetail: ReducerProtocol {
       ? CofficeAsset.Asset.arrowDropUpLine24px
       : CofficeAsset.Asset.arrowDropDownLine24px
     }
+
+    let userReviewEmptyDescription: String = """
+                                             아직 리뷰가 없어요!
+                                             첫 리뷰를 작성해볼까요?
+                                             """
   }
 
   enum Action: Equatable, BindableAction {
@@ -77,9 +84,12 @@ struct CafeDetail: ReducerProtocol {
     case fetchPlace
     case fetchReviews
     case fetchReviewsResponse(TaskResult<[ReviewResponse]>)
+    case fetchUserData
+    case fetchUserDataResponse(TaskResult<User>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
   }
 
+  @Dependency(\.loginClient) private var loginClient
   @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.reviewAPIClient) private var reviewAPIClient
 
@@ -90,6 +100,7 @@ struct CafeDetail: ReducerProtocol {
       switch action {
       case .onAppear:
         return .merge(
+          EffectTask(value: .fetchUserData),
           EffectTask(value: .fetchPlace),
           EffectTask(value: .fetchReviews)
         )
@@ -114,6 +125,23 @@ struct CafeDetail: ReducerProtocol {
         switch result {
         case .success(let reviews):
           return EffectTask(value: .updateReviewCellViewStates(reviews: reviews))
+        case .failure(let error):
+          debugPrint(error.localizedDescription)
+        }
+        return .none
+
+      case .fetchUserData:
+        return .run { send in
+          let user = try await loginClient.fetchUserData()
+          await send(.fetchUserDataResponse(.success(user)))
+        } catch: { error, send in
+          await send(.fetchUserDataResponse(.failure(error)))
+        }
+
+      case .fetchUserDataResponse(let result):
+        switch result {
+        case .success(let user):
+          state.user = user
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }

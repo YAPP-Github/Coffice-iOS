@@ -36,6 +36,26 @@ struct MyPageView: View {
           },
           customize: { BottomSheetContent.customize($0) }
         )
+        .sheet(
+          item: viewStore.binding(\.$contactEmailViewState),
+          content: { viewState in
+            ContactEmailView(
+              contactEmailViewState: Binding(
+                get: { viewState },
+                set: { _ in }
+              ),
+              callback: { result in
+                switch result {
+                case .success:
+                  debugPrint("ContactEmailView Action Finished")
+                case .failure(let error):
+                  debugPrint(error.localizedDescription)
+                }
+                viewStore.send(.contactEmailView(isPresented: false))
+              }
+            )
+          }
+        )
     }
   }
 
