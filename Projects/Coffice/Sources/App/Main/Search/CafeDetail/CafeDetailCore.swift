@@ -16,6 +16,7 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var isReviewReportSheetPresented = false
     @BindingState var isReviewDeleteConfirmSheetPresented = false
     @BindingState var deleteConfirmBottomSheetState: BottomSheetReducer.State?
+    @BindingState var toastViewMessage: String?
     var bottomSheetType: BottomSheetType = .deleteConfirm
 
     var cafeId: Int
@@ -71,10 +72,14 @@ struct CafeDetail: ReducerProtocol {
       : CofficeAsset.Asset.arrowDropDownLine24px
     }
 
-    let userReviewEmptyDescription: String = """
-                                             아직 리뷰가 없어요!
-                                             첫 리뷰를 작성해볼까요?
-                                             """
+    let userReviewEmptyDescription = """
+                                     아직 리뷰가 없어요!
+                                     첫 리뷰를 작성해볼까요?
+                                     """
+    let reviewUploadFinishedMessage = "리뷰가 등록되었습니다."
+    let reviewEditFinishedMessage = "리뷰가 수정되었습니다."
+    let reviewDeleteFinishedMessage = "리뷰가 삭제되었습니다."
+    let reviewReportFinishedMessage = "신고가 접수되었습니다."
   }
 
   enum Action: Equatable, BindableAction {
@@ -88,6 +93,7 @@ struct CafeDetail: ReducerProtocol {
     case infoGuideButtonTapped(CafeFilter.GuideType)
     case presentBubbleMessageView(BubbleMessage.State)
     case presentCafeReviewWriteView(CafeReviewWrite.State)
+    case presentToastView(message: String)
     case cafeReviewWrite(action: CafeReviewWrite.Action)
     case bottomSheet(action: BottomSheetReducer.Action)
     case reviewDeleteConfirmBottomSheet(isPresented: Bool)
@@ -181,8 +187,7 @@ struct CafeDetail: ReducerProtocol {
       case .reportReviewResponse(let result):
         switch result {
         case .success(let reviews):
-          // TODO: 신고 완료 토스트 팝업 표출 필요
-          return .none
+          return EffectTask(value: .presentToastView(message: state.reviewReportFinishedMessage))
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
@@ -208,8 +213,10 @@ struct CafeDetail: ReducerProtocol {
       case .deleteReviewResponse(let result):
         switch result {
         case .success:
-          // TODO: 삭제 완료 토스트 뷰 표출 필요
-          return EffectTask(value: .fetchReviews)
+          return .merge(
+            EffectTask(value: .presentToastView(message: state.reviewDeleteFinishedMessage)),
+            EffectTask(value: .fetchReviews)
+          )
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
@@ -252,6 +259,10 @@ struct CafeDetail: ReducerProtocol {
         state.cafeReviewWriteState = viewState
         return .none
 
+      case .presentToastView(let message):
+        state.toastViewMessage = message
+        return .none
+
       case .toggleToPresentTextForTest:
         state.needToPresentRunningTimeDetailInfo.toggle()
 
@@ -271,8 +282,16 @@ struct CafeDetail: ReducerProtocol {
 
       case .cafeReviewWrite(let action):
         switch action {
-        case .uploadReviewResponse(.success), .editReviewResponse(.success):
-          return EffectTask(value: .fetchReviews)
+        case .uploadReviewResponse(.success):
+          return .merge(
+            EffectTask(value: .presentToastView(message: state.reviewUploadFinishedMessage)),
+            EffectTask(value: .fetchReviews)
+          )
+        case .editReviewResponse(.success):
+          return .merge(
+            EffectTask(value: .presentToastView(message: state.reviewEditFinishedMessage)),
+            EffectTask(value: .fetchReviews)
+          )
         case .dismissView:
           state.cafeReviewWriteState = nil
         default:

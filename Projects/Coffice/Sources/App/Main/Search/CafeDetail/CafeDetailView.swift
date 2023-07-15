@@ -161,6 +161,21 @@ struct CafeDetailView: View {
         },
         customize: { BottomSheetContent.customize($0) }
       )
+      .popup(
+        item: viewStore.binding(\.$toastViewMessage),
+        itemView: { message in
+          ToastView(
+            title: message,
+            image: CofficeAsset.Asset.checkboxCircleFill18px,
+            config: ToastConfiguration.default
+          )
+        },
+        customize: {
+          $0
+            .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: false))
+            .autohideIn(2)
+        }
+      )
     }
   }
 }
