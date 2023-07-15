@@ -10,10 +10,11 @@ import SwiftUI
 
 struct PlaceCellView: View {
   var place: Cafe?
+  var placeName: AttributedString = ""
   var body: some View {
     HStack(spacing: 0) {
       VStack(alignment: .leading, spacing: 8) {
-        Text(place?.name ?? "")
+        Text(placeName)
           .applyCofficeFont(font: .subtitleSemiBold)
         Text(place?.address?.address ?? "")
           .applyCofficeFont(font: .body1Medium)
