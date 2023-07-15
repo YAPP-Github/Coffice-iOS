@@ -14,8 +14,11 @@ struct AppServiceTermsView: View {
 
   var body: some View {
     WithViewStore(store) { viewStore in
-      VStack(spacing: 10) {
-
+      VStack {
+        CommonWebView(store: store.scope(
+          state: \.webViewState,
+          action: AppServiceTermsReducer.Action.webAction)
+        )
       }
       .onAppear {
         viewStore.send(.onAppear)
