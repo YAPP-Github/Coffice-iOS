@@ -12,7 +12,11 @@ import Foundation
 struct CafeDetail: ReducerProtocol {
   struct State: Equatable {
     @BindingState var cafeReviewWriteState: CafeReviewWrite.State?
+    @BindingState var isReviewModifyPopupPresented = false
+    @BindingState var isReviewReportPopupPresented = false
     var cafeId: Int
+    var selectedUserReviewCellViewState: UserReviewCellViewState?
+    var selectedReviewModifyPopupButtonActionType: ReviewModifyPopupButtonActionType = .none
     var cafe: Cafe?
     var cafeTestImageAssets: [CofficeImages] = [
       CofficeAsset.Asset.cafeImage,
@@ -87,6 +91,14 @@ struct CafeDetail: ReducerProtocol {
     case fetchUserData
     case fetchUserDataResponse(TaskResult<User>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
+    case reviewModifyButtonTapped(viewState: State.UserReviewCellViewState)
+    case reviewModifyPopup(isPresented: Bool)
+    case reviewModifyPopupDismissed
+    case reviewReportPopup(isPresented: Bool)
+    case reviewEditButtonTapped
+    case reviewDeleteButtonTapped
+    case reviewReportButtonTapped
+    case resetSelectedReviewModifyPopupButtonActionType
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -148,8 +160,10 @@ struct CafeDetail: ReducerProtocol {
         return .none
 
       case .updateReviewCellViewStates(let reviews):
-        state.userReviewCellViewStates = reviews.compactMap { review in
+        state.userReviewCellViewStates = reviews.compactMap { [userId = state.user?.id] review in
           return .init(
+            reviewId: review.reviewId,
+            memberId: review.memberId,
             userName: review.memberName,
             date: review.createdDate,
             content: review.content,
@@ -158,7 +172,11 @@ struct CafeDetail: ReducerProtocol {
               review.wifiOption == .fast ? .fastWifi : nil,
               review.noiseOption == .quiet ? .quiet : nil
             ]
-            .compactMap { $0 }
+            .compactMap { $0 },
+            isMyReview: review.memberId == userId,
+            outletOption: review.outletOption,
+            wifiOption: review.wifiOption,
+            noiseOption: review.noiseOption
           )
         }
         return .none
@@ -197,13 +215,75 @@ struct CafeDetail: ReducerProtocol {
 
       case .cafeReviewWrite(let action):
         switch action {
-        case .uploadReviewResponse(.success):
+        case .uploadReviewResponse(.success), .editReviewResponse(.success):
           return EffectTask(value: .fetchReviews)
         case .dismissView:
           state.cafeReviewWriteState = nil
         default:
           return .none
         }
+        return .none
+
+      case .reviewModifyPopupDismissed:
+        guard let cellViewState = state.selectedUserReviewCellViewState
+        else { return .none }
+
+        var popActionEffectTask: EffectTask<Action> = .none
+
+        switch state.selectedReviewModifyPopupButtonActionType {
+        case .edit:
+          popActionEffectTask = EffectTask(
+            value: .presentCafeReviewWriteView(
+              .init(
+                reviewType: .edit,
+                placeId: state.cafeId,
+                reviewId: cellViewState.reviewId,
+                outletOption: cellViewState.outletOption,
+                wifiOption: cellViewState.wifiOption,
+                noiseOption: cellViewState.noiseOption,
+                reviewText: cellViewState.content
+              )
+            )
+          )
+          .delay(for: 0.1, scheduler: DispatchQueue.main)
+          .eraseToEffect()
+        case .delete:
+          // TODO: 삭제버튼 이벤트 구현 필요
+          return .none
+        default:
+          return .none
+        }
+
+        return .merge(
+          popActionEffectTask,
+          EffectTask(value: .resetSelectedReviewModifyPopupButtonActionType)
+        )
+
+      case .reviewModifyPopup(let isPresented):
+        state.isReviewModifyPopupPresented = isPresented
+        return .none
+
+      case .reviewReportPopup(let isPresented):
+        state.isReviewReportPopupPresented = isPresented
+        return .none
+
+      case .reviewModifyButtonTapped(let viewState):
+        state.selectedUserReviewCellViewState = viewState
+        return EffectTask(value: .reviewModifyPopup(isPresented: true))
+
+      case .reviewEditButtonTapped:
+        state.selectedReviewModifyPopupButtonActionType = .edit
+        return EffectTask(value: .reviewModifyPopup(isPresented: false))
+
+      case .reviewDeleteButtonTapped:
+        state.selectedReviewModifyPopupButtonActionType = .delete
+        return EffectTask(value: .reviewModifyPopup(isPresented: false))
+
+      case .reviewReportButtonTapped:
+        return EffectTask(value: .reviewReportPopup(isPresented: false))
+
+      case .resetSelectedReviewModifyPopupButtonActionType:
+        state.selectedReviewModifyPopupButtonActionType = .none
         return .none
 
       default:
@@ -222,12 +302,18 @@ struct CafeDetail: ReducerProtocol {
 // MARK: - Sub Views State
 
 extension CafeDetail.State {
-  struct UserReviewCellViewState: Equatable, Identifiable {
+  struct UserReviewCellViewState: Hashable, Identifiable {
     let id = UUID()
+    let reviewId: Int
+    let memberId: Int
     let userName: String
     let date: Date?
     let content: String
     let tagTypes: [ReviewTagType]
+    let isMyReview: Bool
+    let outletOption: ReviewOption.OutletOption
+    let wifiOption: ReviewOption.WifiOption
+    let noiseOption: ReviewOption.NoiseOption
 
     var dateDescription: String {
       guard let date else { return "-" }
@@ -394,5 +480,13 @@ extension CafeDetail.State {
       case .review: return "리뷰"
       }
     }
+  }
+}
+
+extension CafeDetail.State {
+  enum ReviewModifyPopupButtonActionType {
+    case edit
+    case delete
+    case none
   }
 }
