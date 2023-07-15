@@ -380,7 +380,7 @@ struct CafeDetail: ReducerProtocol {
 
       case .reviewReportSheetButtonTapped:
         state.selectedReviewSheetActionType = .report
-        return .concatenate(
+        return .merge(
           EffectTask(value: .reviewReportSheet(isPresented: false)),
           EffectTask(value: .reportReview)
         )
