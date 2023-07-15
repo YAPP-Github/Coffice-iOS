@@ -254,7 +254,6 @@ struct NaverMapCore: ReducerProtocol {
 
       case .appendMarkers(let markers):
         state.markers.append(contentsOf: markers)
-        print("appendMarkers")
         return .none
 
       case .selectCafe(let cafe):

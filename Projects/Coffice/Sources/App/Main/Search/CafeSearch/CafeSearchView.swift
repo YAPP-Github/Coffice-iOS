@@ -107,7 +107,7 @@ extension CafeSearchView {
               )
               .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
             }
-            ForEach(viewStore.places, id: \.self) { place in
+            ForEach(viewStore.cafes, id: \.self) { place in
               PlaceCellView(
                 place: place,
                 placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
