@@ -26,7 +26,7 @@ struct CafeReviewWriteView: View {
             .padding(.vertical, 4)
           Spacer()
           Button {
-            viewStore.send(.dismissView)
+            viewStore.send(.presentDeleteConfirmBottomSheet)
           } label: {
             CofficeAsset.Asset.close40px.swiftUIImage
           }
@@ -91,6 +91,24 @@ struct CafeReviewWriteView: View {
       .onTapGesture {
         UIApplication.keyWindow?.endEditing(true)
       }
+      .popup(
+        item: viewStore.binding(\.$dismissConfirmBottomSheetState),
+        itemView: { sheetState in
+          BottomSheetView(
+            store: store.scope(
+              state: { _ in sheetState },
+              action: CafeReviewWrite.Action.dismissConfirmBottomSheet
+            ),
+            bottomSheetContent: viewStore.deleteConfirmBottomSheetType.content
+          )
+        },
+        customize: {
+          BottomSheetContent.customize($0)
+            .dismissCallback {
+              viewStore.send(.dismissConfirmBottomSheetDismissed)
+            }
+        }
+      )
     }
   }
 }

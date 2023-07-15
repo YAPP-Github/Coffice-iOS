@@ -111,7 +111,7 @@ extension BottomSheetView {
       Button {
         viewStore.send(.confirmButtonTapped)
       } label: {
-        Text(bottomSheetContent.title)
+        Text(bottomSheetContent.confirmButtonTitle)
           .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
           .applyCofficeFont(font: .button)
           .frame(maxWidth: .infinity, alignment: .center)
