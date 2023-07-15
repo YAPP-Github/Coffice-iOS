@@ -17,7 +17,14 @@ struct CafeMapView: View {
     WithViewStore(store) { viewStore in
       GeometryReader { geometry in
         ZStack {
-          NaverMapView(viewStore: viewStore)
+          NaverMapView(
+            viewStore: ViewStore(
+              store.scope(
+                state: \.naverMapState,
+                action: CafeMapCore.Action.naverMapAction
+              )
+            )
+          )
           switch viewStore.displayViewType {
           case .searchResultView:
             CafeSearchListView(store: store.scope(
