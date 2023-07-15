@@ -155,7 +155,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         return EffectTask(value: .resetCafeFilter)
 
       case .resetCafeFilter:
-        state.cafeFilterInformation = state.originCafeFilterInformation
+        state.cafeFilterInformation.resetFilterInfomation()
         return EffectTask(value: .updateMainViewState)
 
       case .saveCafeFilterButtonTapped:

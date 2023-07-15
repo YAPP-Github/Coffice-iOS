@@ -119,4 +119,14 @@ struct CafeFilterInformation: Equatable {
       return true
     }
   }
+
+  mutating func resetFilterInfomation() {
+    self.outletOptionSet.removeAll()
+    self.runningTimeOptionSet.removeAll()
+    self.spaceSizeOptionSet.removeAll()
+    self.personnelOptionSet.removeAll()
+    self.foodOptionSet.removeAll()
+    self.toiletOptionSet.removeAll()
+    self.drinkOptionSet.removeAll()
+  }
 }
