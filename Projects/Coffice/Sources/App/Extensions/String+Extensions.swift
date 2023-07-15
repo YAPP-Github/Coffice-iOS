@@ -7,7 +7,16 @@
 //
 
 import Foundation
+import SwiftUI
 
 extension String {
   var isNotEmpty: Bool { !isEmpty }
+
+  func toAttributedString(matchText: String) -> AttributedString {
+    var attributedString = AttributedString(stringLiteral: self)
+    guard let range = attributedString.range(of: matchText) else { return attributedString }
+    attributedString[range].foregroundColor = CofficeAsset.Colors.secondary1.swiftUIColor
+    attributedString[range].font = .custom(CofficeFont.subtitleSemiBold.name, size: 16)
+    return attributedString
+  }
 }
