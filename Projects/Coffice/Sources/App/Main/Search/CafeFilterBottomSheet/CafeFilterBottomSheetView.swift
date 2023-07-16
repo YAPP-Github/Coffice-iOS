@@ -51,6 +51,24 @@ struct CafeFilterBottomSheetView: View {
         }
         .frame(width: proxy.size.width, height: proxy.size.height)
         .animation(.easeIn(duration: viewStore.dismissAnimationDuration), value: viewStore.isBottomSheetPresented)
+        .popup(
+          item: viewStore.binding(\.$bubbleMessageViewState),
+          itemView: { viewState in
+            BubbleMessageView(store: store.scope(
+              state: { _ in viewState },
+              action: CafeFilterBottomSheet.Action.bubbleMessageAction)
+            )
+          },
+          customize: { popup in
+            popup
+              .type(.default)
+              .position(.center)
+              .animation(.easeIn(duration: 0))
+              .isOpaque(true)
+              .closeOnTapOutside(true)
+              .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+          }
+        )
       }
     }
   }
