@@ -98,7 +98,7 @@ struct MyPageView: View {
           viewStore.send(.editProfileButtonTapped(nickname: viewStore.user?.name ?? "기존닉네임"))
         } label: {
           HStack(spacing: 0) {
-            Text("SNS 로그인")
+            Text("편집")
               .applyCofficeFont(font: .button)
             CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
               .renderingMode(.template)
