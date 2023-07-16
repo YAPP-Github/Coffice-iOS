@@ -31,6 +31,7 @@ struct EditProfile: ReducerProtocol {
       }
     }
   }
+
   struct State: Equatable {
     static let initialState: State = .init(nickname: "기존닉네임")
 
