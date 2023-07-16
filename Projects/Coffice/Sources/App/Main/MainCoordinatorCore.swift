@@ -130,6 +130,7 @@ struct MainCoordinator: ReducerProtocol {
         state.shouldShowTabBarView = true
         state.bubbleMessageState = nil
         return .none
+
       case .myPage(.routeAction(_, .editProfile(.hideTabBar))):
         state.shouldShowTabBarView = false
         return .none
