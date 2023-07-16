@@ -58,6 +58,13 @@ public final class CoreNetwork: CoreNetworkInterface {
     return dto
   }
 
+  public func networkResult<DTO: Decodable>(request: URLRequest) async throws -> NetworkResult<DTO> {
+    let data = try await failableData(of: request)
+    guard let networkResult = try? JSONDecoder().decode(NetworkResult<DTO>.self, from: data)
+    else { throw CoreNetworkError.jsonDecodeFailed }
+    return networkResult
+  }
+
   public func pageableDataTask<DTO: Decodable>(request: URLRequest) async throws -> (dto: DTO, hasNext: Bool) {
     let data = try await data(of: request)
     guard let dto = try? JSONDecoder().decode(NetworkResult<DTO>.self, from: data).data else {
@@ -113,6 +120,26 @@ public final class CoreNetwork: CoreNetworkInterface {
       throw CoreNetworkError.exception(errorMessage: exception.message)
     }
     debugPrint("✅ status: \(httpResponse.statusCode)")
+    return data
+  }
+
+  private func failableData(of request: URLRequest) async throws -> Data {
+    var request = request
+    if let token = token {
+      request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    } else {
+      debugPrint("There is no jwt token")
+    }
+    let (data, response) = try await URLSession.shared.data(for: request)
+    debugPrint("🌐 " + (request.httpMethod ?? "") + " : " + String(request.url?.absoluteString ?? ""))
+    guard let httpResponse = response as? HTTPURLResponse else {
+      throw CoreNetworkError.sessionError
+    }
+    if 200...299 ~= httpResponse.statusCode {
+      debugPrint("✅ status: \(httpResponse.statusCode)")
+    } else {
+      debugPrint("🚨 status: \(httpResponse.statusCode)")
+    }
     return data
   }
 }
