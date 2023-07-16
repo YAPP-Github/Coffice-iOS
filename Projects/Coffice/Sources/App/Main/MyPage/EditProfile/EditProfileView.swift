@@ -38,9 +38,6 @@ struct EditProfileView: View {
         .onAppear {
           viewStore.send(.hideTabBar)
         }
-        .onDisappear {
-          viewStore.send(.showTabBar)
-        }
     }
   }
 

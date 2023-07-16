@@ -27,9 +27,9 @@ struct AppCoordinator: ReducerProtocol {
         UserDefaults.standard.setValue(true, forKey: "alreadyLaunched")
       }
 
-      let isAlreadyLoginned = CoreNetwork.shared.token != nil
+      let isAlreadyLoggedIn = CoreNetwork.shared.token != nil
 
-      if isAlreadyLoginned {
+      if isAlreadyLoggedIn {
         routes = [.root(.main(.initialState), embedInNavigationView: false)]
       } else {
         routes = [.root(.login(.initialState), embedInNavigationView: false)]

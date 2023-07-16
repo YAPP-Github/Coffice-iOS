@@ -16,13 +16,6 @@ struct LoginView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       mainView
-        .customNavigationBar {
-          EmptyView()
-        } leftView: {
-          EmptyView()
-        } rightView: {
-          EmptyView()
-        }
     }
   }
 
