@@ -88,6 +88,13 @@ struct EditProfileView: View {
         }
         .frame(height: 60)
         .padding(.horizontal, 20)
+          HStack(spacing: 0) {
+            Text(viewStore.nicknameValidationType.description)
+              .foregroundColor(CofficeAsset.Colors.red.swiftUIColor)
+              .applyCofficeFont(font: .body1)
+              .padding(.leading, 20)
+            Spacer()
+          }
 
         Spacer()
 
