@@ -17,17 +17,9 @@ struct LoginView: View {
     WithViewStore(store) { viewStore in
       mainView
         .customNavigationBar {
-          Text(viewStore.title)
+          EmptyView()
         } leftView: {
-          Group {
-            if viewStore.state.isOnboarding.isFalse {
-              Button {
-                viewStore.send(.dismissLoginPage)
-              } label: {
-                Image(systemName: "xmark")
-              }
-            }
-          }
+          EmptyView()
         } rightView: {
           EmptyView()
         }
@@ -37,18 +29,25 @@ struct LoginView: View {
   var mainView: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 10) {
-        Spacer()
 
-        Button(action: {
+        CofficeAsset.Asset.loginAppLogo.swiftUIImage
+          .padding(.init(top: 163, leading: 96, bottom: 178, trailing: 96))
+
+        Button {
           viewStore.send(.kakaoLoginButtonClicked)
-        }, label: {
-          Text("카카오 로그인")
-            .tint(.black)
-            .frame(maxWidth: .infinity, minHeight: 50)
-            .applyCofficeFont(font: .header0)
-        })
-        .background(Color.yellow)
-        .cornerRadius(10)
+        } label: {
+          HStack {
+            CofficeAsset.Asset.kakaoLogo18px.swiftUIImage
+              .frame(width: 18, height: 18)
+            Text("카카오톡으로 로그인")
+              .tint(.black)
+              .applyCofficeFont(font: .subtitleSemiBold)
+          }
+          .frame(maxWidth: .infinity)
+          .frame(height: 52)
+        }
+        .background(CofficeAsset.Colors.kakao.swiftUIColor)
+        .cornerRadius(25)
 
         SignInWithAppleButton { request in
           request.requestedScopes = []
@@ -65,7 +64,19 @@ struct LoginView: View {
             debugPrint(error)
           }
         }
+        .cornerRadius(25)
         .frame(height: 50)
+
+        HStack(spacing: 4) {
+          Text("회원가입 없이")
+          Button {
+            viewStore.send(.useAppAsNonMember)
+          } label: {
+            Text("둘러보기")
+              .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+          }
+        }
+        .applyCofficeFont(font: .body1Medium)
 
         Spacer()
       }
