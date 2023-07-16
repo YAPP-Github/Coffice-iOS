@@ -22,7 +22,7 @@ struct EditProfileView: View {
       nickNameView
         .customNavigationBar(
           centerView: {
-            Text("프로필 편집")
+            Text(viewStore.navigationTitle)
               .applyCofficeFont(font: .subtitleSemiBold)
               .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
           },
@@ -37,6 +37,9 @@ struct EditProfileView: View {
         )
         .onAppear {
           viewStore.send(.hideTabBar)
+        }
+        .onDisappear {
+          viewStore.send(.showTabBar)
         }
     }
   }
@@ -88,13 +91,16 @@ struct EditProfileView: View {
         }
         .frame(height: 60)
         .padding(.horizontal, 20)
+
+        if case .checked(let response) = viewStore.nicknameValidationType, response != .valid {
           HStack(spacing: 0) {
-            Text(viewStore.nicknameValidationType.description)
+            Text(response.warningMessage)
               .foregroundColor(CofficeAsset.Colors.red.swiftUIColor)
               .applyCofficeFont(font: .body1)
               .padding(.leading, 20)
             Spacer()
           }
+        }
 
         Spacer()
 
@@ -108,13 +114,13 @@ struct EditProfileView: View {
             .padding(.vertical, 12)
         }
         .background(
-          viewStore.isNicknameValid
+          viewStore.isAbleToCheckNickname
           ? CofficeAsset.Colors.grayScale9.swiftUIColor
           : CofficeAsset.Colors.grayScale5.swiftUIColor
         )
         .cornerRadius(4)
         .padding(.horizontal, 20)
-        .disabled(viewStore.isNicknameValid.isFalse)
+        .disabled(viewStore.isAbleToCheckNickname.isFalse)
       }
     }
   }
