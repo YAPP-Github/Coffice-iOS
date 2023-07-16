@@ -41,8 +41,6 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     var originCafeFilterInformation: CafeFilterInformation
     var cafeFilterInformation: CafeFilterInformation
     var mainViewState: CafeFilterBottomSheetViewState = .init(optionButtonCellViewStates: [])
-
-    var isBottomSheetPresented = false
     let dismissAnimationDuration: Double = 0.3
     let dismissDelayNanoseconds: UInt64 = 300_000_000
     var containerViewHeight: CGFloat = .zero
@@ -60,8 +58,6 @@ struct CafeFilterBottomSheet: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
     case dismiss
-    /// dismiss 애니메이션 적용을 위해 딜레이 시간을 적용한 이벤트
-    case dismissWithDelay
     case presentBottomSheet
     case hideBottomSheet
     case optionButtonTapped(optionType: CafeFilter.OptionType)
@@ -71,7 +67,6 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     case resetCafeFilterButtonTapped
     case resetCafeFilter
     case saveCafeFilterButtonTapped
-    case backgroundViewTapped
     case updateContainerView(height: CGFloat)
     case saveCafeFilter(information: CafeFilterInformation)
     case bubbleMessageAction(BubbleMessage.Action)
@@ -84,17 +79,6 @@ struct CafeFilterBottomSheet: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      case .backgroundViewTapped:
-        return EffectTask(value: .dismissWithDelay)
-
-      case .hideBottomSheet:
-        state.isBottomSheetPresented = false
-        return .none
-
-      case .presentBottomSheet:
-        state.isBottomSheetPresented = true
-        return .none
-
       case .optionButtonTapped(let optionType):
         switch optionType {
         case .runningTime(let option):
@@ -179,26 +163,12 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         return EffectTask(value: .updateMainViewState)
 
       case .saveCafeFilterButtonTapped:
-        // TODO: 화면 상단 필터뷰로 데이터 전달하여 UI 업데이트 필요
         debugPrint("saved mainViewState : \(state.mainViewState)")
-        return .concatenate(
-          EffectTask(value: .saveCafeFilter(information: state.cafeFilterInformation)),
-          EffectTask(value: .dismissWithDelay)
-        )
+        return EffectTask(value: .saveCafeFilter(information: state.cafeFilterInformation))
 
       case .updateContainerView(let height):
         state.containerViewHeight = height
         return .none
-
-      case .dismissWithDelay:
-        let dismissDelayNanoseconds = Int(state.dismissDelayNanoseconds)
-        state.isBottomSheetPresented = false
-        return .concatenate(
-          EffectTask(value: .hideBottomSheet)
-            .delay(for: .nanoseconds(dismissDelayNanoseconds), scheduler: DispatchQueue.main)
-            .eraseToEffect(),
-          EffectTask(value: .dismiss)
-        )
 
       default:
         return .none

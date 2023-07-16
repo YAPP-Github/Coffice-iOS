@@ -28,7 +28,6 @@ struct MainCoordinator: ReducerProtocol {
     var myPageState: MyPageCoordinator.State
     var tabBarState: TabBar.State
 
-    var filterSheetState: CafeFilterBottomSheet.State?
     var commonBottomSheetState: CommonBottomSheet.State?
 
     var shouldShowTabBarView = true
@@ -41,7 +40,6 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
-    case filterBottomSheet(action: CafeFilterBottomSheet.Action)
     case commonBottomSheet(action: CommonBottomSheet.Action)
     case dismissToastMessageView
     case onAppear
@@ -71,29 +69,6 @@ struct MainCoordinator: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      case .filterBottomSheet(.dismiss):
-        state.shouldShowTabBarView = true
-        state.filterSheetState = nil
-        return .none
-
-      case .filterBottomSheet(.saveCafeFilter(let information)):
-        return EffectTask(
-          value: .search(
-            .routeAction(0, action: .cafeMap(.updateCafeFilter(information: information)))
-          )
-        )
-
-      case .filterBottomSheet(.dismissWithDelay):
-        return .merge(
-          EffectTask(value: .search(.routeAction(
-            0,
-            action: .cafeMap(.filterBottomSheetDismissed)
-          ))),
-          EffectTask(value: .search(.routeAction(
-            0,
-            action: .cafeMap(.cafeSearchListAction(.filterBottomSheetDismissed))
-          )))
-        )
 
       case .commonBottomSheet(.dismiss):
         state.commonBottomSheetState = nil
@@ -106,16 +81,6 @@ struct MainCoordinator: ReducerProtocol {
         debugPrint("selectedTab : \(itemType)")
         return .none
 
-      case
-          .search(.routeAction(_, .cafeMap(.cafeFilterMenusAction(
-            .presentFilterBottomSheetView(let filterSheetState)
-          )))),
-          .search(.routeAction(_, .cafeMap(.cafeSearchListAction(.cafeFilterMenus(
-            action: .presentFilterBottomSheetView(let filterSheetState)
-          ))))):
-        state.shouldShowTabBarView = false
-        state.filterSheetState = filterSheetState
-        return .none
 
       case .myPage(.routeAction(_, .editProfile(.hideTabBar))):
         state.shouldShowTabBarView = false
@@ -128,12 +93,6 @@ struct MainCoordinator: ReducerProtocol {
       default:
         return .none
       }
-    }
-    .ifLet(
-      \.filterSheetState,
-      action: /Action.filterBottomSheet
-    ) {
-      CafeFilterBottomSheet()
     }
     .ifLet(
       \.commonBottomSheetState,

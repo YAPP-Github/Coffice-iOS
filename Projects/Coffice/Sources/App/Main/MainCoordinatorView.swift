@@ -64,14 +64,6 @@ struct MainCoordinatorView: View {
 
           IfLetStore(
             store.scope(
-              state: \.filterSheetState,
-              action: MainCoordinator.Action.filterBottomSheet
-            ),
-            then: CafeFilterBottomSheetView.init
-          )
-
-          IfLetStore(
-            store.scope(
               state: \.commonBottomSheetState,
               action: MainCoordinator.Action.commonBottomSheet
             ),

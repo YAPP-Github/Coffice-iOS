@@ -73,6 +73,21 @@ struct CafeFilterMenusView: View {
       .onAppear {
         viewStore.send(.onAppear)
       }
+      .popup(
+        item: viewStore.binding(\.$cafeFilterBottomSheetState),
+        itemView: { viewState in
+          CafeFilterBottomSheetView(store: store.scope(
+            state: { _ in viewState },
+            action: CafeFilterMenus.Action.cafeFilterBottomSheetViewAction)
+          )
+        },
+        customize: {
+          BottomSheetContent.customize($0)
+            .dismissCallback {
+              viewStore.send(.updateButtonViewStates)
+            }
+        }
+      )
     }
   }
 }
