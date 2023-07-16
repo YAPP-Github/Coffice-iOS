@@ -88,6 +88,18 @@ enum WeekDaySymbol: String, Hashable {
     }
   }
 
+  var weekDayString: String {
+    switch self {
+    case .sunday: return "일"
+    case .monday: return "월"
+    case .tuesday: return "화"
+    case .wednesday: return "수"
+    case .thursday: return "목"
+    case .friday: return "금"
+    case .saturday: return "토"
+    }
+  }
+
   static func symbol(of symbol: String?) -> WeekDaySymbol {
     guard let symbol else { return .monday }
     return WeekDaySymbol(rawValue: symbol.lowercased()) ?? .monday

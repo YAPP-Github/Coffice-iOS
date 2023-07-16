@@ -30,13 +30,13 @@ struct CafeDetailHeaderView: View {
                 .applyCofficeFont(font: .button)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 20)
-              Text(viewStore.cafe?.name ?? "훅스턴")
+              Text(viewStore.cafeName)
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
                 .applyCofficeFont(font: .header0)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 36)
                 .padding(.top, 8)
-              Text(viewStore.cafe?.address?.address ?? "서울 서대문구 연희로 91 2층")
+              Text(viewStore.cafeAddress)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 .applyCofficeFont(font: .body1Medium)
                 .font(.system(size: 14))
@@ -47,20 +47,20 @@ struct CafeDetailHeaderView: View {
 
             VStack {
               Button {
-                // TODO: 북마크 API 연동 필요
+                viewStore.send(.bookmarkButtonTapped)
               } label: {
-                CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+                viewStore.bookmarkButtonImage.swiftUIImage
               }
               Spacer()
             }
           }
 
           HStack(spacing: 8) {
-            Text("영업중")
+            Text(viewStore.openingStateDescription)
               .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
               .applyCofficeFont(font: .button)
               .frame(alignment: .leading)
-            Text("목 09:00 ~ 21:00")
+            Text(viewStore.todayRunningTimeDescription)
               .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
               .applyCofficeFont(font: .body1Medium)
             Spacer()
