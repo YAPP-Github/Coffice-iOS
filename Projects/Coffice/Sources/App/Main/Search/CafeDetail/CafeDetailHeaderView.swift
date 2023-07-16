@@ -47,9 +47,9 @@ struct CafeDetailHeaderView: View {
 
             VStack {
               Button {
-                // TODO: 북마크 API 연동 필요
+                viewStore.send(.bookmarkButtonTapped)
               } label: {
-                CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+                viewStore.bookmarkButtonImage.swiftUIImage
               }
               Spacer()
             }

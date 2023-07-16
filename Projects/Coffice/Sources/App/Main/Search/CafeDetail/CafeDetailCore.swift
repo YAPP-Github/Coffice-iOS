@@ -81,6 +81,7 @@ struct CafeDetail: ReducerProtocol {
     let reviewEditFinishedMessage = "리뷰가 수정되었습니다."
     let reviewDeleteFinishedMessage = "리뷰가 삭제되었습니다."
     let reviewReportFinishedMessage = "신고가 접수되었습니다."
+    let bookmarkedMessage = "장소가 저장되었습니다."
   }
 
   enum Action: Equatable, BindableAction {
@@ -90,6 +91,7 @@ struct CafeDetail: ReducerProtocol {
     case popView
     case subMenuTapped(State.SubMenuType)
     case reviewWriteButtonTapped
+    case bookmarkButtonTapped
     case toggleToPresentTextForTest
     case infoGuideButtonTapped(CafeFilter.GuideType)
     case presentBubbleMessageView(BubbleMessage.State)
@@ -106,6 +108,9 @@ struct CafeDetail: ReducerProtocol {
     case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case fetchUserData
     case fetchUserDataResponse(TaskResult<User>)
+    case deleteMyPlace
+    case addMyPlace
+    case addMyPlaceFinished
     case deleteReview
     case deleteReviewResponse(TaskResult<HTTPURLResponse>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
@@ -124,6 +129,7 @@ struct CafeDetail: ReducerProtocol {
   @Dependency(\.loginClient) private var loginClient
   @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.reviewAPIClient) private var reviewAPIClient
+  @Dependency(\.bookmarkClient) private var bookmarkAPIClient
 
   var body: some ReducerProtocolOf<CafeDetail> {
     BindingReducer()
@@ -188,7 +194,7 @@ struct CafeDetail: ReducerProtocol {
 
       case .reportReviewResponse(let result):
         switch result {
-        case .success(let reviews):
+        case .success:
           return EffectTask(value: .presentToastView(message: state.reviewReportFinishedMessage))
         case .failure(let error):
           debugPrint(error.localizedDescription)
@@ -253,6 +259,42 @@ struct CafeDetail: ReducerProtocol {
       case .subMenuTapped(let menuType):
         state.selectedSubMenuType = menuType
         return .none
+
+      case .bookmarkButtonTapped:
+        state.cafe?.isBookmarked.toggle()
+        let isBookmarked = state.cafe?.isBookmarked ?? false
+
+        if isBookmarked {
+          return EffectTask(value: .addMyPlace)
+        } else {
+          return EffectTask(value: .deleteMyPlace)
+        }
+
+      case .addMyPlace:
+        let placeId = state.cafeId
+        return .run { send in
+          try await bookmarkAPIClient.addMyPlace(placeId: placeId)
+          await send(.addMyPlaceFinished)
+        } catch: { error, send in
+          debugPrint(error)
+        }
+
+      case .addMyPlaceFinished:
+        let bookmarkedMessage = state.bookmarkedMessage
+
+        return .merge(
+          EffectTask(value: .fetchPlace),
+          EffectTask(value: .presentToastView(message: bookmarkedMessage))
+        )
+
+      case .deleteMyPlace:
+        let placeId = state.cafeId
+        return .run { send in
+          try await bookmarkAPIClient.deleteMyPlace(placeId: placeId)
+          await send(.fetchPlace)
+        } catch: { error, send in
+          debugPrint(error)
+        }
 
       case .reviewWriteButtonTapped:
         return EffectTask(value: .presentCafeReviewWriteView(.init(reviewType: .create, placeId: state.cafeId)))
@@ -428,6 +470,12 @@ extension CafeDetail.State {
 
   var todayRunningTimeDescription: String {
     cafe?.openingInformation?.formattedString ?? "-"
+  }
+
+  var bookmarkButtonImage: CofficeImages {
+    return cafe?.isBookmarked ?? false
+    ? CofficeAsset.Asset.bookmarkFill40px
+    : CofficeAsset.Asset.bookmarkLine40px
   }
 }
 
