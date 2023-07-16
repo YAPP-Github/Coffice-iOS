@@ -31,7 +31,7 @@ struct CafeSearchCore: ReducerProtocol {
     var selectedWaypoint: WayPoint?
 
     fileprivate func isSearchTextEqualToWaypoint(waypointName: String) -> Bool {
-      return (searchText == waypointName || "\(searchText)역" == waypointName) ? true : false
+      return searchText == waypointName || "\(searchText)역" == waypointName
     }
   }
 
