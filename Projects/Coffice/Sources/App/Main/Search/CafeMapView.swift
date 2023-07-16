@@ -18,11 +18,9 @@ struct CafeMapView: View {
       GeometryReader { geometry in
         ZStack {
           NaverMapView(
-            viewStore: ViewStore(
-              store.scope(
-                state: \.naverMapState,
-                action: CafeMapCore.Action.naverMapAction
-              )
+            store: store.scope(
+              state: \.naverMapState,
+              action: CafeMapCore.Action.naverMapAction
             )
           )
           switch viewStore.displayViewType {

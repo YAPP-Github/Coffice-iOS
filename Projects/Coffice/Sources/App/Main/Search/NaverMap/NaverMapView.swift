@@ -13,8 +13,8 @@ import ComposableArchitecture
 struct NaverMapView {
   @ObservedObject var viewStore: ViewStoreOf<NaverMapCore>
 
-  init(viewStore: ViewStoreOf<NaverMapCore>) {
-    self.viewStore = viewStore
+  init(store: StoreOf<NaverMapCore>) {
+    self.viewStore = ViewStoreOf<NaverMapCore>(store)
   }
 }
 
