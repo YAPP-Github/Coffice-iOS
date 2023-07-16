@@ -69,7 +69,7 @@ struct CafeSearchCore: ReducerProtocol {
   enum CafeSearchCoreDelegate: Equatable {
     case callSearchWithRequestValueByText(searchText: String)
     case searchWithRequestValueByWaypoint(waypoint: WayPoint)
-    case focusSelectedPlace(selectedPlace: Cafe)
+    case focusSelectedPlace(selectedPlace: [Cafe])
     case dismiss
   }
 
@@ -118,7 +118,7 @@ struct CafeSearchCore: ReducerProtocol {
         return EffectTask(value: .delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint)))
 
       case .placeCellTapped(let place):
-        return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: place)))
+        return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: [place])))
 
       case .clearTextButtonTapped:
         state.searchText = ""
@@ -138,7 +138,6 @@ struct CafeSearchCore: ReducerProtocol {
 
       case .submitText:
         guard state.searchText.isNotEmpty else { return .none }
-
         return .run { [searchText = state.searchText] send in
           let waypoints = try await placeAPIClient.fetchWaypoints(name: searchText)
           if let waypoint = waypoints.first {
@@ -206,11 +205,11 @@ struct CafeSearchCore: ReducerProtocol {
         return .none
 
       case .searchPlacesWithRequestValueResponse(let cafes):
-        guard let cafe = cafes.first else {
+        guard cafes.isNotEmpty else {
           state.bodyType = .searchResultEmptyView
           return .none
         }
-        return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: cafe)))
+        return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: cafes)))
 
       default:
         return .none
