@@ -18,6 +18,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
       )
     }
 
+    @BindingState var bubbleMessageViewState: BubbleMessage.State?
     let filterType: CafeFilter.MenuType
     var guideType: CafeFilter.GuideType? {
       switch filterType {
@@ -56,7 +57,8 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
     case dismiss
     /// dismiss 애니메이션 적용을 위해 딜레이 시간을 적용한 이벤트
     case dismissWithDelay
@@ -72,11 +74,14 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     case backgroundViewTapped
     case updateContainerView(height: CGFloat)
     case saveCafeFilter(information: CafeFilterInformation)
+    case bubbleMessageAction(BubbleMessage.Action)
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
 
   var body: some ReducerProtocolOf<CafeFilterBottomSheet> {
+    BindingReducer()
+
     Reduce { state, action in
       switch action {
       case .backgroundViewTapped:
@@ -146,6 +151,10 @@ struct CafeFilterBottomSheet: ReducerProtocol {
             .init(guideType: guideType)
           )
         )
+
+      case .presentBubbleMessageView(let viewState):
+        state.bubbleMessageViewState = viewState
+        return .none
 
       case .updateMainViewState:
         state.updateMainViewState()

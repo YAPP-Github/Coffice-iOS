@@ -28,14 +28,30 @@ struct OpeningInformation: Hashable {
   }
 
   var is24Open: Bool {
-    let currentTime = Date.now
-    let currentDateComponents = Calendar.current.dateComponents([.weekday], from: currentTime)
+    let today = todayInformation
+    return today.openAt == today.closeAt
+  }
 
+  var formattedString: String {
+    if is24Open {
+      return "24시간"
+    } else if isOpened {
+      return "\(todayInformation.weekDaySymbol.rawValue) "
+      + "\(todayInformation.openAt.hour)" + ":\(todayInformation.openAt.minute) "
+      + "~ "
+      + "\(todayInformation.openAt.hour)" + "\(todayInformation.closeAt.hour)"
+    } else {
+      return "영업종료"
+    }
+  }
+
+  private var todayInformation: DayOpenInformation {
+    let currentTime = Date.now
+    let currentDateComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: currentTime)
     guard let today = dayOpenInformations
       .first(where: { $0.weekDaySymbol.weekDayValue == currentDateComponents.weekday })
-    else { return false }
-
-    return today.openAt == today.closeAt
+    else { return .init(weekDaySymbol: .monday, openAt: .dummy, closeAt: .dummy) }
+    return today
   }
 }
 

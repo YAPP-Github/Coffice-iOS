@@ -16,130 +16,119 @@ struct CafeSearchCore: ReducerProtocol {
   struct DebouncingCancelId: Hashable {}
 
   enum CafeSearchViewBodyType {
-    case recentSearchListView
+    case recentSearchWordsView
     case searchResultEmptyView
     case searchResultListView
   }
 
   struct State: Equatable {
     @BindingState var searchText = ""
-    var searchTextSnapshot: String?
-    var searchCameraPositionSnapshot: CLLocationCoordinate2D?
-    var cafeList: [String] = []
-    var stationList: [String] = []
     var recentSearchWordList: [RecentSearchWord] = []
     var previousViewType: CafeMapCore.ViewType = .mainMapView
-    var currentBodyType: CafeSearchViewBodyType = .searchResultListView
-
-    // MARK: QuickSearch
-    var places: [Cafe] = []
+    var bodyType: CafeSearchViewBodyType = .searchResultListView
+    var cafes: [Cafe] = []
     var waypoints: [WayPoint] = []
-    var selectedWaypoints: WayPoint?
-    var needToRetryFetchResponse = false
+    var selectedWaypoint: WayPoint?
+
+    fileprivate func isSearchTextEqualToWaypoint(waypointName: String) -> Bool {
+      return searchText == waypointName || "\(searchText)역" == waypointName
+    }
   }
 
   enum Action: Equatable, BindableAction {
-    case dismiss
-    case onAppear
-    case submitText
-    case clearText
-    case deleteRecentSearchWord(recentWordId: Int)
+    // MARK: Binding
     case binding(BindingAction<State>)
-    case recentSearchWordCellTapped(recentWord: String)
-    case updateCafeSearchState(text: String, cameraPosition: CLLocationCoordinate2D)
 
+    // MARK: View Life Cycle
+    case onAppear
+
+    // MARK: View Tap Events
+    case submitText
+    case clearTextButtonTapped
+    case deleteRecentSearchWordButtonTapped(recentWordId: Int)
+    case recentSearchWordCellTapped(recentWord: String)
     case placeCellTapped(place: Cafe)
     case waypointCellTapped(waypoint: WayPoint)
-    case focusSelectedPlace(selectedPlace: Cafe)
 
-    case searchPlacesByWaypoint(waypoint: WayPoint)
-    case searchPlacesByRequestValue(searchText: String)
+    // MARK: Network Requests
     case fetchRecentSearchWords
-    case fetchPlacesAndWaypoints(searchText: String)
+    case fetchWaypoints
+    case searchPlacesWithoutFilters
+    case searchPlacesWithRequestValue(requestValue: SearchPlaceRequestValue)
+
+    // MARK: Network Response
+    case fetchWayPointsResponse(waypoints: [WayPoint])
     case recentSearchWordsResponse(TaskResult<[RecentSearchWord]>)
-    case fetchPlacesAndWaypointsResponse(CafeSearchResponse, [WayPoint])
-    case retryFetchPlacesAndWaypointsResponse(CafeSearchResponse, [WayPoint], searchText: String)
+    case searchPlacesWithoutFiltersResponse(cafes: [Cafe])
+    case searchPlacesWithRequestValueResponse(cafes: [Cafe])
+
+    // MARK: Delegate
+    case delegate(CafeSearchCoreDelegate)
   }
 
-  func isSearchTextEqualToWaypoint(_ searchText: String, _ waypointName: String) -> Bool {
-    return (searchText == waypointName || "\(searchText)역" == waypointName) ? true : false
+  enum CafeSearchCoreDelegate: Equatable {
+    case callSearchWithRequestValueByText(searchText: String)
+    case searchWithRequestValueByWaypoint(waypoint: WayPoint)
+    case focusSelectedPlace(selectedPlace: [Cafe])
+    case dismiss
   }
 
   @Dependency(\.searchWordClient) private var searchWordClient
   @Dependency(\.placeAPIClient) private var placeAPIClient
 
+  // MARK: - Body
+
   var body: some ReducerProtocolOf<Self> {
     BindingReducer()
     Reduce { state, action in
       switch action {
-      case .updateCafeSearchState(let text, let newCameraPosition):
-        state.searchTextSnapshot = text
-        state.searchCameraPositionSnapshot = newCameraPosition
-        return .none
 
-      case .waypointCellTapped(waypoint: let waypoint):
-        return .send(.searchPlacesByWaypoint(waypoint: waypoint))
-
-      case .placeCellTapped(place: let place):
-        return .send(.focusSelectedPlace(selectedPlace: place))
-
-      case .fetchPlacesAndWaypoints(let searchText):
-        if searchText.isEmpty { return .none }
-        let needToRetryFetchResponse = state.needToRetryFetchResponse
-        return .run { send in
-          async let fetchPlaces = try placeAPIClient.searchPlaces(by: searchText)
-          async let fetchWaypoints = try placeAPIClient.fetchWaypoints(name: searchText)
-          let (places, waypoints) = try await (fetchPlaces, fetchWaypoints)
-          if needToRetryFetchResponse {
-            await send(.retryFetchPlacesAndWaypointsResponse(places, waypoints, searchText: searchText))
-          } else {
-            await send(.fetchPlacesAndWaypointsResponse(places, waypoints))
-          }
-        } catch: { error, send in
-          debugPrint(error)
-        }
-
-      case .retryFetchPlacesAndWaypointsResponse(let places, let waypoints, let searchText):
-        state.needToRetryFetchResponse = false
-        if waypoints.isNotEmpty && places.cafes.isEmpty {
-          guard let waypoint = waypoints.first
-          else { return .send(.searchPlacesByRequestValue(searchText: searchText)) }
-          return .send(.searchPlacesByWaypoint(waypoint: waypoint))
-        } else if waypoints.isNotEmpty && places.cafes.isNotEmpty {
-          for waypoint in waypoints {
-            if isSearchTextEqualToWaypoint(state.searchText, waypoint.name) {
-              return .send(.searchPlacesByWaypoint(waypoint: waypoint))
-            }
-          }
-        }
-        return .send(.searchPlacesByRequestValue(searchText: searchText))
-
-      case .fetchPlacesAndWaypointsResponse(let places, let waypoints):
-        state.places = places.cafes
-        state.waypoints = waypoints
-        return .none
-
-      case .clearText:
-        state.searchText = ""
-        state.currentBodyType = .recentSearchListView
-        return .none
-
-      case .recentSearchWordCellTapped(let recentWord):
-        return .send(.searchPlacesByRequestValue(searchText: recentWord))
+        // MARK: - Binding
 
       case .binding(\.$searchText):
         if state.searchText.isEmpty {
-          state.currentBodyType = .recentSearchListView
+          state.bodyType = .recentSearchWordsView
         } else {
-          state.currentBodyType = .searchResultListView
+          state.bodyType = .searchResultListView
         }
-        state.places = []
-        state.waypoints = []
-        return EffectTask(value: .fetchPlacesAndWaypoints(searchText: state.searchText))
-          .debounce(id: DebouncingCancelId(), for: 0.2, scheduler: DispatchQueue.main)
-          .eraseToEffect()
+        return .merge(
+          EffectTask(value: .fetchWaypoints),
+          EffectTask(value: .searchPlacesWithoutFilters)
+        )
+        .debounce(
+          id: DebouncingCancelId(),
+          for: 0.5,
+          scheduler: DispatchQueue.main
+        )
 
-      case .deleteRecentSearchWord(let id):
+        // MARK: - View Life Cycle
+
+      case .delegate(.dismiss):
+        state.recentSearchWordList.removeAll()
+        return .none
+
+      case .onAppear:
+        state.searchText = ""
+        state.bodyType = .recentSearchWordsView
+        return .send(.fetchRecentSearchWords)
+
+        // MARK: - View Tap Events
+
+      case .waypointCellTapped(let waypoint):
+        return EffectTask(value: .delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint)))
+
+      case .placeCellTapped(let place):
+        return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: [place])))
+
+      case .clearTextButtonTapped:
+        state.searchText = ""
+        state.bodyType = .recentSearchWordsView
+        return .none
+
+      case .recentSearchWordCellTapped(let recentWord):
+        return EffectTask(value: .delegate(.callSearchWithRequestValueByText(searchText: recentWord)))
+
+      case .deleteRecentSearchWordButtonTapped(let id):
         return .run { send in
           try await searchWordClient.deleteRecentSearchWord(id: id)
           await send(.fetchRecentSearchWords)
@@ -147,17 +136,18 @@ struct CafeSearchCore: ReducerProtocol {
           debugPrint(error)
         }
 
-      case .recentSearchWordsResponse(let result):
-        switch result {
-        case .success(let recentSearchWords):
-          state.recentSearchWordList = recentSearchWords
-          return .none
-
-        case .failure(let error):
-          state.recentSearchWordList = []
-          debugPrint(error)
-          return .none
+      case .submitText:
+        guard state.searchText.isNotEmpty else { return .none }
+        return .run { [searchText = state.searchText] send in
+          let waypoints = try await placeAPIClient.fetchWaypoints(name: searchText)
+          if let waypoint = waypoints.first {
+            await send(.delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint)))
+          } else {
+            await send(.delegate(.callSearchWithRequestValueByText(searchText: searchText)))
+          }
         }
+
+        // MARK: - Network Requests
 
       case .fetchRecentSearchWords:
         return .run { send in
@@ -167,41 +157,59 @@ struct CafeSearchCore: ReducerProtocol {
               RecentSearchWord(
                 searchWordId: $0.searchWordId,
                 text: $0.text,
-                createdAt: $0.createdAt)
+                createdAt: $0.createdAt
+              )
             }
             return recentSearchWords
           }
           return await send(.recentSearchWordsResponse(result))
         }
 
-      case .submitText:
-        if state.searchText.isEmpty { return .none }
-        if state.waypoints.isNotEmpty && state.places.isEmpty {
-          guard let waypoint = state.waypoints.first
-          else { return .send(.searchPlacesByRequestValue(searchText: state.searchText)) }
-          return .send(.searchPlacesByWaypoint(waypoint: waypoint))
-        } else if state.waypoints.isNotEmpty && state.places.isNotEmpty {
-          for waypoint in state.waypoints {
-            if isSearchTextEqualToWaypoint(state.searchText, waypoint.name) {
-              return .send(.searchPlacesByWaypoint(waypoint: waypoint))
-            }
-          }
-          return .send(.searchPlacesByRequestValue(searchText: state.searchText))
-        } else {
-          state.needToRetryFetchResponse = true
-          return .send(.fetchPlacesAndWaypoints(searchText: state.searchText))
+      case .fetchWaypoints:
+        return .run { [searchText = state.searchText] send in
+          let waypoints = try await placeAPIClient.fetchWaypoints(name: searchText)
+          await send(.fetchWayPointsResponse(waypoints: waypoints))
         }
 
-      case .dismiss:
-        state.cafeList.removeAll()
-        state.stationList.removeAll()
-        state.recentSearchWordList.removeAll()
+      case .searchPlacesWithoutFilters:
+        return .run { [searchText = state.searchText] send in
+          let cafeSearchResponse = try await placeAPIClient.searchPlaces(by: searchText)
+          await send(.searchPlacesWithoutFiltersResponse(cafes: cafeSearchResponse.cafes))
+        }
+
+      case .searchPlacesWithRequestValue(let requestValue):
+        return .run { send in
+          let result = try await placeAPIClient.searchPlaces(by: requestValue)
+          await send(.searchPlacesWithRequestValueResponse(cafes: result.cafes))
+        }
+
+        // MARK: - Network Responses
+
+      case .recentSearchWordsResponse(let result):
+        switch result {
+        case .success(let recentSearchWords):
+          state.recentSearchWordList = recentSearchWords
+
+        case .failure(let error):
+          state.recentSearchWordList = []
+          debugPrint(error)
+        }
         return .none
 
-      case .onAppear:
-        state.searchText = ""
-        state.currentBodyType = .recentSearchListView
-        return .send(.fetchRecentSearchWords)
+      case .fetchWayPointsResponse(let waypoints):
+        state.waypoints = waypoints
+        return .none
+
+      case .searchPlacesWithoutFiltersResponse(let cafes):
+        state.cafes = cafes
+        return .none
+
+      case .searchPlacesWithRequestValueResponse(let cafes):
+        guard cafes.isNotEmpty else {
+          state.bodyType = .searchResultEmptyView
+          return .none
+        }
+        return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: cafes)))
 
       default:
         return .none

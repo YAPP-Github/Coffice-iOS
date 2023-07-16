@@ -1,24 +1,27 @@
 //
-//  PrivacyPolicyView.swift
-//  Cafe
+//  AppServiceTermsView.swift
+//  coffice
 //
-//  Created by Min Min on 2023/06/15.
-//  Copyright (c) 2023 com.cafe. All rights reserved.
+//  Created by Min Min on 2023/07/16.
+//  Copyright (c) 2023 kr.co.yapp. All rights reserved.
 //
 
 import ComposableArchitecture
 import SwiftUI
 
-struct PrivacyPolicyView: View {
-  let store: StoreOf<PrivacyPolicy>
+struct AppServiceTermsView: View {
+  let store: StoreOf<AppServiceTermsReducer>
 
   var body: some View {
     WithViewStore(store) { viewStore in
-      VStack(spacing: 10) {
+      VStack {
         CommonWebView(store: store.scope(
           state: \.webViewState,
-          action: PrivacyPolicy.Action.webAction)
+          action: AppServiceTermsReducer.Action.webAction)
         )
+      }
+      .onAppear {
+        viewStore.send(.onAppear)
       }
       .customNavigationBar(
         centerView: {
@@ -32,19 +35,16 @@ struct PrivacyPolicyView: View {
           }
         }
       )
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
     }
   }
 }
 
-struct PrivacyPolicyView_Previews: PreviewProvider {
+struct AppServiceTermsView_Previews: PreviewProvider {
   static var previews: some View {
-    PrivacyPolicyView(
+    AppServiceTermsView(
       store: .init(
         initialState: .initialState,
-        reducer: PrivacyPolicy()
+        reducer: AppServiceTermsReducer()
       )
     )
   }

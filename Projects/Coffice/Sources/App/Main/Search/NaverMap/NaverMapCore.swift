@@ -14,8 +14,12 @@ import SwiftUI
 struct NaverMapCore: ReducerProtocol {
 
   struct State: Equatable {
+    var shouldShowRefreshButtonView: Bool {
+      return isMovingCameraPosition.isFalse && recentCameraUpdateReason != .changedByDeveloper
+    }
+
     // MARK: Selecting Cafe
-    var selectedCafe: Cafe? {
+    fileprivate(set) var selectedCafe: Cafe? {
       didSet {
         if let unselectedMarker = markers.first(where: { $0.cafe.placeId == oldValue?.placeId }) {
           unselectedMarker.markerType = .init(
@@ -33,23 +37,43 @@ struct NaverMapCore: ReducerProtocol {
       }
     }
 
-    var markers: [MapMarker] = []
-    var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
-    var cafes: [Cafe] = []
-    var shouldClearMarkers: Bool = false
-    var bottomFloatingButtons = CafeMapCore.BottomFloatingButtonType.allCases
+    fileprivate(set) var markers: [MapMarker] = []
+    fileprivate(set) var currentCameraPosition = CLLocationCoordinate2D(latitude: 37.4971, longitude: 127.0287)
+    fileprivate(set) var cafes: [Cafe] = []
+    fileprivate(set) var shouldClearMarkers: Bool = false
+    fileprivate(set) var bottomFloatingButtons = CafeMapCore.BottomFloatingButtonType.allCases
       .map(CafeMapCore.BottomFloatingButton.init)
-    var isUpdatingCameraPosition = false
-    var isUpdatingMarkers = false
-    var shouldUpdateMarkers: Bool {
-      return cafes.isNotEmpty && isUpdatingMarkers
+    fileprivate(set) var isUpdatingCameraPosition = false
+    fileprivate(set) var shouldUpdateMarkers = false
+    fileprivate(set) var isUpdatingMarkers = false
+    fileprivate(set) var shouldShowBookmarkCafesOnly = false
+    fileprivate(set) var shouldShowOpenTime = false
+
+    fileprivate(set) var isMovingCameraPosition = false
+    fileprivate(set) var recentCameraUpdateReason: NaverMapCameraUpdateReason = .changedByDeveloper
+
+    mutating func removeAllMarkers() {
+      selectedCafe = nil
+      recentCameraUpdateReason = .changedByDeveloper
+      markers.forEach {
+        $0.touchHandler = nil
+        $0.mapView = nil
+      }
+      markers.removeAll()
     }
-    var shouldShowBookmarkCafesOnly = false
-    var shouldShowRefreshButtonView: Bool {
-      return isMovingCameraPosition.isFalse && cameraUpdateReason != .changedByDeveloper
+
+    mutating func toggleOpenTime() {
+      if shouldShowOpenTime {
+        markers.forEach {
+          $0.subCaptionText = $0.cafe.openingInformation?.formattedString ?? "정보없음"
+          $0.subCaptionColor = CofficeAsset.Colors.secondary1.color
+        }
+      } else {
+        markers.forEach {
+          $0.subCaptionText = ""
+        }
+      }
     }
-    var isMovingCameraPosition = false
-    var cameraUpdateReason: NaverMapCameraUpdateReason = .changedByDeveloper
   }
 
   enum Action: Equatable {
@@ -60,25 +84,39 @@ struct NaverMapCore: ReducerProtocol {
     case mapViewTapped
     case cardViewBookmarkButtonTapped(cafe: Cafe)
 
+    // MARK: Move Camera
+    case moveCameraToUserPosition
+    case moveCameraTo(position: CLLocationCoordinate2D)
+
+    // MARK: Network Requests
+    case searchPlacesWithRequestValue(requestValue: SearchPlaceRequestValue)
+
     // MARK: Network Responses
     case cafeListResponse(TaskResult<[Cafe]>)
 
-    case updateCameraToUserPosition
-    case updateCafeMarkers(isOpened: Bool, cafeSearchFilters: CafeSearchFilters, hasCommunalTable: Bool)
-    case moveCameraToUserPosition
-
-    case removeAllMarkers
-    case appendMarker(marker: MapMarker)
-
-    // MARK: Event Completed
+    // MARK: On/Off Flag After Update UI Completed
     case cameraMovedToUserPosition
     case markersUpdated
     case bookmarkStateUpdated
     case markersCleared
-    case updateCameraUpdateReason(NaverMapCameraUpdateReason)
+    case cameraPositionUpdated(toPosition: CLLocationCoordinate2D, byReason: NaverMapCameraUpdateReason)
     case cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D)
 
+    // MARK: Functions
+    case updatePinnedCafes(cafes: [Cafe])
+    case removeAllMarkers
+    case appendMarkers(markers: [MapMarker])
+    case selectCafe(cafe: Cafe)
+    case unselectCafe
+    case addCafes(cafes: [Cafe])
+
+    // MARK: ETC
+    case delegate(NaverMapDelegate)
     case showBookmarkedToast
+  }
+
+  enum NaverMapDelegate: Equatable {
+    case callSearchPlacesWithRequestValue
   }
 
   // MARK: - Dependencies
@@ -89,12 +127,26 @@ struct NaverMapCore: ReducerProtocol {
   var body: some ReducerProtocolOf<Self> {
     Reduce { state, action in
       switch action {
+
+        // MARK: - View Tap Events
       case .refreshButtonTapped:
-        state.cameraUpdateReason = .changedByDeveloper
-        return .none
+        state.recentCameraUpdateReason = .changedByDeveloper
+        return .run { send in
+          await send(.removeAllMarkers)
+          await send(.delegate(.callSearchPlacesWithRequestValue))
+        }
 
       case .bottomFloatingButtonTapped(let buttonType):
         switch buttonType {
+        case .openTimeButton:
+          if let clockButtonIndex = state.bottomFloatingButtons
+            .firstIndex(where: { $0.type == buttonType }) {
+            state.shouldUpdateMarkers = true
+            state.bottomFloatingButtons[clockButtonIndex].isSelected.toggle()
+            state.shouldShowOpenTime = state.bottomFloatingButtons[clockButtonIndex].isSelected
+            state.toggleOpenTime()
+          }
+          return .none
         case .currentLocationButton:
           state.isUpdatingCameraPosition = true
           return .send(.moveCameraToUserPosition)
@@ -102,7 +154,8 @@ struct NaverMapCore: ReducerProtocol {
         case .bookmarkButton:
           if let bookmarkButtonIndex = state.bottomFloatingButtons
             .firstIndex(where: { $0.type == buttonType }) {
-            state.isUpdatingMarkers = true
+            state.removeAllMarkers()
+            state.shouldUpdateMarkers = true
             state.bottomFloatingButtons[bookmarkButtonIndex].isSelected.toggle()
             state.shouldShowBookmarkCafesOnly = state.bottomFloatingButtons[bookmarkButtonIndex].isSelected
           }
@@ -127,31 +180,34 @@ struct NaverMapCore: ReducerProtocol {
           debugPrint(error)
         }
 
+      case .markerTapped(let cafe):
+        state.selectedCafe = cafe
+        return .none
+
+      case .mapViewTapped:
+        state.selectedCafe = nil
+        return .none
+
+        // MARK: - Move Camera
+
       case .moveCameraToUserPosition:
         state.currentCameraPosition = locationManager.fetchCurrentLocation()
         return .none
 
-      case let .updateCafeMarkers(isOpened, cafeSearchFilters, hasCommunalTable):
-        state.isUpdatingMarkers = true
-        return .run { send in
-          let result = await TaskResult {
-            let cafeRequest = SearchPlaceRequestValue(
-              searchText: "",
-              userLatitude: 37.498768,
-              userLongitude: 127.0277985,
-              maximumSearchDistance: 500,
-              isOpened: isOpened,
-              hasCommunalTable: hasCommunalTable,
-              filters: cafeSearchFilters,
-              pageSize: 100000,
-              pageableKey: nil
-            )
+      case .moveCameraTo(let position):
+        state.currentCameraPosition = position
+        state.isUpdatingCameraPosition = true
+        return .none
 
-            let cafeListData = try await placeAPIClient.searchPlaces(by: cafeRequest)
-            return cafeListData.cafes
-          }
-          await send(.cafeListResponse(result))
+        // MARK: - Network Requests
+
+      case .searchPlacesWithRequestValue(let requestValue):
+        return .run { send in
+          let cafeResponse = try await placeAPIClient.searchPlaces(by: requestValue)
+          await send(.updatePinnedCafes(cafes: cafeResponse.cafes))
         }
+
+        // MARK: - Network Responses
 
       case .cafeListResponse(let result):
         switch result {
@@ -163,42 +219,54 @@ struct NaverMapCore: ReducerProtocol {
           return .none
         }
 
-      case .markerTapped(let cafe):
-        state.selectedCafe = cafe
-        return .none
-
-      case .mapViewTapped:
-        state.selectedCafe = nil
-        return .none
+        // MARK: - On/Off Flag After Update UI Completed
 
       case .cameraMovedToUserPosition:
         state.isUpdatingCameraPosition = false
         return .none
 
       case .markersUpdated:
-        state.isUpdatingMarkers = false
+        state.shouldUpdateMarkers = false
+        NaverMapViewProgressChecker.shared.isUpdatingMarkers = false
         return .none
 
       case .markersCleared:
         state.shouldClearMarkers = false
         return .none
 
-      case .removeAllMarkers:
-        state.markers.removeAll()
-        return .none
-
-      case .appendMarker(let marker):
-        state.markers.append(marker)
-        return .none
-
-      case .updateCameraUpdateReason(let updateReason):
-        state.isMovingCameraPosition = true
-        state.cameraUpdateReason = updateReason
-        return .none
-
-      case .cameraPositionMoved(let newCameraPosition):
-        state.currentCameraPosition = newCameraPosition
+      case .cameraPositionUpdated(let updatedPosition, let updateReason):
+        state.currentCameraPosition = updatedPosition
+        state.recentCameraUpdateReason = updateReason
         state.isMovingCameraPosition = false
+        return .none
+
+        // MARK: - Functions (외부에서 호출 가능)
+
+      case .updatePinnedCafes(let cafes):
+        state.removeAllMarkers()
+        state.cafes = cafes
+        state.shouldUpdateMarkers = true
+        return .none
+
+      case .removeAllMarkers:
+        state.removeAllMarkers()
+        return .none
+
+      case .appendMarkers(let markers):
+        state.markers.append(contentsOf: markers)
+        return .none
+
+      case .selectCafe(let cafe):
+        state.selectedCafe = cafe // FIXME: Marker 찍혀있는지 검사 안해도 되나?
+        return .none
+
+      case .unselectCafe:
+        state.selectedCafe = nil
+        return .none
+
+      case .addCafes(let cafes):
+        state.cafes.append(contentsOf: cafes)
+        state.shouldUpdateMarkers = true
         return .none
 
       default:

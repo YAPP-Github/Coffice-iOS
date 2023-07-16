@@ -65,7 +65,6 @@ struct CafeFilterMenusView: View {
               .cornerRadius(18)
             }
           }
-          .padding(.horizontal, 20)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 36)
