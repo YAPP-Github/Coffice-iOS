@@ -25,7 +25,7 @@ struct CafeMapCore: ReducerProtocol {
     @BindingState var searchText = ""
     var cafeSearchState = CafeSearchCore.State()
     var cafeSearchListState = CafeSearchListCore.State()
-    var cafeFilterMenusState = CafeFilterMenus.State.initialState
+    var cafeFilterMenusState: CafeFilterMenus.State = .initialState
 
     // MARK: CafeFilter
     var cafeFilterInformation: CafeFilterInformation = .initialState
@@ -62,8 +62,6 @@ struct CafeMapCore: ReducerProtocol {
     case requestLocationAuthorization
     case resetCafes(ResetState)
     case cafeFilterMenusAction(CafeFilterMenus.Action)
-    case updateCafeFilter(information: CafeFilterInformation)
-    case filterBottomSheetDismissed
     case onDisappear
     case cardViewTapped
   }
@@ -180,6 +178,14 @@ struct CafeMapCore: ReducerProtocol {
 
       case .cafeSearchListAction(.titleLabelTapped):
         return EffectTask(value: .updateDisplayType(.searchView))
+
+      case .cafeSearchListAction(.updateCafeFilter(let information)):
+        state.cafeFilterInformation = information
+        return EffectTask(
+          value: .cafeFilterMenusAction(
+            .updateCafeFilter(information: information)
+          )
+        )
 
       case .cafeSearchListAction(.dismiss):
         return .send(.resetCafes(.dismissSearchResultView))
@@ -368,25 +374,17 @@ struct CafeMapCore: ReducerProtocol {
         locationManager.requestAuthorization()
         return .none
 
-      case .updateCafeFilter(let information):
+      case .cafeFilterMenusAction(.delegate(.updateCafeFilter(let information))):
         state.cafeFilterInformation = information
-        state.cafeSearchListState.cafeFilterInformation = information
-        return .merge(
-          EffectTask(value: .cafeFilterMenusAction(.updateCafeFilter(information: information))),
-          EffectTask(value: .cafeSearchListAction(
-            .cafeFilterMenus(action: .updateCafeFilter(information: information))
-          ))
-        )
-
-      case .filterBottomSheetDismissed:
-        return EffectTask(
-          value: .cafeFilterMenusAction(.updateCafeFilter(information: state.cafeFilterInformation))
-        )
+        return EffectTask(value: .cafeSearchListAction(
+          .cafeFilterMenus(action: .updateCafeFilter(information: information))
+        ))
 
       case .cardViewTapped:
         guard let cafe = state.naverMapState.selectedCafe
         else { return .none }
         return EffectTask(value: .pushToCafeDetailView(cafeId: cafe.placeId))
+
       default:
         return .none
       }

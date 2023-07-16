@@ -67,6 +67,11 @@ struct CafeFilterMenus: ReducerProtocol {
     case cafeFilterBottomSheetViewAction(CafeFilterBottomSheet.Action)
     case updateCafeFilter(information: CafeFilterInformation)
     case updateButtonViewStates
+    case delegate(Delegate)
+  }
+
+  enum Delegate: Equatable {
+    case updateCafeFilter(information: CafeFilterInformation)
   }
 
   var body: some ReducerProtocolOf<CafeFilterMenus> {
@@ -92,6 +97,10 @@ struct CafeFilterMenus: ReducerProtocol {
         state.cafeFilterBottomSheetState = viewState
         return .none
 
+      case .delegate(.updateCafeFilter(let information)):
+        state.filterInformation = information
+        return EffectTask(value: .updateButtonViewStates)
+
       case .updateCafeFilter(let information):
         state.filterInformation = information
         return EffectTask(value: .updateButtonViewStates)
@@ -104,7 +113,7 @@ struct CafeFilterMenus: ReducerProtocol {
         switch action {
         case .saveCafeFilter(let information):
           state.cafeFilterBottomSheetState = nil
-          return EffectTask(value: .updateCafeFilter(information: information))
+          return EffectTask(value: .delegate(.updateCafeFilter(information: information)))
         case .dismiss:
           state.cafeFilterBottomSheetState = nil
           return .none

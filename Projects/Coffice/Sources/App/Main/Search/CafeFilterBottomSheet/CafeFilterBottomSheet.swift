@@ -41,8 +41,6 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     var originCafeFilterInformation: CafeFilterInformation
     var cafeFilterInformation: CafeFilterInformation
     var mainViewState: CafeFilterBottomSheetViewState = .init(optionButtonCellViewStates: [])
-    let dismissAnimationDuration: Double = 0.3
-    let dismissDelayNanoseconds: UInt64 = 300_000_000
     var containerViewHeight: CGFloat = .zero
     let headerViewHeight: CGFloat = 80
     let footerViewHeight: CGFloat = 84 + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
@@ -163,7 +161,6 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         return EffectTask(value: .updateMainViewState)
 
       case .saveCafeFilterButtonTapped:
-        debugPrint("saved mainViewState : \(state.mainViewState)")
         return EffectTask(value: .saveCafeFilter(information: state.cafeFilterInformation))
 
       case .updateContainerView(let height):
