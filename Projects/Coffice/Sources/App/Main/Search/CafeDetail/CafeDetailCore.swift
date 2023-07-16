@@ -17,6 +17,7 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var isReviewDeleteConfirmSheetPresented = false
     @BindingState var deleteConfirmBottomSheetState: BottomSheetReducer.State?
     @BindingState var toastViewMessage: String?
+    @BindingState var bubbleMessageViewState: BubbleMessage.State?
     var bottomSheetType: BottomSheetType = .deleteConfirm
 
     var cafeId: Int
@@ -93,6 +94,7 @@ struct CafeDetail: ReducerProtocol {
     case infoGuideButtonTapped(CafeFilter.GuideType)
     case presentBubbleMessageView(BubbleMessage.State)
     case presentCafeReviewWriteView(CafeReviewWrite.State)
+    case bubbleMessageAction(BubbleMessage.Action)
     case presentToastView(message: String)
     case cafeReviewWrite(action: CafeReviewWrite.Action)
     case bottomSheet(action: BottomSheetReducer.Action)
@@ -279,6 +281,10 @@ struct CafeDetail: ReducerProtocol {
             .init(guideType: guideType)
           )
         )
+
+      case .presentBubbleMessageView(let viewState):
+        state.bubbleMessageViewState = viewState
+        return .none
 
       case .cafeReviewWrite(let action):
         switch action {
