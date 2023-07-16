@@ -412,6 +412,25 @@ struct CafeDetail: ReducerProtocol {
   }
 }
 
+extension CafeDetail.State {
+  var cafeName: String {
+    cafe?.name ?? "-"
+  }
+
+  var cafeAddress: String {
+    cafe?.address?.address ?? "-"
+  }
+
+  var openingStateDescription: String {
+    cafe?.openingInformation?.isOpened ?? false
+    ? "영업중" : "영업종료"
+  }
+
+  var todayRunningTimeDescription: String {
+    cafe?.openingInformation?.formattedString ?? "-"
+  }
+}
+
 // MARK: - Sub Views State
 
 extension CafeDetail.State {
