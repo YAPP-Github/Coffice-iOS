@@ -176,6 +176,24 @@ struct CafeDetailView: View {
             .autohideIn(2)
         }
       )
+      .popup(
+        item: viewStore.binding(\.$bubbleMessageViewState),
+        itemView: { viewState in
+          BubbleMessageView(store: store.scope(
+            state: { _ in viewState },
+            action: CafeDetail.Action.bubbleMessageAction)
+          )
+        },
+        customize: { popup in
+          popup
+            .type(.default)
+            .position(.center)
+            .animation(.easeIn(duration: 0))
+            .isOpaque(true)
+            .closeOnTapOutside(true)
+            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+        }
+      )
     }
   }
 }
