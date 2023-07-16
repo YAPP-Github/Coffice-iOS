@@ -76,6 +76,12 @@ struct EditProfile: ReducerProtocol {
 
       case .checkNicknameResponse(let response):
         state.nicknameValidationType = .checked(response: response)
+        if state.nicknameValidationType == .checked(response: .valid) {
+          return .concatenate(
+            EffectTask(value: .showTabBar),
+            EffectTask(value: .popView)
+          )
+        }
         return .none
 
       default:

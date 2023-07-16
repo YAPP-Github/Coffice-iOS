@@ -18,12 +18,14 @@ struct MyPageCoordinator: ReducerProtocol {
     var routes: [Route<MyPageScreen.State>]
   }
 
-  enum Action: IndexedRouterAction, Equatable {
+  enum Action: IndexedRouterAction, Equatable, BindableAction {
     case routeAction(Int, action: MyPageScreen.Action)
     case updateRoutes([Route<MyPageScreen.State>])
+    case binding(BindingAction<State>)
   }
 
   var body: some ReducerProtocolOf<MyPageCoordinator> {
+    BindingReducer()
     Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, action: .myPage(.menuButtonTapped(let menuItem))):
