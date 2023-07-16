@@ -1,19 +1,19 @@
 //
-//  LocationServiceTermsCore.swift
-//  Cafe
+//  AppServiceTermsCore.swift
+//  coffice
 //
-//  Created by MinKyeongTae on 2023/05/29.
-//  Copyright © 2023 com.cafe. All rights reserved.
+//  Created by Min Min on 2023/07/16.
+//  Copyright (c) 2023 kr.co.yapp. All rights reserved.
 //
 
 import ComposableArchitecture
 
-struct LocationServiceTerms: ReducerProtocol {
+struct AppServiceTermsReducer: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init()
     var webViewState: CommonWebReducer.State
-    let title = "위치서비스 약관"
-    let webUrlString = "https://traveling-jade-4ad.notion.site/f946b1a337704f108f11d3c6333569d8"
+    let title = "서비스 이용약관"
+    let webUrlString = "https://traveling-jade-4ad.notion.site/0b8d9c87d5be459c97860ddb4bffaa31"
 
     init() {
       webViewState = .init(urlString: webUrlString)
@@ -26,9 +26,7 @@ struct LocationServiceTerms: ReducerProtocol {
     case webAction(CommonWebReducer.Action)
   }
 
-  @Dependency(\.apiClient) private var apiClient
-
-  var body: some ReducerProtocolOf<LocationServiceTerms> {
+  var body: some ReducerProtocolOf<Self> {
     Scope(
       state: \.webViewState,
       action: /Action.webAction
@@ -36,7 +34,7 @@ struct LocationServiceTerms: ReducerProtocol {
       CommonWebReducer()
     }
 
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
       case .onAppear:
         return .none

@@ -13,16 +13,12 @@ struct LocationServiceTermsView: View {
   let store: StoreOf<LocationServiceTerms>
 
   var body: some View {
-    mainView
-  }
-
-  var mainView: some View {
     WithViewStore(store) { viewStore in
       VStack {
-        Spacer()
-        Text("LoactionServiceTermsView")
-
-        Spacer()
+        CommonWebView(store: store.scope(
+          state: \.webViewState,
+          action: LocationServiceTerms.Action.webAction)
+        )
       }
       .customNavigationBar(
         centerView: {
