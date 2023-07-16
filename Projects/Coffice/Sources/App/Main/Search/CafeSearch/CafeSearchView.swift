@@ -36,10 +36,10 @@ struct CafeSearchView: View {
 
 extension CafeSearchView {
   var cafeSearchBodyView: some View {
-    WithViewStore(store, observe: \.currentBodyType) { viewStore in
+    WithViewStore(store, observe: \.bodyType) { viewStore in
       switch viewStore.state {
-      case .recentSearchListView:
-        recentSearchListView
+      case .recentSearchWordsView:
+        recentSearchWordsView
 
       case .searchResultEmptyView:
         searchResultEmptyView
@@ -69,7 +69,7 @@ extension CafeSearchView {
             .keyboardType(.default)
           if viewStore.searchText.isNotEmpty {
             Button {
-              viewStore.send(.clearText)
+              viewStore.send(.clearTextButtonTapped)
             } label: {
               CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
                 .resizable()
@@ -85,7 +85,7 @@ extension CafeSearchView {
               .padding(.trailing, 8)
           }
           Button {
-            viewStore.send(.dismiss)
+            viewStore.send(.delegate(.dismiss))
           } label: {
             CofficeAsset.Asset.close24px.swiftUIImage
           }
@@ -107,7 +107,7 @@ extension CafeSearchView {
               )
               .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
             }
-            ForEach(viewStore.places, id: \.self) { place in
+            ForEach(viewStore.cafes, id: \.self) { place in
               PlaceCellView(
                 place: place,
                 placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
@@ -145,7 +145,7 @@ extension CafeSearchView {
     .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
   }
 
-  var recentSearchListView: some View {
+  var recentSearchWordsView: some View {
     WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         Text("최근검색어")
@@ -185,7 +185,7 @@ extension CafeSearchView {
         .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 16))
         Spacer()
         Button {
-          viewStore.send(.deleteRecentSearchWord(recentWordId: id))
+          viewStore.send(.deleteRecentSearchWordButtonTapped(recentWordId: id))
         } label: {
           CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
             .renderingMode(.template)

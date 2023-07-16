@@ -11,11 +11,18 @@ import NMapsMap
 import ComposableArchitecture
 
 struct NaverMapView {
-  @ObservedObject var viewStore: ViewStoreOf<CafeMapCore>
+  @ObservedObject var viewStore: ViewStoreOf<NaverMapCore>
 
-  init(viewStore: ViewStoreOf<CafeMapCore>) {
-    self.viewStore = viewStore
+  init(store: StoreOf<NaverMapCore>) {
+    self.viewStore = ViewStoreOf<NaverMapCore>(store)
   }
+}
+
+final class NaverMapViewProgressChecker {
+  static let shared = NaverMapViewProgressChecker()
+  var isUpdatingMarkers = false
+
+  private init() {}
 }
 
 extension NaverMapView: UIViewRepresentable {
@@ -30,50 +37,36 @@ extension NaverMapView: UIViewRepresentable {
     naverMapView.mapView.minZoomLevel = 12
     naverMapView.mapView.addCameraDelegate(delegate: context.coordinator)
     naverMapView.mapView.touchDelegate = context.coordinator
-    moveCameraTo(naverMapView: naverMapView, location: viewStore.naverMapState.currentCameraPosition, zoomLevel: 15)
+    moveCameraTo(naverMapView: naverMapView, location: viewStore.currentCameraPosition, zoomLevel: 15)
     return naverMapView
   }
 
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if viewStore.naverMapState.isUpdatingCameraPosition {
+    if viewStore.isUpdatingCameraPosition {
       let nmgLocation = NMGLatLng(
-        lat: viewStore.naverMapState.currentCameraPosition.latitude,
-        lng: viewStore.naverMapState.currentCameraPosition.longitude
+        lat: viewStore.currentCameraPosition.latitude,
+        lng: viewStore.currentCameraPosition.longitude
       )
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: 15)
       DispatchQueue.main.async {
         uiView.mapView.moveCamera(cameraUpdate) { _ in
-          viewStore.send(.naverMapAction(.cameraMovedToUserPosition))
+          viewStore.send(.cameraMovedToUserPosition)
         }
       }
     }
 
-    if viewStore.naverMapState.shouldClearMarkers {
-      DispatchQueue.main.async {
-        removeAllMarkers()
-        viewStore.send(.naverMapAction(.markersCleared)) }
+    if viewStore.shouldClearMarkers {
+      DispatchQueue.main.async { viewStore.send(.markersCleared) }
     }
 
-    if viewStore.naverMapState.shouldUpdateMarkers
-        && viewStore.naverMapState.selectedCafe != nil {
-      DispatchQueue.main.async {
-        addMarker(
-          naverMapView: uiView,
-          cafeList: viewStore.naverMapState.cafes,
-          selectedCafe: viewStore.naverMapState.selectedCafe,
-          coordinator: context.coordinator
-        )
-      }
-    }
-
-    if viewStore.naverMapState.shouldUpdateMarkers {
-      if viewStore.naverMapState.shouldShowBookmarkCafesOnly {
+    if viewStore.shouldUpdateMarkers && NaverMapViewProgressChecker.shared.isUpdatingMarkers.isFalse {
+      NaverMapViewProgressChecker.shared.isUpdatingMarkers = true
+      if viewStore.shouldShowBookmarkCafesOnly {
         DispatchQueue.main.async {
-          removeAllMarkers()
           addMarker(
             naverMapView: uiView,
-            cafeList: viewStore.naverMapState.cafes.filter { $0.isBookmarked },
-            selectedCafe: viewStore.naverMapState.selectedCafe,
+            cafeList: viewStore.cafes.filter { $0.isBookmarked },
+            selectedCafe: viewStore.selectedCafe,
             coordinator: context.coordinator
           )
         }
@@ -81,8 +74,8 @@ extension NaverMapView: UIViewRepresentable {
         DispatchQueue.main.async {
           addMarker(
             naverMapView: uiView,
-            cafeList: viewStore.naverMapState.cafes,
-            selectedCafe: viewStore.naverMapState.selectedCafe,
+            cafeList: viewStore.cafes,
+            selectedCafe: viewStore.selectedCafe,
             coordinator: context.coordinator
           )
         }
@@ -96,27 +89,10 @@ extension NaverMapView: UIViewRepresentable {
 }
 
 extension NaverMapView {
-  func removeMarkers(filter: ((MapMarker) -> Bool)) {
-    viewStore.naverMapState.markers.filter(filter).forEach {
-      $0.touchHandler = nil
-      $0.mapView = nil
-    }
-
-    DispatchQueue.main.async {
-      viewStore.send(.naverMapAction(.markersUpdated))
-    }
-  }
-
-  func removeAllMarkers() {
-    for marker in viewStore.naverMapState.markers {
-      marker.touchHandler = nil
-      marker.mapView = nil
-    }
-    viewStore.send(.naverMapAction(.removeAllMarkers))
-  }
-
   func addMarker(naverMapView: NMFNaverMapView, cafeList: [Cafe], selectedCafe: Cafe?, coordinator: Coordinator) {
-    removeAllMarkers()
+    viewStore.send(.markersUpdated)
+
+    var markers = [MapMarker]()
     for cafe in cafeList {
       let marker = MapMarker(
         cafe: cafe,
@@ -129,11 +105,9 @@ extension NaverMapView {
       if marker.markerType.selectType == .selected {
       }
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-
         DispatchQueue.main.async {
-          viewStore.send(.naverMapAction(.markerTapped(cafe: cafe)))
+          viewStore.send(.markerTapped(cafe: cafe))
         }
-
         return true
       }
       marker.captionText = cafe.name
@@ -143,10 +117,10 @@ extension NaverMapView {
       marker.captionRequestedWidth = 90
 
       marker.mapView = naverMapView.mapView
-      viewStore.send(.naverMapAction(.appendMarker(marker: marker)))
+      markers.append(marker)
     }
     DispatchQueue.main.async {
-      viewStore.send(.naverMapAction(.markersUpdated))
+      viewStore.send(.appendMarkers(markers: markers))
     }
   }
 
@@ -175,31 +149,24 @@ class Coordinator: NSObject, NMFMapViewOptionDelegate {
 extension Coordinator: NMFMapViewTouchDelegate {
   func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.naverMapAction(.mapViewTapped))
+      self?.target.viewStore.send(.mapViewTapped)
     }
   }
 }
 
 extension Coordinator: NMFMapViewCameraDelegate {
-  func mapView(_ mapView: NMFMapView, cameraWillChangeByReason reason: Int, animated: Bool) {
-    DispatchQueue.main.async { [weak self] in
-      guard let updateReason = NaverMapCameraUpdateReason(rawValue: reason)
-      else { return }
-      self?.target.viewStore.send(.naverMapAction(.updateCameraUpdateReason(updateReason)))
-    }
-  }
-
-  func mapViewCameraIdle(_ mapView: NMFMapView) {
+  func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
     let latitude = mapView.cameraPosition.target.lat
     let longitude = mapView.cameraPosition.target.lng
     DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(
-        .naverMapAction(
-          .cameraPositionMoved(
-            newCameraPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+      if let updateReason = NaverMapCameraUpdateReason(rawValue: reason) {
+        self?.target.viewStore.send(
+          .cameraPositionUpdated(
+            toPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+            byReason: updateReason
           )
         )
-      )
+      }
     }
   }
 }
