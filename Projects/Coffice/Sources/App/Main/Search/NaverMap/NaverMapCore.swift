@@ -174,7 +174,7 @@ struct NaverMapCore: ReducerProtocol {
         return .concatenate(
           EffectTask(value: .updatePinnedCafes(cafes: state.cafes)),
           .merge(
-            EffectTask(value: .markerTapped(cafe: selectedCafe)),
+            EffectTask(value: .selectCafe(cafe: selectedCafe)),
             EffectTask(value: .moveCameraTo(position: CLLocationCoordinate2DMake(cafe.latitude, cafe.longitude)))
           )
         )
@@ -194,7 +194,7 @@ struct NaverMapCore: ReducerProtocol {
           }
           await send(.delegate(.callUpdateBookmarkSearchListCell(cafe: selectedCafe)))
           await send(.updatePinnedCafes(cafes: cafes))
-          await send(.markerTapped(cafe: selectedCafe))
+          await send(.selectCafe(cafe: selectedCafe))
         } catch: { error, send in
           debugPrint(error)
         }
