@@ -57,7 +57,7 @@ struct Cafe: Hashable, Identifiable {
 
 extension Cafe {
   var bookmarkImage: Image {
-   return isBookmarked
+    return isBookmarked
     ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
     : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
   }
