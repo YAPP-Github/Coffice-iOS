@@ -7,8 +7,8 @@
 //
 
 import ComposableArchitecture
-import SwiftUI
 import PopupView
+import SwiftUI
 
 struct CafeSearchListView: View {
   let store: StoreOf<CafeSearchListCore>
