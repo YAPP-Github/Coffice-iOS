@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import PopupView
 import SwiftUI
 
 struct CafeSearchListView: View {
@@ -34,6 +35,17 @@ struct CafeSearchListView: View {
         case .mapView:
           Spacer()
         }
+      }
+      .popup(isPresented: viewStore.$shouldShowToastByBookmark) {
+        ToastView(
+          title: "장소가 저장되었습니다.",
+          image: CofficeAsset.Asset.checkboxCircleFill18px,
+          config: ToastConfiguration.default
+        )
+      } customize: {
+        $0
+          .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: false))
+          .autohideIn(2)
       }
       .onAppear {
         viewStore.send(.onAppear)

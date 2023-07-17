@@ -176,6 +176,9 @@ struct CafeMapCore: ReducerProtocol {
           return .none
         }
 
+      case .cafeSearchListAction(.searchListCellBookmarkUpdated(let cafe)):
+        return EffectTask(value: .naverMapAction(.searchListCellBookmarkUpdated(cafe: cafe)))
+
       case .cafeSearchListAction(.titleLabelTapped):
         return EffectTask(value: .updateDisplayType(.searchView))
 
@@ -234,6 +237,9 @@ struct CafeMapCore: ReducerProtocol {
       case .naverMapAction(.showBookmarkedToast):
         state.shouldShowToast = true
         return .none
+
+      case .naverMapAction(.delegate(.callUpdateBookmarkSearchListCell(let cafe))):
+        return EffectTask(value: .cafeSearchListAction(.updateBookmarkedSearchListCell(cafe: cafe)))
 
       // MARK: Search Delegate
       case .cafeSearchAction(.delegate(.callSearchWithRequestValueByText(let searchText))):

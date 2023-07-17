@@ -31,9 +31,10 @@ struct CafeSearchListCore: ReducerProtocol {
     var cafeList: [Cafe] = []
     var pageSize: Int = 10
     var cafeFilterInformation: CafeFilterInformation = .initialState
+    @BindingState var shouldShowToastByBookmark = false
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
     case updateCafeSearchListState(title: String?, cafeList: [Cafe], hasNext: Bool)
     case updateViewType(ViewType)
     case onAppear
@@ -49,11 +50,22 @@ struct CafeSearchListCore: ReducerProtocol {
     case cafeSearchListCellTapped(cafe: Cafe)
     case focusSelectedCafe(selectedCafe: Cafe)
     case searchPlacesByFilter
+
+    // MARK: Bookmark
+    case binding(BindingAction<State>)
+    case bookmarkButtonTapped(cafe: Cafe)
+    case updateBookmarkedSearchListCell(cafe: Cafe)
+    case searchListCellBookmarkUpdated(cafe: Cafe)
+    case showBookmarkedToast
   }
 
+  // MARK: - Dependencies
   @Dependency(\.placeAPIClient) private var placeAPIClient
+  @Dependency(\.bookmarkClient) private var bookmarkClient
 
   var body: some ReducerProtocolOf<CafeSearchListCore> {
+    BindingReducer()
+
     Scope(
       state: \.filterMenusState,
       action: /Action.cafeFilterMenus(action:)
@@ -63,6 +75,35 @@ struct CafeSearchListCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .showBookmarkedToast:
+        state.shouldShowToastByBookmark = true
+        return .none
+
+      case .updateBookmarkedSearchListCell(let cafe):
+        guard let index = state.cafeList.firstIndex(where: { $0.placeId == cafe.placeId })
+        else { return .none }
+        state.cafeList[index].isBookmarked.toggle()
+        return .none
+
+      case .bookmarkButtonTapped(let cafe):
+        guard let selectedCafeIndex = state.cafeList.firstIndex(where: { $0.placeId == cafe.placeId })
+        else { return .none }
+
+        state.cafeList[selectedCafeIndex].isBookmarked.toggle()
+        let selectedCafe = state.cafeList[selectedCafeIndex]
+
+        return .run { send in
+          if selectedCafe.isBookmarked {
+            try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+            await send(.showBookmarkedToast)
+          } else {
+            try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
+          }
+          await send(.searchListCellBookmarkUpdated(cafe: cafe))
+        } catch: { error, send in
+          debugPrint(error)
+        }
+
       case .updateCafeSearchListState(let title, let cafeList, let hasNext):
         if let title { state.title = title }
         state.hasNext = hasNext

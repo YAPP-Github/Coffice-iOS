@@ -83,6 +83,7 @@ struct NaverMapCore: ReducerProtocol {
     case markerTapped(cafe: Cafe)
     case mapViewTapped
     case cardViewBookmarkButtonTapped(cafe: Cafe)
+    case searchListCellBookmarkButtonTapped(cafe: Cafe)
 
     // MARK: Move Camera
     case moveCameraToUserPosition
@@ -113,10 +114,12 @@ struct NaverMapCore: ReducerProtocol {
     // MARK: ETC
     case delegate(NaverMapDelegate)
     case showBookmarkedToast
+    case searchListCellBookmarkUpdated(cafe: Cafe)
   }
 
   enum NaverMapDelegate: Equatable {
     case callSearchPlacesWithRequestValue
+    case callUpdateBookmarkSearchListCell(cafe: Cafe)
   }
 
   // MARK: - Dependencies
@@ -162,20 +165,36 @@ struct NaverMapCore: ReducerProtocol {
           return .none
         }
 
-      case .cardViewBookmarkButtonTapped(let cafe):
-        if let selectedCafeIndex = state.cafes
-          .firstIndex(where: { $0.placeId == state.selectedCafe?.placeId }) {
-          state.cafes[selectedCafeIndex].isBookmarked.toggle()
-          state.selectedCafe = state.cafes[selectedCafeIndex]
-        }
+      case .searchListCellBookmarkUpdated(let cafe):
+        guard let selectedCafeIndex = state.cafes.firstIndex(where: { $0.placeId == cafe.placeId })
+        else { return .none }
+        state.cafes[selectedCafeIndex].isBookmarked.toggle()
+        let selectedCafe = state.cafes[selectedCafeIndex]
 
-        return .run { [isBookmarked = state.selectedCafe?.isBookmarked] send in
-          if isBookmarked == true {
-            try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+        return .concatenate(
+          EffectTask(value: .updatePinnedCafes(cafes: state.cafes)),
+          .merge(
+            EffectTask(value: .selectCafe(cafe: selectedCafe)),
+            EffectTask(value: .moveCameraTo(position: CLLocationCoordinate2DMake(cafe.latitude, cafe.longitude)))
+          )
+        )
+
+      case .cardViewBookmarkButtonTapped(let cafe):
+        guard let selectedCafeIndex = state.cafes.firstIndex(where: { $0.placeId == cafe.placeId })
+        else { return .none }
+        state.cafes[selectedCafeIndex].isBookmarked.toggle()
+        let selectedCafe = state.cafes[selectedCafeIndex]
+
+        return .run { [cafes = state.cafes] send in
+          if selectedCafe.isBookmarked {
+            try await bookmarkClient.addMyPlace(placeId: selectedCafe.placeId)
             await send(.showBookmarkedToast)
           } else {
-            try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
+            try await bookmarkClient.deleteMyPlace(placeId: selectedCafe.placeId)
           }
+          await send(.delegate(.callUpdateBookmarkSearchListCell(cafe: selectedCafe)))
+          await send(.updatePinnedCafes(cafes: cafes))
+          await send(.selectCafe(cafe: selectedCafe))
         } catch: { error, send in
           debugPrint(error)
         }
