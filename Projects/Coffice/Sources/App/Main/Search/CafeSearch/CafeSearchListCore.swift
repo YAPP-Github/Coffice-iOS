@@ -31,9 +31,10 @@ struct CafeSearchListCore: ReducerProtocol {
     var cafeList: [Cafe] = []
     var pageSize: Int = 10
     var cafeFilterInformation: CafeFilterInformation = .initialState
+    @BindingState var shouldShowToastByBookmark = false
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
     case updateCafeSearchListState(title: String?, cafeList: [Cafe], hasNext: Bool)
     case updateViewType(ViewType)
     case onAppear
@@ -51,10 +52,12 @@ struct CafeSearchListCore: ReducerProtocol {
     case focusSelectedCafe(selectedCafe: Cafe)
     case searchPlacesByFilter
 
-    // Mark: Bookmark
+    // MARK: Bookmark
+    case binding(BindingAction<State>)
     case bookmarkButtonTapped(cafe: Cafe)
     case updateBookmarkedSearchListCell(cafe: Cafe)
     case searchListCellBookmarkUpdated(cafe: Cafe)
+    case showBookmarkedToast
   }
 
   // MARK: - Dependencies
@@ -62,6 +65,8 @@ struct CafeSearchListCore: ReducerProtocol {
   @Dependency(\.bookmarkClient) private var bookmarkClient
 
   var body: some ReducerProtocolOf<CafeSearchListCore> {
+    BindingReducer()
+
     Scope(
       state: \.filterMenusState,
       action: /Action.cafeFilterMenus(action:)
@@ -71,6 +76,10 @@ struct CafeSearchListCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .showBookmarkedToast:
+        state.shouldShowToastByBookmark = true
+        return .none
+
       case .updateBookmarkedSearchListCell(let cafe):
         guard let index = state.cafeList.firstIndex(where: { $0.placeId == cafe.placeId })
         else { return .none }
@@ -87,7 +96,7 @@ struct CafeSearchListCore: ReducerProtocol {
         return .run { send in
           if selectedCafe.isBookmarked == true {
             try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
-//            await send(.showBookmarkedToast)
+            await send(.showBookmarkedToast)
           } else {
             try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
           }
