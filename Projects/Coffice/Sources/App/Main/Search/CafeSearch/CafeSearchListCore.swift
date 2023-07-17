@@ -72,7 +72,7 @@ struct CafeSearchListCore: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .updateBookmarkedSearchListCell(let cafe):
-        guard let index = state.cafeList.firstIndex(of: cafe)
+        guard let index = state.cafeList.firstIndex(where: { $0.placeId == cafe.placeId })
         else { return .none }
         state.cafeList[index].isBookmarked.toggle()
         return .none
