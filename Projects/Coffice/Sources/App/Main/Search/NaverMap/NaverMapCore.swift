@@ -186,7 +186,7 @@ struct NaverMapCore: ReducerProtocol {
         let selectedCafe = state.cafes[selectedCafeIndex]
 
         return .run { [cafes = state.cafes] send in
-          if selectedCafe.isBookmarked == true {
+          if selectedCafe.isBookmarked {
             try await bookmarkClient.addMyPlace(placeId: selectedCafe.placeId)
             await send(.showBookmarkedToast)
           } else {

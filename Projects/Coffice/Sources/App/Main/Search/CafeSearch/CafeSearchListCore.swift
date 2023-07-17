@@ -94,7 +94,7 @@ struct CafeSearchListCore: ReducerProtocol {
         let selectedCafe = state.cafeList[selectedCafeIndex]
 
         return .run { send in
-          if selectedCafe.isBookmarked == true {
+          if selectedCafe.isBookmarked {
             try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
             await send(.showBookmarkedToast)
           } else {
