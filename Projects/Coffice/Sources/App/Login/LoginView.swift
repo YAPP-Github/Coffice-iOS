@@ -16,39 +16,30 @@ struct LoginView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       mainView
-        .customNavigationBar {
-          Text(viewStore.title)
-        } leftView: {
-          Group {
-            if viewStore.state.isOnboarding.isFalse {
-              Button {
-                viewStore.send(.dismissLoginPage)
-              } label: {
-                Image(systemName: "xmark")
-              }
-            }
-          }
-        } rightView: {
-          EmptyView()
-        }
     }
   }
 
   var mainView: some View {
     WithViewStore(store) { viewStore in
-      VStack(spacing: 10) {
-        Spacer()
+      VStack(spacing: 0) {
+        CofficeAsset.Asset.loginAppLogo.swiftUIImage
+          .padding(.init(top: 163, leading: 96, bottom: 178, trailing: 96))
 
-        Button(action: {
-          viewStore.send(.kakaoLoginButtonClicked)
-        }, label: {
-          Text("카카오 로그인")
-            .tint(.black)
-            .frame(maxWidth: .infinity, minHeight: 50)
-            .applyCofficeFont(font: .header0)
-        })
-        .background(Color.yellow)
-        .cornerRadius(10)
+        Button {
+          viewStore.send(.kakaoLoginButtonTapped)
+        } label: {
+          HStack {
+            CofficeAsset.Asset.kakaoLogo18px.swiftUIImage
+              .frame(width: 18, height: 18)
+            Text("카카오톡으로 로그인")
+              .tint(.black)
+              .applyCofficeFont(font: .subtitleSemiBold)
+          }
+          .frame(maxWidth: .infinity)
+        }
+        .frame(height: 52)
+        .background(CofficeAsset.Colors.kakao.swiftUIColor)
+        .cornerRadius(25)
 
         SignInWithAppleButton { request in
           request.requestedScopes = []
@@ -60,12 +51,26 @@ struct LoginView: View {
                   let token = String(data: identityToken, encoding: .utf8) else {
               return
             }
-            viewStore.send(.appleLoginButtonClicked(token: token))
+            viewStore.send(.appleLoginButtonTapped(token: token))
           case .failure(let error):
             debugPrint(error)
           }
         }
+        .cornerRadius(25)
         .frame(height: 50)
+        .padding(.top, 16)
+
+        HStack(spacing: 4) {
+          Text("회원가입 없이")
+          Button {
+            viewStore.send(.lookAroundButtonTapped)
+          } label: {
+            Text("둘러보기")
+              .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+          }
+        }
+        .applyCofficeFont(font: .body1Medium)
+        .padding(.top, 24)
 
         Spacer()
       }

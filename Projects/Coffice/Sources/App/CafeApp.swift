@@ -23,7 +23,7 @@ struct CafeApp: App {
     WindowGroup {
       AppCoordinatorView(
         store: .init(
-          initialState: .initialState,
+          initialState: .init(),
           reducer: AppCoordinator()
         )
       )

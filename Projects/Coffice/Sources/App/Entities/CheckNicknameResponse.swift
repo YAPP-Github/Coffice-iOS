@@ -43,6 +43,8 @@ enum CheckNicknameResponse {
       return "이미 존재하는 닉네임입니다."
     case .tooLong, .tooShort:
       return "한글/영어/숫자 최소 2자, 최대 15자로 입력해주세요."
+    case .containsIllegalCharacters:
+      return "한글/영어/숫자만 닉네임에 사용할 수 있어요."
     default:
       return ""
     }
