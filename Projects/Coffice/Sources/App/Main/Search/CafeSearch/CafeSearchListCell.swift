@@ -44,15 +44,10 @@ struct CafeSearchListCell: View {
           Button {
             viewStore.send(.bookmarkButtonTapped(cafe: cafe))
           } label: {
-            Group {
-              if cafe.isBookmarked == true {
-                CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-              } else {
-                CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
-              }
-            }
-            .frame(width: 40, height: 40)
-            .scaledToFill()
+            cafe.bookmarkImage
+              .resizable()
+              .frame(width: 40, height: 40)
+              .scaledToFill()
           }
           .padding(.trailing, 20)
         }

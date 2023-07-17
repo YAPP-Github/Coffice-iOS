@@ -8,6 +8,7 @@
 
 import Foundation
 import Network
+import SwiftUI
 
 struct Cafe: Hashable, Identifiable {
   static let dummy = Cafe(
@@ -52,6 +53,14 @@ struct Cafe: Hashable, Identifiable {
   let foodTypes: [FoodType]?
   let restroomType: [RestroomType]?
   var isBookmarked: Bool
+}
+
+extension Cafe {
+  var bookmarkImage: Image {
+   return isBookmarked
+    ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
+    : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+  }
 }
 
 extension SearchPlaceResponseDTO {
