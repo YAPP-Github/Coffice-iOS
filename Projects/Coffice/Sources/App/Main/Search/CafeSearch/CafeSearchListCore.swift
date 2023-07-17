@@ -50,9 +50,16 @@ struct CafeSearchListCore: ReducerProtocol {
     case cafeSearchListCellTapped(cafe: Cafe)
     case focusSelectedCafe(selectedCafe: Cafe)
     case searchPlacesByFilter
+
+    // Mark: Bookmark
+    case bookmarkButtonTapped(cafe: Cafe)
+    case updateBookmarkedSearchListCell(cafe: Cafe)
+    case searchListCellBookmarkUpdated(cafe: Cafe)
   }
 
+  // MARK: - Dependencies
   @Dependency(\.placeAPIClient) private var placeAPIClient
+  @Dependency(\.bookmarkClient) private var bookmarkClient
 
   var body: some ReducerProtocolOf<CafeSearchListCore> {
     Scope(
@@ -64,6 +71,31 @@ struct CafeSearchListCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .updateBookmarkedSearchListCell(let cafe):
+        guard let index = state.cafeList.firstIndex(of: cafe)
+        else { return .none }
+        state.cafeList[index].isBookmarked.toggle()
+        return .none
+
+      case .bookmarkButtonTapped(let cafe):
+        guard let selectedCafeIndex = state.cafeList.firstIndex(where: { $0.placeId == cafe.placeId })
+        else { return .none }
+
+        state.cafeList[selectedCafeIndex].isBookmarked.toggle()
+        let selectedCafe = state.cafeList[selectedCafeIndex]
+
+        return .run { send in
+          if selectedCafe.isBookmarked == true {
+            try await bookmarkClient.addMyPlace(placeId: cafe.placeId)
+//            await send(.showBookmarkedToast)
+          } else {
+            try await bookmarkClient.deleteMyPlace(placeId: cafe.placeId)
+          }
+          await send(.searchListCellBookmarkUpdated(cafe: cafe))
+        } catch: { error, send in
+          debugPrint(error)
+        }
+
       case .updateCafeSearchListState(let title, let cafeList, let hasNext):
         if let title { state.title = title }
         state.hasNext = hasNext
