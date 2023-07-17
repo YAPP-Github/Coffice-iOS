@@ -46,7 +46,6 @@ struct CafeSearchListCore: ReducerProtocol {
     case popView
     case titleLabelTapped
     case updateCafeFilter(information: CafeFilterInformation)
-    case filterBottomSheetDismissed
     case cafeSearchListCellTapped(cafe: Cafe)
     case focusSelectedCafe(selectedCafe: Cafe)
     case searchPlacesByFilter
@@ -110,13 +109,12 @@ struct CafeSearchListCore: ReducerProtocol {
 
       case .updateCafeFilter(let information):
         state.cafeFilterInformation = information
-        return EffectTask(value: .cafeFilterMenus(action: .updateCafeFilter(information: information)))
+        return .none
 
-      case .filterBottomSheetDismissed:
+      case .cafeFilterMenus(.delegate(.updateCafeFilter(let information))):
+        state.cafeFilterInformation = information
         return .concatenate(
-          EffectTask(
-            value: .cafeFilterMenus(action: .updateCafeFilter(information: state.cafeFilterInformation))
-          ),
+          EffectTask(value: .updateCafeFilter(information: information)),
           EffectTask(value: .searchPlacesByFilter)
         )
 

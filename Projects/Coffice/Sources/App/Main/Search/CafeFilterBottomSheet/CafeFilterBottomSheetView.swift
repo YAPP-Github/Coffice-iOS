@@ -18,58 +18,32 @@ struct CafeFilterBottomSheetView: View {
 
   var body: some View {
     WithViewStore(store) { viewStore in
-      GeometryReader { proxy in
-        ZStack {
-          CofficeAsset.Colors.grayScale9.swiftUIColor
-            .opacity(0.4)
-            .ignoresSafeArea()
-            .onTapGesture {
-              viewStore.send(.backgroundViewTapped)
-            }
-            .onAppear {
-              viewStore.send(.presentBottomSheet)
-            }
-
-          if viewStore.isBottomSheetPresented {
-            RoundedRectangle(cornerRadius: 15)
-              .transition(.move(edge: .bottom))
-              .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-              .shadow(color: .gray, radius: 5)
-              .overlay {
-                VStack(spacing: 0) {
-                  filterOptionButtonContainerView
-                  footerView
-                  Spacer()
-                }
-                .frame(width: proxy.size.width, height: proxy.size.height)
-              }
-              .onAppear {
-                viewStore.send(.updateContainerView(height: proxy.size.height))
-              }
-              .offset(y: viewStore.containerViewHeight - viewStore.bottomSheetHeight)
-          }
-        }
-        .frame(width: proxy.size.width, height: proxy.size.height)
-        .animation(.easeIn(duration: viewStore.dismissAnimationDuration), value: viewStore.isBottomSheetPresented)
-        .popup(
-          item: viewStore.binding(\.$bubbleMessageViewState),
-          itemView: { viewState in
-            BubbleMessageView(store: store.scope(
-              state: { _ in viewState },
-              action: CafeFilterBottomSheet.Action.bubbleMessageAction)
-            )
-          },
-          customize: { popup in
-            popup
-              .type(.default)
-              .position(.center)
-              .animation(.easeIn(duration: 0))
-              .isOpaque(true)
-              .closeOnTapOutside(true)
-              .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
-          }
-        )
+      VStack(spacing: 0) {
+        filterOptionButtonContainerView
+        footerView
       }
+      .background(
+        CofficeAsset.Colors.grayScale1.swiftUIColor
+          .cornerRadius(18, corners: [.topLeft, .topRight])
+      )
+      .popup(
+        item: viewStore.binding(\.$bubbleMessageViewState),
+        itemView: { viewState in
+          BubbleMessageView(store: store.scope(
+            state: { _ in viewState },
+            action: CafeFilterBottomSheet.Action.bubbleMessageAction)
+          )
+        },
+        customize: { popup in
+          popup
+            .type(.default)
+            .position(.center)
+            .animation(.easeIn(duration: 0))
+            .isOpaque(true)
+            .closeOnTapOutside(true)
+            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+        }
+      )
     }
   }
 }
@@ -98,7 +72,7 @@ extension CafeFilterBottomSheetView {
         Spacer()
 
         Button {
-          viewStore.send(.dismissWithDelay)
+          viewStore.send(.dismiss)
         } label: {
           CofficeAsset.Asset.close40px.swiftUIImage
             .padding(.top, 24)
@@ -204,6 +178,7 @@ extension CafeFilterBottomSheetView {
       }
       .frame(height: 84)
       .padding(.horizontal, 20)
+      .padding(.bottom, UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0)
     }
   }
 }

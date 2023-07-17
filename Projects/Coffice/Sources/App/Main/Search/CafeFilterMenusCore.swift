@@ -13,6 +13,8 @@ struct CafeFilterMenus: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init(filterInformation: .initialState)
     static let mock: State = .init(filterInformation: .mock)
+
+    @BindingState var cafeFilterBottomSheetState: CafeFilterBottomSheet.State?
     var buttonViewStates: [ButtonViewState] = []
     var filterInformation: CafeFilterInformation
 
@@ -57,15 +59,24 @@ struct CafeFilterMenus: ReducerProtocol {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
     case onAppear
     case filterButtonTapped(CafeFilter.MenuType)
     case presentFilterBottomSheetView(CafeFilterBottomSheet.State)
+    case cafeFilterBottomSheetViewAction(CafeFilterBottomSheet.Action)
     case updateCafeFilter(information: CafeFilterInformation)
     case updateButtonViewStates
+    case delegate(Delegate)
+  }
+
+  enum Delegate: Equatable {
+    case updateCafeFilter(information: CafeFilterInformation)
   }
 
   var body: some ReducerProtocolOf<CafeFilterMenus> {
+    BindingReducer()
+
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -82,6 +93,14 @@ struct CafeFilterMenus: ReducerProtocol {
           )
         )
 
+      case .presentFilterBottomSheetView(let viewState):
+        state.cafeFilterBottomSheetState = viewState
+        return .none
+
+      case .delegate(.updateCafeFilter(let information)):
+        state.filterInformation = information
+        return EffectTask(value: .updateButtonViewStates)
+
       case .updateCafeFilter(let information):
         state.filterInformation = information
         return EffectTask(value: .updateButtonViewStates)
@@ -90,9 +109,27 @@ struct CafeFilterMenus: ReducerProtocol {
         state.updateButtonViewStates()
         return .none
 
+      case .cafeFilterBottomSheetViewAction(let action):
+        switch action {
+        case .saveCafeFilter(let information):
+          state.cafeFilterBottomSheetState = nil
+          return EffectTask(value: .delegate(.updateCafeFilter(information: information)))
+        case .dismiss:
+          state.cafeFilterBottomSheetState = nil
+          return .none
+        default:
+          return .none
+        }
+
       default:
         return .none
       }
+    }
+    .ifLet(
+      \.cafeFilterBottomSheetState,
+      action: /Action.cafeFilterBottomSheetViewAction
+    ) {
+      CafeFilterBottomSheet()
     }
   }
 }
