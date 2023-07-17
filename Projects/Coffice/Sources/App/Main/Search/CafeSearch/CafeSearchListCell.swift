@@ -42,12 +42,17 @@ struct CafeSearchListCell: View {
           }
           Spacer()
           Button {
-            // TODO: 북마크 기능 추가
+            viewStore.send(.bookmarkButtonTapped(cafe: cafe))
           } label: {
-            CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
-              .resizable()
-              .scaledToFill()
-              .frame(width: 40, height: 40)
+            Group {
+              if cafe.isBookmarked == true {
+                CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
+              } else {
+                CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+              }
+            }
+            .frame(width: 40, height: 40)
+            .scaledToFill()
           }
           .padding(.trailing, 20)
         }
