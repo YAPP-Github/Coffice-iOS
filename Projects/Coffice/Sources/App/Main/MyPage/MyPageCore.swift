@@ -21,12 +21,14 @@ struct MyPage: ReducerProtocol {
     }
     var bottomSheetState: BottomSheetReducer.State = .initialState
     @BindingState var shouldShowBottomSheet = false
+    @BindingState var devTestViewState: DevTest.State?
     var bottomSheetType: BottomSheetType = .logout
   }
 
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
     case bottomSheet(BottomSheetReducer.Action)
+    case devTestAction(DevTest.Action)
     case contactEmailView(isPresented: Bool)
     case onAppear
     case menuButtonTapped(MenuItem)
@@ -36,6 +38,7 @@ struct MyPage: ReducerProtocol {
     case memberLeaveButtonTapped
     case logout
     case memberLeave
+    case presentDevTestView
   }
 
   @Dependency(\.loginClient) private var loginClient
@@ -122,9 +125,23 @@ struct MyPage: ReducerProtocol {
         }
         return .none
 
+      case .presentDevTestView:
+        state.devTestViewState = .initialState
+        return .none
+
+      case .devTestAction(.dismissView):
+        state.devTestViewState = nil
+        return .none
+
       default:
         return .none
       }
+    }
+    .ifLet(
+      \.devTestViewState,
+      action: /MyPage.Action.devTestAction
+    ) {
+      DevTest()
     }
   }
 }

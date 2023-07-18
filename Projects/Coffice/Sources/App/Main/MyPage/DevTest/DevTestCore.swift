@@ -7,10 +7,12 @@
 //
 
 import ComposableArchitecture
+import Foundation
 
 struct DevTest: ReducerProtocol {
-  struct State: Equatable {
+  struct State: Equatable, Identifiable {
     static let initialState: State = .init()
+    let id = UUID()
     // ■ TCA에서 UI와 State 프로퍼티를 바인딩하는 여러가지 방법이 있습니다.
     // - reference(옛날 방식 코드도 있으니 가려가며 참고)
     // https://www.pointfree.co/blog/posts/63-the-composable-architecture-%EF%B8%8F-swiftui-bindings
@@ -23,17 +25,26 @@ struct DevTest: ReducerProtocol {
     // 2-3) Reducer body 안에 BindingReducer()를 추가합니다.
     var textFieldStringWithoutBindingState = ""
     @BindingState var textFieldStringWithBindingState = ""
+    // TODO: BottomSheet 공용 UI 컴포넌트 구성 필요
+    @BindingState var cafeFilterBottomSheetState: CafeFilterBottomSheet.State?
 
     let title = "개발자 기능 테스트"
   }
 
   enum Action: Equatable, BindableAction {
     case onAppear
-    case popView
+    case dismissView
+    case dismissButtonTapped
+
+    // MARK: TextField
     /// BindingState의 변화를 감지하는 action case
     case binding(BindingAction<State>)
     /// 바인딩한 String 타입 변수의 변화를 받는 action case
     case textFieldStringDidChange(String)
+    case presentCafeFilterBottomSheetView
+
+    // MARK: Cafe Filter Bottom Sheet
+    case cafeFilterBottomSheetAction(CafeFilterBottomSheet.Action)
   }
 
   var body: some ReducerProtocolOf<DevTest> {
@@ -44,12 +55,16 @@ struct DevTest: ReducerProtocol {
       case .onAppear:
         return .none
 
-      case .popView:
-        return .none
-
       case .textFieldStringDidChange(let text):
         debugPrint("textFieldStringWithoutBindingState : \(text)")
         return .none
+
+      case .presentCafeFilterBottomSheetView:
+        state.cafeFilterBottomSheetState = .mock
+        return .none
+
+      case .dismissButtonTapped:
+        return EffectTask(value: .dismissView)
 
       default:
         return .none
@@ -65,6 +80,31 @@ struct DevTest: ReducerProtocol {
       default:
         return .none
       }
+    }
+
+    // MARK: Cafe Filter Bottom Sheet
+    Reduce { state, action in
+      switch action {
+      case .cafeFilterBottomSheetAction(let action):
+        switch action {
+        case .saveCafeFilter(let information):
+          debugPrint("saved information : \(information)")
+        case .dismiss:
+          state.cafeFilterBottomSheetState = nil
+        default:
+          return .none
+        }
+        return .none
+
+      default:
+        return .none
+      }
+    }
+    .ifLet(
+      \.cafeFilterBottomSheetState,
+      action: /Action.cafeFilterBottomSheetAction
+    ) {
+      CafeFilterBottomSheet()
     }
   }
 }

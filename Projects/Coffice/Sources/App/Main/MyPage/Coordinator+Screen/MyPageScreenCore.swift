@@ -16,7 +16,6 @@ struct MyPageScreen: ReducerProtocol {
     case appServiceTerms(AppServiceTermsReducer.State)
     case locationServiceTerms(LocationServiceTerms.State)
     case editProfile(EditProfile.State)
-    case commonBottomSheet(CommonBottomSheet.State)
   }
 
   enum Action: Equatable {
@@ -25,7 +24,6 @@ struct MyPageScreen: ReducerProtocol {
     case appServiceTerms(AppServiceTermsReducer.Action)
     case locationServiceTerms(LocationServiceTerms.Action)
     case editProfile(EditProfile.Action)
-    case commonBottomSheet(CommonBottomSheet.Action)
   }
 
   var body: some ReducerProtocolOf<MyPageScreen> {
@@ -62,13 +60,6 @@ struct MyPageScreen: ReducerProtocol {
       action: /Action.editProfile
     ) {
       EditProfile()
-    }
-
-    Scope(
-      state: /State.commonBottomSheet,
-      action: /Action.commonBottomSheet
-    ) {
-      CommonBottomSheet()
     }
   }
 }

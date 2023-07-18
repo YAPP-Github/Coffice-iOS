@@ -28,8 +28,6 @@ struct MainCoordinator: ReducerProtocol {
     var myPageState: MyPageCoordinator.State
     var tabBarState: TabBar.State
 
-    var commonBottomSheetState: CommonBottomSheet.State?
-
     var shouldShowTabBarView = true
   }
 
@@ -40,7 +38,6 @@ struct MainCoordinator: ReducerProtocol {
     case savedList(SavedListCoordinator.Action)
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
-    case commonBottomSheet(action: CommonBottomSheet.Action)
     case dismissToastMessageView
     case onAppear
   }
@@ -69,18 +66,12 @@ struct MainCoordinator: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-
-      case .commonBottomSheet(.dismiss):
-        state.commonBottomSheetState = nil
-        return .none
-
       case .onAppear:
         return .none
 
       case .tabBar(.selectTab(let itemType)):
         debugPrint("selectedTab : \(itemType)")
         return .none
-
 
       case .myPage(.routeAction(_, .editProfile(.hideTabBar))):
         state.shouldShowTabBarView = false
@@ -93,12 +84,6 @@ struct MainCoordinator: ReducerProtocol {
       default:
         return .none
       }
-    }
-    .ifLet(
-      \.commonBottomSheetState,
-      action: /Action.commonBottomSheet
-    ) {
-      CommonBottomSheet()
     }
   }
 }

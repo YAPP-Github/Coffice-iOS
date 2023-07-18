@@ -45,12 +45,6 @@ struct MyPageCoordinatorView: View {
           action: MyPageScreen.Action.editProfile,
           then: EditProfileView.init
         )
-
-        CaseLet(
-          state: /MyPageScreen.State.commonBottomSheet,
-          action: MyPageScreen.Action.commonBottomSheet,
-          then: CommonBottomSheetView.init
-        )
       }
     }
   }

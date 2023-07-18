@@ -17,6 +17,7 @@ struct DevTestView: View {
       VStack(spacing: 10) {
         textFieldWithBindingState
         textFieldWithoutBindingState
+        cafeFilterBottomSheetTestView
       }
       .padding(20)
       .customNavigationBar(
@@ -24,12 +25,27 @@ struct DevTestView: View {
           Text(viewStore.title)
         },
         leftView: {
+          EmptyView()
+        },
+        rightView: {
           Button {
-            viewStore.send(.popView)
+            viewStore.send(.dismissButtonTapped)
           } label: {
-            Image(systemName: "chevron.left")
+            CofficeAsset.Asset.close40px.swiftUIImage
           }
         }
+      )
+      .popup(
+        item: viewStore.binding(\.$cafeFilterBottomSheetState),
+        itemView: { viewState in
+          CafeFilterBottomSheetView(
+            store: store.scope(
+              state: { _ in viewState },
+              action: DevTest.Action.cafeFilterBottomSheetAction
+            )
+          )
+        },
+        customize: BottomSheetContent.customize
       )
       .onAppear {
         viewStore.send(.onAppear)
@@ -73,6 +89,24 @@ extension DevTestView {
       .overlay {
         RoundedRectangle(cornerRadius: 5)
           .stroke(.gray, lineWidth: 1)
+      }
+    }
+  }
+
+  private var cafeFilterBottomSheetTestView: some View {
+    WithViewStore(store) { viewStore in
+      Button {
+        viewStore.send(.presentCafeFilterBottomSheetView)
+      } label: {
+        Text("Present CafeFilterBottomSheet")
+          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+          .applyCofficeFont(font: .button)
+          .frame(height: 35)
+          .frame(maxWidth: .infinity, alignment: .center)
+          .overlay {
+            RoundedRectangle(cornerRadius: 5)
+              .stroke(CofficeAsset.Colors.grayScale7.swiftUIColor, lineWidth: 1)
+          }
       }
     }
   }
