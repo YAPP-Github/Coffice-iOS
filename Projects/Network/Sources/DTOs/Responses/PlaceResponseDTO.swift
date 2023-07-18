@@ -24,4 +24,5 @@ public struct PlaceResponseDTO: Decodable {
   public let drinkTypes: [String]?
   public let foodTypes: [String]?
   public let restroomTypes: [String]?
+  public let archived: Bool?
 }
