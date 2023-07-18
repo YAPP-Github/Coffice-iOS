@@ -56,6 +56,15 @@ struct MyPageView: View {
             )
           }
         )
+        .sheet(
+          item: viewStore.$devTestViewState,
+          content: { viewState in
+            DevTestView(store: store.scope(
+              state: { _ in viewState },
+              action: MyPage.Action.devTestAction
+            ))
+          }
+        )
     }
   }
 
