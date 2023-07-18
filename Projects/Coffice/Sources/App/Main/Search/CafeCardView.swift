@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Kingfisher
 import SwiftUI
 
 struct CafeCardView: View {
@@ -28,10 +29,10 @@ struct CafeCardView: View {
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
             }
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-              Text("영업중")
+              Text(viewStore.naverMapState.selectedCafe?.openingStateDescription ?? "")
                 .applyCofficeFont(font: .button)
                 .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
-              Text("월: 11:00 ~ 21:30")
+              Text(viewStore.naverMapState.selectedCafe?.todayRunningTimeDescription ?? "")
                 .applyCofficeFont(font: .body1Medium)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
             }
@@ -50,44 +51,45 @@ struct CafeCardView: View {
               )
             )
           } label: {
-            Group {
-              if viewStore.naverMapState.selectedCafe?.isBookmarked == true {
-                CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-              } else {
-                CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
-              }
-            }
-            .frame(width: 40, height: 40)
-            .scaledToFill()
+            viewStore.naverMapState.selectedCafe?.bookmarkImage
+              .frame(width: 40, height: 40)
+              .scaledToFill()
           }
         }
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
-            ForEach(1...10, id: \.self) { _ in
-              Image(uiImage: CofficeAsset.Asset.cafeImage.image)
-                .resizable()
-                .frame(
-                  width: viewStore.fixedImageSize,
-                  height: viewStore.fixedImageSize
-                )
-                .scaledToFit()
-                .cornerRadius(4, corners: .allCorners)
+            if let imageUrls = viewStore.naverMapState.selectedCafe?.imageUrls, imageUrls.isNotEmpty {
+              ForEach(imageUrls, id: \.self) { imageUrl in
+                KFImage.url(URL(string: imageUrl))
+                  .resizable()
+                  .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
+                  .scaledToFit()
+                  .cornerRadius(4, corners: .allCorners)
+              }
+            } else {
+              ForEach(1...3, id: \.self) { imageAsset in
+                Image(uiImage: CofficeAsset.Asset.cafeImage.image)
+                  .resizable()
+                  .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
+                  .scaledToFit()
+                  .cornerRadius(4, corners: .allCorners)
+              }
             }
           }
         }
-        HStack(spacing: 0) {
-          Text("🔌 콘센트 넉넉")
-            .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-            .applyCofficeFont(font: .body2Medium)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(
-              RoundedRectangle(cornerRadius: 4)
-                .stroke(
-                  CofficeAsset.Colors.grayScale3.swiftUIColor,
-                  lineWidth: 1
-                )
-            )
+        HStack(spacing: 11) {
+          if let electricOutletLevelText = viewStore.naverMapState.selectedCafe?.electricOutletLevelToText {
+            Text(electricOutletLevelText)
+              .cafeTagTextModifier()
+          }
+          if let capacityLevelText = viewStore.naverMapState.selectedCafe?.capacityLevelToText {
+            Text(capacityLevelText)
+              .cafeTagTextModifier()
+          }
+          if let hasCommunalTableText = viewStore.naverMapState.selectedCafe?.hasCommunalTableToText {
+            Text(hasCommunalTableText)
+              .cafeTagTextModifier()
+          }
         }
       }
       .padding(EdgeInsets(top: 24, leading: 20, bottom: 20, trailing: 20))
