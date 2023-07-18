@@ -35,7 +35,7 @@ struct CafeSearchListCell: View {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
               Text(cafe.openingStateDescription)
                 .applyCofficeFont(font: .button)
-                .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+                .foregroundColor(cafe.openingStateTextColor)
               Text(cafe.todayRunningTimeDescription)
                 .applyCofficeFont(font: .body1Medium)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)

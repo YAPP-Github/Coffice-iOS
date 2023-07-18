@@ -31,7 +31,7 @@ struct CafeCardView: View {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
               Text(viewStore.naverMapState.selectedCafe?.openingStateDescription ?? "")
                 .applyCofficeFont(font: .button)
-                .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+                .foregroundColor(viewStore.naverMapState.selectedCafe?.openingStateTextColor)
               Text(viewStore.naverMapState.selectedCafe?.todayRunningTimeDescription ?? "")
                 .applyCofficeFont(font: .body1Medium)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)

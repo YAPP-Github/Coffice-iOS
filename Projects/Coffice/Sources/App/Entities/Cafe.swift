@@ -56,8 +56,14 @@ struct Cafe: Hashable, Identifiable {
 }
 
 extension Cafe {
+  var openingStateTextColor: Color {
+    openingInformation?.isOpened ?? false
+    ? CofficeAsset.Colors.secondary1.swiftUIColor
+    : CofficeAsset.Colors.grayScale7.swiftUIColor
+  }
+
   var openingStateDescription: String {
-    openingInformation?.isOpened ?? true
+    openingInformation?.isOpened ?? false
     ? "영업중" : "영업종료"
   }
 
