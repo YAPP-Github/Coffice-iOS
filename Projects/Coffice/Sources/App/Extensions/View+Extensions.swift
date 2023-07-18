@@ -17,10 +17,6 @@ extension View {
     modifier(RoundedCornerViewModifier(radius: radius, corners: corners))
   }
 
-  func cafeCellViewModifier(fontColor: Color) -> some View {
-    modifier(CafeCellViewModifier(fontColor: fontColor))
-  }
-
   func customNavigationBar<C, L, R>(
     centerView: @escaping (() -> C),
     leftView: @escaping (() -> L),
