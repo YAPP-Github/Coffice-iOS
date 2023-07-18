@@ -9,6 +9,10 @@
 import SwiftUI
 
 extension View {
+  func cafeTagTextModifier() -> some View {
+    modifier(CafeTagTextModifier())
+  }
+
   func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
     modifier(RoundedCornerViewModifier(radius: radius, corners: corners))
   }
