@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Foundation
+import Kingfisher
 import SwiftUI
 
 struct CafeSearchListCell: View {
@@ -25,17 +26,17 @@ struct CafeSearchListCell: View {
                 .clipped()
                 .applyCofficeFont(font: CofficeFont.header2)
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-              Text(cafe.address?.address ?? "")
+              Text(cafe.address?.simpleAddress ?? "")
                 .lineLimit(1)
                 .clipped()
                 .applyCofficeFont(font: .body2Medium)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
             }
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-              Text(cafe.openingInformation?.isOpened ?? false ? "영업중" : "영업종료")
+              Text(cafe.openingStateDescription)
                 .applyCofficeFont(font: .button)
-                .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
-              Text("월: 11:00 ~ 23:00")
+                .foregroundColor(cafe.openingStateTextColor)
+              Text(cafe.todayRunningTimeDescription)
                 .applyCofficeFont(font: .body1Medium)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
             }
@@ -53,33 +54,41 @@ struct CafeSearchListCell: View {
         }
         .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
         ScrollView(.horizontal, showsIndicators: false) {
-          HStack(spacing: 0) {
-            ForEach(1...10, id: \.self) { _ in
-              CofficeAsset.Asset.cafeImage.swiftUIImage
-                .resizable()
-                .frame(width: 124, height: 112)
-                .cornerRadius(4, corners: .allCorners)
-                .scaledToFit()
-                .padding(.trailing, 8)
+          HStack(spacing: 8) {
+            if let imageUrls = cafe.imageUrls, imageUrls.isNotEmpty {
+              ForEach(imageUrls, id: \.self) { imageUrl in
+                KFImage.url(URL(string: imageUrl))
+                  .resizable()
+                  .frame(width: 124, height: 112)
+                  .scaledToFit()
+                  .cornerRadius(4, corners: .allCorners)
+              }
+            } else {
+              ForEach(1...3, id: \.self) { imageAsset in
+                CofficeAsset.Asset.cafeImage.swiftUIImage
+                  .resizable()
+                  .frame(width: 124, height: 112)
+                  .scaledToFit()
+                  .cornerRadius(4, corners: .allCorners)
+              }
             }
           }
         }
         .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
-        HStack {
-          Text("🔌 콘센트 넉넉")
-            .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-            .applyCofficeFont(font: .body2Medium)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .overlay(
-              RoundedRectangle(cornerRadius: 4)
-                .stroke(
-                  CofficeAsset.Colors.grayScale3.swiftUIColor,
-                  lineWidth: 1
-                )
-            )
+        HStack(spacing: 11) {
+          if let electricOutletLevelText = cafe.electricOutletLevelText {
+            Text(electricOutletLevelText)
+              .cafeTagTextModifier()
+          }
+          if let capacityLevelText = cafe.capacityLevelText {
+            Text(capacityLevelText)
+              .cafeTagTextModifier()
+          }
+          if let hasCommunalTableText = cafe.hasCommunalTableText {
+            Text(hasCommunalTableText)
+              .cafeTagTextModifier()
+          }
         }
-        .padding(EdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0))
       }
     }
   }

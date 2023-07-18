@@ -33,7 +33,11 @@ struct CafeFilterInformation: Equatable {
   var drinkOptionSet: Set<CafeFilter.DrinkOption> = []
 
   var isOpened: Bool {
-    runningTimeOptionSet.contains(.running) && runningTimeOptionSet.contains(.twentyFourHours)
+    runningTimeOptionSet.contains(.running)
+  }
+
+  var openAroundTheClock: Bool {
+    runningTimeOptionSet.contains(.twentyFourHours)
   }
 
   var cafeSearchFilters: CafeSearchFilters {

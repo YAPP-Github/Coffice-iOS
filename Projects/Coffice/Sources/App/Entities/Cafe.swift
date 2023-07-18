@@ -56,10 +56,47 @@ struct Cafe: Hashable, Identifiable {
 }
 
 extension Cafe {
+  var openingStateTextColor: Color {
+    openingInformation?.isOpened ?? false
+    ? CofficeAsset.Colors.secondary1.swiftUIColor
+    : CofficeAsset.Colors.grayScale7.swiftUIColor
+  }
+
+  var openingStateDescription: String {
+    openingInformation?.isOpened ?? false
+    ? "영업중" : "영업종료"
+  }
+
+  var todayRunningTimeDescription: String {
+    openingInformation?.formattedString ?? "-"
+  }
+
   var bookmarkImage: Image {
     return isBookmarked
     ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
     : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+  }
+
+  var hasCommunalTableText: String? {
+    return (hasCommunalTable ?? false) ? "🪑 단체석" : nil
+  }
+
+  var capacityLevelText: String? {
+    switch capcityLevel {
+    case .high: return "🗄️ 대형카페"
+    case .medium: return "🗄️ 중형카페"
+    case .low: return "🗄️ 소형카페"
+    default: return nil
+    }
+  }
+
+  var electricOutletLevelText: String? {
+    switch electricOutletLevel {
+    case "MANY": return "🔌 콘센트 넉넉"
+    case "SEVERAL": return "🔌 콘센트 보통"
+    case "FEW": return "🔌 콘센트 부족"
+    default: return nil
+    }
   }
 }
 

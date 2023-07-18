@@ -9,12 +9,12 @@
 import SwiftUI
 
 extension View {
-  func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-    modifier(RoundedCornerViewModifier(radius: radius, corners: corners))
+  func cafeTagTextModifier() -> some View {
+    modifier(CafeTagTextModifier())
   }
 
-  func cafeCellViewModifier(fontColor: Color) -> some View {
-    modifier(CafeCellViewModifier(fontColor: fontColor))
+  func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+    modifier(RoundedCornerViewModifier(radius: radius, corners: corners))
   }
 
   func customNavigationBar<C, L, R>(
