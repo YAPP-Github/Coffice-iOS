@@ -68,7 +68,7 @@ struct CafeCardView: View {
               }
             } else {
               ForEach(1...3, id: \.self) { imageAsset in
-                Image(uiImage: CofficeAsset.Asset.cafeImage.image)
+                CofficeAsset.Asset.cafeImage.swiftUIImage
                   .resizable()
                   .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
                   .scaledToFit()
