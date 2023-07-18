@@ -61,14 +61,6 @@ struct MainCoordinatorView: View {
           } else {
             tabBarTouchBlockerView
           }
-
-          IfLetStore(
-            store.scope(
-              state: \.commonBottomSheetState,
-              action: MainCoordinator.Action.commonBottomSheet
-            ),
-            then: CommonBottomSheetView.init
-          )
         }
         .onAppear {
           viewStore.send(.onAppear)
