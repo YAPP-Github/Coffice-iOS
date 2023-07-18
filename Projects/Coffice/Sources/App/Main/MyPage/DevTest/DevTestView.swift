@@ -25,10 +25,13 @@ struct DevTestView: View {
           Text(viewStore.title)
         },
         leftView: {
+          EmptyView()
+        },
+        rightView: {
           Button {
-            viewStore.send(.popView)
+            viewStore.send(.dismissButtonTapped)
           } label: {
-            Image(systemName: "chevron.left")
+            CofficeAsset.Asset.close40px.swiftUIImage
           }
         }
       )
@@ -95,7 +98,7 @@ extension DevTestView {
       Button {
         viewStore.send(.presentCafeFilterBottomSheetView)
       } label: {
-        Text("Present CommonBottomSheet")
+        Text("Present CafeFilterBottomSheet")
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
           .applyCofficeFont(font: .button)
           .frame(height: 35)

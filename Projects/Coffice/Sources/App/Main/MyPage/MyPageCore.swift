@@ -129,6 +129,10 @@ struct MyPage: ReducerProtocol {
         state.devTestViewState = .initialState
         return .none
 
+      case .devTestAction(.dismissView):
+        state.devTestViewState = nil
+        return .none
+
       default:
         return .none
       }

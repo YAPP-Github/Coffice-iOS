@@ -33,7 +33,8 @@ struct DevTest: ReducerProtocol {
 
   enum Action: Equatable, BindableAction {
     case onAppear
-    case popView
+    case dismissView
+    case dismissButtonTapped
 
     // MARK: TextField
     /// BindingState의 변화를 감지하는 action case
@@ -54,9 +55,6 @@ struct DevTest: ReducerProtocol {
       case .onAppear:
         return .none
 
-      case .popView:
-        return .none
-
       case .textFieldStringDidChange(let text):
         debugPrint("textFieldStringWithoutBindingState : \(text)")
         return .none
@@ -64,6 +62,9 @@ struct DevTest: ReducerProtocol {
       case .presentCafeFilterBottomSheetView:
         state.cafeFilterBottomSheetState = .mock
         return .none
+
+      case .dismissButtonTapped:
+        return EffectTask(value: .dismissView)
 
       default:
         return .none
