@@ -114,19 +114,17 @@ struct CafeMapCore: ReducerProtocol {
       case .cafeSearchListAction(.searchPlacesByFilter):
         guard state.displayViewType == .searchResultView
         else { return .none }
-
         let currentCameraPosition = state.naverMapState.currentCameraPosition
-        let isOpened = state.cafeSearchListState.cafeFilterInformation.isOpened
-        let cafeSearchFilters = state.cafeSearchListState.cafeFilterInformation.cafeSearchFilters
-        let hasCommunalTable = state.cafeSearchListState.cafeFilterInformation.hasCommunalTable
+        let filterInformation = state.cafeSearchListState.cafeFilterInformation
         let requestValue = SearchPlaceRequestValue(
           searchText: "",
           userLatitude: currentCameraPosition.latitude,
           userLongitude: currentCameraPosition.longitude,
           maximumSearchDistance: 2000,
-          isOpened: isOpened,
-          hasCommunalTable: hasCommunalTable,
-          filters: cafeSearchFilters,
+          isOpened: filterInformation.isOpened,
+          openAroundTheClock: filterInformation.openAroundTheClock,
+          hasCommunalTable: filterInformation.hasCommunalTable,
+          filters: filterInformation.cafeSearchFilters,
           pageSize: 10,
           pageableKey: nil
         )
@@ -195,9 +193,7 @@ struct CafeMapCore: ReducerProtocol {
 
       case .cafeSearchListAction(.scrollAndRequestSearchPlace(let lastDistance)):
         let pageSize = state.cafeSearchListState.pageSize
-        let isOpened = state.cafeFilterInformation.isOpened
-        let cafeSearchFilters = state.cafeFilterInformation.cafeSearchFilters
-        let hasCommunalTable = state.cafeFilterInformation.hasCommunalTable
+        let filterInformation = state.cafeFilterInformation
         return .run { [cameraPosition = state.naverMapState.currentCameraPosition] send in
           let result = await TaskResult {
             let cafeRequest = SearchPlaceRequestValue(
@@ -205,9 +201,10 @@ struct CafeMapCore: ReducerProtocol {
               userLatitude: cameraPosition.latitude,
               userLongitude: cameraPosition.longitude,
               maximumSearchDistance: 2000,
-              isOpened: isOpened,
-              hasCommunalTable: hasCommunalTable,
-              filters: cafeSearchFilters,
+              isOpened: filterInformation.isOpened,
+              openAroundTheClock: filterInformation.openAroundTheClock,
+              hasCommunalTable: filterInformation.hasCommunalTable,
+              filters: filterInformation.cafeSearchFilters,
               pageSize: pageSize,
               pageableKey: PageableKey(lastCafeDistance: lastDistance)
             )
@@ -227,6 +224,7 @@ struct CafeMapCore: ReducerProtocol {
           userLongitude: cameraPosition.longitude,
           maximumSearchDistance: 500,
           isOpened: filterInformation.isOpened,
+          openAroundTheClock: filterInformation.openAroundTheClock,
           hasCommunalTable: filterInformation.hasCommunalTable,
           filters: filterInformation.cafeSearchFilters,
           pageSize: 9999999,
@@ -251,6 +249,7 @@ struct CafeMapCore: ReducerProtocol {
           userLongitude: currentCameraPosition.longitude,
           maximumSearchDistance: 2000, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
           isOpened: filterInformation.isOpened,
+          openAroundTheClock: filterInformation.openAroundTheClock,
           hasCommunalTable: filterInformation.hasCommunalTable,
           filters: filterInformation.cafeSearchFilters,
           pageSize: 10, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
@@ -266,6 +265,7 @@ struct CafeMapCore: ReducerProtocol {
           userLongitude: waypoint.longitude,
           maximumSearchDistance: 2000, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
           isOpened: filterInformation.isOpened,
+          openAroundTheClock: filterInformation.openAroundTheClock,
           hasCommunalTable: filterInformation.hasCommunalTable,
           filters: filterInformation.cafeSearchFilters,
           pageSize: 10, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요

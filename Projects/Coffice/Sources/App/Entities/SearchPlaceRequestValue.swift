@@ -15,6 +15,7 @@ struct SearchPlaceRequestValue: Equatable {
   let userLongitude: Double
   let maximumSearchDistance: Double
   let isOpened: Bool?
+  let openAroundTheClock: Bool?
   let hasCommunalTable: Bool?
   let filters: CafeSearchFilters?
   let pageSize: Int
@@ -33,6 +34,7 @@ extension SearchPlaceRequestValue {
       longitude: userLongitude,
       distance: maximumSearchDistance,
       open: isOpened,
+      openAroundTheClock: openAroundTheClock,
       hasCommunalTable: hasCommunalTable,
       capacityLevels: filters?.capacityLevels?.compactMap { $0.dtoName },
       drinkType: filters?.drinkTypes?.compactMap { $0.dtoName },

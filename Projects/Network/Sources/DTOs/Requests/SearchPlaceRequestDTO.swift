@@ -14,6 +14,7 @@ public struct SearchPlaceRequestDTO: Encodable {
   public let longitude: Double
   public let distance: Double
   public let open: Bool?
+  public let openAroundTheClock: Bool?
   public let hasCommunalTable: Bool?
   public let capacityLevels: [String]?
   public let drinkTypes: [String]?
@@ -30,6 +31,7 @@ public struct SearchPlaceRequestDTO: Encodable {
     longitude: Double,
     distance: Double,
     open: Bool?,
+    openAroundTheClock: Bool?,
     hasCommunalTable: Bool?,
     capacityLevels: [String]?,
     drinkType: [String]?,
@@ -44,6 +46,7 @@ public struct SearchPlaceRequestDTO: Encodable {
     self.longitude = longitude
     self.distance = distance
     self.open = open
+    self.openAroundTheClock = openAroundTheClock
     self.hasCommunalTable = hasCommunalTable
     self.capacityLevels = capacityLevels
     self.drinkTypes = drinkType
