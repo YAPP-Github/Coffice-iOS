@@ -34,7 +34,7 @@ extension SearchPlaceRequestValue {
       distance: maximumSearchDistance,
       open: isOpened,
       hasCommunalTable: hasCommunalTable,
-      capcityLevel: filters?.capacityLevels?.compactMap { $0.dtoName },
+      capacityLevels: filters?.capacityLevels?.compactMap { $0.dtoName },
       drinkType: filters?.drinkTypes?.compactMap { $0.dtoName },
       foodType: filters?.foodTypes?.compactMap { $0.dtoName },
       restroomTypes: filters?.restroomTypes?.compactMap { $0.dtoName },
