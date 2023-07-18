@@ -41,7 +41,7 @@ struct MyPage: ReducerProtocol {
     case presentDevTestView
   }
 
-  @Dependency(\.loginClient) private var loginClient
+  @Dependency(\.accountClient) private var accountClient
 
   var body: some ReducerProtocolOf<MyPage> {
     BindingReducer()
@@ -49,7 +49,7 @@ struct MyPage: ReducerProtocol {
       switch action {
       case .onAppear:
         return .run { send in
-          let userData = try await loginClient.fetchUserData()
+          let userData = try await accountClient.fetchUserData()
           await send(.userInfoFetched(userData))
         } catch: { error, send in
           debugPrint(error)

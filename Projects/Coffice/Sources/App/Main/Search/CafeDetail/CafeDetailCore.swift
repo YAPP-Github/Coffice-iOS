@@ -126,7 +126,7 @@ struct CafeDetail: ReducerProtocol {
     case resetSelectedReviewModifySheetActionType
   }
 
-  @Dependency(\.loginClient) private var loginClient
+  @Dependency(\.accountClient) private var accountClient
   @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.reviewAPIClient) private var reviewAPIClient
   @Dependency(\.bookmarkClient) private var bookmarkAPIClient
@@ -203,7 +203,7 @@ struct CafeDetail: ReducerProtocol {
 
       case .fetchUserData:
         return .run { send in
-          let user = try await loginClient.fetchUserData()
+          let user = try await accountClient.fetchUserData()
           await send(.fetchUserDataResponse(.success(user)))
         } catch: { error, send in
           await send(.fetchUserDataResponse(.failure(error)))

@@ -1,5 +1,5 @@
 //
-//  KakaoLoginClient.swift
+//  AccountClient.swift
 //  coffice
 //
 //  Created by 천수현 on 2023/06/17.
@@ -12,8 +12,8 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import Network
 
-struct LoginClient: DependencyKey {
-  static var liveValue: LoginClient = .liveValue
+struct AccountClient: DependencyKey {
+  static var liveValue: AccountClient = .liveValue
 
   func login(loginType: LoginType, accessToken: String?) async throws -> LoginResponseDTO {
     let coreNetwork = CoreNetwork.shared
@@ -57,8 +57,8 @@ struct LoginClient: DependencyKey {
 }
 
 extension DependencyValues {
-  var loginClient: LoginClient {
-    get { self[LoginClient.self] }
-    set { self[LoginClient.self] = newValue }
+  var accountClient: AccountClient {
+    get { self[AccountClient.self] }
+    set { self[AccountClient.self] = newValue }
   }
 }
