@@ -153,7 +153,7 @@ extension PlaceResponseDTO {
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
       restroomType: restroomTypes?.compactMap { RestroomType.type(of: $0) },
-      isBookmarked: true
+      isBookmarked: archived ?? false
     )
   }
 }
