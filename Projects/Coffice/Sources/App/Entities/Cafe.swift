@@ -77,11 +77,11 @@ extension Cafe {
     : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
   }
 
-  var hasCommunalTableToText: String? {
+  var hasCommunalTableText: String? {
     return (hasCommunalTable ?? false) ? "🪑 단체석" : nil
   }
 
-  var capacityLevelToText: String? {
+  var capacityLevelText: String? {
     switch capcityLevel {
     case .high: return "🗄️ 대형카페"
     case .medium: return "🗄️ 중형카페"
@@ -90,7 +90,7 @@ extension Cafe {
     }
   }
 
-  var electricOutletLevelToText: String? {
+  var electricOutletLevelText: String? {
     switch electricOutletLevel {
     case "MANY": return "🔌 콘센트 넉넉"
     case "SEVERAL": return "🔌 콘센트 보통"
