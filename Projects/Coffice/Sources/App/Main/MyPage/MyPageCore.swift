@@ -39,6 +39,12 @@ struct MyPage: ReducerProtocol {
     case logout
     case memberLeave
     case presentDevTestView
+    case delegate(MyPageDelegate)
+  }
+
+  enum MyPageDelegate {
+    case logoutCompleted
+    case memberLeaveCompleted
   }
 
   @Dependency(\.accountClient) private var accountClient
@@ -61,11 +67,20 @@ struct MyPage: ReducerProtocol {
 
         // MARK: MyPage Actions
       case .logout:
-        return .none // TODO: 서버 나오면 기능 연결 (로그아웃)
+        return .run { send in
+          _ = try await accountClient.logout()
+          await send(.delegate(.logoutCompleted))
+        } catch: { error, send in
+          debugPrint(error)
+        }
 
       case .memberLeave:
-        return .none // TODO: 서버 나오면 기능 연결 (회원탈퇴)
-
+        return .run { send in
+          _ = try await accountClient.memberLeave()
+          await send(.delegate(.memberLeaveCompleted))
+        } catch: { error, send in
+          debugPrint(error)
+        }
         // MARK: MyPageButton Tap Events
       case .menuButtonTapped(let menuItem):
         return .run { send in
@@ -96,6 +111,7 @@ struct MyPage: ReducerProtocol {
 
         // MARK: BottomSheetButton Tap Events
       case .bottomSheet(.confirmButtonTapped):
+        state.shouldShowBottomSheet = false
         return .run { [bottomSheetType = state.bottomSheetType] send in
           switch bottomSheetType {
           case .logout:

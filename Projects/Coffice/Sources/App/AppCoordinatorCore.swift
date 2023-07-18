@@ -52,6 +52,13 @@ struct AppCoordinator: ReducerProtocol {
         state.routes.presentCover(.main(.initialState))
         return .none
 
+      case .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.logoutCompleted)))))),
+          .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.memberLeaveCompleted)))))):
+        KeychainManager.shared.deleteUserToken()
+        state.routes.dismissAll()
+        state.routes.presentCover(.login(.initialState))
+        return .none
+
       default:
         return .none
       }

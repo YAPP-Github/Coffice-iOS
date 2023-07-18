@@ -26,13 +26,13 @@ struct AccountClient: DependencyKey {
           authProviderUserId: accessToken ?? UUID().uuidString
         )
       ) else {
-      throw LoginError.jsonEncodeFailed
+      throw CoreNetworkError.jsonEncodeFailed
     }
     guard let request = urlComponents?.toURLRequest(
       method: .post,
       httpBody: requestBody
     ) else {
-      throw LoginError.emptyAccessToken
+      throw CoreNetworkError.requestConvertFailed
     }
     let response: LoginResponseDTO = try await coreNetwork.dataTask(request: request)
     KeychainManager.shared.addItem(
@@ -49,10 +49,34 @@ struct AccountClient: DependencyKey {
     urlComponents?.path = "/api/v1/members/me"
 
     guard let request = urlComponents?.toURLRequest(method: .get)
-    else { throw LoginError.emptyAccessToken }
+    else { throw CoreNetworkError.requestConvertFailed }
 
     let response: MemberResponseDTO = try await coreNetwork.dataTask(request: request)
     return response.toEntity()
+  }
+
+  func logout() async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/members/logout"
+
+    guard let request = urlComponents?.toURLRequest(method: .post)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    let response = try await coreNetwork.dataTask(request: request)
+    return response
+  }
+
+  func memberLeave() async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/members/withdraw"
+
+    guard let request = urlComponents?.toURLRequest(method: .post)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    let response = try await coreNetwork.dataTask(request: request)
+    return response
   }
 }
 
