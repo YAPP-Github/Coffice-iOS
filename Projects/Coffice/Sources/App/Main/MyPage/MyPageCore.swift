@@ -81,6 +81,7 @@ struct MyPage: ReducerProtocol {
         } catch: { error, send in
           debugPrint(error)
         }
+
         // MARK: MyPageButton Tap Events
       case .menuButtonTapped(let menuItem):
         return .run { send in

@@ -79,9 +79,6 @@ struct CafeMapView: View {
       .onAppear {
         viewStore.send(.requestLocationAuthorization)
       }
-      .onDisappear {
-        viewStore.send(.onDisappear)
-      }
       .popup(isPresented: viewStore.$shouldShowToast) {
         ToastView(
           title: "장소가 저장되었습니다.",
