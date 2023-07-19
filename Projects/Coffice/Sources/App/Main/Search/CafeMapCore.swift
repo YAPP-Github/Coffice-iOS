@@ -18,6 +18,8 @@ struct CafeMapCore: ReducerProtocol {
     var fixedImageSize: CGFloat { (maxScreenWidth - 56) / 3 }
     var fixedCardTitleSize: CGFloat { maxScreenWidth - 48 }
     @BindingState var shouldShowToast = false
+    var toastType: ToastType = .toastByBookmark
+
     // MARK: ViewType
     var displayViewType: ViewType = .mainMapView
 
@@ -64,6 +66,7 @@ struct CafeMapCore: ReducerProtocol {
     case cafeFilterMenusAction(CafeFilterMenus.Action)
     case onDisappear
     case cardViewTapped
+    case showToastBySearch
   }
 
   // MARK: - Dependencies
@@ -233,6 +236,7 @@ struct CafeMapCore: ReducerProtocol {
         return EffectTask(value: .naverMapAction(.searchPlacesWithRequestValue(requestValue: requestValue)))
 
       case .naverMapAction(.showBookmarkedToast):
+        state.toastType = .toastByBookmark
         state.shouldShowToast = true
         return .none
 
@@ -289,6 +293,7 @@ struct CafeMapCore: ReducerProtocol {
             )
           )
           await send(.updateDisplayType(.searchResultView))
+          if cafeResponse.cafes.isEmpty { await send(.showToastBySearch) }
         }
 
       case .cafeSearchAction(.delegate(.focusSelectedPlace(let cafes))):
@@ -357,6 +362,11 @@ struct CafeMapCore: ReducerProtocol {
         }
 
         // MARK: Common
+      case .showToastBySearch:
+        state.toastType = .toastBySearch
+        state.shouldShowToast = true
+        return .none
+
       case .resetCafes(let resetState):
         switch resetState {
         case .searchResultIsEmpty:
@@ -399,6 +409,25 @@ struct CafeMapCore: ReducerProtocol {
 }
 
 extension CafeMapCore {
+  enum ToastType {
+    case toastByBookmark
+    case toastBySearch
+
+    var title: String {
+      switch self {
+      case .toastByBookmark: return "장소가 저장되었습니다."
+      case .toastBySearch: return "이 근처의 검색결과가 없어요!"
+      }
+    }
+
+    var image: CofficeImages? {
+      switch self {
+      case .toastByBookmark: return CofficeAsset.Asset.checkboxCircleFill18px
+      case .toastBySearch: return nil
+      }
+    }
+  }
+
   enum ResetState {
     case searchResultIsEmpty
     case dismissSearchResultView
