@@ -25,6 +25,7 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
     case onAppear
     case wholeTermsAgreementButtonTapped
     case termsOptionButtonTapped(viewState: TermsOptionButtonViewState)
+    case termsWebMenuButtonTapped(termsType: TermsType)
     case delegate(Delegate)
   }
 
@@ -49,6 +50,17 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
       case .termsOptionButtonTapped(let viewState):
         state.termsOptionButtonViewStates[viewState.index].isSelected.toggle()
         return .none
+
+      case .termsWebMenuButtonTapped(let termsType):
+        // TODO: 약관동의 웹뷰 표출 필요
+        switch termsType {
+        case .appService:
+          return .none
+        case .locationService:
+          return .none
+        case .privacyPolicy:
+          return .none
+        }
 
       default:
         return .none

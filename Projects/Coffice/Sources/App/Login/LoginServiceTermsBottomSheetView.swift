@@ -68,7 +68,11 @@ struct LoginServiceTermsBottomSheetView: View {
                 .frame(height: 32)
               }
 
-              CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
+              Button {
+                viewStore.send(.termsWebMenuButtonTapped(termsType: viewState.type))
+              } label: {
+                CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
+              }
             }
             .padding(.bottom, 20)
           }
