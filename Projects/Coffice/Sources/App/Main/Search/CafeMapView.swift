@@ -84,8 +84,8 @@ struct CafeMapView: View {
       }
       .popup(isPresented: viewStore.$shouldShowToast) {
         ToastView(
-          title: "장소가 저장되었습니다.",
-          image: CofficeAsset.Asset.checkboxCircleFill18px,
+          title: viewStore.toastType.title,
+          image: viewStore.toastType.image,
           config: ToastConfiguration.default
         )
       } customize: {
