@@ -10,6 +10,56 @@ import ComposableArchitecture
 import Foundation
 
 struct LoginServiceTermsBottomSheet: ReducerProtocol {
+  struct State: Equatable {
+    static let initialState: State = .init()
+    var termsOptionButtonViewStates: [TermsOptionButtonViewState] = TermsType.allCases
+      .map({ TermsOptionButtonViewState(type: $0, isSelected: false) }) {
+        didSet {
+          isWholeTermsAgreed = termsOptionButtonViewStates.allSatisfy(\.isSelected)
+        }
+      }
+    var isWholeTermsAgreed = false
+  }
+
+  enum Action: Equatable {
+    case onAppear
+    case wholeTermsAgreementButtonTapped
+    case termsOptionButtonTapped(viewState: TermsOptionButtonViewState)
+    case delegate(Delegate)
+  }
+
+  enum Delegate: Equatable {
+    case confirmButtonTapped
+    case dismissView
+  }
+
+  var body: some ReducerProtocolOf<LoginServiceTermsBottomSheet> {
+    Reduce { state, action in
+      switch action {
+      case .onAppear:
+        return .none
+
+      case .wholeTermsAgreementButtonTapped:
+        state.isWholeTermsAgreed.toggle()
+        let isWholeTermsAgreed = state.isWholeTermsAgreed
+        state.termsOptionButtonViewStates = TermsType.allCases
+          .map { TermsOptionButtonViewState(type: $0, isSelected: isWholeTermsAgreed) }
+        return .none
+
+      case .termsOptionButtonTapped(let viewState):
+        state.termsOptionButtonViewStates[viewState.index].isSelected.toggle()
+        return .none
+
+      default:
+        return .none
+      }
+    }
+  }
+}
+
+// MARK: - Sub Models
+
+extension LoginServiceTermsBottomSheet {
   enum TermsType: Int, CaseIterable {
     case appService
     case locationService
@@ -48,67 +98,26 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
       : CofficeAsset.Colors.grayScale4
     }
   }
+}
 
-  struct State: Equatable {
-    static let initialState: State = .init()
-    var termsOptionButtonViewStates: [TermsOptionButtonViewState] = TermsType.allCases
-      .map({ TermsOptionButtonViewState(type: $0, isSelected: false) }) {
-        didSet {
-          isWholeTermsAgreed = termsOptionButtonViewStates.allSatisfy(\.isSelected)
-        }
-      }
-    var isWholeTermsAgreed = false
-    var wholeTermsAgreementCheckboxImage: CofficeImages {
-      isWholeTermsAgreed
-      ? CofficeAsset.Asset.checkboxCircleFill24px
-      : CofficeAsset.Asset.checkboxCircleLine24px
-    }
+// MARK: - Getters
 
-    var wholeTermsAgreementCheckboxColor: CofficeColors {
-      isWholeTermsAgreed
-      ? CofficeAsset.Colors.grayScale9
-      : CofficeAsset.Colors.grayScale4
-    }
-
-    var confirmButtonBackgroundColor: CofficeColors {
-      isWholeTermsAgreed
-      ? CofficeAsset.Colors.grayScale9
-      : CofficeAsset.Colors.grayScale5
-    }
+extension LoginServiceTermsBottomSheet.State {
+  var wholeTermsAgreementCheckboxImage: CofficeImages {
+    isWholeTermsAgreed
+    ? CofficeAsset.Asset.checkboxCircleFill24px
+    : CofficeAsset.Asset.checkboxCircleLine24px
   }
 
-  enum Action: Equatable {
-    case onAppear
-    case wholeTermsAgreementButtonTapped
-    case termsOptionButtonTapped(viewState: TermsOptionButtonViewState)
-    case delegate(Delegate)
+  var wholeTermsAgreementCheckboxColor: CofficeColors {
+    isWholeTermsAgreed
+    ? CofficeAsset.Colors.grayScale9
+    : CofficeAsset.Colors.grayScale4
   }
 
-  enum Delegate: Equatable {
-    case confirmButtonTapped
-    case dismissView
-  }
-
-  var body: some ReducerProtocolOf<LoginServiceTermsBottomSheet> {
-    Reduce { state, action in
-      switch action {
-      case .onAppear:
-        return .none
-
-      case .wholeTermsAgreementButtonTapped:
-        state.isWholeTermsAgreed.toggle()
-        let isWholeTermsAgreed = state.isWholeTermsAgreed
-        state.termsOptionButtonViewStates = TermsType.allCases
-          .map { TermsOptionButtonViewState(type: $0, isSelected: isWholeTermsAgreed) }
-        return .none
-
-      case .termsOptionButtonTapped(let viewState):
-        state.termsOptionButtonViewStates[viewState.index].isSelected.toggle()
-        return .none
-
-      default:
-        return .none
-      }
-    }
+  var confirmButtonBackgroundColor: CofficeColors {
+    isWholeTermsAgreed
+    ? CofficeAsset.Colors.grayScale9
+    : CofficeAsset.Colors.grayScale5
   }
 }
