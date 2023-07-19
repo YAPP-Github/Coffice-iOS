@@ -98,12 +98,12 @@ struct Login: ReducerProtocol {
     // MARK: Login Service Terms Bottom Sheet
     Reduce { state, action in
       switch action {
-      case .loginServiceTermsBottomSheetAction(let action):
+      case .loginServiceTermsBottomSheetAction(.delegate(let action)):
         switch action {
         case .dismissView:
           state.loginServiceTermsBottomSheetState = nil
-        default:
-          return .none
+        case .confirmButtonTapped:
+          state.loginServiceTermsBottomSheetState = nil
         }
         return .none
 

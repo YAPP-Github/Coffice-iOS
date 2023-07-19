@@ -29,11 +29,11 @@ struct LoginServiceTermsBottomSheetView: View {
 
         HStack(spacing: 16) {
           Button {
-            // TODO: 약관 전체 동의 이벤트
+            viewStore.send(.wholeTermsAgreementButtonTapped)
           } label: {
-            CofficeAsset.Asset.checkboxCircleLine24px.swiftUIImage
+            viewStore.wholeTermsAgreementCheckboxImage.swiftUIImage
               .renderingMode(.template)
-              .foregroundColor(CofficeAsset.Colors.grayScale4.swiftUIColor)
+              .foregroundColor(viewStore.wholeTermsAgreementCheckboxColor.swiftUIColor)
           }
           Text("약관 전체 동의")
             .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
@@ -47,77 +47,35 @@ struct LoginServiceTermsBottomSheetView: View {
           .frame(height: 1)
           .padding(.bottom, 20)
 
-        HStack(spacing: 16) {
-          Button {
-            // TODO: 약관 동의 이벤트
-          } label: {
-            HStack {
-              CofficeAsset.Asset.checkboxCircleLine24px.swiftUIImage
-                .renderingMode(.template)
-                .foregroundColor(CofficeAsset.Colors.grayScale4.swiftUIColor)
-              Text("서비스 이용약관")
-                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                .applyCofficeFont(font: .subtitle1Medium)
-              Text("(필수)")
-                .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
-                .applyCofficeFont(font: .subtitle1Medium)
-              Spacer()
+        VStack(spacing: 0) {
+          ForEach(viewStore.termsOptionButtonViewStates) { viewState in
+            HStack(spacing: 16) {
+              Button {
+                viewStore.send(.termsOptionButtonTapped(viewState: viewState))
+              } label: {
+                HStack {
+                  viewState.checkboxImage.swiftUIImage
+                    .renderingMode(.template)
+                    .foregroundColor(viewState.checkboxImageColor.swiftUIColor)
+                  Text(viewState.title)
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                    .applyCofficeFont(font: .subtitle1Medium)
+                  Text("(필수)")
+                    .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+                    .applyCofficeFont(font: .subtitle1Medium)
+                  Spacer()
+                }
+                .frame(height: 32)
+              }
+
+              CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
             }
-            .frame(height: 32)
+            .padding(.bottom, 20)
           }
-
-          CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
         }
-        .padding(.bottom, 20)
-
-        HStack(spacing: 16) {
-          Button {
-            // TODO: 약관 동의 이벤트
-          } label: {
-            HStack {
-              CofficeAsset.Asset.checkboxCircleLine24px.swiftUIImage
-                .renderingMode(.template)
-                .foregroundColor(CofficeAsset.Colors.grayScale4.swiftUIColor)
-              Text("서비스 이용약관")
-                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                .applyCofficeFont(font: .subtitle1Medium)
-              Text("(필수)")
-                .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
-                .applyCofficeFont(font: .subtitle1Medium)
-              Spacer()
-            }
-            .frame(height: 32)
-          }
-
-          CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
-        }
-        .padding(.bottom, 20)
-
-        HStack(spacing: 16) {
-          Button {
-            // TODO: 약관 동의 이벤트
-          } label: {
-            HStack {
-              CofficeAsset.Asset.checkboxCircleLine24px.swiftUIImage
-                .renderingMode(.template)
-                .foregroundColor(CofficeAsset.Colors.grayScale4.swiftUIColor)
-              Text("서비스 이용약관")
-                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                .applyCofficeFont(font: .subtitle1Medium)
-              Text("(필수)")
-                .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
-                .applyCofficeFont(font: .subtitle1Medium)
-              Spacer()
-            }
-            .frame(height: 32)
-          }
-
-          CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
-        }
-        .padding(.bottom, 20)
 
         Button {
-
+          viewStore.send(.delegate(.confirmButtonTapped))
         } label: {
           Text("확인")
             .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
@@ -125,12 +83,13 @@ struct LoginServiceTermsBottomSheetView: View {
             .frame(maxWidth: .infinity, alignment: .center)
             .frame(height: 44)
             .background(
-              CofficeAsset.Colors.grayScale5.swiftUIColor
+              viewStore.confirmButtonBackgroundColor.swiftUIColor
                 .frame(height: 44)
                 .cornerRadius(4, corners: .allCorners)
             )
         }
         .padding(.vertical, 20)
+        .disabled(viewStore.isWholeTermsAgreed.isFalse)
       }
       .padding(.horizontal, 20)
       .padding(.bottom, UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0)
