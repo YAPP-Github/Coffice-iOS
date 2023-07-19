@@ -16,6 +16,7 @@ struct Login: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init()
     var appleLoginToken: String?
+    var selectedLoginType: OAuthLoginType?
 
     var isOnboarding: Bool {
       UserDefaults.standard.bool(forKey: "alreadyLaunched").isFalse
@@ -48,6 +49,12 @@ struct Login: ReducerProtocol {
         return .none
 
       case .kakaoLoginButtonTapped:
+        state.selectedLoginType = .kakao
+        return EffectTask(value: .presentLoginServiceTermsBottomSheet)
+
+      case .appleLoginButtonTapped(let token):
+        state.selectedLoginType = .apple
+        state.appleLoginToken = token
         return EffectTask(value: .presentLoginServiceTermsBottomSheet)
 
       case .loginKakaoAccount:
@@ -58,10 +65,6 @@ struct Login: ReducerProtocol {
         } catch: { error, send in
           debugPrint(error)
         }
-
-      case .appleLoginButtonTapped(let token):
-        state.appleLoginToken = token
-        return EffectTask(value: .presentLoginServiceTermsBottomSheet)
 
       case .loginAppleAccount:
         guard let appleloginToken = state.appleLoginToken
@@ -76,8 +79,10 @@ struct Login: ReducerProtocol {
 
       case .lookAroundButtonTapped:
         return .run { send in
-          let response = try await accountClient.login(loginType: .anonymous,
-                                                     accessToken: nil)
+          let response = try await accountClient.login(
+            loginType: .anonymous,
+            accessToken: nil
+          )
           KeychainManager.shared.deleteUserToken()
           KeychainManager.shared.addItem(key: "anonymousToken",
                                          value: response.accessToken)
@@ -104,6 +109,14 @@ struct Login: ReducerProtocol {
           state.loginServiceTermsBottomSheetState = nil
         case .confirmButtonTapped:
           state.loginServiceTermsBottomSheetState = nil
+          switch state.selectedLoginType {
+          case .apple:
+            return EffectTask(value: .loginAppleAccount)
+          case .kakao:
+            return EffectTask(value: .loginKakaoAccount)
+          default:
+            return .none
+          }
         }
         return .none
 
@@ -141,5 +154,12 @@ struct Login: ReducerProtocol {
         }
       }
     }
+  }
+}
+
+extension Login {
+  enum OAuthLoginType {
+    case apple
+    case kakao
   }
 }
