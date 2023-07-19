@@ -75,6 +75,18 @@ struct LoginView: View {
         Spacer()
       }
       .padding(20)
+      .popup(
+        item: viewStore.binding(\.$loginServiceTermsBottomSheetState),
+        itemView: { viewState in
+          LoginServiceTermsBottomSheetView(
+            store: store.scope(
+              state: { _ in viewState },
+              action: Login.Action.loginServiceTermsBottomSheetAction
+            )
+          )
+        },
+        customize: BottomSheetContent.customize
+      )
     }
   }
 }
