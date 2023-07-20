@@ -69,7 +69,7 @@ struct LoginServiceTermsBottomSheetView: View {
               }
 
               Button {
-                viewStore.send(.termsWebMenuButtonTapped(termsType: viewState.type))
+                viewStore.send(.termsWebMenuButtonTapped(viewState: viewState))
               } label: {
                 CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
               }
@@ -104,6 +104,34 @@ struct LoginServiceTermsBottomSheetView: View {
       .onAppear {
         viewStore.send(.onAppear)
       }
+      .sheet(
+        item: viewStore.$webViewState,
+        content: { viewState in
+          VStack(spacing: 0) {
+            CommonWebView(
+              store: store.scope(
+                state: { _ in viewState },
+                action: LoginServiceTermsBottomSheet.Action.commonWebReducerAction
+              )
+            )
+          }
+          .customNavigationBar(
+            centerView: {
+              Text(viewStore.webViewTitle)
+            },
+            leftView: {
+              EmptyView()
+            },
+            rightView: {
+              Button {
+                viewStore.send(.dismissWebView)
+              } label: {
+                CofficeAsset.Asset.close40px.swiftUIImage
+              }
+            }
+          )
+        }
+      )
     }
   }
 }

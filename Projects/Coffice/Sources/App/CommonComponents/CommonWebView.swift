@@ -28,7 +28,8 @@ struct CommonWebView: UIViewRepresentable {
 }
 
 struct CommonWebReducer: ReducerProtocol {
-  struct State: Equatable {
+  struct State: Equatable, Identifiable {
+    let id = UUID()
     let urlString: String
   }
 
