@@ -33,7 +33,7 @@ struct Login: ReducerProtocol {
     case loginCompleted
   }
 
-  @Dependency(\.loginClient) private var loginClient
+  @Dependency(\.accountClient) private var accountClient
 
   var body: some ReducerProtocolOf<Login> {
     BindingReducer()
@@ -48,7 +48,7 @@ struct Login: ReducerProtocol {
       case .kakaoLoginButtonTapped:
         return .run { send in
           let accessToken = try await fetchKakaoOAuthToken()
-          _ = try await loginClient.login(loginType: .kakao,
+          _ = try await accountClient.login(loginType: .kakao,
                                           accessToken: accessToken)
           await send(.loginCompleted)
         } catch: { error, send in
@@ -57,7 +57,7 @@ struct Login: ReducerProtocol {
 
       case .appleLoginButtonTapped(let token):
         return .run { send in
-          _ = try await loginClient.login(loginType: .apple,
+          _ = try await accountClient.login(loginType: .apple,
                                           accessToken: token)
           await send(.loginCompleted)
         } catch: { error, send in
@@ -66,7 +66,7 @@ struct Login: ReducerProtocol {
 
       case .lookAroundButtonTapped:
         return .run { send in
-          let response = try await loginClient.login(loginType: .anonymous,
+          let response = try await accountClient.login(loginType: .anonymous,
                                                      accessToken: nil)
           KeychainManager.shared.deleteUserToken()
           KeychainManager.shared.addItem(key: "anonymousToken",

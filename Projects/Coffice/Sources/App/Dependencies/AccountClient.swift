@@ -1,5 +1,5 @@
 //
-//  KakaoLoginClient.swift
+//  AccountClient.swift
 //  coffice
 //
 //  Created by 천수현 on 2023/06/17.
@@ -12,8 +12,8 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import Network
 
-struct LoginClient: DependencyKey {
-  static var liveValue: LoginClient = .liveValue
+struct AccountClient: DependencyKey {
+  static var liveValue: AccountClient = .liveValue
 
   func login(loginType: LoginType, accessToken: String?) async throws -> LoginResponseDTO {
     let coreNetwork = CoreNetwork.shared
@@ -26,13 +26,13 @@ struct LoginClient: DependencyKey {
           authProviderUserId: accessToken ?? UUID().uuidString
         )
       ) else {
-      throw LoginError.jsonEncodeFailed
+      throw CoreNetworkError.jsonEncodeFailed
     }
     guard let request = urlComponents?.toURLRequest(
       method: .post,
       httpBody: requestBody
     ) else {
-      throw LoginError.emptyAccessToken
+      throw CoreNetworkError.requestConvertFailed
     }
     let response: LoginResponseDTO = try await coreNetwork.dataTask(request: request)
     KeychainManager.shared.addItem(
@@ -49,16 +49,40 @@ struct LoginClient: DependencyKey {
     urlComponents?.path = "/api/v1/members/me"
 
     guard let request = urlComponents?.toURLRequest(method: .get)
-    else { throw LoginError.emptyAccessToken }
+    else { throw CoreNetworkError.requestConvertFailed }
 
     let response: MemberResponseDTO = try await coreNetwork.dataTask(request: request)
     return response.toEntity()
   }
+
+  func logout() async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/members/logout"
+
+    guard let request = urlComponents?.toURLRequest(method: .post)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    let response = try await coreNetwork.dataTask(request: request)
+    return response
+  }
+
+  func memberLeave() async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/members/withdraw"
+
+    guard let request = urlComponents?.toURLRequest(method: .post)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    let response = try await coreNetwork.dataTask(request: request)
+    return response
+  }
 }
 
 extension DependencyValues {
-  var loginClient: LoginClient {
-    get { self[LoginClient.self] }
-    set { self[LoginClient.self] = newValue }
+  var accountClient: AccountClient {
+    get { self[AccountClient.self] }
+    set { self[AccountClient.self] = newValue }
   }
 }

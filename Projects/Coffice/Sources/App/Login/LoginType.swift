@@ -39,7 +39,7 @@ enum LoginType {
   var image: Image {
     switch self {
     case .kakao:
-      return CofficeAsset.Asset.kakaoLogo18px.swiftUIImage
+      return CofficeAsset.Asset.kakaoLogoFill18px.swiftUIImage
     case .apple:
       return CofficeAsset.Asset.appleLogo18px.swiftUIImage
     case .anonymous:

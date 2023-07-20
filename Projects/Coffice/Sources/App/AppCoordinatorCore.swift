@@ -42,6 +42,8 @@ struct AppCoordinator: ReducerProtocol {
   enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: AppScreen.Action)
     case updateRoutes([Route<AppScreen.State>])
+    case dismissAllRoutes
+    case presentLoginView
   }
 
   var body: some ReducerProtocolOf<AppCoordinator> {
@@ -50,6 +52,24 @@ struct AppCoordinator: ReducerProtocol {
       case .routeAction(_, action: .login(.routeAction(_, action: .main(.loginCompleted)))):
         state.routes.dismissAll()
         state.routes.presentCover(.main(.initialState))
+        return .none
+
+      case .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.logoutCompleted)))))),
+          .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.memberLeaveCompleted)))))):
+        KeychainManager.shared.deleteUserToken()
+        return .merge(
+          EffectTask(value: .dismissAllRoutes),
+          EffectTask(value: .presentLoginView)
+            .delay(for: 0.5, scheduler: DispatchQueue.main)
+            .eraseToEffect()
+        )
+
+      case .dismissAllRoutes:
+        state.routes.dismissAll()
+        return .none
+
+      case .presentLoginView:
+        state.routes.presentCover(.login(.initialState))
         return .none
 
       default:
