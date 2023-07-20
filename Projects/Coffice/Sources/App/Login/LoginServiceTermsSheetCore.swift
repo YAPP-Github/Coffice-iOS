@@ -12,6 +12,8 @@ import Foundation
 struct LoginServiceTermsBottomSheet: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init()
+    @BindingState var webViewState: CommonWebReducer.State?
+
     var termsOptionButtonViewStates: [TermsOptionButtonViewState] = TermsType.allCases
       .map({ TermsOptionButtonViewState(type: $0, isSelected: false) }) {
         didSet {
@@ -19,16 +21,19 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
         }
       }
     var isWholeTermsAgreed = false
-    @BindingState var commonWebReducerState: CommonWebReducer.State?
+    var selectedOptionButtonViewState: TermsOptionButtonViewState?
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
     case onAppear
     case wholeTermsAgreementButtonTapped
     case termsOptionButtonTapped(viewState: TermsOptionButtonViewState)
-    case termsWebMenuButtonTapped(termsType: TermsType)
+    case termsWebMenuButtonTapped(viewState: TermsOptionButtonViewState)
     case delegate(Delegate)
     case commonWebReducerAction(CommonWebReducer.Action)
+    case webViewAction(CommonWebReducer.Action)
+    case dismissWebView
   }
 
   enum Delegate: Equatable {
@@ -37,6 +42,8 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
   }
 
   var body: some ReducerProtocolOf<LoginServiceTermsBottomSheet> {
+    BindingReducer()
+
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -53,39 +60,22 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
         state.termsOptionButtonViewStates[viewState.index].isSelected.toggle()
         return .none
 
-      case .termsWebMenuButtonTapped(let termsType):
-        // TODO: 약관동의 웹뷰 표출 필요
-        switch termsType {
-        case .appService:
-          state.commonWebReducerState = .init(
-            urlString: CommonWebReducer.TransitionType.appServiceTerms.urlString,
-            transitionType: .privacyPolicy
-          )
-          return .none
+      case .termsWebMenuButtonTapped(let viewState):
+        state.selectedOptionButtonViewState = viewState
+        state.webViewState = .init(urlString: viewState.type.urlString)
+        return .none
 
-        case .locationService:
-          state.commonWebReducerState = .init(
-            urlString: CommonWebReducer.TransitionType.locationServiceTerms.urlString,
-            transitionType: .locationServiceTerms
-          )
-          return .none
-
-        case .privacyPolicy:
-          state.commonWebReducerState = .init(
-            urlString: CommonWebReducer.TransitionType.privacyPolicy.urlString,
-            transitionType: .privacyPolicy
-          )
-          return .none
-        }
+      case .dismissWebView:
+        state.webViewState = nil
+        return .none
 
       default:
         return .none
       }
     }
-    // TODO: CommonWebReducer액션 감지, dismiss시, State nil 등등..
     .ifLet(
-      \.commonWebReducerState,
-       action: /Action.commonWebReducerAction
+      \.webViewState,
+      action: /Action.commonWebReducerAction
     ) {
       CommonWebReducer()
     }
@@ -99,6 +89,17 @@ extension LoginServiceTermsBottomSheet {
     case appService
     case locationService
     case privacyPolicy
+
+    var urlString: String {
+      switch self {
+      case .appService:
+        return "https://traveling-jade-4ad.notion.site/0b8d9c87d5be459c97860ddb4bffaa31"
+      case .locationService:
+        return "https://traveling-jade-4ad.notion.site/f946b1a337704f108f11d3c6333569d8"
+      case .privacyPolicy:
+        return "https://traveling-jade-4ad.notion.site/74a66cfd0dc34c17b0f2f8da4f1cd1bb"
+      }
+    }
   }
 
   struct TermsOptionButtonViewState: Equatable, Identifiable {
@@ -154,5 +155,9 @@ extension LoginServiceTermsBottomSheet.State {
     isWholeTermsAgreed
     ? CofficeAsset.Colors.grayScale9
     : CofficeAsset.Colors.grayScale5
+  }
+
+  var webViewTitle: String {
+    return selectedOptionButtonViewState?.title ?? "-"
   }
 }
