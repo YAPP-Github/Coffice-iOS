@@ -15,13 +15,15 @@ import Network
 struct Login: ReducerProtocol {
   struct State: Equatable {
     static let initialState: State = .init()
+    var appleLoginToken: String?
+    var selectedLoginType: OAuthLoginType?
 
     var isOnboarding: Bool {
       UserDefaults.standard.bool(forKey: "alreadyLaunched").isFalse
       && CoreNetwork.shared.token == nil
     }
 
-    @BindingState var shouldShowTermsBottomSheet = false
+    @BindingState var loginServiceTermsBottomSheetState: LoginServiceTermsBottomSheet.State?
   }
 
   enum Action: Equatable, BindableAction {
@@ -30,7 +32,11 @@ struct Login: ReducerProtocol {
     case lookAroundButtonTapped
     case kakaoLoginButtonTapped
     case appleLoginButtonTapped(token: String)
+    case loginAppleAccount
+    case loginKakaoAccount
     case loginCompleted
+    case loginServiceTermsBottomSheetAction(LoginServiceTermsBottomSheet.Action)
+    case presentLoginServiceTermsBottomSheet
   }
 
   @Dependency(\.accountClient) private var accountClient
@@ -39,26 +45,33 @@ struct Login: ReducerProtocol {
     BindingReducer()
     Reduce { state, action in
       switch action {
-      case .binding(\.$shouldShowTermsBottomSheet):
-        return .none
-
       case .onAppear:
         return .none
 
       case .kakaoLoginButtonTapped:
+        state.selectedLoginType = .kakao
+        return EffectTask(value: .presentLoginServiceTermsBottomSheet)
+
+      case .appleLoginButtonTapped(let token):
+        state.selectedLoginType = .apple
+        state.appleLoginToken = token
+        return EffectTask(value: .presentLoginServiceTermsBottomSheet)
+
+      case .loginKakaoAccount:
         return .run { send in
           let accessToken = try await fetchKakaoOAuthToken()
-          _ = try await accountClient.login(loginType: .kakao,
-                                          accessToken: accessToken)
+          _ = try await accountClient.login(loginType: .kakao, accessToken: accessToken)
           await send(.loginCompleted)
         } catch: { error, send in
           debugPrint(error)
         }
 
-      case .appleLoginButtonTapped(let token):
+      case .loginAppleAccount:
+        guard let appleloginToken = state.appleLoginToken
+        else { return .none }
+
         return .run { send in
-          _ = try await accountClient.login(loginType: .apple,
-                                          accessToken: token)
+          _ = try await accountClient.login(loginType: .apple, accessToken: appleloginToken)
           await send(.loginCompleted)
         } catch: { error, send in
           debugPrint(error)
@@ -66,8 +79,10 @@ struct Login: ReducerProtocol {
 
       case .lookAroundButtonTapped:
         return .run { send in
-          let response = try await accountClient.login(loginType: .anonymous,
-                                                     accessToken: nil)
+          let response = try await accountClient.login(
+            loginType: .anonymous,
+            accessToken: nil
+          )
           KeychainManager.shared.deleteUserToken()
           KeychainManager.shared.addItem(key: "anonymousToken",
                                          value: response.accessToken)
@@ -76,9 +91,44 @@ struct Login: ReducerProtocol {
           debugPrint(error)
         }
 
+      case .presentLoginServiceTermsBottomSheet:
+        state.loginServiceTermsBottomSheetState = .initialState
+        return .none
+
       default:
         return .none
       }
+    }
+
+    // MARK: Login Service Terms Bottom Sheet
+    Reduce { state, action in
+      switch action {
+      case .loginServiceTermsBottomSheetAction(.delegate(let action)):
+        switch action {
+        case .dismissView:
+          state.loginServiceTermsBottomSheetState = nil
+        case .confirmButtonTapped:
+          state.loginServiceTermsBottomSheetState = nil
+          switch state.selectedLoginType {
+          case .apple:
+            return EffectTask(value: .loginAppleAccount)
+          case .kakao:
+            return EffectTask(value: .loginKakaoAccount)
+          default:
+            return .none
+          }
+        }
+        return .none
+
+      default:
+        return .none
+      }
+    }
+    .ifLet(
+      \.loginServiceTermsBottomSheetState,
+      action: /Action.loginServiceTermsBottomSheetAction
+    ) {
+      LoginServiceTermsBottomSheet()
     }
   }
 
@@ -104,5 +154,12 @@ struct Login: ReducerProtocol {
         }
       }
     }
+  }
+}
+
+extension Login {
+  enum OAuthLoginType {
+    case apple
+    case kakao
   }
 }

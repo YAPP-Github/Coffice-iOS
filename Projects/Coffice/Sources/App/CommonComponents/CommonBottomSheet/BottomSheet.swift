@@ -20,6 +20,7 @@ struct BottomSheetContent: Equatable {
       .position(.bottom)
       .isOpaque(true)
       .closeOnTapOutside(true)
+      .closeOnTap(false)
       .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
   }
   static let mock = BottomSheetContent(
