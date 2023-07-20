@@ -19,6 +19,7 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
         }
       }
     var isWholeTermsAgreed = false
+    @BindingState var commonWebReducerState: CommonWebReducer.State?
   }
 
   enum Action: Equatable {
@@ -27,6 +28,7 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
     case termsOptionButtonTapped(viewState: TermsOptionButtonViewState)
     case termsWebMenuButtonTapped(termsType: TermsType)
     case delegate(Delegate)
+    case commonWebReducerAction(CommonWebReducer.Action)
   }
 
   enum Delegate: Equatable {
@@ -55,16 +57,37 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
         // TODO: 약관동의 웹뷰 표출 필요
         switch termsType {
         case .appService:
+          state.commonWebReducerState = .init(
+            urlString: CommonWebReducer.TransitionType.appServiceTerms.urlString,
+            transitionType: .privacyPolicy
+          )
           return .none
+
         case .locationService:
+          state.commonWebReducerState = .init(
+            urlString: CommonWebReducer.TransitionType.locationServiceTerms.urlString,
+            transitionType: .locationServiceTerms
+          )
           return .none
+
         case .privacyPolicy:
+          state.commonWebReducerState = .init(
+            urlString: CommonWebReducer.TransitionType.privacyPolicy.urlString,
+            transitionType: .privacyPolicy
+          )
           return .none
         }
 
       default:
         return .none
       }
+    }
+    // TODO: CommonWebReducer액션 감지, dismiss시, State nil 등등..
+    .ifLet(
+      \.commonWebReducerState,
+       action: /Action.commonWebReducerAction
+    ) {
+      CommonWebReducer()
     }
   }
 }
