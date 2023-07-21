@@ -20,6 +20,7 @@ struct MyPageView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       mainView
+        .navigationBarHidden(true)
         .onAppear {
           viewStore.send(.onAppear)
         }
