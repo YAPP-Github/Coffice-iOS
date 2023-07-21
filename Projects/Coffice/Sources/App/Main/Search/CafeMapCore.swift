@@ -114,9 +114,18 @@ struct CafeMapCore: ReducerProtocol {
         return .none
 
         // MARK: SearchListAction
-      case .cafeSearchListAction(.searchPlacesByFilter):
-        guard state.displayViewType == .searchResultView
-        else { return .none }
+      case .cafeSearchListAction(.focusSelectedCafe(let selectedCafe)):
+        let newCameraPosition = CLLocationCoordinate2D(
+          latitude: selectedCafe.latitude,
+          longitude: selectedCafe.longitude
+        )
+        return .concatenate(
+          EffectTask(value: .naverMapAction(.selectCafe(cafe: selectedCafe))),
+          EffectTask(value: .naverMapAction(.moveCameraTo(position: newCameraPosition)))
+        )
+
+        // MARK: CafeSearch Delegate
+      case .cafeSearchListAction(.delegate(.callSearchPlacesByFilter)):
         let currentCameraPosition = state.naverMapState.currentCameraPosition
         let filterInformation = state.cafeSearchListState.cafeFilterInformation
         let requestValue = SearchPlaceRequestValue(
@@ -131,40 +140,14 @@ struct CafeMapCore: ReducerProtocol {
           pageSize: 10,
           pageableKey: nil
         )
-        return .run { send in
-          let cafeResponse = try await placeAPIClient.searchPlaces(by: requestValue)
-          await send(.cafeSearchListAction(
-            .updateCafeSearchListState(
-              title: nil,
-              cafeList: cafeResponse.cafes,
-              hasNext: cafeResponse.hasNext
-            )
-          ))
-          await send(
-            .naverMapAction(.updatePinnedCafes(cafes: cafeResponse.cafes))
-          )
-          await send(
-            .naverMapAction(
-              .moveCameraTo(position: .init(
-                latitude: currentCameraPosition.latitude,
-                longitude: currentCameraPosition.longitude)
-              )
-            )
-          )
-          await send(.updateDisplayType(.searchResultView))
-        }
+        return EffectTask(value: .cafeSearchListAction(.searchPlacesByFilter(requestValue)))
 
-      case .cafeSearchListAction(.focusSelectedCafe(let selectedCafe)):
-        let newCameraPosition = CLLocationCoordinate2D(
-          latitude: selectedCafe.latitude,
-          longitude: selectedCafe.longitude
-        )
+      case .cafeSearchListAction(.delegate(.didFinishSearchPlacesByFilter(let cafeResponse))):
         return .concatenate(
-          EffectTask(value: .naverMapAction(.selectCafe(cafe: selectedCafe))),
-          EffectTask(value: .naverMapAction(.moveCameraTo(position: newCameraPosition)))
-        )
+          EffectTask(value: .naverMapAction(.updatePinnedCafes(cafes: cafeResponse.cafes))),
+          EffectTask(value: .updateDisplayType(.searchResultView))
+          )
 
-        // MARK: CafeSearch Delegate
       case .cafeSearchAction(.delegate(.dismiss)):
         switch state.cafeSearchState.previousViewType {
         case .mainMapView:
@@ -323,7 +306,6 @@ struct CafeMapCore: ReducerProtocol {
         switch result {
         case .success(let searchResponse):
           return .run { send in
-            await send(.naverMapAction(.unselectCafe))
             await send(.naverMapAction(.updatePinnedCafes(cafes: searchResponse.cafes)))
             await send(
               .cafeSearchListAction(
@@ -335,7 +317,6 @@ struct CafeMapCore: ReducerProtocol {
               )
             )
           }
-
         case .failure(let error):
           debugPrint(error)
           return .none
