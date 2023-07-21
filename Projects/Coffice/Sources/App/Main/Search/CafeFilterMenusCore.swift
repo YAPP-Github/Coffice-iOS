@@ -79,9 +79,6 @@ struct CafeFilterMenus: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
-      case .onAppear:
-        return .none
-
       case .filterButtonTapped(let menuType):
         guard let buttonViewStateIndex = state.buttonViewStates.firstIndex(where: { $0.menuType == menuType })
         else { return .none }

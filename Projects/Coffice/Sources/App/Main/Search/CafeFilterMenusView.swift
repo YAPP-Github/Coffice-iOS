@@ -70,9 +70,6 @@ struct CafeFilterMenusView: View {
         .frame(height: 36)
         .padding(.bottom, 16)
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
       .popup(
         item: viewStore.binding(\.$cafeFilterBottomSheetState),
         itemView: { viewState in
