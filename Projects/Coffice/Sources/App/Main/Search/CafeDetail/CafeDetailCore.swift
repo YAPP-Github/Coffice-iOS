@@ -53,6 +53,15 @@ struct CafeDetail: ReducerProtocol {
       }
     }
 
+    var updatedDate: Date?
+    var updatedDateDescription: String {
+      guard let updatedDate else { return "-" }
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = "M월 dd일 hh:mm 기준"
+      let date = Date()
+      return dateFormatter.string(from: date)
+    }
+
     let imagePageViewHeight: CGFloat = 346.0
     let homeMenuViewHeight: CGFloat = 100.0
     var needToPresentRunningTimeDetailInfo = false
@@ -113,6 +122,7 @@ struct CafeDetail: ReducerProtocol {
     case reviewReportSheetButtonTapped
     case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
     case resetSelectedReviewModifySheetActionType
+    case updateUpdatedDate
   }
 
   @Dependency(\.accountClient) private var accountClient
@@ -251,7 +261,7 @@ struct CafeDetail: ReducerProtocol {
         state.subSecondaryInfoViewStates = CafeDetail.State.SubSecondaryInfoType.allCases
           .map { CafeDetail.State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
 
-        return .none
+        return EffectTask(value: .updateUpdatedDate)
 
       case .subMenuTapped(let menuType):
         state.selectedSubMenuType = menuType
@@ -430,6 +440,10 @@ struct CafeDetail: ReducerProtocol {
 
       case .resetSelectedReviewModifySheetActionType:
         state.selectedReviewSheetActionType = .none
+        return .none
+
+      case .updateUpdatedDate:
+        state.updatedDate = Date()
         return .none
 
       default:
