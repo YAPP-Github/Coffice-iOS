@@ -121,9 +121,11 @@ extension CafeFilterBottomSheetView {
                       .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                       .cornerRadius(16)
                       .background(viewState.backgroundColor.swiftUIColor.clipShape(Capsule()))
+                      .cornerRadius(18)
                       .overlay {
                         RoundedRectangle(cornerRadius: 18)
                           .stroke(viewState.borderColor.swiftUIColor, lineWidth: 1)
+                          .padding(1)
                       }
                       .frame(height: 36)
                   }

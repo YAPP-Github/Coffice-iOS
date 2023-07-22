@@ -40,7 +40,7 @@ struct CafeFilterOptionButtonViewState: Equatable, Identifiable {
     if isSelected {
       return CofficeAsset.Colors.grayScale9
     } else {
-      return CofficeAsset.Colors.grayScale3
+      return CofficeAsset.Colors.grayScale4
     }
   }
 
