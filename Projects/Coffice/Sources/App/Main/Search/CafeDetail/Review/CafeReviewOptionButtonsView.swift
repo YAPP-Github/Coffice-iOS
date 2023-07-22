@@ -31,11 +31,13 @@ struct CafeReviewOptionButtonsView: View {
                 Text(viewState.title)
                   .foregroundColor(viewState.textColorAsset.swiftUIColor)
                   .applyCofficeFont(font: .body2Medium)
+                  .cornerRadius(18)
                   .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                   .background(viewState.backgroundColorAsset.swiftUIColor.clipShape(Capsule()))
                   .overlay {
                     RoundedRectangle(cornerRadius: 18)
                       .stroke(viewState.borderColorAsset.swiftUIColor, lineWidth: 1)
+                      .padding(1)
                   }
                   .frame(height: 34)
                   .padding(.leading, 1)

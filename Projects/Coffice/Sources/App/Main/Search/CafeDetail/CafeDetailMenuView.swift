@@ -312,6 +312,7 @@ extension CafeDetailMenuView {
               .multilineTextAlignment(.leading)
               .padding(.top, 20)
 
+            // TODO: Tag가 한줄 넘어갈 경우 넘어가도록 커스텀 뷰 구현 필요
             if viewState.tagTypes.isNotEmpty {
               HStack(spacing: 8) {
                 ForEach(viewState.tagTypes, id: \.self) { tagType in
@@ -324,7 +325,7 @@ extension CafeDetailMenuView {
                     .overlay(
                       RoundedRectangle(cornerRadius: 4)
                         .stroke(
-                          CofficeAsset.Colors.grayScale3.swiftUIColor,
+                          CofficeAsset.Colors.grayScale4.swiftUIColor,
                           lineWidth: 1
                         )
                     )

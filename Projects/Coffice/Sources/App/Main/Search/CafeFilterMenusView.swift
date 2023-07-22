@@ -34,11 +34,12 @@ struct CafeFilterMenusView: View {
                     .scaledToFit()
                     .foregroundColor(viewState.foregroundColorAsset.swiftUIColor)
                     .frame(width: viewState.menuType.size.width, height: viewState.menuType.size.height)
-                    .cornerRadius(16)
+                    .cornerRadius(18)
                     .background(viewState.backgroundColorAsset.swiftUIColor.clipShape(Capsule()))
                     .overlay(
                       RoundedRectangle(cornerRadius: 18)
                         .stroke(viewState.borderColorAsset.swiftUIColor, lineWidth: 1)
+                        .padding(1)
                     )
                 default:
                   HStack(spacing: 0) {
@@ -59,6 +60,7 @@ struct CafeFilterMenusView: View {
                   .overlay(
                     RoundedRectangle(cornerRadius: 18)
                       .stroke(viewState.borderColorAsset.swiftUIColor, lineWidth: 1)
+                      .padding(1)
                   )
                 }
               }
@@ -69,9 +71,6 @@ struct CafeFilterMenusView: View {
         .frame(maxWidth: .infinity)
         .frame(height: 36)
         .padding(.bottom, 16)
-      }
-      .onAppear {
-        viewStore.send(.onAppear)
       }
       .popup(
         item: viewStore.binding(\.$cafeFilterBottomSheetState),

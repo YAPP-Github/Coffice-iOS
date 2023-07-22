@@ -47,6 +47,7 @@ struct CafeMapView: View {
 
           VStack(alignment: .center, spacing: 0) {
             headerView
+              .contentShape(Rectangle())
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .padding(.bottom, 20)
@@ -173,5 +174,16 @@ extension CafeMapView {
       )
     )
     .padding(.top, 8)
+  }
+}
+
+struct CafeMapView_Previews: PreviewProvider {
+  static var previews: some View {
+    CafeMapView(
+      store: .init(
+        initialState: .init(),
+        reducer: CafeMapCore()
+      )
+    )
   }
 }

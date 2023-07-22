@@ -13,7 +13,7 @@ import TCACoordinators
 
 struct AppCoordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
-    static let initialState: State = .init(
+    static let mock: State = .init(
       routes: [.root(.login(.initialState), embedInNavigationView: false)]
     )
 
@@ -32,7 +32,10 @@ struct AppCoordinator: ReducerProtocol {
       if isAlreadyLoggedIn {
         routes = [.root(.main(.initialState), embedInNavigationView: false)]
       } else {
-        routes = [.root(.login(.initialState), embedInNavigationView: false)]
+        routes = [
+            .root(.main(.initialState), embedInNavigationView: false),
+            .cover(.login(.init(isOnboarding: false)))
+        ]
       }
     }
 
@@ -51,7 +54,6 @@ struct AppCoordinator: ReducerProtocol {
       switch action {
       case .routeAction(_, action: .login(.routeAction(_, action: .main(.loginCompleted)))):
         state.routes.dismissAll()
-        state.routes.presentCover(.main(.initialState))
         return .none
 
       case .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.logoutCompleted)))))),
@@ -69,7 +71,7 @@ struct AppCoordinator: ReducerProtocol {
         return .none
 
       case .presentLoginView:
-        state.routes.presentCover(.login(.initialState))
+        state.routes.presentCover(.login(.init(isOnboarding: false)))
         return .none
 
       default:
