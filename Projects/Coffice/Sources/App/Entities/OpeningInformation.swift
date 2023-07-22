@@ -31,7 +31,7 @@ struct OpeningInformation: Hashable {
     return today.openAt == today.closeAt
   }
 
-  var formattedString: String {
+  var quickFormattedString: String {
     if is24Open {
       return "24시간"
     } else if isOpened {
@@ -44,7 +44,22 @@ struct OpeningInformation: Hashable {
     }
   }
 
-  private var todayInformation: DayOpenInformation {
+  var detailFormattedString: String {
+    if is24Open {
+      return "24시간"
+    } else if isOpened {
+      return dayOpenInformations.reduce("", { partialResult, dayInformation in
+        "\(dayInformation.weekDaySymbol.rawValue) "
+        + "\(dayInformation.openAt.hour)" + ":\(dayInformation.openAt.minute) "
+        + "~ "
+        + "\(dayInformation.openAt.hour)" + "\(dayInformation.closeAt.hour)"
+      })
+    } else {
+      return "영업종료"
+    }
+  }
+
+  var todayInformation: DayOpenInformation {
     let currentTime = Date.now
     let currentDateComponents = Calendar.current.dateComponents([.weekday, .hour, .minute], from: currentTime)
     guard let today = dayOpenInformations

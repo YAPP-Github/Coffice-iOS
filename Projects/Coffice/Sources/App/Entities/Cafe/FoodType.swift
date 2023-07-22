@@ -26,4 +26,11 @@ enum FoodType: Hashable {
     case .mealWorthy: return "MEAL_WORTHY"
     }
   }
+
+  var text: String {
+    switch self {
+    case .glutenFree: return "글루텐 프리"
+    case .mealWorthy: return "식사가능"
+    }
+  }
 }

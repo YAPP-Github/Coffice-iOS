@@ -26,4 +26,11 @@ enum DrinkType: Hashable {
     case .soyMilk: return "SOY_MILK"
     }
   }
+
+  var text: String {
+    switch self {
+    case .decaffeinated: return "디카페인"
+    case .soyMilk: return "두유"
+    }
+  }
 }

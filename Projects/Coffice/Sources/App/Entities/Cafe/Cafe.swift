@@ -45,7 +45,7 @@ extension Cafe {
   }
 
   var todayRunningTimeDescription: String {
-    openingInformation?.formattedString ?? "-"
+    openingInformation?.quickFormattedString ?? "-"
   }
 
   var bookmarkImage: Image {

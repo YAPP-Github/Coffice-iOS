@@ -34,7 +34,7 @@ struct BubbleMessageView: View {
           VStack(spacing: 10) {
             ForEach(viewStore.subInfoViewStates) { subInfoViewState in
               HStack(spacing: 0) {
-                Image(asset: subInfoViewState.iconImage)
+                Image(subInfoViewState.iconImageName)
                   .resizable()
                   .frame(width: 20, height: 20)
                 Text(subInfoViewState.title)

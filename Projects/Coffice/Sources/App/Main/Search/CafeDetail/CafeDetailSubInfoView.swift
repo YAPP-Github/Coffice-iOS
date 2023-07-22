@@ -120,9 +120,10 @@ extension CafeDetailSubInfoView {
                   .frame(alignment: .leading)
 
                 if viewState.type == .congestion {
-                  Text(viewState.congestionDescription)
-                    .foregroundColor(viewState.congestionLevel == .high ? .red : .black)
-                    .font(.system(size: 14))
+                  // FIXME: 혼잡도 어떤식으로 나타낼지 정의 필요
+//                  Text(viewState.congestionDescription)
+//                    .foregroundColor(viewState.congestionLevel == .high ? .red : .black)
+//                    .font(.system(size: 14))
 
                   Spacer()
 

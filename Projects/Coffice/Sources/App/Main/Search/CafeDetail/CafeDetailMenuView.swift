@@ -94,9 +94,9 @@ extension CafeDetailMenuView {
       HStack {
         CofficeAsset.Asset.globalLine18px.swiftUIImage
         Button {
-          // TODO: SNS Link Action 구현 필요
+          // TODO: WebView 띄워주기
         } label: {
-          Text(viewStore.cafe?.homepageUrl ?? "https://www.instagram.com/hoxton_seoul최대...")
+          Text(viewStore.cafe?.homepageUrl ?? "-")
             .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
             .applyCofficeFont(font: .body1Medium)
             .frame(alignment: .leading)
@@ -119,14 +119,14 @@ extension CafeDetailMenuView {
         HStack {
           CofficeAsset.Asset.mapPinLine18px.swiftUIImage
 
-          Text(viewStore.cafe?.address?.address ?? "서울 서대문구 연희로 91 2층")
+          Text(viewStore.cafe?.address?.address ?? "-")
             .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
             .applyCofficeFont(font: .body1Medium)
             .frame(alignment: .leading)
             .frame(height: 20)
 
           Button {
-            // TODO: 좌측 텍스트 복사 이벤트
+            UIPasteboard.general.string = viewStore.cafe?.address?.address ?? "-"
           } label: {
             CofficeAsset.Asset.fileCopyLine18px.swiftUIImage
           }
@@ -143,7 +143,7 @@ extension CafeDetailMenuView {
     WithViewStore(store) { viewStore in
       HStack {
         CofficeAsset.Asset.phoneFill18px.swiftUIImage
-        Text(viewStore.cafe?.phoneNumber ?? "02) 123-4567")
+        Text(viewStore.cafe?.phoneNumber ?? "-")
           .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
           .applyCofficeFont(font: .body1Medium)
           .frame(alignment: .leading)
@@ -169,20 +169,22 @@ extension CafeDetailMenuView {
               viewStore.send(.toggleToPresentTextForTest)
             } label: {
               HStack(alignment: .top) {
-                Text("월 09:00 - 21:00")
+                Text(viewStore.cafe?.openingInformation?.quickFormattedString ?? "-")
                   .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                   .applyCofficeFont(font: .body1Medium)
                   .frame(height: 20)
                   .frame(alignment: .leading)
                   .padding(.top, 4)
-                viewStore.runningTimeDetailInfoArrowImageAsset.swiftUIImage
-                  .padding(.top, 2)
+                if let openingInfo = viewStore.cafe?.openingInformation,
+                   openingInfo.is24Open.isFalse {
+                  viewStore.runningTimeDetailInfoArrowImageAsset.swiftUIImage
+                    .padding(.top, 2)
+                }
               }
             }
 
-            // TODO: 실제 API 연동 시에 운영시간 정보 관련 뷰 모델 구성 및 레이아웃 수정 예정
             if viewStore.needToPresentRunningTimeDetailInfo {
-              Text(viewStore.runningTimeDetailInfo)
+              Text(viewStore.cafe?.openingInformation?.detailFormattedString ?? "-")
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 .applyCofficeFont(font: .body1Medium)
                 .lineSpacing(4)
@@ -190,37 +192,6 @@ extension CafeDetailMenuView {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 2)
             }
-
-            HStack(alignment: .top) {
-              VStack(spacing: 0) {
-                Text("- 브레이크 타임 :")
-                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                  .applyCofficeFont(font: .body1Medium)
-                  .frame(height: 20)
-                  .padding(.top, 1)
-                Spacer()
-              }
-
-              VStack {
-                Text(
-                  """
-                  주중) 15:00 ~ 17:00
-                  주말) 15:00 ~ 16:00
-                  """
-                )
-                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                .applyCofficeFont(font: .body1Medium)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: 40)
-                Spacer()
-              }
-            }
-            .padding(.top, 5)
-
-            Text("- 주문마감 : 21:00")
-              .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-              .applyCofficeFont(font: .body1Medium)
-              .frame(height: 20)
           }
         }
       }
@@ -336,12 +307,11 @@ extension CafeDetailMenuView {
             .padding(.top, 20)
 
             Text(viewState.content)
-            .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-            .applyCofficeFont(font: .body1)
-            .multilineTextAlignment(.leading)
-            .padding(.top, 20)
+              .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+              .applyCofficeFont(font: .body1)
+              .multilineTextAlignment(.leading)
+              .padding(.top, 20)
 
-            // TODO: Tag기 한줄 넘어갈 경우 넘어가도록 커스텀 뷰 구현 필요
             if viewState.tagTypes.isNotEmpty {
               HStack(spacing: 8) {
                 ForEach(viewState.tagTypes, id: \.self) { tagType in

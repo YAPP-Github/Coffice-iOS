@@ -33,19 +33,19 @@ struct BubbleMessage: ReducerProtocol {
       switch guideType {
       case .outletState:
         return [
-          .init(iconImage: CofficeAsset.Asset.close40px, title: "넉넉:", description: "80% 이상"),
-          .init(iconImage: CofficeAsset.Asset.close40px, title: "보통:", description: "30% ~ 80%"),
-          .init(iconImage: CofficeAsset.Asset.close40px, title: "부족:", description: "30% 미만")
+          .init(iconImageName: ElectricOutletLevel.many.iconName, title: "넉넉:", description: "80% 이상"),
+          .init(iconImageName: ElectricOutletLevel.several.iconName, title: "보통:", description: "30% ~ 80%"),
+          .init(iconImageName: ElectricOutletLevel.few.iconName, title: "부족:", description: "30% 미만")
         ]
       case .spaceSize:
         return [
-          .init(iconImage: CofficeAsset.Asset.close40px, title: "대형:", description: "테이블 15개 이상"),
-          .init(iconImage: CofficeAsset.Asset.close40px, title: "보통:", description: "테이블 6 ~ 14개"),
-          .init(iconImage: CofficeAsset.Asset.close40px, title: "부족:", description: "테이블 5개 이하")
+          .init(iconImageName: CapacityLevel.high.iconName, title: "대형:", description: "테이블 15개 이상"),
+          .init(iconImageName: CapacityLevel.medium.iconName, title: "보통:", description: "테이블 6 ~ 14개"),
+          .init(iconImageName: CapacityLevel.low.iconName, title: "부족:", description: "테이블 5개 이하")
         ]
       case .groupSeat:
         return [
-          .init(iconImage: CofficeAsset.Asset.close40px, title: "단체석:", description: "5인 테이블")
+          .init(iconImageName: CafeGroupSeatLevel.isTrue.iconName, title: "단체석:", description: "5인 테이블")
         ]
       }
     }
@@ -53,7 +53,7 @@ struct BubbleMessage: ReducerProtocol {
 
   struct SubInfoViewState: Equatable, Identifiable {
     let id = UUID()
-    let iconImage: CofficeImages
+    let iconImageName: String
     let title: String
     let description: String
   }
