@@ -47,6 +47,7 @@ struct CafeMapView: View {
 
           VStack(alignment: .center, spacing: 0) {
             headerView
+              .contentShape(Rectangle())
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
               .padding(.bottom, 20)
