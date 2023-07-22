@@ -19,7 +19,7 @@ struct Cafe: Hashable, Identifiable {
     longitude: 125,
     distanceFromUser: 100,
     phoneNumber: "010-0000-0000",
-    electricOutletLevel: "low",
+    electricOutletLevel: .few,
     hasCommunalTable: nil,
     capacityLevel: nil,
     imageUrls: [],
@@ -41,9 +41,9 @@ struct Cafe: Hashable, Identifiable {
   let longitude: Double
   let distanceFromUser: Double
   let phoneNumber: String?
-  let electricOutletLevel: String?
-  let hasCommunalTable: Bool?
-  let capacityLevel: String?
+  let electricOutletLevel: ElectricOutletLevel?
+  let hasCommunalTable: CafeGroupSeatLevel?
+  let capacityLevel: CafeSizeLevel?
   let imageUrls: [String]?
   let homepageUrl: String?
   let crowdednessList: [CrowdednessResponse]?
