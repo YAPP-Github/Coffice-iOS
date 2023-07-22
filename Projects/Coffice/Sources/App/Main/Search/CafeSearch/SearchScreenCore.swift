@@ -45,14 +45,14 @@ struct SearchScreen: ReducerProtocol {
       state: /State.cafeSearchList,
       action: /Action.cafeSearchList
     ) {
-        CafeSearchListCore()
+      CafeSearchListCore()
     }
 
     Scope(
       state: /State.cafeReviewWrite,
       action: /Action.cafeReviewWrite
     ) {
-        CafeReviewWrite()
+      CafeReviewWrite()
     }
   }
 }

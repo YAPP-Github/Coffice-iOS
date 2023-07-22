@@ -37,7 +37,7 @@ struct AppCoordinatorView_Previews: PreviewProvider {
   static var previews: some View {
     AppCoordinatorView(
       store: .init(
-        initialState: .initialState,
+        initialState: .mock,
         reducer: AppCoordinator()
       )
     )
