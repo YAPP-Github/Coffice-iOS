@@ -175,3 +175,14 @@ extension CafeMapView {
     .padding(.top, 8)
   }
 }
+
+struct CafeMapView_Previews: PreviewProvider {
+  static var previews: some View {
+    CafeMapView(
+      store: .init(
+        initialState: .init(),
+        reducer: CafeMapCore()
+      )
+    )
+  }
+}
