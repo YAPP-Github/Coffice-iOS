@@ -99,3 +99,14 @@ struct CafeDetailHeaderView: View {
     }
   }
 }
+
+struct CafeDetailHeaderView_Previews: PreviewProvider {
+  static var previews: some View {
+    CafeDetailHeaderView(
+      store: .init(
+        initialState: .init(cafeId: 21),
+        reducer: CafeDetail()
+      )
+    )
+  }
+}

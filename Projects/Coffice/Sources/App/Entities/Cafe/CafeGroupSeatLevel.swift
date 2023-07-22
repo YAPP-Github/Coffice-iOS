@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum CafeGroupSeatLevel {
+enum CafeGroupSeatLevel: Hashable {
   case unknown
   case isTrue
   case isFalse
@@ -26,6 +26,17 @@ enum CafeGroupSeatLevel {
 
   var text: String {
     return self == .isTrue ? "🪑 단체석" : ""
+  }
+
+  var informationText: String {
+    switch self {
+    case .unknown:
+      return "정보 없음"
+    case .isTrue:
+      return "있음"
+    case .isFalse:
+      return "없음"
+    }
   }
 
   static func level(of level: Bool) -> CafeGroupSeatLevel {

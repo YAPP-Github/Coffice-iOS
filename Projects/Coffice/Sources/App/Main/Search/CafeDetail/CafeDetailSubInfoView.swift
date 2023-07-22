@@ -48,9 +48,9 @@ extension CafeDetailSubInfoView {
           ForEach(viewStore.state) { viewState in
             VStack(alignment: .center, spacing: 12) {
               HStack(alignment: .top, spacing: 0) {
-                Image(systemName: viewState.iconName)
+                Image(viewState.iconName)
                   .resizable()
-                  .frame(width: 30, height: 30)
+                  .frame(width: 44, height: 44)
                   .padding(.vertical, 6)
                 Button {
                   viewStore.send(
@@ -80,7 +80,9 @@ extension CafeDetailSubInfoView {
               .fixedSize(horizontal: true, vertical: true)
             }
 
-            if viewState.type != .groupSeat {
+            if case . groupSeat = viewState.type {
+              EmptyView()
+            } else {
               Spacer()
             }
           }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ElectricOutletLevel {
+enum ElectricOutletLevel: Hashable {
   case unknown
   case few
   case several
@@ -52,6 +52,15 @@ enum ElectricOutletLevel {
     case .several: return "🔌 콘센트 보통"
     case .few: return "🔌 콘센트 부족"
     default: return "🔌 콘센트 정보 없음"
+    }
+  }
+
+  var informationText: String {
+    switch self {
+    case .many: return "넉넉"
+    case .several: return "보통"
+    case .few: return "부족"
+    default: return "정보 없음"
     }
   }
 }

@@ -29,13 +29,12 @@ struct CafeDetail: ReducerProtocol {
       CofficeAsset.Asset.userProfile40px,
       CofficeAsset.Asset.errorWarningFill40px
     ]
-    // TODO: User data 처리방식 고민 필요
-    var user: User?
 
+    var user: User?
     let subMenuTypes = SubMenuType.allCases
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
       .map { SubMenusViewState.init(subMenuType: $0, isSelected: $0 == .detailInfo) }
-    var subPrimaryInfoViewStates: [SubPrimaryInfoViewState] = SubPrimaryInfoType.allCases
+    var subPrimaryInfoViewStates: [SubPrimaryInfoViewState] = []
       .map(SubPrimaryInfoViewState.init)
     var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = SubSecondaryInfoType.allCases
       .map(SubSecondaryInfoViewState.init)
@@ -254,6 +253,11 @@ struct CafeDetail: ReducerProtocol {
 
       case .placeResponse(let cafe):
         state.cafe = cafe
+        state.subPrimaryInfoViewStates = [
+          .init(type: .outletState(cafe.electricOutletLevel)),
+          .init(type: .spaceSize(cafe.capacityLevel)),
+          .init(type: .groupSeat(cafe.hasCommunalTable))
+        ]
         return .none
 
       case .subMenuTapped(let menuType):
@@ -510,10 +514,10 @@ extension CafeDetail.State {
     case review
   }
 
-  enum SubPrimaryInfoType: CaseIterable {
-    case outletState
-    case spaceSize
-    case groupSeat
+  enum SubPrimaryInfoType: Hashable {
+    case outletState(ElectricOutletLevel)
+    case spaceSize(CapacityLevel)
+    case groupSeat(CafeGroupSeatLevel)
   }
 
   enum SubSecondaryInfoType: CaseIterable {
@@ -558,12 +562,12 @@ extension CafeDetail.State {
       description = "-"
 
       switch type {
-      case .outletState:
-        description = "넉넉"
-      case .spaceSize:
-        description = "대형"
-      case .groupSeat:
-        description = "있음"
+      case .outletState(let outletLevel):
+        description = outletLevel.informationText
+      case .spaceSize(let capacityLevel):
+        description = capacityLevel.informationText
+      case .groupSeat(let groupSeatLevel):
+        description = groupSeatLevel.informationText
       }
     }
 
@@ -577,9 +581,9 @@ extension CafeDetail.State {
 
     var iconName: String {
       switch type {
-      case .outletState: return "power"
-      case .spaceSize: return "house"
-      case .groupSeat: return "person"
+      case .outletState(let outletLevel): return outletLevel.iconName
+      case .spaceSize(let capacityLevel): return capacityLevel.iconName
+      case .groupSeat(let groupSeatLevel): return groupSeatLevel.iconName
       }
     }
 

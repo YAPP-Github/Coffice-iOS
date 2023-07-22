@@ -57,9 +57,12 @@ extension Cafe {
 
 extension SearchPlaceResponseDTO {
   func toCafeEntity() -> Cafe {
-    let openingInformation = openingHours?.isEmpty == true
-    ? nil
-    : OpeningInformation(dayOpenInformations: openingHours?.map { $0.toEntity() } ?? [])
+    var openingInformation: OpeningInformation?
+    if let openingHours, openingHours.isNotEmpty {
+      openingInformation = OpeningInformation(
+        dayOpenInformations: openingHours.map { $0.toEntity() }
+      )
+    }
     return .init(
       placeId: placeId,
       name: name,
@@ -85,9 +88,12 @@ extension SearchPlaceResponseDTO {
 
 extension PlaceResponseDTO {
   func toCafeEntity() -> Cafe {
-    let openingInformation = openingHours == nil
-    ? nil
-    : OpeningInformation(dayOpenInformations: openingHours?.map { $0.toEntity() } ?? [])
+    var openingInformation: OpeningInformation?
+    if let openingHours, openingHours.isNotEmpty {
+      openingInformation = OpeningInformation(
+        dayOpenInformations: openingHours.map { $0.toEntity() }
+      )
+    }
     return .init(
       placeId: placeId,
       name: name,
