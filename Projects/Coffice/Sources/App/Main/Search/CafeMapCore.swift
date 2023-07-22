@@ -17,6 +17,7 @@ struct CafeMapCore: ReducerProtocol {
     var maxScreenWidth: CGFloat = .zero
     var fixedImageSize: CGFloat { (maxScreenWidth - 56) / 3 }
     var fixedCardTitleSize: CGFloat { maxScreenWidth - 48 }
+    var isFirstOnAppear: Bool = true
     @BindingState var shouldShowToast = false
     var toastType: ToastType = .toastByBookmark
 
@@ -43,17 +44,18 @@ struct CafeMapCore: ReducerProtocol {
     case updateMaxScreenWidth(CGFloat)
 
     // MARK: Sub-Core Actions
-    case cafeSearchListAction(CafeSearchListCore.Action)
     case cafeSearchAction(CafeSearchCore.Action)
+    case cafeSearchListAction(CafeSearchListCore.Action)
 
     // MARK: NaverMapView
     case naverMapAction(NaverMapCore.Action)
     case refreshButtonTapped
 
     // MARK: Search
-    case searhPlacesWithRequestValue(requestValue: SearchPlaceRequestValue)
+    case searchPlacesWithRequestValueByDefault
+    case searchPlacesWithRequestValue(SearchPlaceRequestValue)
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
-    case searchPlacesByRequestValueResponse(TaskResult<CafeSearchResponse>)
+    case searchPlacesWithRequestValueResponse(TaskResult<CafeSearchResponse>)
 
     // MARK: Temporary
     case pushToCafeDetailView(cafeId: Int)
@@ -64,9 +66,12 @@ struct CafeMapCore: ReducerProtocol {
     case requestLocationAuthorization
     case resetCafes(ResetState)
     case cafeFilterMenusAction(CafeFilterMenus.Action)
-    case onDisappear
     case cardViewTapped
     case showToastBySearch
+
+    // MARK: View_Life_Cycle
+    case onAppear
+    case onDisappear
   }
 
   // MARK: - Dependencies
@@ -302,20 +307,37 @@ struct CafeMapCore: ReducerProtocol {
         }
 
         // MARK: Search
-      case .searchPlacesByRequestValueResponse(let result):
+      case .searchPlacesWithRequestValueByDefault:
+        let requestValue = SearchPlaceRequestValue(
+          searchText: "",
+          userLatitude: 37.4971,
+          userLongitude: 127.0287,
+          maximumSearchDistance: 3000,
+          isOpened: nil,
+          openAroundTheClock: nil,
+          hasCommunalTable: nil,
+          filters: nil,
+          pageSize: 30,
+          pageableKey: nil
+        )
+        return .merge(
+          EffectTask(value: .searchPlacesWithRequestValue(requestValue)),
+          EffectTask(value: .naverMapAction(.moveCameraTo(
+            position: .init(latitude: requestValue.userLatitude, longitude: requestValue.userLongitude)
+          )))
+        )
+
+      case .searchPlacesWithRequestValue(let requestValue):
+        return .run { send in
+          let result = await TaskResult { return try await placeAPIClient.searchPlaces(by: requestValue) }
+          await send(.searchPlacesWithRequestValueResponse(result))
+        }
+
+      case .searchPlacesWithRequestValueResponse(let result):
         switch result {
         case .success(let searchResponse):
           return .run { send in
             await send(.naverMapAction(.updatePinnedCafes(cafes: searchResponse.cafes)))
-            await send(
-              .cafeSearchListAction(
-                .updateCafeSearchListState(
-                  title: nil,
-                  cafeList: searchResponse.cafes,
-                  hasNext: searchResponse.hasNext
-                )
-              )
-            )
           }
         case .failure(let error):
           debugPrint(error)
@@ -381,6 +403,17 @@ struct CafeMapCore: ReducerProtocol {
         guard let cafe = state.naverMapState.selectedCafe
         else { return .none }
         return EffectTask(value: .pushToCafeDetailView(cafeId: cafe.placeId))
+
+      // MARK: View_Life_Cycle
+      case .onAppear:
+        if state.isFirstOnAppear {
+          state.isFirstOnAppear = false
+          return .merge(
+            EffectTask(value: .searchPlacesWithRequestValueByDefault),
+            EffectTask(value: .requestLocationAuthorization)
+          )
+        }
+        return .none
 
       default:
         return .none
