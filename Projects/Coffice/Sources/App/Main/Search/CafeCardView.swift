@@ -78,15 +78,15 @@ struct CafeCardView: View {
           }
         }
         HStack(spacing: 11) {
-          if let electricOutletLevelText = viewStore.naverMapState.selectedCafe?.electricOutletLevelText {
+          if let electricOutletLevelText = viewStore.naverMapState.selectedCafe?.electricOutletLevel.text {
             Text(electricOutletLevelText)
               .cafeTagTextModifier()
           }
-          if let capacityLevelText = viewStore.naverMapState.selectedCafe?.capacityLevelText {
+          if let capacityLevelText = viewStore.naverMapState.selectedCafe?.capacityLevel.text {
             Text(capacityLevelText)
               .cafeTagTextModifier()
           }
-          if let hasCommunalTableText = viewStore.naverMapState.selectedCafe?.hasCommunalTableText {
+          if let hasCommunalTableText = viewStore.naverMapState.selectedCafe?.hasCommunalTable.text {
             Text(hasCommunalTableText)
               .cafeTagTextModifier()
           }

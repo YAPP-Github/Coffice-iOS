@@ -47,19 +47,26 @@ extension CafeDetailSubInfoView {
         HStack {
           ForEach(viewStore.state) { viewState in
             VStack(alignment: .center, spacing: 12) {
-              Image(systemName: viewState.iconName)
-                .resizable()
-                .frame(width: 30, height: 30)
-                .overlay(alignment: .topTrailing) {
-                  Button {
-                    viewStore.send(.infoGuideButtonTapped(viewState.guideType))
-                  } label: {
-                    Image(asset: CofficeAsset.Asset.informationLine18px)
-                      .resizable()
-                      .frame(width: 18, height: 18)
-                  }
-                  .offset(x: 5, y: -5)
+              HStack(alignment: .top, spacing: 0) {
+                Image(systemName: viewState.iconName)
+                  .resizable()
+                  .frame(width: 30, height: 30)
+                  .padding(.vertical, 6)
+                Button {
+                  viewStore.send(
+                    .infoGuideButtonTapped(
+                      viewState.guideType
+                    )
+                  )
+                } label: {
+                  Image(asset: CofficeAsset.Asset.informationLine18px)
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(CofficeAsset.Colors.grayScale4.swiftUIColor)
+                    .frame(width: 18, height: 18)
                 }
+              }
+              .offset(x: 9, y: 0)
               HStack(spacing: 8) {
                 Text(viewState.title)
                   .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)

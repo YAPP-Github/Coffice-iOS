@@ -11,28 +11,6 @@ import Network
 import SwiftUI
 
 struct Cafe: Hashable, Identifiable {
-  static let dummy = Cafe(
-    placeId: 0,
-    name: "name",
-    address: .init(address: "address", simpleAddress: "simpleAddress", postalCode: "00000"),
-    latitude: 37,
-    longitude: 125,
-    distanceFromUser: 100,
-    phoneNumber: "010-0000-0000",
-    electricOutletLevel: .few,
-    hasCommunalTable: nil,
-    capacityLevel: nil,
-    imageUrls: [],
-    homepageUrl: nil,
-    crowdednessList: nil,
-    openingInformation: nil,
-    capcityLevel: nil,
-    drinkTypes: nil,
-    foodTypes: nil,
-    restroomType: nil,
-    isBookmarked: false
-  )
-
   let id = UUID() // TODO: Identifiable 채택을 위한 임시 코드
   let placeId: Int
   let name: String
@@ -41,14 +19,13 @@ struct Cafe: Hashable, Identifiable {
   let longitude: Double
   let distanceFromUser: Double
   let phoneNumber: String?
-  let electricOutletLevel: ElectricOutletLevel?
-  let hasCommunalTable: CafeGroupSeatLevel?
-  let capacityLevel: CafeSizeLevel?
+  let electricOutletLevel: ElectricOutletLevel
+  let hasCommunalTable: CafeGroupSeatLevel
   let imageUrls: [String]?
   let homepageUrl: String?
   let crowdednessList: [CrowdednessResponse]?
   let openingInformation: OpeningInformation?
-  let capcityLevel: CapacityLevel?
+  let capacityLevel: CapacityLevel
   let drinkTypes: [DrinkType]?
   let foodTypes: [FoodType]?
   let restroomType: [RestroomType]?
@@ -76,28 +53,6 @@ extension Cafe {
     ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
     : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
   }
-
-  var hasCommunalTableText: String? {
-    return (hasCommunalTable ?? false) ? "🪑 단체석" : nil
-  }
-
-  var capacityLevelText: String? {
-    switch capcityLevel {
-    case .high: return "🗄️ 대형카페"
-    case .medium: return "🗄️ 중형카페"
-    case .low: return "🗄️ 소형카페"
-    default: return nil
-    }
-  }
-
-  var electricOutletLevelText: String? {
-    switch electricOutletLevel {
-    case "MANY": return "🔌 콘센트 넉넉"
-    case "SEVERAL": return "🔌 콘센트 보통"
-    case "FEW": return "🔌 콘센트 부족"
-    default: return nil
-    }
-  }
 }
 
 extension SearchPlaceResponseDTO {
@@ -113,14 +68,13 @@ extension SearchPlaceResponseDTO {
       longitude: coordinates.longitude,
       distanceFromUser: distance ?? 0,
       phoneNumber: phoneNumber,
-      electricOutletLevel: electricOutletLevel,
-      hasCommunalTable: hasCommunalTable,
-      capacityLevel: capacityLevel,
+      electricOutletLevel: ElectricOutletLevel.level(of: electricOutletLevel ?? ""),
+      hasCommunalTable: CafeGroupSeatLevel.level(of: hasCommunalTable ?? false),
       imageUrls: imageUrls,
       homepageUrl: homepageUrl,
       crowdednessList: crowdednessList?.map { $0.toEntity() },
       openingInformation: openingInformation,
-      capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
+      capacityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
       restroomType: restroomTypes?.compactMap { RestroomType.type(of: $0) },
@@ -142,18 +96,40 @@ extension PlaceResponseDTO {
       longitude: coordinates.longitude,
       distanceFromUser: 0,
       phoneNumber: phoneNumber,
-      electricOutletLevel: electricOutletLevel,
-      hasCommunalTable: hasCommunalTable,
-      capacityLevel: capacityLevel,
+      electricOutletLevel: ElectricOutletLevel.level(of: electricOutletLevel ?? ""),
+      hasCommunalTable: CafeGroupSeatLevel.level(of: hasCommunalTable ?? false),
       imageUrls: imageUrls,
       homepageUrl: homepageUrl,
       crowdednessList: crowdednessList?.map { $0.toEntity() },
       openingInformation: openingInformation,
-      capcityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
+      capacityLevel: CapacityLevel.level(of: capacityLevel ?? ""),
       drinkTypes: drinkTypes?.compactMap { DrinkType.type(of: $0) },
       foodTypes: foodTypes?.compactMap { FoodType.type(of: $0) },
       restroomType: restroomTypes?.compactMap { RestroomType.type(of: $0) },
       isBookmarked: archived ?? false
     )
   }
+}
+
+extension Cafe {
+  static let dummy = Cafe(
+    placeId: 0,
+    name: "name",
+    address: .init(address: "address", simpleAddress: "simpleAddress", postalCode: "00000"),
+    latitude: 37,
+    longitude: 125,
+    distanceFromUser: 100,
+    phoneNumber: "010-0000-0000",
+    electricOutletLevel: .few,
+    hasCommunalTable: .unknown,
+    imageUrls: [],
+    homepageUrl: nil,
+    crowdednessList: nil,
+    openingInformation: nil,
+    capacityLevel: .unknown,
+    drinkTypes: nil,
+    foodTypes: nil,
+    restroomType: nil,
+    isBookmarked: false
+  )
 }

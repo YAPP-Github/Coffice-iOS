@@ -14,13 +14,13 @@ enum CapacityLevel: Hashable {
   case medium
   case high
 
-  static func level(of capacity: String) -> CapacityLevel? {
+  static func level(of capacity: String) -> CapacityLevel {
     switch capacity {
     case "UNKNOWN": return .unknown
     case "LOW": return .low
     case "MEDIUM": return .medium
     case "HIGH": return .high
-    default: return nil
+    default: return .unknown
     }
   }
 
@@ -30,6 +30,28 @@ enum CapacityLevel: Hashable {
     case .low: return "LOW"
     case .medium: return "MEDIUM"
     case .high: return "HIGH"
+    }
+  }
+
+  var text: String {
+    switch self {
+    case .high: return "🗄️ 대형카페"
+    case .medium: return "🗄️ 중형카페"
+    case .low: return "🗄️ 소형카페"
+    default: return ""
+    }
+  }
+
+  var iconName: String {
+    switch self {
+    case .unknown:
+      return CofficeAsset.Asset.cafeSizeSmall44px.name // TODO: Unknown 처리
+    case .low:
+      return CofficeAsset.Asset.cafeSizeSmall44px.name
+    case .medium:
+      return CofficeAsset.Asset.cafeSizeMedium44px.name
+    case .high:
+      return CofficeAsset.Asset.cafeSizeLarge44px.name
     }
   }
 }

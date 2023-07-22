@@ -91,7 +91,7 @@ struct CafeFilterInformation: Equatable {
       }
     }
 
-    let electricOutletTypes = CafeFilter.OutletOption.allCases.compactMap { option -> ElectricOutletType? in
+    let electricOutletLevels = CafeFilter.OutletOption.allCases.compactMap { option -> ElectricOutletLevel? in
       guard outletOptionSet.contains(option)
       else { return nil }
 
@@ -110,7 +110,7 @@ struct CafeFilterInformation: Equatable {
       drinkTypes: drinkTypes,
       foodTypes: foodTypes,
       restroomTypes: restroomTypes,
-      electricOutletLevels: electricOutletTypes
+      electricOutletLevels: electricOutletLevels
     )
   }
 

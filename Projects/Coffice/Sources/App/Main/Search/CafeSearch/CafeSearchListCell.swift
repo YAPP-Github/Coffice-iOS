@@ -76,18 +76,12 @@ struct CafeSearchListCell: View {
         }
         .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
         HStack(spacing: 11) {
-          if let electricOutletLevelText = cafe.electricOutletLevelText {
-            Text(electricOutletLevelText)
-              .cafeTagTextModifier()
-          }
-          if let capacityLevelText = cafe.capacityLevelText {
-            Text(capacityLevelText)
-              .cafeTagTextModifier()
-          }
-          if let hasCommunalTableText = cafe.hasCommunalTableText {
-            Text(hasCommunalTableText)
-              .cafeTagTextModifier()
-          }
+          Text(cafe.electricOutletLevel.text)
+            .cafeTagTextModifier()
+          Text(cafe.capacityLevel.text)
+            .cafeTagTextModifier()
+          Text(cafe.hasCommunalTable.text)
+            .cafeTagTextModifier()
         }
       }
     }
