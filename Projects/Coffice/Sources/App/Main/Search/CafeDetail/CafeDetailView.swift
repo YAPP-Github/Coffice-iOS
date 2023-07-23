@@ -54,6 +54,7 @@ struct CafeDetailView: View {
                 .renderingMode(.template)
                 .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
             }
+            .hiddenWithOpacity(isHidden: true)
           }
           .padding(.top, 4)
           .padding(.horizontal, 8)
