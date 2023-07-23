@@ -19,4 +19,15 @@ extension String {
     attributedString[range].font = .custom(CofficeFont.subtitleSemiBold.name, size: 16)
     return attributedString
   }
+
+  func utcDate(format: String) -> Date? {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = format
+    dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+
+    guard let utcDate = dateFormatter.date(from: self)
+    else { return nil }
+
+    return utcDate
+  }
 }
