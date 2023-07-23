@@ -61,6 +61,7 @@ struct CafeCardView: View {
             if let imageUrls = viewStore.naverMapState.selectedCafe?.imageUrls, imageUrls.isNotEmpty {
               ForEach(imageUrls, id: \.self) { imageUrl in
                 KFImage.url(URL(string: imageUrl))
+                  .placeholder { CofficeAsset.Asset.cafePlaceholder.swiftUIImage }
                   .resizable()
                   .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
                   .scaledToFit()
@@ -68,7 +69,7 @@ struct CafeCardView: View {
               }
             } else {
               ForEach(1...3, id: \.self) { imageAsset in
-                CofficeAsset.Asset.cafeImage.swiftUIImage
+                CofficeAsset.Asset.cafePlaceholder.swiftUIImage
                   .resizable()
                   .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
                   .scaledToFit()
