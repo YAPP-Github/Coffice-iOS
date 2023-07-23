@@ -121,7 +121,7 @@ struct CafeDetail: ReducerProtocol {
     case reviewReportSheetButtonTapped
     case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
     case resetSelectedReviewModifySheetActionType
-    case updateUpdatedDate
+    case updateLastModifiedDate
   }
 
   @Dependency(\.accountClient) private var accountClient
@@ -260,7 +260,7 @@ struct CafeDetail: ReducerProtocol {
         state.subSecondaryInfoViewStates = CafeDetail.State.SubSecondaryInfoType.allCases
           .map { CafeDetail.State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
 
-        return EffectTask(value: .updateUpdatedDate)
+        return EffectTask(value: .updateLastModifiedDate)
 
       case .subMenuTapped(let menuType):
         state.selectedSubMenuType = menuType
@@ -441,7 +441,7 @@ struct CafeDetail: ReducerProtocol {
         state.selectedReviewSheetActionType = .none
         return .none
 
-      case .updateUpdatedDate:
+      case .updateLastModifiedDate:
         state.updatedDate = Date()
         return .none
 
