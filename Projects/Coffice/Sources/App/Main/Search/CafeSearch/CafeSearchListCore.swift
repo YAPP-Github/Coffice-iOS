@@ -49,7 +49,10 @@ struct CafeSearchListCore: ReducerProtocol {
     case updateCafeFilter(information: CafeFilterInformation)
     case cafeSearchListCellTapped(cafe: Cafe)
     case focusSelectedCafe(selectedCafe: Cafe)
-    case searchPlacesByFilter
+
+    // MARK: Search
+    case searchPlacesByFilter(SearchPlaceRequestValue)
+    case searchPlacesResponseByFilter(TaskResult<CafeSearchResponse>)
 
     // MARK: Bookmark
     case binding(BindingAction<State>)
@@ -57,8 +60,16 @@ struct CafeSearchListCore: ReducerProtocol {
     case updateBookmarkedSearchListCell(cafe: Cafe)
     case searchListCellBookmarkUpdated(cafe: Cafe)
     case showBookmarkedToast
+
+    // MARK: DeleateAction
+    case delegate(CafeSearchListDelegate)
   }
 
+  // MARK: CafeSearchListDelegate
+  enum CafeSearchListDelegate: Equatable {
+    case callSearchPlacesByFilter
+    case didFinishSearchPlacesByFilter(CafeSearchResponse)
+  }
   // MARK: - Dependencies
   @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.bookmarkClient) private var bookmarkClient
@@ -75,6 +86,28 @@ struct CafeSearchListCore: ReducerProtocol {
 
     Reduce { state, action in
       switch action {
+      case .searchPlacesByFilter(let requestValue):
+        return .run { send in
+          let result = await TaskResult { return try await placeAPIClient.searchPlaces(by: requestValue) }
+          await send(.searchPlacesResponseByFilter(result))
+        }
+
+      case .searchPlacesResponseByFilter(let result):
+        switch result {
+        case .success(let response):
+          return .merge(
+            EffectTask(value: .delegate(.didFinishSearchPlacesByFilter(response))),
+            EffectTask(value: .updateCafeSearchListState(
+              title: nil,
+              cafeList: response.cafes,
+              hasNext: response.hasNext
+            ))
+          )
+        case .failure(let error):
+          debugPrint(error)
+          return .none
+        }
+
       case .showBookmarkedToast:
         state.shouldShowToastByBookmark = true
         return .none
@@ -156,7 +189,7 @@ struct CafeSearchListCore: ReducerProtocol {
         state.cafeFilterInformation = information
         return .concatenate(
           EffectTask(value: .updateCafeFilter(information: information)),
-          EffectTask(value: .searchPlacesByFilter)
+          EffectTask(value: .delegate(.callSearchPlacesByFilter))
         )
 
       default:
