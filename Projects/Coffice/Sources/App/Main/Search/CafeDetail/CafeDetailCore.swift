@@ -18,6 +18,8 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var deleteConfirmBottomSheetState: BottomSheetReducer.State?
     @BindingState var toastViewMessage: String?
     @BindingState var bubbleMessageViewState: BubbleMessage.State?
+    @BindingState var webViewState: CommonWebReducer.State?
+
     var bottomSheetType: BottomSheetType = .deleteConfirm
 
     var cafeId: Int
@@ -122,6 +124,11 @@ struct CafeDetail: ReducerProtocol {
     case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
     case resetSelectedReviewModifySheetActionType
     case updateLastModifiedDate
+
+    // MARK: Web View
+    case commonWebReducerAction(CommonWebReducer.Action)
+    case cafeHomepageUrlTapped
+    case dismissWebView
   }
 
   @Dependency(\.accountClient) private var accountClient
@@ -445,6 +452,17 @@ struct CafeDetail: ReducerProtocol {
         state.updatedDate = Date()
         return .none
 
+      case .cafeHomepageUrlTapped:
+        guard let webViewUrlString = state.cafe?.homepageUrl
+        else { return .none }
+
+        state.webViewState = .init(urlString: webViewUrlString)
+        return .none
+
+      case .dismissWebView:
+        state.webViewState = nil
+        return .none
+
       default:
         return .none
       }
@@ -454,6 +472,12 @@ struct CafeDetail: ReducerProtocol {
       action: /Action.cafeReviewWrite(action:)
     ) {
       CafeReviewWrite()
+    }
+    .ifLet(
+      \.webViewState,
+      action: /Action.commonWebReducerAction
+    ) {
+      CommonWebReducer()
     }
   }
 }

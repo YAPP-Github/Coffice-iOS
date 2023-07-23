@@ -94,7 +94,7 @@ extension CafeDetailMenuView {
       HStack {
         CofficeAsset.Asset.globalLine18px.swiftUIImage
         Button {
-          // TODO: WebView 띄워주기
+          viewStore.send(.cafeHomepageUrlTapped)
         } label: {
           Text(viewStore.cafe?.homepageUrl ?? "-")
             .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
