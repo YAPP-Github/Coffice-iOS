@@ -94,6 +94,10 @@ extension NaverMapView {
 
     var markers = [MapMarker]()
     for cafe in cafeList {
+      guard viewStore.markers
+        .contains(where: { $0.cafe.latitude == cafe.latitude && $0.cafe.longitude == cafe.longitude })
+        .isFalse
+      else { continue }
       let marker = MapMarker(
         cafe: cafe,
         markerType: .init(
@@ -102,8 +106,6 @@ extension NaverMapView {
         ),
         position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
       )
-      if marker.markerType.selectType == .selected {
-      }
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         DispatchQueue.main.async {
           viewStore.send(.markerTapped(cafe: cafe))
