@@ -69,7 +69,7 @@ struct CafeMapCore: ReducerProtocol {
     case cardViewTapped
     case showToastBySearch
 
-    // MARK: View_Life_Cycle
+    // MARK: View LifeCycle
     case onAppear
     case onDisappear
   }
@@ -404,7 +404,7 @@ struct CafeMapCore: ReducerProtocol {
         else { return .none }
         return EffectTask(value: .pushToCafeDetailView(cafeId: cafe.placeId))
 
-      // MARK: View_Life_Cycle
+      // MARK: View LifeCycle
       case .onAppear:
         if state.isFirstOnAppear {
           state.isFirstOnAppear = false
