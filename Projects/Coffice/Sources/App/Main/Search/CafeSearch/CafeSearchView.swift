@@ -155,6 +155,7 @@ extension CafeSearchView {
           .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 16))
           .frame(maxWidth: .infinity, alignment: .leading)
           .frame(height: 60)
+          .hiddenWithOpacity(isHidden: viewStore.recentSearchWordList.isEmpty)
         ScrollView(.vertical, showsIndicators: false) {
           VStack(spacing: 0) {
             ForEach(viewStore.recentSearchWordList, id: \.searchWordId) { searchWord in

@@ -77,9 +77,7 @@ struct CafeMapView: View {
         }
       }
       .navigationBarHidden(true)
-      .onAppear {
-        viewStore.send(.requestLocationAuthorization)
-      }
+      .onAppear { viewStore.send(.onAppear) }
       .popup(isPresented: viewStore.$shouldShowToast) {
         ToastView(
           title: viewStore.toastType.title,

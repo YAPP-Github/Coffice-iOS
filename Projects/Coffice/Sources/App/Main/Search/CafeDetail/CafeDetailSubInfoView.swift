@@ -97,11 +97,11 @@ extension CafeDetailSubInfoView {
   }
 
   private var cafeSecondaryInfoView: some View {
-    WithViewStore(store, observe: \.subSecondaryInfoViewStates) { viewStore in
+    WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         HStack {
           VStack(spacing: 0) {
-            ForEach(viewStore.state) { viewState in
+            ForEach(viewStore.subSecondaryInfoViewStates) { viewState in
               Text(viewState.title)
                 .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
                 .applyCofficeFont(font: .button)
@@ -112,7 +112,7 @@ extension CafeDetailSubInfoView {
           }
 
           VStack(alignment: .leading, spacing: 0) {
-            ForEach(viewStore.state) { viewState in
+            ForEach(viewStore.subSecondaryInfoViewStates) { viewState in
               HStack {
                 Text(viewState.description)
                   .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
@@ -127,7 +127,7 @@ extension CafeDetailSubInfoView {
 
                   Spacer()
 
-                  Text("6월 22일 16:00 기준")
+                  Text(viewStore.updatedDateDescription)
                     .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                     .applyCofficeFont(font: .body2Medium)
                     .frame(alignment: .trailing)

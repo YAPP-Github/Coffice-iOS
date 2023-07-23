@@ -53,6 +53,14 @@ struct CafeDetail: ReducerProtocol {
       }
     }
 
+    var updatedDate: Date?
+    var updatedDateDescription: String {
+      guard let updatedDate else { return "-" }
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = "M월 dd일 hh:mm 기준"
+      return dateFormatter.string(from: updatedDate)
+    }
+
     let imagePageViewHeight: CGFloat = 346.0
     let homeMenuViewHeight: CGFloat = 100.0
     var needToPresentRunningTimeDetailInfo = false
@@ -113,6 +121,7 @@ struct CafeDetail: ReducerProtocol {
     case reviewReportSheetButtonTapped
     case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
     case resetSelectedReviewModifySheetActionType
+    case updateLastModifiedDate
   }
 
   @Dependency(\.accountClient) private var accountClient
@@ -251,7 +260,7 @@ struct CafeDetail: ReducerProtocol {
         state.subSecondaryInfoViewStates = CafeDetail.State.SubSecondaryInfoType.allCases
           .map { CafeDetail.State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
 
-        return .none
+        return EffectTask(value: .updateLastModifiedDate)
 
       case .subMenuTapped(let menuType):
         state.selectedSubMenuType = menuType
@@ -432,6 +441,10 @@ struct CafeDetail: ReducerProtocol {
         state.selectedReviewSheetActionType = .none
         return .none
 
+      case .updateLastModifiedDate:
+        state.updatedDate = Date()
+        return .none
+
       default:
         return .none
       }
@@ -597,11 +610,17 @@ extension CafeDetail.State {
 
       switch type {
       case .food:
-        description = cafe.foodTypes?.map { $0.text }.joined(separator: "/") ?? "-"
+        let foodTypeTexts = cafe.foodTypes?.map(\.text) ?? []
+        description = foodTypeTexts.isNotEmpty
+        ? foodTypeTexts.joined(separator: "/")
+        : "-"
       case .toilet:
         description = "-" // FIXME: 서버에서 안내려오는중 (화장실 정보)
       case .beverage:
-        description = cafe.drinkTypes?.map { $0.text }.joined(separator: "/") ?? "-"
+        let drinkTypeTexts = cafe.drinkTypes?.map(\.text) ?? []
+        description = drinkTypeTexts.isNotEmpty
+        ? drinkTypeTexts.joined(separator: "/")
+        : "-"
       case .price:
         description = "-" // FIXME: 서버에서 안내려오는중 (가격 정보)
       case .congestion:
