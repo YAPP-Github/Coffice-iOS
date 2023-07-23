@@ -76,27 +76,42 @@ struct CafeDetailHeaderView: View {
     }
   }
 
-  var imagePageView: some View {
+  private var imagePageView: some View {
     WithViewStore(store) { viewStore in
-      TabView {
+      Group {
         if let imageUrls = viewStore.cafe?.imageUrls,
            imageUrls.isNotEmpty {
-          ForEach(imageUrls, id: \.self) { imageUrl in
-            KFImage.url(URL(string: imageUrl))
-              .resizable()
-              .scaledToFill()
+          TabView {
+            ForEach(imageUrls, id: \.self) { imageUrl in
+              KFImage.url(URL(string: imageUrl))
+                .placeholder {
+                  imagePlaceholderView
+                }
+                .resizable()
+                .scaledToFill()
+            }
           }
+          .tabViewStyle(PageTabViewStyle())
         } else {
-          ForEach(viewStore.cafeTestImageAssets, id: \.self) { imageAsset in
-            imageAsset.swiftUIImage
-              .resizable()
-              .scaledToFill()
-          }
+          imagePlaceholderView
         }
       }
       .frame(height: viewStore.imagePageViewHeight)
-      .tabViewStyle(PageTabViewStyle())
     }
+  }
+
+  private var imagePlaceholderView: some View {
+    LinearGradient(
+      gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+      startPoint: .top,
+      endPoint: .bottom
+    )
+    .background(
+      CofficeAsset.Asset.cafePlaceholder.swiftUIImage
+        .resizable()
+        .scaledToFill()
+        .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
+    )
   }
 }
 
