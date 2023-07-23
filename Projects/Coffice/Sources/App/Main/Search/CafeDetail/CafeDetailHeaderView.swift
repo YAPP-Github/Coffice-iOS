@@ -95,6 +95,12 @@ struct CafeDetailHeaderView: View {
             startPoint: .top,
             endPoint: .bottom
           )
+          .background(
+            CofficeAsset.Asset.cafePlaceholder.swiftUIImage
+              .resizable()
+              .scaledToFill()
+              .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
+          )
         }
       }
       .frame(height: viewStore.imagePageViewHeight)
