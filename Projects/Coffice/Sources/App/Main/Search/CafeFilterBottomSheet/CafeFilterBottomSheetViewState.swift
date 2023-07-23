@@ -113,7 +113,7 @@ enum CafeFilter {
     }
   }
 
-  enum GuideType {
+  enum GuideType: Equatable {
     case outletState
     case spaceSize
     case groupSeat

@@ -29,16 +29,14 @@ struct CafeDetail: ReducerProtocol {
       CofficeAsset.Asset.userProfile40px,
       CofficeAsset.Asset.errorWarningFill40px
     ]
-    // TODO: User data 처리방식 고민 필요
-    var user: User?
 
+    var user: User?
     let subMenuTypes = SubMenuType.allCases
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
       .map { SubMenusViewState.init(subMenuType: $0, isSelected: $0 == .detailInfo) }
-    var subPrimaryInfoViewStates: [SubPrimaryInfoViewState] = SubPrimaryInfoType.allCases
+    var subPrimaryInfoViewStates: [SubPrimaryInfoViewState] = []
       .map(SubPrimaryInfoViewState.init)
-    var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = SubSecondaryInfoType.allCases
-      .map(SubSecondaryInfoViewState.init)
+    var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = []
     var userReviewCellViewStates: [UserReviewCellViewState] = []
     var userReviewHeaderTitle: String {
       return "리뷰 \(userReviewCellViewStates.count)"
@@ -57,15 +55,6 @@ struct CafeDetail: ReducerProtocol {
 
     let imagePageViewHeight: CGFloat = 346.0
     let homeMenuViewHeight: CGFloat = 100.0
-    let openTimeDescription = """
-                              화 09:00 - 21:00
-                              수 09:00 - 21:00
-                              목 09:00 - 21:00
-                              금 정기휴무 (매주 금요일)
-                              토 09:00 - 21:00
-                              일 09:00 - 21:00
-                              """
-    var runningTimeDetailInfo = ""
     var needToPresentRunningTimeDetailInfo = false
     var runningTimeDetailInfoArrowImageAsset: CofficeImages {
       return needToPresentRunningTimeDetailInfo
@@ -254,6 +243,14 @@ struct CafeDetail: ReducerProtocol {
 
       case .placeResponse(let cafe):
         state.cafe = cafe
+        state.subPrimaryInfoViewStates = [
+          .init(type: .outletState(cafe.electricOutletLevel)),
+          .init(type: .spaceSize(cafe.capacityLevel)),
+          .init(type: .groupSeat(cafe.hasCommunalTable))
+        ]
+        state.subSecondaryInfoViewStates = CafeDetail.State.SubSecondaryInfoType.allCases
+          .map { CafeDetail.State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
+
         return .none
 
       case .subMenuTapped(let menuType):
@@ -309,12 +306,6 @@ struct CafeDetail: ReducerProtocol {
 
       case .toggleToPresentTextForTest:
         state.needToPresentRunningTimeDetailInfo.toggle()
-
-        if state.needToPresentRunningTimeDetailInfo {
-          state.runningTimeDetailInfo = state.openTimeDescription
-        } else {
-          state.runningTimeDetailInfo = ""
-        }
         return .none
 
       case .infoGuideButtonTapped(let guideType):
@@ -469,7 +460,7 @@ extension CafeDetail.State {
   }
 
   var todayRunningTimeDescription: String {
-    cafe?.openingInformation?.formattedString ?? "-"
+    cafe?.openingInformation?.quickFormattedString ?? "-"
   }
 
   var bookmarkButtonImage: CofficeImages {
@@ -510,10 +501,10 @@ extension CafeDetail.State {
     case review
   }
 
-  enum SubPrimaryInfoType: CaseIterable {
-    case outletState
-    case spaceSize
-    case groupSeat
+  enum SubPrimaryInfoType: Hashable {
+    case outletState(ElectricOutletLevel)
+    case spaceSize(CapacityLevel)
+    case groupSeat(CafeGroupSeatLevel)
   }
 
   enum SubSecondaryInfoType: CaseIterable {
@@ -558,12 +549,12 @@ extension CafeDetail.State {
       description = "-"
 
       switch type {
-      case .outletState:
-        description = "넉넉"
-      case .spaceSize:
-        description = "대형"
-      case .groupSeat:
-        description = "있음"
+      case .outletState(let outletLevel):
+        description = outletLevel.informationText
+      case .spaceSize(let capacityLevel):
+        description = capacityLevel.informationText
+      case .groupSeat(let groupSeatLevel):
+        description = groupSeatLevel.informationText
       }
     }
 
@@ -577,9 +568,9 @@ extension CafeDetail.State {
 
     var iconName: String {
       switch type {
-      case .outletState: return "power"
-      case .spaceSize: return "house"
-      case .groupSeat: return "person"
+      case .outletState(let outletLevel): return outletLevel.iconName
+      case .spaceSize(let capacityLevel): return capacityLevel.iconName
+      case .groupSeat(let groupSeatLevel): return groupSeatLevel.iconName
       }
     }
 
@@ -598,7 +589,7 @@ extension CafeDetail.State {
     var description = "-"
     var congestionLevel: CongestionLevel
 
-    init(type: SubSecondaryInfoType) {
+    init(cafe: Cafe, type: SubSecondaryInfoType) {
       self.type = type
 
       congestionLevel = .high
@@ -606,15 +597,15 @@ extension CafeDetail.State {
 
       switch type {
       case .food:
-        description = "디저트 / 식사가능"
+        description = cafe.foodTypes?.map { $0.text }.joined(separator: "/") ?? "-"
       case .toilet:
-        description = "실내 / 남녀개별"
+        description = "-" // FIXME: 서버에서 안내려오는중 (화장실 정보)
       case .beverage:
-        description = "디카페인 / 두유"
+        description = cafe.drinkTypes?.map { $0.text }.joined(separator: "/") ?? "-"
       case .price:
-        description = "아메리카노 4000원~"
+        description = "-" // FIXME: 서버에서 안내려오는중 (가격 정보)
       case .congestion:
-        description = "평일 오후"
+        description = "-" // FIXME: 서버에서 요일별로 내려오는중인데 어떤 정보를 어떻게 띄워줘야할지 정리 필요
       }
     }
 
@@ -625,14 +616,6 @@ extension CafeDetail.State {
       case .beverage: return "음료"
       case .price: return "가격대"
       case .congestion: return "혼잡도"
-      }
-    }
-
-    var congestionDescription: String {
-      switch congestionLevel {
-      case .low: return "여유"
-      case .middle: return "보통"
-      case .high: return "혼잡"
       }
     }
   }

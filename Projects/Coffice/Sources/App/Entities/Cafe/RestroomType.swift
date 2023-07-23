@@ -1,0 +1,29 @@
+//
+//  RestroomType.swift
+//  coffice
+//
+//  Created by 천수현 on 2023/07/22.
+//  Copyright © 2023 kr.co.yapp. All rights reserved.
+//
+
+import Foundation
+
+enum RestroomType: Hashable {
+  case indoors
+  case genderSeperated
+
+  static func type(of restroomType: String) -> RestroomType? {
+    switch restroomType {
+    case "INDOORS": return .indoors
+    case "GENDER_SEPARATED": return .genderSeperated
+    default: return nil
+    }
+  }
+
+  var dtoName: String {
+    switch self {
+    case .indoors: return "INDOORS"
+    case .genderSeperated: return "GENDER_SEPARATED"
+    }
+  }
+}
