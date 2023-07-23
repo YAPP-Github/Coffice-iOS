@@ -95,7 +95,7 @@ extension NaverMapView {
     var markers = [MapMarker]()
     for cafe in cafeList {
       guard viewStore.markers
-        .contains(where: { $0.cafe.latitude == cafe.latitude && $0.cafe.longitude == cafe.longitude })
+        .contains(where: { $0.cafe.placeId == cafe.placeId })
         .isFalse
       else { continue }
       let marker = MapMarker(
