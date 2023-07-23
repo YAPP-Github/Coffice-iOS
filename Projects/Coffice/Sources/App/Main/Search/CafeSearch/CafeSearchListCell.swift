@@ -14,7 +14,7 @@ import SwiftUI
 struct CafeSearchListCell: View {
   let store: StoreOf<CafeSearchListCore>
   let cafe: Cafe
-  
+
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
@@ -58,7 +58,7 @@ struct CafeSearchListCell: View {
             if let imageUrls = cafe.imageUrls, imageUrls.isNotEmpty {
               ForEach(imageUrls, id: \.self) { imageUrl in
                 KFImage.url(URL(string: imageUrl))
-                  .placeholder{ CofficeAsset.Asset.cafePlaceholder.swiftUIImage }
+                  .placeholder { CofficeAsset.Asset.cafePlaceholder.swiftUIImage }
                   .resizable()
                   .frame(width: 124, height: 112)
                   .scaledToFit()
