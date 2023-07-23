@@ -151,7 +151,7 @@ struct CafeMapCore: ReducerProtocol {
         return .concatenate(
           EffectTask(value: .naverMapAction(.updatePinnedCafes(cafes: cafeResponse.cafes))),
           EffectTask(value: .updateDisplayType(.searchResultView))
-          )
+        )
 
       case .cafeSearchAction(.delegate(.dismiss)):
         switch state.cafeSearchState.previousViewType {
