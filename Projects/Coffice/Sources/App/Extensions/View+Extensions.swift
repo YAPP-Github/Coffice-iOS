@@ -17,6 +17,10 @@ extension View {
     modifier(RoundedCornerViewModifier(radius: radius, corners: corners))
   }
 
+  func hiddenWithOpacity(isHidden: Bool) -> some View {
+    modifier(HiddenWithOpacityViewModifier(isHidden: isHidden))
+  }
+
   func customNavigationBar<C, L, R>(
     centerView: @escaping (() -> C),
     leftView: @escaping (() -> L),
