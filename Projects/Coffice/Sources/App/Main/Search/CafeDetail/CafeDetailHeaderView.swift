@@ -78,24 +78,26 @@ struct CafeDetailHeaderView: View {
 
   var imagePageView: some View {
     WithViewStore(store) { viewStore in
-      TabView {
+      Group {
         if let imageUrls = viewStore.cafe?.imageUrls,
            imageUrls.isNotEmpty {
-          ForEach(imageUrls, id: \.self) { imageUrl in
-            KFImage.url(URL(string: imageUrl))
-              .resizable()
-              .scaledToFill()
+          TabView {
+            ForEach(imageUrls, id: \.self) { imageUrl in
+              KFImage.url(URL(string: imageUrl))
+                .resizable()
+                .scaledToFill()
+            }
           }
+          .tabViewStyle(PageTabViewStyle())
         } else {
-          ForEach(viewStore.cafeTestImageAssets, id: \.self) { imageAsset in
-            imageAsset.swiftUIImage
-              .resizable()
-              .scaledToFill()
-          }
+          LinearGradient(
+            gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+            startPoint: .top,
+            endPoint: .bottom
+          )
         }
       }
       .frame(height: viewStore.imagePageViewHeight)
-      .tabViewStyle(PageTabViewStyle())
     }
   }
 }
