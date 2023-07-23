@@ -1,5 +1,5 @@
 //
-//  HiddenViewModifier.swift
+//  HiddenWithOpacityViewModifier.swift
 //  coffice
 //
 //  Created by Min Min on 2023/07/23.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct HiddenViewModifier: ViewModifier {
+struct HiddenWithOpacityViewModifier: ViewModifier {
   private let isHidden: Bool
 
   init(isHidden: Bool) {

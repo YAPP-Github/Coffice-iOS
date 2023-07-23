@@ -17,8 +17,8 @@ extension View {
     modifier(RoundedCornerViewModifier(radius: radius, corners: corners))
   }
 
-  func hidden(_ isHidden: Bool) -> some View {
-    modifier(HiddenViewModifier(isHidden: isHidden))
+  func hiddenWithOpacity(isHidden: Bool) -> some View {
+    modifier(HiddenWithOpacityViewModifier(isHidden: isHidden))
   }
 
   func customNavigationBar<C, L, R>(
