@@ -194,6 +194,30 @@ struct CafeDetailView: View {
             .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
         }
       )
+      .sheet(
+        item: viewStore.binding(\.$webViewState),
+        content: { viewState in
+          VStack(spacing: 0) {
+            CommonWebView(
+              store: store.scope(
+                state: { _ in viewState },
+                action: CafeDetail.Action.commonWebReducerAction
+              )
+            )
+          }
+          .customNavigationBar(
+            centerView: { EmptyView() },
+            leftView: { EmptyView() },
+            rightView: {
+              Button {
+                viewStore.send(.dismissWebView)
+              } label: {
+                CofficeAsset.Asset.close40px.swiftUIImage
+              }
+            }
+          )
+        }
+      )
     }
   }
 }
