@@ -98,7 +98,8 @@ extension CafeSearchView {
 
   var searchResultListView: some View {
     WithViewStore(store) { viewStore in
-        ScrollView {
+      ScrollView {
+        VStack(spacing: 0) {
           VStack(spacing: 0) {
             ForEach(viewStore.waypoints, id: \.self) { waypoint in
               WaypointCellView(
@@ -108,17 +109,22 @@ extension CafeSearchView {
               .contentShape(Rectangle())
               .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
             }
-            ForEach(viewStore.cafes, id: \.self) { place in
-              PlaceCellView(
-                place: place,
-                placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
-              )
-              .contentShape(Rectangle())
-              .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
-            }
           }
-          .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+          .background(alignment: .bottom) {
+            Divider()
+              .frame(minHeight: 2)
+              .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
+          }
+          ForEach(viewStore.cafes, id: \.self) { place in
+            PlaceCellView(
+              place: place,
+              placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
+            )
+            .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
+          }
         }
+        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+      }
     }
   }
 
