@@ -105,6 +105,7 @@ extension CafeSearchView {
                 waypoint: waypoint,
                 waypointName: waypoint.name.changeMatchTextColor(matchText: viewStore.searchText)
               )
+              .contentShape(Rectangle())
               .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
             }
             ForEach(viewStore.cafes, id: \.self) { place in
@@ -112,6 +113,7 @@ extension CafeSearchView {
                 place: place,
                 placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
               )
+              .contentShape(Rectangle())
               .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
             }
           }
@@ -160,6 +162,7 @@ extension CafeSearchView {
           VStack(spacing: 0) {
             ForEach(viewStore.recentSearchWordList, id: \.searchWordId) { searchWord in
               listCell(searchWord.text, searchWord.searchWordId)
+                .contentShape(Rectangle())
                 .onTapGesture { viewStore.send(.recentSearchWordCellTapped(recentWord: searchWord.text)) }
             }
           }
