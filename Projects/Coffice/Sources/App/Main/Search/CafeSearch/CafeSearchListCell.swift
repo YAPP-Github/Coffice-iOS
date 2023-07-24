@@ -77,12 +77,9 @@ struct CafeSearchListCell: View {
         }
         .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
         HStack(spacing: 11) {
-          Text(cafe.electricOutletLevel.text)
-            .cafeTagTextModifier()
-          Text(cafe.capacityLevel.text)
-            .cafeTagTextModifier()
-          Text(cafe.hasCommunalTable.text)
-            .cafeTagTextModifier()
+          CafeTagTextView(text: cafe.electricOutletLevel.text)
+          CafeTagTextView(text: cafe.capacityLevel.text)
+          CafeTagTextView(text: cafe.hasCommunalTable.text)
         }
       }
     }
