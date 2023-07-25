@@ -6,12 +6,12 @@
       "scale" : "1x"
     },
     {
-      "filename" : "outlet_several@2x-44px.png",
+      "filename" : "outlet_several-44px@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "outlet_several@3x-44px.png",
+      "filename" : "outlet_several-44px@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
