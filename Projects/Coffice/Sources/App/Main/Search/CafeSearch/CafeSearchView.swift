@@ -21,9 +21,10 @@ struct CafeSearchView: View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
         cafeSearchHeaderView
-        Divider()
-          .frame(minHeight: 2)
-          .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
+          .background(alignment: .bottom) {
+            CofficeAsset.Colors.grayScale2.swiftUIColor
+              .frame(height: 2)
+          }
         cafeSearchBodyView
       }
       .onAppear {
@@ -111,9 +112,8 @@ extension CafeSearchView {
             }
           }
           .background(alignment: .bottom) {
-            Divider()
-              .frame(minHeight: 2)
-              .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
+            CofficeAsset.Colors.grayScale2.swiftUIColor
+              .frame(height: 2)
           }
           ForEach(viewStore.cafes, id: \.self) { place in
             PlaceCellView(
