@@ -102,7 +102,7 @@ extension CafeSearchView {
       ScrollView {
         VStack(spacing: 0) {
           VStack(spacing: 0) {
-            ForEach(viewStore.waypoints, id: \.self) { waypoint in
+            ForEach(viewStore.waypoints) { waypoint in
               WaypointCellView(
                 waypoint: waypoint,
                 waypointName: waypoint.name.changeMatchTextColor(matchText: viewStore.searchText)
@@ -115,7 +115,7 @@ extension CafeSearchView {
             CofficeAsset.Colors.grayScale2.swiftUIColor
               .frame(height: 2)
           }
-          ForEach(viewStore.cafes, id: \.self) { place in
+          ForEach(viewStore.cafes) { place in
             PlaceCellView(
               place: place,
               placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
