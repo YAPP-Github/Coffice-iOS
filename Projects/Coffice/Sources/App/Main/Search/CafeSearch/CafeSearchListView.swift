@@ -80,6 +80,8 @@ extension CafeSearchListView {
         .padding(.trailing, 12)
 
         Text(viewStore.title)
+          .applyCofficeFont(font: .subtitle1Medium)
+          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
           .frame(maxWidth: .infinity, alignment: .leading)
           .contentShape(Rectangle())
           .onTapGesture { viewStore.send(.titleLabelTapped) }

@@ -21,9 +21,10 @@ struct CafeSearchView: View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
         cafeSearchHeaderView
-        Divider()
-          .frame(minHeight: 2)
-          .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
+          .background(alignment: .bottom) {
+            CofficeAsset.Colors.grayScale2.swiftUIColor
+              .frame(height: 2)
+          }
         cafeSearchBodyView
       }
       .onAppear {
@@ -98,9 +99,10 @@ extension CafeSearchView {
 
   var searchResultListView: some View {
     WithViewStore(store) { viewStore in
-        ScrollView {
+      ScrollView {
+        VStack(spacing: 0) {
           VStack(spacing: 0) {
-            ForEach(viewStore.waypoints, id: \.self) { waypoint in
+            ForEach(viewStore.waypoints) { waypoint in
               WaypointCellView(
                 waypoint: waypoint,
                 waypointName: waypoint.name.changeMatchTextColor(matchText: viewStore.searchText)
@@ -108,17 +110,21 @@ extension CafeSearchView {
               .contentShape(Rectangle())
               .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
             }
-            ForEach(viewStore.cafes, id: \.self) { place in
-              PlaceCellView(
-                place: place,
-                placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
-              )
-              .contentShape(Rectangle())
-              .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
-            }
           }
-          .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+          .background(alignment: .bottom) {
+            CofficeAsset.Colors.grayScale2.swiftUIColor
+              .frame(height: 2)
+          }
+          ForEach(viewStore.cafes) { place in
+            PlaceCellView(
+              place: place,
+              placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
+            )
+            .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
+          }
         }
+        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+      }
     }
   }
 
