@@ -47,7 +47,7 @@ enum CapacityLevel: Hashable {
     case .high: return "대형"
     case .medium: return "중형"
     case .low: return "소형"
-    default: return "정보 없음"
+    default: return "-"
     }
   }
 
