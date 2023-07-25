@@ -46,12 +46,11 @@ extension CafeDetailSubInfoView {
 
         HStack {
           ForEach(viewStore.state) { viewState in
-            VStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .center, spacing: 8) {
               HStack(alignment: .top, spacing: 0) {
                 Image(viewState.iconName)
                   .resizable()
                   .frame(width: 44, height: 44)
-                  .padding(.vertical, 6)
                 Button {
                   viewStore.send(
                     .infoGuideButtonTapped(
