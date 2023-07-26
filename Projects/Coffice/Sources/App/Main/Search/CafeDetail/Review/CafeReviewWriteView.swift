@@ -36,8 +36,7 @@ struct CafeReviewWriteView: View {
         .padding(.bottom, 16)
 
         HStack {
-          CofficeAsset.Asset.cafeImage.swiftUIImage
-            .resizable()
+          imagePlaceholderView
             .frame(width: 48, height: 48)
             .cornerRadius(4, corners: .allCorners)
 
@@ -114,7 +113,7 @@ struct CafeReviewWriteView: View {
 }
 
 extension CafeReviewWriteView: KeyboardPresentationReadable {
-  var reviewFormScrollView: some View {
+  private var reviewFormScrollView: some View {
     WithViewStore(store) { viewStore in
       ScrollViewReader { proxy in
         ScrollView(.vertical, showsIndicators: true) {
@@ -141,7 +140,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     }
   }
 
-  var reviewOptionMenuView: some View {
+  private var reviewOptionMenuView: some View {
     WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         ForEach(viewStore.optionButtonStates) { buttonState in
@@ -156,7 +155,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     }
   }
 
-  var reviewTextView: some View {
+  private var reviewTextView: some View {
     WithViewStore(store) { viewStore in
       ZStack(alignment: .topLeading) {
         VStack(alignment: .leading, spacing: 0) {
@@ -197,7 +196,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     }
   }
 
-  var textDescriptionView: some View {
+  private var textDescriptionView: some View {
     WithViewStore(store) { viewStore in
       HStack(alignment: .bottom, spacing: 0) {
         Text(viewStore.currentTextLengthDescription)
@@ -207,6 +206,19 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
           .foregroundColor(CofficeAsset.Colors.grayScale5.swiftUIColor)
           .applyCofficeFont(font: .body3Medium)
       }
+    }
+  }
+
+  private var imagePlaceholderView: some View {
+    LinearGradient(
+      gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+      startPoint: .top,
+      endPoint: .bottom
+    )
+    .background(alignment: .center) {
+      CofficeAsset.Asset.icPlaceholder.swiftUIImage
+        .resizable()
+        .frame(width: 24, height: 24)
     }
   }
 }
