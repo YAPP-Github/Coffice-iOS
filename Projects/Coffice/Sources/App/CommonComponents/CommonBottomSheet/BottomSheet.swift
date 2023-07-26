@@ -22,6 +22,7 @@ struct BottomSheetContent: Equatable {
       .closeOnTapOutside(true)
       .closeOnTap(false)
       .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+      .animation(.easeOut(duration: 0.2))
   }
   static let mock = BottomSheetContent(
     title: "제목",
