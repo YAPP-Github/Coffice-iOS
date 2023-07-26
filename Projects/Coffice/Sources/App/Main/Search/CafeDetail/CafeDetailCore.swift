@@ -26,11 +26,6 @@ struct CafeDetail: ReducerProtocol {
     var selectedUserReviewCellViewState: UserReviewCellViewState?
     var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
     var cafe: Cafe?
-    var cafeTestImageAssets: [CofficeImages] = [
-      CofficeAsset.Asset.cafeImage,
-      CofficeAsset.Asset.userProfile40px,
-      CofficeAsset.Asset.errorWarningFill40px
-    ]
 
     var user: User?
     let subMenuTypes = SubMenuType.allCases

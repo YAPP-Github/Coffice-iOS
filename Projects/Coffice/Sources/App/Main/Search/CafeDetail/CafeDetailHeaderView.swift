@@ -106,12 +106,10 @@ struct CafeDetailHeaderView: View {
       startPoint: .top,
       endPoint: .bottom
     )
-    .background(
-      CofficeAsset.Asset.cafePlaceholder.swiftUIImage
-        .resizable()
-        .scaledToFill()
+    .background(alignment: .center) {
+      CofficeAsset.Asset.icPlaceholder.swiftUIImage
         .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
-    )
+    }
   }
 }
 
