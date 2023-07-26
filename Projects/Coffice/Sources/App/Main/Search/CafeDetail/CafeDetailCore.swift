@@ -296,7 +296,9 @@ struct CafeDetail: ReducerProtocol {
             .init(
               reviewType: .create,
               placeId: state.cafeId,
-              imageUrlString: state.cafe?.imageUrls?.first
+              imageUrlString: state.cafe?.imageUrls?.first,
+              cafeName: state.cafe?.name,
+              cafeAddress: state.cafe?.address?.address
             )
           )
         )
@@ -369,6 +371,8 @@ struct CafeDetail: ReducerProtocol {
                 placeId: state.cafeId,
                 imageUrlString: state.cafe?.imageUrls?.first,
                 reviewId: cellViewState.reviewId,
+                cafeName: state.cafe?.name,
+                cafeAddress: state.cafe?.address?.address,
                 outletOption: cellViewState.outletOption,
                 wifiOption: cellViewState.wifiOption,
                 noiseOption: cellViewState.noiseOption,

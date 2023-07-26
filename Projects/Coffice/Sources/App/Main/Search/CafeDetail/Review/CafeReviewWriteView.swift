@@ -53,7 +53,7 @@ struct CafeReviewWriteView: View {
           .cornerRadius(4, corners: .allCorners)
 
           VStack(spacing: 0) {
-            Text("훅스턴")
+            Text(viewStore.cafeName)
               .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
               .applyCofficeFont(font: .subtitleSemiBold)
               .frame(maxWidth: .infinity, alignment: .leading)
@@ -61,7 +61,7 @@ struct CafeReviewWriteView: View {
 
             Spacer()
 
-            Text("서울 서대문구 연희로 91 2층")
+            Text(viewStore.cafeAddress)
               .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
               .applyCofficeFont(font: .body1Medium)
               .frame(maxWidth: .infinity, alignment: .leading)
