@@ -26,11 +26,6 @@ struct CafeDetail: ReducerProtocol {
     var selectedUserReviewCellViewState: UserReviewCellViewState?
     var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
     var cafe: Cafe?
-    var cafeTestImageAssets: [CofficeImages] = [
-      CofficeAsset.Asset.cafeImage,
-      CofficeAsset.Asset.userProfile40px,
-      CofficeAsset.Asset.errorWarningFill40px
-    ]
 
     var user: User?
     let subMenuTypes = SubMenuType.allCases
@@ -40,9 +35,6 @@ struct CafeDetail: ReducerProtocol {
       .map(SubPrimaryInfoViewState.init)
     var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = []
     var userReviewCellViewStates: [UserReviewCellViewState] = []
-    var userReviewHeaderTitle: String {
-      return "리뷰 \(userReviewCellViewStates.count)"
-    }
 
     var selectedSubMenuType: SubMenuType = .detailInfo {
       didSet {
@@ -56,21 +48,10 @@ struct CafeDetail: ReducerProtocol {
     }
 
     var updatedDate: Date?
-    var updatedDateDescription: String {
-      guard let updatedDate else { return "-" }
-      let dateFormatter = DateFormatter()
-      dateFormatter.dateFormat = "M월 dd일 hh:mm 기준"
-      return dateFormatter.string(from: updatedDate)
-    }
 
     let imagePageViewHeight: CGFloat = 346.0
     let homeMenuViewHeight: CGFloat = 100.0
     var needToPresentRunningTimeDetailInfo = false
-    var runningTimeDetailInfoArrowImageAsset: CofficeImages {
-      return needToPresentRunningTimeDetailInfo
-      ? CofficeAsset.Asset.arrowDropUpLine24px
-      : CofficeAsset.Asset.arrowDropDownLine24px
-    }
 
     let userReviewEmptyDescription = """
                                      아직 리뷰가 없어요!
@@ -310,7 +291,17 @@ struct CafeDetail: ReducerProtocol {
         }
 
       case .reviewWriteButtonTapped:
-        return EffectTask(value: .presentCafeReviewWriteView(.init(reviewType: .create, placeId: state.cafeId)))
+        return EffectTask(
+          value: .presentCafeReviewWriteView(
+            .init(
+              reviewType: .create,
+              placeId: state.cafeId,
+              imageUrlString: state.cafe?.imageUrls?.first,
+              cafeName: state.cafe?.name,
+              cafeAddress: state.cafe?.address?.address
+            )
+          )
+        )
 
       case .presentCafeReviewWriteView(let viewState):
         state.cafeReviewWriteState = viewState
@@ -378,7 +369,10 @@ struct CafeDetail: ReducerProtocol {
               .init(
                 reviewType: .edit,
                 placeId: state.cafeId,
+                imageUrlString: state.cafe?.imageUrls?.first,
                 reviewId: cellViewState.reviewId,
+                cafeName: state.cafe?.name,
+                cafeAddress: state.cafe?.address?.address,
                 outletOption: cellViewState.outletOption,
                 wifiOption: cellViewState.wifiOption,
                 noiseOption: cellViewState.noiseOption,
@@ -482,6 +476,8 @@ struct CafeDetail: ReducerProtocol {
   }
 }
 
+// MARK: - Getter
+
 extension CafeDetail.State {
   var cafeName: String {
     cafe?.name ?? "-"
@@ -504,6 +500,23 @@ extension CafeDetail.State {
     return cafe?.isBookmarked ?? false
     ? CofficeAsset.Asset.bookmarkFill40px
     : CofficeAsset.Asset.bookmarkLine40px
+  }
+
+  var updatedDateDescription: String {
+    guard let updatedDate else { return "-" }
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "M월 dd일 hh:mm 기준"
+    return dateFormatter.string(from: updatedDate)
+  }
+
+  var userReviewHeaderTitle: String {
+    return "리뷰 \(userReviewCellViewStates.count)"
+  }
+
+  var runningTimeDetailInfoArrowImageAsset: CofficeImages {
+    return needToPresentRunningTimeDetailInfo
+    ? CofficeAsset.Asset.arrowDropUpLine24px
+    : CofficeAsset.Asset.arrowDropDownLine24px
   }
 }
 
