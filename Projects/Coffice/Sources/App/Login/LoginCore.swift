@@ -19,7 +19,7 @@ struct Login: ReducerProtocol {
     var selectedLoginType: OAuthLoginType?
 
     var isOnboarding: Bool {
-      UserDefaults.standard.bool(forKey: "alreadyLaunched").isFalse
+      return UserDefaults.standard.bool(forKey: "alreadyLaunched").isFalse
       && CoreNetwork.shared.token == nil
     }
 
@@ -32,6 +32,7 @@ struct Login: ReducerProtocol {
     case lookAroundButtonTapped
     case kakaoLoginButtonTapped
     case appleLoginButtonTapped(token: String)
+    case dismissButtonTapped
     case loginAppleAccount
     case loginKakaoAccount
     case loginCompleted

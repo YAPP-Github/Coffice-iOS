@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Kingfisher
 import SwiftUI
 
 struct SavedListView: View {
@@ -25,16 +26,12 @@ struct SavedListView: View {
         viewStore.send(.onAppear)
       }
       .customNavigationBar {
-        HStack(spacing: 4) {
-          Text(viewStore.title)
-            .applyCofficeFont(font: .header1)
-            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-          CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-            .frame(width: 36, height: 36)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.leading, 20)
-        .padding(.vertical, 14)
+        Text(viewStore.title)
+          .applyCofficeFont(font: .header1)
+          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.leading, 20)
+          .padding(.vertical, 12)
       }
     }
   }
@@ -53,13 +50,15 @@ struct SavedListView: View {
           ) {
             ForEach(viewStore.cafes, id: \.self) { cafe in
               VStack(spacing: 0) {
-                CofficeAsset.Asset.cafeImage.swiftUIImage
+                KFImage.url(URL(string: cafe.imageUrls?.first ?? ""))
+                  .onFailureImage(CofficeAsset.Asset.icPlaceholder.image)
                   .resizable()
                   .aspectRatio(contentMode: .fill)
                   .frame(
                     width: (proxy.size.width - 60) / 2,
                     height: (proxy.size.width - 60) / 2
                   )
+                  .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
                   .clipped()
                   .cornerRadius(5)
                   .overlay(alignment: .topTrailing) {

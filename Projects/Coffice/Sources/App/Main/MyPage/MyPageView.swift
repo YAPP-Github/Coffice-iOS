@@ -105,11 +105,22 @@ struct MyPageView: View {
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
         Spacer()
         Button {
-          viewStore.send(.editProfileButtonTapped(nickname: viewStore.user?.name ?? "기존닉네임"))
+          viewStore.send(
+            .delegate(
+              .editProfileButtonTapped(
+                nickname: viewStore.user?.name ?? "-",
+                loginType: viewStore.user?.loginTypes.first ?? .anonymous
+              )
+            )
+          )
         } label: {
           HStack(spacing: 0) {
-            Text("편집")
-              .applyCofficeFont(font: .button)
+            Text(
+              viewStore.user?.loginTypes.first == .anonymous
+              ? "SNS 로그인"
+              : "편집"
+            )
+            .applyCofficeFont(font: .button)
             CofficeAsset.Asset.arrowDropRightLine24px.swiftUIImage
               .renderingMode(.template)
               .frame(width: 24, height: 24)
