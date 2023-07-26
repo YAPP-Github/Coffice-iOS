@@ -39,6 +39,7 @@ struct MainCoordinator: ReducerProtocol {
     case myPage(MyPageCoordinator.Action)
     case tabBar(TabBar.Action)
     case dismissToastMessageView
+    case loginCompleted
     case onAppear
   }
 
@@ -68,6 +69,9 @@ struct MainCoordinator: ReducerProtocol {
       switch action {
       case .onAppear:
         return .none
+
+      case .loginCompleted:
+        return EffectTask(value: .tabBar(.selectTab(.search)))
 
       case .tabBar(.selectTab(let itemType)):
         debugPrint("selectedTab : \(itemType)")
