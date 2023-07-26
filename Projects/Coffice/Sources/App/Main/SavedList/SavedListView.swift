@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Kingfisher
 import SwiftUI
 
 struct SavedListView: View {
@@ -49,13 +50,15 @@ struct SavedListView: View {
           ) {
             ForEach(viewStore.cafes, id: \.self) { cafe in
               VStack(spacing: 0) {
-                CofficeAsset.Asset.cafeImage.swiftUIImage
+                KFImage.url(URL(string: cafe.imageUrls?.first ?? ""))
+                  .onFailureImage(CofficeAsset.Asset.icPlaceholder.image)
                   .resizable()
                   .aspectRatio(contentMode: .fill)
                   .frame(
                     width: (proxy.size.width - 60) / 2,
                     height: (proxy.size.width - 60) / 2
                   )
+                  .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
                   .clipped()
                   .cornerRadius(5)
                   .overlay(alignment: .topTrailing) {
