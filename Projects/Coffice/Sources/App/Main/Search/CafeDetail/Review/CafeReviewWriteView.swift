@@ -230,7 +230,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     .background(alignment: .center) {
       CofficeAsset.Asset.icPlaceholder.swiftUIImage
         .resizable()
-        .frame(width: 24, height: 24)
+        .frame(width: 20, height: 20)
     }
   }
 }
