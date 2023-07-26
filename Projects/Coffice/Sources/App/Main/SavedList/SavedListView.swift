@@ -25,16 +25,12 @@ struct SavedListView: View {
         viewStore.send(.onAppear)
       }
       .customNavigationBar {
-        HStack(spacing: 4) {
-          Text(viewStore.title)
-            .applyCofficeFont(font: .header1)
-            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-          CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-            .frame(width: 36, height: 36)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.leading, 20)
-        .padding(.vertical, 14)
+        Text(viewStore.title)
+          .applyCofficeFont(font: .header1)
+          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.leading, 20)
+          .padding(.vertical, 12)
       }
     }
   }
