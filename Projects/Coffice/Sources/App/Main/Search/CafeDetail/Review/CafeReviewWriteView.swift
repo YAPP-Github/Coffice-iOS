@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Kingfisher
 import SwiftUI
 
 struct CafeReviewWriteView: View {
@@ -36,9 +37,20 @@ struct CafeReviewWriteView: View {
         .padding(.bottom, 16)
 
         HStack {
-          imagePlaceholderView
-            .frame(width: 48, height: 48)
-            .cornerRadius(4, corners: .allCorners)
+          Group {
+            if let imageUrl = viewStore.imageUrl {
+              KFImage.url(imageUrl)
+                .placeholder {
+                  imagePlaceholderView
+                }
+                .resizable()
+                .scaledToFill()
+            } else {
+              imagePlaceholderView
+            }
+          }
+          .frame(width: 48, height: 48)
+          .cornerRadius(4, corners: .allCorners)
 
           VStack(spacing: 0) {
             Text("훅스턴")

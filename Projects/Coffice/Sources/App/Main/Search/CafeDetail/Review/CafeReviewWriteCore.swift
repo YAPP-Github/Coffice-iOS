@@ -29,6 +29,7 @@ struct CafeReviewWrite: ReducerProtocol {
     var optionButtonStates: [CafeReviewOptionButtons.State]
     var reviewType: ReviewType
     let placeId: Int
+    let imageUrl: URL?
     let reviewId: Int?
 
     var isSaveButtonEnabled = false
@@ -53,6 +54,7 @@ struct CafeReviewWrite: ReducerProtocol {
     init(
       reviewType: ReviewType,
       placeId: Int,
+      imageUrlString: String? = nil,
       reviewId: Int? = nil,
       outletOption: OutletStateOption? = nil,
       wifiOption: WifiStateOption? = nil,
@@ -61,6 +63,7 @@ struct CafeReviewWrite: ReducerProtocol {
     ) {
       self.reviewType = reviewType
       self.placeId = placeId
+      self.imageUrl = URL(string: imageUrlString ?? "")
       self.reviewId = reviewId
 
       switch reviewType {

@@ -305,7 +305,15 @@ struct CafeDetail: ReducerProtocol {
         }
 
       case .reviewWriteButtonTapped:
-        return EffectTask(value: .presentCafeReviewWriteView(.init(reviewType: .create, placeId: state.cafeId)))
+        return EffectTask(
+          value: .presentCafeReviewWriteView(
+            .init(
+              reviewType: .create,
+              placeId: state.cafeId,
+              imageUrlString: state.cafe?.imageUrls?.first
+            )
+          )
+        )
 
       case .presentCafeReviewWriteView(let viewState):
         state.cafeReviewWriteState = viewState
@@ -373,6 +381,7 @@ struct CafeDetail: ReducerProtocol {
               .init(
                 reviewType: .edit,
                 placeId: state.cafeId,
+                imageUrlString: state.cafe?.imageUrls?.first,
                 reviewId: cellViewState.reviewId,
                 outletOption: cellViewState.outletOption,
                 wifiOption: cellViewState.wifiOption,
