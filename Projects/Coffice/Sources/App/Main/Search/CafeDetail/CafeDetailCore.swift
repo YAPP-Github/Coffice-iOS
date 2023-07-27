@@ -19,16 +19,13 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var toastViewMessage: String?
     @BindingState var bubbleMessageViewState: BubbleMessage.State?
     @BindingState var webViewState: CommonWebReducer.State?
-
-    var bottomSheetType: BottomSheetType = .deleteConfirm
+    var headerViewState: CafeDetailHeaderReducer.State = .init()
 
     var cafeId: Int
-    var selectedUserReviewCellViewState: UserReviewCellViewState?
-    var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
     var cafe: Cafe?
-
     var user: User?
-    let subMenuTypes = SubMenuType.allCases
+
+    var selectedUserReviewCellViewState: UserReviewCellViewState?
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
       .map { SubMenusViewState.init(subMenuType: $0, isSelected: $0 == .detailInfo) }
     var subPrimaryInfoViewStates: [SubPrimaryInfoViewState] = []
@@ -36,6 +33,9 @@ struct CafeDetail: ReducerProtocol {
     var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = []
     var userReviewCellViewStates: [UserReviewCellViewState] = []
 
+    var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
+    var bottomSheetType: BottomSheetType = .deleteConfirm
+    let subMenuTypes = SubMenuType.allCases
     var selectedSubMenuType: SubMenuType = .detailInfo {
       didSet {
         subMenuViewStates = SubMenuType.allCases.map { subMenuType in
@@ -49,7 +49,6 @@ struct CafeDetail: ReducerProtocol {
 
     var updatedDate: Date?
 
-    let imagePageViewHeight: CGFloat = 346.0
     let homeMenuViewHeight: CGFloat = 100.0
     var needToPresentRunningTimeDetailInfo = false
 
@@ -61,7 +60,6 @@ struct CafeDetail: ReducerProtocol {
     let reviewEditFinishedMessage = "리뷰가 수정되었습니다."
     let reviewDeleteFinishedMessage = "리뷰가 삭제되었습니다."
     let reviewReportFinishedMessage = "신고가 접수되었습니다."
-    let bookmarkedMessage = "장소가 저장되었습니다."
   }
 
   enum Action: Equatable, BindableAction {
@@ -71,7 +69,6 @@ struct CafeDetail: ReducerProtocol {
     case popView
     case subMenuTapped(State.SubMenuType)
     case reviewWriteButtonTapped
-    case bookmarkButtonTapped
     case toggleToPresentTextForTest
     case infoGuideButtonTapped(CafeFilter.GuideType)
     case presentBubbleMessageView(BubbleMessage.State)
@@ -88,9 +85,6 @@ struct CafeDetail: ReducerProtocol {
     case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case fetchUserData
     case fetchUserDataResponse(TaskResult<User>)
-    case deleteMyPlace
-    case addMyPlace
-    case addMyPlaceFinished
     case deleteReview
     case deleteReviewResponse(TaskResult<HTTPURLResponse>)
     case updateReviewCellViewStates(reviews: [ReviewResponse])
@@ -106,6 +100,9 @@ struct CafeDetail: ReducerProtocol {
     case resetSelectedReviewModifySheetActionType
     case updateLastModifiedDate
 
+    // MARK: Cafe Header
+    case cafeHeaderAction(CafeDetailHeaderReducer.Action)
+
     // MARK: Web View
     case commonWebReducerAction(CommonWebReducer.Action)
     case cafeHomepageUrlTapped
@@ -119,6 +116,14 @@ struct CafeDetail: ReducerProtocol {
 
   var body: some ReducerProtocolOf<CafeDetail> {
     BindingReducer()
+
+    Scope(
+      state: \.headerViewState,
+      action: /Action.cafeHeaderAction,
+      child: {
+        CafeDetailHeaderReducer()
+      }
+    )
 
     Reduce { state, action in
       switch action {
@@ -248,47 +253,14 @@ struct CafeDetail: ReducerProtocol {
         state.subSecondaryInfoViewStates = CafeDetail.State.SubSecondaryInfoType.allCases
           .map { CafeDetail.State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
 
-        return EffectTask(value: .updateLastModifiedDate)
+        return .merge(
+          state.headerViewState.update(cafe: cafe).map(Action.cafeHeaderAction),
+          EffectTask(value: .updateLastModifiedDate)
+        )
 
       case .subMenuTapped(let menuType):
         state.selectedSubMenuType = menuType
         return .none
-
-      case .bookmarkButtonTapped:
-        state.cafe?.isBookmarked.toggle()
-        let isBookmarked = state.cafe?.isBookmarked ?? false
-
-        if isBookmarked {
-          return EffectTask(value: .addMyPlace)
-        } else {
-          return EffectTask(value: .deleteMyPlace)
-        }
-
-      case .addMyPlace:
-        let placeId = state.cafeId
-        return .run { send in
-          try await bookmarkAPIClient.addMyPlace(placeId: placeId)
-          await send(.addMyPlaceFinished)
-        } catch: { error, send in
-          debugPrint(error)
-        }
-
-      case .addMyPlaceFinished:
-        let bookmarkedMessage = state.bookmarkedMessage
-
-        return .merge(
-          EffectTask(value: .fetchPlace),
-          EffectTask(value: .presentToastView(message: bookmarkedMessage))
-        )
-
-      case .deleteMyPlace:
-        let placeId = state.cafeId
-        return .run { send in
-          try await bookmarkAPIClient.deleteMyPlace(placeId: placeId)
-          await send(.fetchPlace)
-        } catch: { error, send in
-          debugPrint(error)
-        }
 
       case .reviewWriteButtonTapped:
         return EffectTask(
@@ -297,7 +269,7 @@ struct CafeDetail: ReducerProtocol {
               reviewType: .create,
               placeId: state.cafeId,
               imageUrlString: state.cafe?.imageUrls?.first,
-              cafeName: state.cafe?.name,
+              cafeName: state.cafeName,
               cafeAddress: state.cafe?.address?.address
             )
           )
@@ -371,7 +343,7 @@ struct CafeDetail: ReducerProtocol {
                 placeId: state.cafeId,
                 imageUrlString: state.cafe?.imageUrls?.first,
                 reviewId: cellViewState.reviewId,
-                cafeName: state.cafe?.name,
+                cafeName: state.cafeName,
                 cafeAddress: state.cafe?.address?.address,
                 outletOption: cellViewState.outletOption,
                 wifiOption: cellViewState.wifiOption,
@@ -457,6 +429,18 @@ struct CafeDetail: ReducerProtocol {
         state.webViewState = nil
         return .none
 
+        // MARK: Cafe Detail Header
+      case .cafeHeaderAction(.delegate(let action)):
+        switch action {
+        case .presentToastView(message: let message):
+          return EffectTask(value: .presentToastView(message: message))
+        case .fetchPlace:
+          return EffectTask(value: .fetchPlace)
+        case .updateBookmarkedState(let isBookmarked):
+          state.cafe?.isBookmarked = isBookmarked
+          return .none
+        }
+
       default:
         return .none
       }
@@ -494,12 +478,6 @@ extension CafeDetail.State {
 
   var todayRunningTimeDescription: String {
     cafe?.openingInformation?.quickFormattedString ?? "-"
-  }
-
-  var bookmarkButtonImage: CofficeImages {
-    return cafe?.isBookmarked ?? false
-    ? CofficeAsset.Asset.bookmarkFill40px
-    : CofficeAsset.Asset.bookmarkLine40px
   }
 
   var updatedDateDescription: String {

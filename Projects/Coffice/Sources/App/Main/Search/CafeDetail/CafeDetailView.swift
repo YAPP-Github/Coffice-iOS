@@ -25,7 +25,12 @@ struct CafeDetailView: View {
       VStack(spacing: 0) {
         ScrollView(.vertical) {
           VStack(spacing: 0) {
-            CafeDetailHeaderView(store: store)
+            CafeDetailHeaderView(
+              store: store.scope(
+                state: \.headerViewState,
+                action: CafeDetail.Action.cafeHeaderAction
+              )
+            )
             CafeDetailSubInfoView(store: store)
             CafeDetailMenuView(store: store)
           }
