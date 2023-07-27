@@ -31,7 +31,12 @@ struct CafeDetailView: View {
                 action: CafeDetail.Action.cafeDetailHeaderAction
               )
             )
-            CafeDetailSubInfoView(store: store)
+            CafeDetailSubInfoView(
+              store: store.scope(
+                state: \.subInfoViewState,
+                action: CafeDetail.Action.cafeDetailSubInfoAction
+              )
+            )
             CafeDetailMenuView(store: store)
           }
         }
@@ -180,24 +185,6 @@ struct CafeDetailView: View {
           $0
             .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: false))
             .autohideIn(2)
-        }
-      )
-      .popup(
-        item: viewStore.binding(\.$bubbleMessageViewState),
-        itemView: { viewState in
-          BubbleMessageView(store: store.scope(
-            state: { _ in viewState },
-            action: CafeDetail.Action.bubbleMessageAction)
-          )
-        },
-        customize: { popup in
-          popup
-            .type(.default)
-            .position(.center)
-            .animation(.easeIn(duration: 0))
-            .isOpaque(true)
-            .closeOnTapOutside(true)
-            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
         }
       )
       .sheet(

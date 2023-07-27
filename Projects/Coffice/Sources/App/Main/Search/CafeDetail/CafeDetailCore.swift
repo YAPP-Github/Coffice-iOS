@@ -17,9 +17,9 @@ struct CafeDetail: ReducerProtocol {
     @BindingState var isReviewDeleteConfirmSheetPresented = false
     @BindingState var deleteConfirmBottomSheetState: BottomSheetReducer.State?
     @BindingState var toastViewMessage: String?
-    @BindingState var bubbleMessageViewState: BubbleMessage.State?
     @BindingState var webViewState: CommonWebReducer.State?
     var headerViewState: CafeDetailHeaderReducer.State = .init()
+    var subInfoViewState: CafeDetailSubInfoReducer.State = .init()
 
     var cafeId: Int
     var cafe: Cafe?
@@ -28,9 +28,6 @@ struct CafeDetail: ReducerProtocol {
     var selectedUserReviewCellViewState: UserReviewCellViewState?
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
       .map { SubMenusViewState.init(subMenuType: $0, isSelected: $0 == .detailInfo) }
-    var subPrimaryInfoViewStates: [SubPrimaryInfoViewState] = []
-      .map(SubPrimaryInfoViewState.init)
-    var subSecondaryInfoViewStates: [SubSecondaryInfoViewState] = []
     var userReviewCellViewStates: [UserReviewCellViewState] = []
 
     var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
@@ -46,8 +43,6 @@ struct CafeDetail: ReducerProtocol {
         }
       }
     }
-
-    var updatedDate: Date?
 
     let homeMenuViewHeight: CGFloat = 100.0
     var needToPresentRunningTimeDetailInfo = false
@@ -70,10 +65,7 @@ struct CafeDetail: ReducerProtocol {
     case subMenuTapped(State.SubMenuType)
     case reviewWriteButtonTapped
     case toggleToPresentTextForTest
-    case infoGuideButtonTapped(CafeFilter.GuideType)
-    case presentBubbleMessageView(BubbleMessage.State)
     case presentCafeReviewWriteView(CafeReviewWrite.State)
-    case bubbleMessageAction(BubbleMessage.Action)
     case presentToastView(message: String)
     case cafeReviewWrite(action: CafeReviewWrite.Action)
     case bottomSheet(action: BottomSheetReducer.Action)
@@ -100,8 +92,11 @@ struct CafeDetail: ReducerProtocol {
     case resetSelectedReviewModifySheetActionType
     case updateLastModifiedDate
 
-    // MARK: Cafe Header
+    // MARK: Cafe Detail Header
     case cafeDetailHeaderAction(CafeDetailHeaderReducer.Action)
+
+    // MARK: Cafe Detail Sub Info
+    case cafeDetailSubInfoAction(CafeDetailSubInfoReducer.Action)
 
     // MARK: Web View
     case commonWebReducerAction(CommonWebReducer.Action)
@@ -122,6 +117,14 @@ struct CafeDetail: ReducerProtocol {
       action: /Action.cafeDetailHeaderAction,
       child: {
         CafeDetailHeaderReducer()
+      }
+    )
+
+    Scope(
+      state: \.subInfoViewState,
+      action: /Action.cafeDetailSubInfoAction,
+      child: {
+        CafeDetailSubInfoReducer()
       }
     )
 
@@ -245,16 +248,9 @@ struct CafeDetail: ReducerProtocol {
 
       case .placeResponse(let cafe):
         state.cafe = cafe
-        state.subPrimaryInfoViewStates = [
-          .init(type: .outletState(cafe.electricOutletLevel)),
-          .init(type: .spaceSize(cafe.capacityLevel)),
-          .init(type: .groupSeat(cafe.hasCommunalTable))
-        ]
-        state.subSecondaryInfoViewStates = CafeDetail.State.SubSecondaryInfoType.allCases
-          .map { CafeDetail.State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
-
         return .merge(
           state.headerViewState.update(cafe: cafe).map(Action.cafeDetailHeaderAction),
+          state.subInfoViewState.update(cafe: cafe).map(Action.cafeDetailSubInfoAction),
           EffectTask(value: .updateLastModifiedDate)
         )
 
@@ -285,17 +281,6 @@ struct CafeDetail: ReducerProtocol {
 
       case .toggleToPresentTextForTest:
         state.needToPresentRunningTimeDetailInfo.toggle()
-        return .none
-
-      case .infoGuideButtonTapped(let guideType):
-        return EffectTask(
-          value: .presentBubbleMessageView(
-            .init(guideType: guideType)
-          )
-        )
-
-      case .presentBubbleMessageView(let viewState):
-        state.bubbleMessageViewState = viewState
         return .none
 
       case .cafeReviewWrite(let action):
@@ -414,10 +399,6 @@ struct CafeDetail: ReducerProtocol {
         state.selectedReviewSheetActionType = .none
         return .none
 
-      case .updateLastModifiedDate:
-        state.updatedDate = Date()
-        return .none
-
       case .cafeHomepageUrlTapped:
         guard let webViewUrlString = state.cafe?.homepageUrl
         else { return .none }
@@ -480,13 +461,6 @@ extension CafeDetail.State {
     cafe?.openingInformation?.quickFormattedString ?? "-"
   }
 
-  var updatedDateDescription: String {
-    guard let updatedDate else { return "-" }
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "M월 dd일 hh:mm 기준"
-    return dateFormatter.string(from: updatedDate)
-  }
-
   var userReviewHeaderTitle: String {
     return "리뷰 \(userReviewCellViewStates.count)"
   }
@@ -529,26 +503,6 @@ extension CafeDetail.State {
     case review
   }
 
-  enum SubPrimaryInfoType: Hashable {
-    case outletState(ElectricOutletLevel)
-    case spaceSize(CapacityLevel)
-    case groupSeat(CafeGroupSeatLevel)
-  }
-
-  enum SubSecondaryInfoType: CaseIterable {
-    case food
-    case toilet
-    case beverage
-    case price
-    case congestion
-  }
-
-  enum CongestionLevel {
-    case low
-    case middle
-    case high
-  }
-
   enum ReviewTagType: CaseIterable {
     case enoughOutlets
     case fastWifi
@@ -562,94 +516,6 @@ extension CafeDetail.State {
         return "📶 와이파이 빨라요"
       case .quiet:
         return "🔊 조용해요"
-      }
-    }
-  }
-
-  struct SubPrimaryInfoViewState: Identifiable, Equatable {
-    let id = UUID()
-    let type: SubPrimaryInfoType
-    var description = "-"
-
-    init(type: SubPrimaryInfoType) {
-      self.type = type
-
-      description = "-"
-
-      switch type {
-      case .outletState(let outletLevel):
-        description = outletLevel.informationText
-      case .spaceSize(let capacityLevel):
-        description = capacityLevel.informationText
-      case .groupSeat(let groupSeatLevel):
-        description = groupSeatLevel.informationText
-      }
-    }
-
-    var title: String {
-      switch type {
-      case .outletState: return "콘센트"
-      case .spaceSize: return "공간 크기"
-      case .groupSeat: return "단체석"
-      }
-    }
-
-    var iconName: String {
-      switch type {
-      case .outletState(let outletLevel): return outletLevel.iconName
-      case .spaceSize(let capacityLevel): return capacityLevel.iconName
-      case .groupSeat(let groupSeatLevel): return groupSeatLevel.iconName
-      }
-    }
-
-    var guideType: CafeFilter.GuideType {
-      switch type {
-      case .outletState: return .outletState
-      case .spaceSize: return .spaceSize
-      case .groupSeat: return .groupSeat
-      }
-    }
-  }
-
-  struct SubSecondaryInfoViewState: Identifiable, Equatable {
-    let id = UUID()
-    let type: SubSecondaryInfoType
-    var description = "-"
-    var congestionLevel: CongestionLevel
-
-    init(cafe: Cafe, type: SubSecondaryInfoType) {
-      self.type = type
-
-      congestionLevel = .high
-      description = "-"
-
-      switch type {
-      case .food:
-        let foodTypeTexts = cafe.foodTypes?.map(\.text) ?? []
-        description = foodTypeTexts.isNotEmpty
-        ? foodTypeTexts.joined(separator: "/")
-        : "-"
-      case .toilet:
-        description = "-" // FIXME: 서버에서 안내려오는중 (화장실 정보)
-      case .beverage:
-        let drinkTypeTexts = cafe.drinkTypes?.map(\.text) ?? []
-        description = drinkTypeTexts.isNotEmpty
-        ? drinkTypeTexts.joined(separator: "/")
-        : "-"
-      case .price:
-        description = "-" // FIXME: 서버에서 안내려오는중 (가격 정보)
-      case .congestion:
-        description = "-" // FIXME: 서버에서 요일별로 내려오는중인데 어떤 정보를 어떻게 띄워줘야할지 정리 필요
-      }
-    }
-
-    var title: String {
-      switch type {
-      case .food: return "푸드"
-      case .toilet: return "화장실"
-      case .beverage: return "음료"
-      case .price: return "가격대"
-      case .congestion: return "혼잡도"
       }
     }
   }

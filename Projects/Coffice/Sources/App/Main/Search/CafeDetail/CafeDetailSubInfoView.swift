@@ -10,14 +10,14 @@ import ComposableArchitecture
 import SwiftUI
 
 struct CafeDetailSubInfoView: View {
-  private let store: StoreOf<CafeDetail>
+  private let store: StoreOf<CafeDetailSubInfoReducer>
 
-  init(store: StoreOf<CafeDetail>) {
+  init(store: StoreOf<CafeDetailSubInfoReducer>) {
     self.store = store
   }
 
   var body: some View {
-    WithViewStore(store) { _ in
+    WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
         VStack(spacing: 0) {
           cafeSubPrimaryInfoView
@@ -29,6 +29,24 @@ struct CafeDetailSubInfoView: View {
           .frame(height: 4)
           .padding(.top, 20)
       }
+      .popup(
+        item: viewStore.binding(\.$bubbleMessageViewState),
+        itemView: { viewState in
+          BubbleMessageView(store: store.scope(
+            state: { _ in viewState },
+            action: CafeDetailSubInfoReducer.Action.bubbleMessageAction)
+          )
+        },
+        customize: { popup in
+          popup
+            .type(.default)
+            .position(.center)
+            .animation(.easeIn(duration: 0))
+            .isOpaque(true)
+            .closeOnTapOutside(true)
+            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+        }
+      )
     }
   }
 }
@@ -141,8 +159,8 @@ struct CafeSearchDetailSubInfoView_Previews: PreviewProvider {
   static var previews: some View {
     CafeDetailSubInfoView(
       store: .init(
-        initialState: .init(cafeId: 1),
-        reducer: CafeDetail()
+        initialState: .init(),
+        reducer: CafeDetailSubInfoReducer()
       )
     )
   }
