@@ -101,7 +101,7 @@ struct CafeDetail: ReducerProtocol {
     case updateLastModifiedDate
 
     // MARK: Cafe Header
-    case cafeHeaderAction(CafeDetailHeaderReducer.Action)
+    case cafeDetailHeaderAction(CafeDetailHeaderReducer.Action)
 
     // MARK: Web View
     case commonWebReducerAction(CommonWebReducer.Action)
@@ -119,7 +119,7 @@ struct CafeDetail: ReducerProtocol {
 
     Scope(
       state: \.headerViewState,
-      action: /Action.cafeHeaderAction,
+      action: /Action.cafeDetailHeaderAction,
       child: {
         CafeDetailHeaderReducer()
       }
@@ -254,7 +254,7 @@ struct CafeDetail: ReducerProtocol {
           .map { CafeDetail.State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
 
         return .merge(
-          state.headerViewState.update(cafe: cafe).map(Action.cafeHeaderAction),
+          state.headerViewState.update(cafe: cafe).map(Action.cafeDetailHeaderAction),
           EffectTask(value: .updateLastModifiedDate)
         )
 
@@ -430,7 +430,7 @@ struct CafeDetail: ReducerProtocol {
         return .none
 
         // MARK: Cafe Detail Header
-      case .cafeHeaderAction(.delegate(let action)):
+      case .cafeDetailHeaderAction(.delegate(let action)):
         switch action {
         case .presentToastView(message: let message):
           return EffectTask(value: .presentToastView(message: message))

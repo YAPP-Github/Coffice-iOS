@@ -28,7 +28,7 @@ struct CafeDetailView: View {
             CafeDetailHeaderView(
               store: store.scope(
                 state: \.headerViewState,
-                action: CafeDetail.Action.cafeHeaderAction
+                action: CafeDetail.Action.cafeDetailHeaderAction
               )
             )
             CafeDetailSubInfoView(store: store)
