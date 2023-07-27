@@ -50,7 +50,7 @@ struct CafeMapView: View {
               .contentShape(Rectangle())
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-              .padding(.bottom, 20)
+              .padding(.bottom, 24)
             if viewStore.naverMapState.shouldShowRefreshButtonView {
               refreshButtonView
             }
@@ -105,17 +105,16 @@ extension CafeMapView {
             .resizable()
             .frame(width: 18, height: 18)
             .scaledToFill()
-            .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+            .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
           Text("현위치 재검색")
             .applyCofficeFont(font: .body1Medium)
-            .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+            .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
         }
         .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 16))
       }
       .background {
         RoundedRectangle(cornerRadius: 22)
-          .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          .shadow(color: .black.opacity(0.16), radius: 4, x: 0, y: 0)
+          .foregroundColor(CofficeAsset.Colors.secondary0.swiftUIColor)
       }
     }
   }
