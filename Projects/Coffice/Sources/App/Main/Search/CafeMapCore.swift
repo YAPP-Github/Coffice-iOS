@@ -425,7 +425,7 @@ struct CafeMapCore: ReducerProtocol {
     }
     .ifLet(
       \.serviceAreaPopupState,
-       action: /Action.serviceAreaPopupAction
+      action: /Action.serviceAreaPopupAction
     ) {
       ServiceAreaPopup()
     }
