@@ -50,7 +50,7 @@ struct CafeMapView: View {
               .contentShape(Rectangle())
               .onTapGesture { viewStore.send(.updateDisplayType(.searchView)) }
               .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-              .padding(.bottom, 20)
+              .padding(.bottom, 24)
             if viewStore.naverMapState.shouldShowRefreshButtonView {
               refreshButtonView
             }
@@ -115,7 +115,6 @@ extension CafeMapView {
       .background {
         RoundedRectangle(cornerRadius: 22)
           .foregroundColor(CofficeAsset.Colors.secondary0.swiftUIColor)
-          .shadow(color: .black.opacity(0.16), radius: 4, x: 0, y: 0)
       }
     }
   }
