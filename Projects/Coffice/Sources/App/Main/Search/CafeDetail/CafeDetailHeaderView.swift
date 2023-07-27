@@ -1,5 +1,5 @@
 //
-//  CafeSearchDetailHeaderView.swift
+//  CafeDetailHeaderView.swift
 //  coffice
 //
 //  Created by Min Min on 2023/06/26.
