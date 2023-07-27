@@ -36,7 +36,7 @@ struct CafeReviewWriteView: View {
         .padding(.horizontal, 20)
         .padding(.bottom, 16)
 
-        HStack {
+        HStack(spacing: 16) {
           Group {
             if let imageUrl = viewStore.imageUrl {
               KFImage.url(imageUrl)
