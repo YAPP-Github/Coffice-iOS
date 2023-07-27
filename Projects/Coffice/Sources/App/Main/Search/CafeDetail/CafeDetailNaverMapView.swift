@@ -11,9 +11,9 @@ import NMapsMap
 import SwiftUI
 
 struct CafeDetailNaverMapView {
-  @ObservedObject var viewStore: ViewStoreOf<CafeDetail>
+  @ObservedObject var viewStore: ViewStoreOf<CafeDetailMenuReducer>
 
-  init(viewStore: ViewStoreOf<CafeDetail>) {
+  init(viewStore: ViewStoreOf<CafeDetailMenuReducer>) {
     self.viewStore = viewStore
   }
 }
