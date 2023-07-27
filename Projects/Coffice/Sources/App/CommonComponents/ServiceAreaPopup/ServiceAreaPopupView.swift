@@ -10,7 +10,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct ServiceAreaPopupView: View {
-  let store: StoreOf<ServiceAreaPopup>
+  private let store: StoreOf<ServiceAreaPopup>
 
   init(store: StoreOf<ServiceAreaPopup>) {
     self.store = store
