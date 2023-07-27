@@ -90,7 +90,6 @@ struct CafeDetail: ReducerProtocol {
     case reviewReportSheetButtonTapped
     case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
     case resetSelectedReviewModifySheetActionType
-    case updateLastModifiedDate
 
     // MARK: Cafe Detail Header
     case cafeDetailHeaderAction(CafeDetailHeaderReducer.Action)
@@ -249,8 +248,7 @@ struct CafeDetail: ReducerProtocol {
         state.cafe = cafe
         return .merge(
           state.headerViewState.update(cafe: cafe).map(Action.cafeDetailHeaderAction),
-          state.subInfoViewState.update(cafe: cafe).map(Action.cafeDetailSubInfoAction),
-          EffectTask(value: .updateLastModifiedDate)
+          state.subInfoViewState.update(cafe: cafe).map(Action.cafeDetailSubInfoAction)
         )
 
       case .subMenuTapped(let menuType):
