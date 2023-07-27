@@ -170,7 +170,6 @@ enum CafeFilter {
   }
 
   enum RunningTimeOption: Int, Equatable, CaseIterable {
-    case viewOnMap
     case running
     case twentyFourHours
 
@@ -180,8 +179,6 @@ enum CafeFilter {
 
     var title: String {
       switch self {
-      case .viewOnMap:
-        return "🕐 지도에서 보기"
       case .running:
         return "영업중"
       case .twentyFourHours:
