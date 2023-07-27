@@ -107,7 +107,6 @@ struct CafeDetail: ReducerProtocol {
   @Dependency(\.accountClient) private var accountClient
   @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.reviewAPIClient) private var reviewAPIClient
-  @Dependency(\.bookmarkClient) private var bookmarkAPIClient
 
   var body: some ReducerProtocolOf<CafeDetail> {
     BindingReducer()
@@ -446,10 +445,6 @@ struct CafeDetail: ReducerProtocol {
 extension CafeDetail.State {
   var cafeName: String {
     cafe?.name ?? "-"
-  }
-
-  var cafeAddress: String {
-    cafe?.address?.address ?? "-"
   }
 
   var openingStateDescription: String {
