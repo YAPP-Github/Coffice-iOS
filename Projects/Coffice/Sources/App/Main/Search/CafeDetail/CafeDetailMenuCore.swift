@@ -47,23 +47,6 @@ struct CafeDetailMenuReducer: ReducerProtocol {
       }
     }
 
-    var userReviewHeaderTitle: String {
-      return "리뷰 \(userReviewCellViewStates.count)"
-    }
-
-    var cafeName: String {
-      cafe?.name ?? "-"
-    }
-
-    var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
-      .map { SubMenusViewState.init(subMenuType: $0, isSelected: $0 == .detailInfo) }
-
-    var runningTimeDetailInfoArrowImageName: String {
-      return needToPresentRunningTimeDetailInfo
-      ? CofficeAsset.Asset.arrowDropUpLine24px.name
-      : CofficeAsset.Asset.arrowDropDownLine24px.name
-    }
-
     mutating func update(cafe: Cafe?) -> EffectTask<Action> {
       self.cafe = cafe
       return EffectTask(value: .fetchReviews)
@@ -427,6 +410,22 @@ extension CafeDetailMenuReducer {
         )
       }
     }
+  }
+}
+
+extension CafeDetailMenuReducer.State {
+  var userReviewHeaderTitle: String {
+    return "리뷰 \(userReviewCellViewStates.count)"
+  }
+
+  var cafeName: String {
+    cafe?.name ?? "-"
+  }
+
+  var runningTimeDetailInfoArrowImageName: String {
+    return needToPresentRunningTimeDetailInfo
+    ? CofficeAsset.Asset.arrowDropUpLine24px.name
+    : CofficeAsset.Asset.arrowDropDownLine24px.name
   }
 }
 
