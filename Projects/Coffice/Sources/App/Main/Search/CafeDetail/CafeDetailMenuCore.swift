@@ -26,7 +26,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     let reviewEditFinishedMessage = "리뷰가 수정되었습니다."
     let reviewDeleteFinishedMessage = "리뷰가 삭제되었습니다."
     let reviewReportFinishedMessage = "신고가 접수되었습니다."
-    var hasNextReview: Bool?
+    var hasNextReview: Bool = false
     var lastReviewDistance: Double = .zero
     var reviewPageSize: Int = 10
 
@@ -96,6 +96,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case reviewReportSheet(isPresented: Bool)
     case reviewModifySheet(isPresented: Bool)
     case reviewDeleteConfirmBottomSheet(isPresented: Bool)
+    case userReviewCellDidAppear(viewState: UserReviewCellViewState)
   }
 
   enum Delegate: Equatable {
@@ -112,6 +113,13 @@ struct CafeDetailMenuReducer: ReducerProtocol {
       switch action {
       case .onAppear:
         return EffectTask(value: .fetchUserData)
+
+      case .userReviewCellDidAppear(let currentCellState):
+        guard let lastReviewCellState = state.userReviewCellViewStates.last,
+              lastReviewCellState == currentCellState,
+              state.hasNextReview
+        else { return .none }
+        return .none
 
       case .subMenuTapped(let menuType):
         state.selectedSubMenuType = menuType

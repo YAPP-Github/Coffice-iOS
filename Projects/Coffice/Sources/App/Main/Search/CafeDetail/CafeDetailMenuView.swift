@@ -399,6 +399,9 @@ extension CafeDetailMenuView {
       LazyVStack(spacing: 0) {
         ForEach(viewStore.userReviewCellViewStates) { viewState in
           UserReviewCell(store: store, viewState: viewState)
+            .onAppear {
+              viewStore.send(.userReviewCellDidAppear(viewState: viewState))
+            }
         }
       }
     }
