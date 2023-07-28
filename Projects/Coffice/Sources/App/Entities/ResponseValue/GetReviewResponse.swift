@@ -22,7 +22,7 @@ struct Review: Equatable {
   var noiseOption: ReviewOption.NoiseOption
   let createdDate: Date?
   let updatedDate: Date?
-  let content: String
+  let content: String?
 
   init(
     reviewId: Int,
@@ -33,7 +33,7 @@ struct Review: Equatable {
     noiseLevel: String,
     createdAt: String,
     updatedAt: String,
-    content: String
+    content: String?
   ) {
     self.reviewId = reviewId
     self.memberId = memberId

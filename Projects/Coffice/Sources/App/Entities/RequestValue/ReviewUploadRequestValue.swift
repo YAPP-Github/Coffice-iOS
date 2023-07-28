@@ -14,7 +14,7 @@ struct ReviewUploadRequestValue {
   let electricOutletOption: ReviewOption.OutletOption
   let wifiOption: ReviewOption.WifiOption
   let noiseOption: ReviewOption.NoiseOption
-  let content: String
+  let content: String?
 }
 
 extension ReviewUploadRequestValue {

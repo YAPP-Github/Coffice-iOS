@@ -13,7 +13,8 @@ public typealias ReviewsResponseDTO = [ReviewResponseDTO]
 public struct ReviewResponseDTO: Decodable {
   public let reviewId: Int
   public let member: Member
-  public let electricOutletLevel, wifiLevel, noiseLevel, content: String
+  public let electricOutletLevel, wifiLevel, noiseLevel: String
+  public let content: String?
   public let createdAt, updatedAt: String
 
   public struct Member: Decodable {

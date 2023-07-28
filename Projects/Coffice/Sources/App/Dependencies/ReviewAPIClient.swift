@@ -22,6 +22,9 @@ struct ReviewAPIClient: DependencyKey {
     urlComponents?.queryItems = [
       .init(name: "pageSize", value: "\(requestValue.pageSize)")
     ]
+    if let lastSeenReviewId = requestValue.lastSeenReviewId {
+      urlComponents?.queryItems?.append(.init(name: "lastSeenReviewId", value: "\(lastSeenReviewId)"))
+    }
 
     guard let request = urlComponents?.toURLRequest(method: .get)
     else { throw CoreNetworkError.requestConvertFailed }

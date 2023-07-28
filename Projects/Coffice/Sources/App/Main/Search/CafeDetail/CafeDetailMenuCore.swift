@@ -29,6 +29,8 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     var hasNextReview: Bool = false
     var lastReviewDistance: Double = .zero
     var reviewPageSize: Int = 10
+    var lastSeenReviewId: Int?
+    var requestedLastSeenReviewId: Int?
 
     var cafe: Cafe?
     var user: User?
@@ -117,9 +119,11 @@ struct CafeDetailMenuReducer: ReducerProtocol {
       case .userReviewCellDidAppear(let currentCellState):
         guard let lastReviewCellState = state.userReviewCellStates.last,
               lastReviewCellState == currentCellState,
+              state.lastSeenReviewId != currentCellState.reviewId,
               state.hasNextReview
         else { return .none }
-        return .none
+        state.lastSeenReviewId = lastReviewCellState.reviewId
+        return EffectTask(value: .fetchReviews)
 
       case .subMenuTapped(let menuType):
         state.selectedSubMenuType = menuType
@@ -173,14 +177,14 @@ struct CafeDetailMenuReducer: ReducerProtocol {
       switch action {
       case .updateReviewCellStates(let reviewsResponse):
         state.hasNextReview = reviewsResponse.hasNext
-        state.userReviewCellStates = reviewsResponse.reviews
+        state.userReviewCellStates += reviewsResponse.reviews
           .compactMap { [userId = state.user?.id] review in
             return .init(
               reviewId: review.reviewId,
               memberId: review.memberId,
               userName: review.memberName,
               date: review.createdDate,
-              content: review.content,
+              content: review.content ?? "",
               tagTypes: [
                 review.outletOption == .enough ? .enoughOutlets : nil,
                 review.wifiOption == .fast ? .fastWifi : nil,
@@ -196,11 +200,14 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         return .none
 
       case .fetchReviews:
-        guard let placeId = state.cafe?.placeId
+        guard let placeId = state.cafe?.placeId,
+              state.canFetchReviews
         else { return .none }
 
-        return .run { send in
-          let reviewsResponse = try await reviewAPIClient.fetchReviews(requestValue: .init(placeId: placeId))
+        return .run { [lastSeenReviewId = state.lastSeenReviewId] send in
+          let reviewsResponse = try await reviewAPIClient.fetchReviews(
+            requestValue: .init(placeId: placeId, lastSeenReviewId: lastSeenReviewId)
+          )
           await send(.fetchReviewsResponse(.success(reviewsResponse)))
         } catch: { error, send in
           await send(.fetchReviewsResponse(.failure(error)))
@@ -233,6 +240,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
       case .fetchReviewsResponse(let result):
         switch result {
         case .success(let reviewsResponse):
+          state.requestedLastSeenReviewId = state.lastSeenReviewId
           return EffectTask(value: .updateReviewCellStates(response: reviewsResponse))
         case .failure(let error):
           debugPrint(error.localizedDescription)
@@ -320,7 +328,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
                 outletOption: cellState.outletOption,
                 wifiOption: cellState.wifiOption,
                 noiseOption: cellState.noiseOption,
-                reviewText: cellState.content
+                reviewText: cellState.content ?? ""
               )
             )
           )
@@ -441,6 +449,11 @@ extension CafeDetailMenuReducer.State {
     return needToPresentRunningTimeDetailInfo
     ? CofficeAsset.Asset.arrowDropUpLine24px.name
     : CofficeAsset.Asset.arrowDropDownLine24px.name
+  }
+
+  var canFetchReviews: Bool {
+    return requestedLastSeenReviewId == nil
+    || lastSeenReviewId != requestedLastSeenReviewId
   }
 }
 

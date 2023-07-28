@@ -13,7 +13,7 @@ struct ReviewsRequestValue {
   let pageSize: Int
   let lastSeenReviewId: Int?
 
-  init(placeId: Int, pageSize: Int = 10, lastSeenReviewId: Int? = nil) {
+  init(placeId: Int, pageSize: Int = 10, lastSeenReviewId: Int?) {
     self.placeId = placeId
     self.pageSize = pageSize
     self.lastSeenReviewId = lastSeenReviewId

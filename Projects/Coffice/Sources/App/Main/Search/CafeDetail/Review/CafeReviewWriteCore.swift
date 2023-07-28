@@ -23,7 +23,7 @@ struct CafeReviewWrite: ReducerProtocol {
     static let mock: Self = .init(reviewType: .create, placeId: 1)
 
     let id = UUID()
-    @BindingState var reviewText = ""
+    @BindingState var reviewText: String?
     @BindingState var dismissConfirmBottomSheetState: BottomSheetReducer.State?
     var deleteConfirmBottomSheetType: BottomSheetType = .dismissConfirm
     var optionButtonStates: [CafeReviewOptionButtons.State]
@@ -41,10 +41,10 @@ struct CafeReviewWrite: ReducerProtocol {
     let maximumTextLength = 200
 
     var textViewBottomPadding: CGFloat = 0.0
-    var currentTextLengthDescription: String { "\(reviewText.count)" }
+    var currentTextLengthDescription: String { "\(reviewText?.count ?? 0)" }
     var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
     var shouldPresentTextViewPlaceholder: Bool {
-      reviewText.isEmpty
+      reviewText?.isEmpty == true
     }
     var saveButtonTitle: String {
       return reviewType == .create ? "등록하기" : "수정하기"
@@ -63,7 +63,7 @@ struct CafeReviewWrite: ReducerProtocol {
       outletOption: OutletStateOption? = nil,
       wifiOption: WifiStateOption? = nil,
       noiseOption: NoiseOption? = nil,
-      reviewText: String = ""
+      reviewText: String? = nil
     ) {
       self.reviewType = reviewType
       self.placeId = placeId

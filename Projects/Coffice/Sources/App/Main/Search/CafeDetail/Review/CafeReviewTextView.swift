@@ -16,7 +16,7 @@ struct CafeReviewTextView: UIViewRepresentable {
     return textView
   }()
 
-  @Binding var text: String
+  @Binding var text: String?
 
   func makeUIView(context: Context) -> UITextView {
     textView.delegate = context.coordinator
@@ -32,11 +32,11 @@ struct CafeReviewTextView: UIViewRepresentable {
   }
 
   class Coordinator: NSObject {
-    @Binding private(set) var text: String
+    @Binding private(set) var text: String?
     let maxTextLength: Int = 200
     let maxNumberOfLines: Int = 11
 
-    init(_ text: Binding<String>) {
+    init(_ text: Binding<String?>) {
       self._text = text
     }
   }
@@ -44,7 +44,7 @@ struct CafeReviewTextView: UIViewRepresentable {
 
 extension CafeReviewTextView.Coordinator: UITextViewDelegate {
   func textViewDidChange(_ textView: UITextView) {
-    var updatedText = textView.text ?? ""
+    var updatedText = textView.text
 
     if textView.text.count > maxTextLength {
       updatedText = String(textView.text.prefix(maxTextLength))
