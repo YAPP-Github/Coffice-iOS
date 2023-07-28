@@ -83,12 +83,12 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case deleteReview
     case deleteReviewResponse(TaskResult<HTTPURLResponse>)
-    case reviewModifyButtonTapped(viewState: State.UserReviewCellViewState)
+    case reviewModifyButtonTapped(viewState: UserReviewCellViewState)
     case reviewModifySheetDismissed
     case reviewEditSheetButtonTapped
     case reviewDeleteSheetButtonTapped
     case reviewReportSheetButtonTapped
-    case reviewReportButtonTapped(viewState: State.UserReviewCellViewState)
+    case reviewReportButtonTapped(viewState: UserReviewCellViewState)
     case presentCafeReviewWriteView(CafeReviewWrite.State)
     case resetSelectedReviewModifySheetActionType
 
@@ -470,51 +470,49 @@ extension CafeDetailMenuReducer.State {
 
 // MARK: - Review
 
-extension CafeDetailMenuReducer.State {
-  struct UserReviewCellViewState: Hashable, Identifiable {
-    let id = UUID()
-    let reviewId: Int
-    let memberId: Int
-    let userName: String
-    let date: Date?
-    let content: String
-    let tagTypes: [ReviewTagType]
-    let isMyReview: Bool
-    let outletOption: ReviewOption.OutletOption
-    let wifiOption: ReviewOption.WifiOption
-    let noiseOption: ReviewOption.NoiseOption
+struct UserReviewCellViewState: Hashable, Identifiable {
+  let id = UUID()
+  let reviewId: Int
+  let memberId: Int
+  let userName: String
+  let date: Date?
+  let content: String
+  let tagTypes: [ReviewTagType]
+  let isMyReview: Bool
+  let outletOption: ReviewOption.OutletOption
+  let wifiOption: ReviewOption.WifiOption
+  let noiseOption: ReviewOption.NoiseOption
 
-    var dateDescription: String {
-      guard let date else { return "-" }
+  var dateDescription: String {
+    guard let date else { return "-" }
 
-      let dateFormatter = DateFormatter()
-      dateFormatter.locale = Locale(identifier: "ko_KR")
-      dateFormatter.dateFormat = "M.dd E"
-      return dateFormatter.string(from: date)
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale(identifier: "ko_KR")
+    dateFormatter.dateFormat = "M.dd E"
+    return dateFormatter.string(from: date)
+  }
+}
+
+enum ReviewTagType: CaseIterable {
+  case enoughOutlets
+  case fastWifi
+  case quiet
+
+  var title: String {
+    switch self {
+    case .enoughOutlets:
+      return "🔌 콘센트 넉넉해요"
+    case .fastWifi:
+      return "📶 와이파이 빨라요"
+    case .quiet:
+      return "🔊 조용해요"
     }
   }
+}
 
-  enum ReviewTagType: CaseIterable {
-    case enoughOutlets
-    case fastWifi
-    case quiet
-
-    var title: String {
-      switch self {
-      case .enoughOutlets:
-        return "🔌 콘센트 넉넉해요"
-      case .fastWifi:
-        return "📶 와이파이 빨라요"
-      case .quiet:
-        return "🔊 조용해요"
-      }
-    }
-  }
-
-  enum ReviewSheetButtonActionType {
-    case edit
-    case delete
-    case report
-    case none
-  }
+enum ReviewSheetButtonActionType {
+  case edit
+  case delete
+  case report
+  case none
 }
