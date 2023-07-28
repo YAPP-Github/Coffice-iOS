@@ -1,5 +1,5 @@
 //
-//  CafeSearchDetailHeaderView.swift
+//  CafeDetailHeaderView.swift
 //  coffice
 //
 //  Created by Min Min on 2023/06/26.
@@ -11,9 +11,9 @@ import Kingfisher
 import SwiftUI
 
 struct CafeDetailHeaderView: View {
-  private let store: StoreOf<CafeDetail>
+  private let store: StoreOf<CafeDetailHeaderReducer>
 
-  init(store: StoreOf<CafeDetail>) {
+  init(store: StoreOf<CafeDetailHeaderReducer>) {
     self.store = store
   }
 
@@ -75,7 +75,11 @@ struct CafeDetailHeaderView: View {
       }
     }
   }
+}
 
+// MARK: - Subviews
+
+extension CafeDetailHeaderView {
   private var imagePageView: some View {
     WithViewStore(store) { viewStore in
       Group {
@@ -113,12 +117,14 @@ struct CafeDetailHeaderView: View {
   }
 }
 
+// MARK: Previews
+
 struct CafeDetailHeaderView_Previews: PreviewProvider {
   static var previews: some View {
     CafeDetailHeaderView(
       store: .init(
-        initialState: .init(cafeId: 21),
-        reducer: CafeDetail()
+        initialState: .init(cafe: .dummy),
+        reducer: CafeDetailHeaderReducer()
       )
     )
   }

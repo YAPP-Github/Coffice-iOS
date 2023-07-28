@@ -25,9 +25,24 @@ struct CafeDetailView: View {
       VStack(spacing: 0) {
         ScrollView(.vertical) {
           VStack(spacing: 0) {
-            CafeDetailHeaderView(store: store)
-            CafeDetailSubInfoView(store: store)
-            CafeDetailMenuView(store: store)
+            CafeDetailHeaderView(
+              store: store.scope(
+                state: \.headerViewState,
+                action: CafeDetail.Action.cafeDetailHeaderAction
+              )
+            )
+            CafeDetailSubInfoView(
+              store: store.scope(
+                state: \.subInfoViewState,
+                action: CafeDetail.Action.cafeDetailSubInfoAction
+              )
+            )
+            CafeDetailMenuView(
+              store: store.scope(
+                state: \.menuViewState,
+                action: CafeDetail.Action.cafeDetailMenuAction
+              )
+            )
           }
         }
       }
@@ -63,105 +78,6 @@ struct CafeDetailView: View {
       .onAppear {
         viewStore.send(.onAppear)
       }
-      .sheet(
-        item: viewStore.binding(\.$cafeReviewWriteState),
-        content: { viewState in
-          CafeReviewWriteView(
-            store: store.scope(
-              state: { _ in viewState },
-              action: CafeDetail.Action.cafeReviewWrite(action:)
-            )
-          )
-        }
-      )
-      .popup(
-        isPresented: viewStore.binding(\.$isReviewModifySheetPresented),
-        view: {
-          VStack(spacing: 12) {
-            Button {
-              viewStore.send(.reviewEditSheetButtonTapped)
-            } label: {
-              Text("수정하기")
-                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-                .applyCofficeFont(font: .button)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: 52)
-                .padding(.top, 20)
-            }
-
-            Button {
-              viewStore.send(.reviewDeleteSheetButtonTapped)
-            } label: {
-              Text("삭제하기")
-                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-                .applyCofficeFont(font: .button)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: 52)
-            }
-
-            Spacer()
-          }
-          .padding(.horizontal, 20)
-          .frame(height: 196)
-          .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          .cornerRadius(12, corners: [.topLeft, .topRight])
-        },
-        customize: { popup in
-          popup
-            .type(.toast)
-            .position(.bottom)
-            .isOpaque(true)
-            .closeOnTapOutside(true)
-            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
-            .dismissCallback {
-              viewStore.send(.reviewModifySheetDismissed)
-            }
-        }
-      )
-      .popup(
-        isPresented: viewStore.binding(\.$isReviewReportSheetPresented),
-        view: {
-          VStack(spacing: 12) {
-            Button {
-              viewStore.send(.reviewReportSheetButtonTapped)
-            } label: {
-              Text("신고하기")
-                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-                .applyCofficeFont(font: .button)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: 52)
-                .padding(.top, 20)
-            }
-
-            Spacer()
-          }
-          .padding(.horizontal, 20)
-          .frame(height: 132)
-          .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          .cornerRadius(12, corners: [.topLeft, .topRight])
-        },
-        customize: { popup in
-          popup
-            .type(.toast)
-            .position(.bottom)
-            .isOpaque(true)
-            .closeOnTapOutside(true)
-            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
-        }
-      )
-      .popup(
-        item: viewStore.binding(\.$deleteConfirmBottomSheetState),
-        itemView: { sheetState in
-          BottomSheetView(
-            store: store.scope(
-              state: { _ in sheetState },
-              action: CafeDetail.Action.bottomSheet
-            ),
-            bottomSheetContent: viewStore.bottomSheetType.content
-          )
-        },
-        customize: { BottomSheetContent.customize($0) }
-      )
       .popup(
         item: viewStore.binding(\.$toastViewMessage),
         itemView: { message in
@@ -175,48 +91,6 @@ struct CafeDetailView: View {
           $0
             .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: false))
             .autohideIn(2)
-        }
-      )
-      .popup(
-        item: viewStore.binding(\.$bubbleMessageViewState),
-        itemView: { viewState in
-          BubbleMessageView(store: store.scope(
-            state: { _ in viewState },
-            action: CafeDetail.Action.bubbleMessageAction)
-          )
-        },
-        customize: { popup in
-          popup
-            .type(.default)
-            .position(.center)
-            .animation(.easeIn(duration: 0))
-            .isOpaque(true)
-            .closeOnTapOutside(true)
-            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
-        }
-      )
-      .sheet(
-        item: viewStore.binding(\.$webViewState),
-        content: { viewState in
-          VStack(spacing: 0) {
-            CommonWebView(
-              store: store.scope(
-                state: { _ in viewState },
-                action: CafeDetail.Action.commonWebReducerAction
-              )
-            )
-          }
-          .customNavigationBar(
-            centerView: { EmptyView() },
-            leftView: { EmptyView() },
-            rightView: {
-              Button {
-                viewStore.send(.dismissWebView)
-              } label: {
-                CofficeAsset.Asset.close40px.swiftUIImage
-              }
-            }
-          )
         }
       )
     }
