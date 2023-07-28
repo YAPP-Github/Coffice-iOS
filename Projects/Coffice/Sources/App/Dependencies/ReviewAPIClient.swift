@@ -26,24 +26,26 @@ struct ReviewAPIClient: DependencyKey {
     guard let request = urlComponents?.toURLRequest(method: .get)
     else { throw CoreNetworkError.requestConvertFailed }
 
-    // TODO: 페이징 업데이트 로직 추가 구현 필요
     let response: (
       dto: ReviewsResponseDTO,
       hasNext: Bool
     ) = try await coreNetwork.pageableDataTask(request: request)
-    return response.dto.map { element -> ReviewResponse in
-      return .init(
-        reviewId: element.reviewId,
-        memberId: element.member.memberId,
-        memberName: element.member.name,
-        electricOutletLevel: element.electricOutletLevel,
-        wifiLevel: element.wifiLevel,
-        noiseLevel: element.noiseLevel,
-        createdAt: element.createdAt,
-        updatedAt: element.updatedAt,
-        content: element.content
-      )
-    }
+    return .init(
+      reviews: response.dto.map { element -> Review in
+        return .init(
+          reviewId: element.reviewId,
+          memberId: element.member.memberId,
+          memberName: element.member.name,
+          electricOutletLevel: element.electricOutletLevel,
+          wifiLevel: element.wifiLevel,
+          noiseLevel: element.noiseLevel,
+          createdAt: element.createdAt,
+          updatedAt: element.updatedAt,
+          content: element.content
+        )
+      },
+      hasNext: response.hasNext
+    )
   }
 
   func uploadReview(requestValue: ReviewUploadRequestValue) async throws -> HTTPURLResponse {

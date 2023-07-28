@@ -8,9 +8,12 @@
 
 import Foundation
 
-typealias ReviewsResponse = [ReviewResponse]
+struct ReviewsResponse: Equatable {
+  let reviews: [Review]
+  let hasNext: Bool
+}
 
-struct ReviewResponse: Equatable {
+struct Review: Equatable {
   let reviewId: Int
   let memberId: Int
   let memberName: String

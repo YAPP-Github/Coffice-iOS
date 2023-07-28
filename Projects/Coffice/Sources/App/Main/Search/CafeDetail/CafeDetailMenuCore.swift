@@ -26,6 +26,9 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     let reviewEditFinishedMessage = "리뷰가 수정되었습니다."
     let reviewDeleteFinishedMessage = "리뷰가 삭제되었습니다."
     let reviewReportFinishedMessage = "신고가 접수되었습니다."
+    var hasNextReview: Bool?
+    var lastReviewDistance: Double = .zero
+    var reviewPageSize: Int = 10
 
     var cafe: Cafe?
     var user: User?
@@ -33,6 +36,8 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     var userReviewCellViewStates: [UserReviewCellViewState] = []
     var selectedUserReviewCellViewState: UserReviewCellViewState?
     var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
+    var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
+      .map { SubMenusViewState.init(subMenuType: $0, isSelected: $0 == .detailInfo) }
     var bottomSheetType: BottomSheetType = .deleteConfirm
     let subMenuTypes = SubMenuType.allCases
 
@@ -58,7 +63,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case onAppear
     case subMenuTapped(State.SubMenuType)
     case reviewWriteButtonTapped
-    case updateReviewCellViewStates(reviews: [ReviewResponse])
+    case updateReviewCellViewStates(response: ReviewsResponse)
     case toggleToPresentRunningTime
     case cafeHomepageUrlTapped
     case fetchUserData
@@ -73,7 +78,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case cafeReviewWrite(action: CafeReviewWrite.Action)
     case bottomSheet(action: BottomSheetReducer.Action)
     case fetchReviews
-    case fetchReviewsResponse(TaskResult<[ReviewResponse]>)
+    case fetchReviewsResponse(TaskResult<ReviewsResponse>)
     case reportReview
     case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case deleteReview
@@ -158,26 +163,28 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     // MARK: - Review
     Reduce { state, action in
       switch action {
-      case .updateReviewCellViewStates(let reviews):
-        state.userReviewCellViewStates = reviews.compactMap { [userId = state.user?.id] review in
-          return .init(
-            reviewId: review.reviewId,
-            memberId: review.memberId,
-            userName: review.memberName,
-            date: review.createdDate,
-            content: review.content,
-            tagTypes: [
-              review.outletOption == .enough ? .enoughOutlets : nil,
-              review.wifiOption == .fast ? .fastWifi : nil,
-              review.noiseOption == .quiet ? .quiet : nil
-            ]
-              .compactMap { $0 },
-            isMyReview: review.memberId == userId,
-            outletOption: review.outletOption,
-            wifiOption: review.wifiOption,
-            noiseOption: review.noiseOption
-          )
-        }
+      case .updateReviewCellViewStates(let reviewsResponse):
+        state.hasNextReview = reviewsResponse.hasNext
+        state.userReviewCellViewStates = reviewsResponse.reviews
+          .compactMap { [userId = state.user?.id] review in
+            return .init(
+              reviewId: review.reviewId,
+              memberId: review.memberId,
+              userName: review.memberName,
+              date: review.createdDate,
+              content: review.content,
+              tagTypes: [
+                review.outletOption == .enough ? .enoughOutlets : nil,
+                review.wifiOption == .fast ? .fastWifi : nil,
+                review.noiseOption == .quiet ? .quiet : nil
+              ]
+                .compactMap { $0 },
+              isMyReview: review.memberId == userId,
+              outletOption: review.outletOption,
+              wifiOption: review.wifiOption,
+              noiseOption: review.noiseOption
+            )
+          }
         return .none
 
       case .fetchReviews:
@@ -185,8 +192,8 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         else { return .none }
 
         return .run { send in
-          let reviews = try await reviewAPIClient.fetchReviews(requestValue: .init(placeId: placeId))
-          await send(.fetchReviewsResponse(.success(reviews)))
+          let reviewsResponse = try await reviewAPIClient.fetchReviews(requestValue: .init(placeId: placeId))
+          await send(.fetchReviewsResponse(.success(reviewsResponse)))
         } catch: { error, send in
           await send(.fetchReviewsResponse(.failure(error)))
         }
@@ -217,8 +224,8 @@ struct CafeDetailMenuReducer: ReducerProtocol {
 
       case .fetchReviewsResponse(let result):
         switch result {
-        case .success(let reviews):
-          return EffectTask(value: .updateReviewCellViewStates(reviews: reviews))
+        case .success(let reviewsResponse):
+          return EffectTask(value: .updateReviewCellViewStates(response: reviewsResponse))
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
