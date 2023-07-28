@@ -11,9 +11,9 @@ import SwiftUI
 
 struct UserReviewCell: View {
   private let store: StoreOf<CafeDetailMenuReducer>
-  private let viewState: UserReviewCellViewState
+  private let viewState: UserReviewCellState
 
-  init(store: StoreOf<CafeDetailMenuReducer>, viewState: UserReviewCellViewState) {
+  init(store: StoreOf<CafeDetailMenuReducer>, viewState: UserReviewCellState) {
     self.store = store
     self.viewState = viewState
   }

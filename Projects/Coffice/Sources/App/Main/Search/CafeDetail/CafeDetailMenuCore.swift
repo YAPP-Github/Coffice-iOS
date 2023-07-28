@@ -33,8 +33,8 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     var cafe: Cafe?
     var user: User?
     var needToPresentRunningTimeDetailInfo = false
-    var userReviewCellViewStates: [UserReviewCellViewState] = []
-    var selectedUserReviewCellViewState: UserReviewCellViewState?
+    var userReviewCellStates: [UserReviewCellState] = []
+    var selectedUserReviewCellState: UserReviewCellState?
     var selectedReviewSheetActionType: ReviewSheetButtonActionType = .none
     var subMenuViewStates: [SubMenusViewState] = SubMenuType.allCases
       .map { SubMenusViewState.init(subMenuType: $0, isSelected: $0 == .detailInfo) }
@@ -63,7 +63,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case onAppear
     case subMenuTapped(State.SubMenuType)
     case reviewWriteButtonTapped
-    case updateReviewCellViewStates(response: ReviewsResponse)
+    case updateReviewCellStates(response: ReviewsResponse)
     case toggleToPresentRunningTime
     case cafeHomepageUrlTapped
     case fetchUserData
@@ -83,12 +83,12 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case deleteReview
     case deleteReviewResponse(TaskResult<HTTPURLResponse>)
-    case reviewModifyButtonTapped(viewState: UserReviewCellViewState)
+    case reviewModifyButtonTapped(viewState: UserReviewCellState)
     case reviewModifySheetDismissed
     case reviewEditSheetButtonTapped
     case reviewDeleteSheetButtonTapped
     case reviewReportSheetButtonTapped
-    case reviewReportButtonTapped(viewState: UserReviewCellViewState)
+    case reviewReportButtonTapped(viewState: UserReviewCellState)
     case presentCafeReviewWriteView(CafeReviewWrite.State)
     case resetSelectedReviewModifySheetActionType
 
@@ -96,7 +96,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case reviewReportSheet(isPresented: Bool)
     case reviewModifySheet(isPresented: Bool)
     case reviewDeleteConfirmBottomSheet(isPresented: Bool)
-    case userReviewCellDidAppear(viewState: UserReviewCellViewState)
+    case userReviewCellDidAppear(viewState: UserReviewCellState)
   }
 
   enum Delegate: Equatable {
@@ -115,7 +115,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         return EffectTask(value: .fetchUserData)
 
       case .userReviewCellDidAppear(let currentCellState):
-        guard let lastReviewCellState = state.userReviewCellViewStates.last,
+        guard let lastReviewCellState = state.userReviewCellStates.last,
               lastReviewCellState == currentCellState,
               state.hasNextReview
         else { return .none }
@@ -171,9 +171,9 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     // MARK: - Review
     Reduce { state, action in
       switch action {
-      case .updateReviewCellViewStates(let reviewsResponse):
+      case .updateReviewCellStates(let reviewsResponse):
         state.hasNextReview = reviewsResponse.hasNext
-        state.userReviewCellViewStates = reviewsResponse.reviews
+        state.userReviewCellStates = reviewsResponse.reviews
           .compactMap { [userId = state.user?.id] review in
             return .init(
               reviewId: review.reviewId,
@@ -207,7 +207,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         }
 
       case .reportReview:
-        guard let reviewId = state.selectedUserReviewCellViewState?.reviewId,
+        guard let reviewId = state.selectedUserReviewCellState?.reviewId,
               let placeId = state.cafe?.placeId
         else { return .none }
 
@@ -219,7 +219,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         }
 
       case .deleteReview:
-        guard let reviewId = state.selectedUserReviewCellViewState?.reviewId,
+        guard let reviewId = state.selectedUserReviewCellState?.reviewId,
               let placeId = state.cafe?.placeId
         else { return .none }
 
@@ -233,7 +233,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
       case .fetchReviewsResponse(let result):
         switch result {
         case .success(let reviewsResponse):
-          return EffectTask(value: .updateReviewCellViewStates(response: reviewsResponse))
+          return EffectTask(value: .updateReviewCellStates(response: reviewsResponse))
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
@@ -300,7 +300,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         return .none
 
       case .reviewModifySheetDismissed:
-        guard let cellViewState = state.selectedUserReviewCellViewState,
+        guard let cellState = state.selectedUserReviewCellState,
               let placeId = state.cafe?.placeId
         else { return .none }
 
@@ -314,13 +314,13 @@ struct CafeDetailMenuReducer: ReducerProtocol {
                 reviewType: .edit,
                 placeId: placeId,
                 imageUrlString: state.cafe?.imageUrls?.first,
-                reviewId: cellViewState.reviewId,
+                reviewId: cellState.reviewId,
                 cafeName: state.cafe?.name,
                 cafeAddress: state.cafe?.address?.address,
-                outletOption: cellViewState.outletOption,
-                wifiOption: cellViewState.wifiOption,
-                noiseOption: cellViewState.noiseOption,
-                reviewText: cellViewState.content
+                outletOption: cellState.outletOption,
+                wifiOption: cellState.wifiOption,
+                noiseOption: cellState.noiseOption,
+                reviewText: cellState.content
               )
             )
           )
@@ -360,7 +360,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         return .none
 
       case .reviewModifyButtonTapped(let viewState):
-        state.selectedUserReviewCellViewState = viewState
+        state.selectedUserReviewCellState = viewState
         return EffectTask(value: .reviewModifySheet(isPresented: true))
 
       case .reviewEditSheetButtonTapped:
@@ -379,7 +379,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         )
 
       case .reviewReportButtonTapped(let viewState):
-        state.selectedUserReviewCellViewState = viewState
+        state.selectedUserReviewCellState = viewState
         return EffectTask(value: .reviewReportSheet(isPresented: true))
 
       case .bottomSheet(let action):
@@ -430,7 +430,7 @@ extension CafeDetailMenuReducer {
 
 extension CafeDetailMenuReducer.State {
   var userReviewHeaderTitle: String {
-    return "리뷰 \(userReviewCellViewStates.count)"
+    return "리뷰 \(userReviewCellStates.count)"
   }
 
   var cafeName: String {
@@ -478,7 +478,7 @@ extension CafeDetailMenuReducer.State {
 
 // MARK: - Review
 
-struct UserReviewCellViewState: Hashable, Identifiable {
+struct UserReviewCellState: Hashable, Identifiable {
   let id = UUID()
   let reviewId: Int
   let memberId: Int

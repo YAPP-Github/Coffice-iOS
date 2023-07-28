@@ -386,7 +386,7 @@ extension CafeDetailMenuView {
 
   private var userReviewListView: some View {
     WithViewStore(store) { viewStore in
-      if viewStore.userReviewCellViewStates.isNotEmpty {
+      if viewStore.userReviewCellStates.isNotEmpty {
         userReviewsView
       } else {
         userReviewEmptyView
@@ -397,7 +397,7 @@ extension CafeDetailMenuView {
   private var userReviewsView: some View {
     WithViewStore(store) { viewStore in
       LazyVStack(spacing: 0) {
-        ForEach(viewStore.userReviewCellViewStates) { viewState in
+        ForEach(viewStore.userReviewCellStates) { viewState in
           UserReviewCell(store: store, viewState: viewState)
             .onAppear {
               viewStore.send(.userReviewCellDidAppear(viewState: viewState))
