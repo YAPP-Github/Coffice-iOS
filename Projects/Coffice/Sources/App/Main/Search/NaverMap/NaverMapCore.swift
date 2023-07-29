@@ -98,13 +98,13 @@ struct NaverMapCore: ReducerProtocol {
     // MARK: On/Off Flag After Update UI Completed
     case cameraMovedToUserPosition
     case markersUpdated
-    case bookmarkStateUpdated
     case markersCleared
     case cameraPositionUpdated(toPosition: CLLocationCoordinate2D, byReason: NaverMapCameraUpdateReason)
     case cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D)
 
     // MARK: Functions
     case updatePinnedCafes(cafes: [Cafe])
+    case updateSelectedCafeState
     case removeAllMarkers
     case appendMarkers(markers: [MapMarker])
     case selectCafe(cafe: Cafe)
@@ -281,7 +281,7 @@ struct NaverMapCore: ReducerProtocol {
         return .none
 
       case .selectCafe(let cafe):
-        state.selectedCafe = cafe // FIXME: Marker 찍혀있는지 검사 안해도 되나?
+        state.selectedCafe = cafe
         return .none
 
       case .unselectCafe:
@@ -292,6 +292,14 @@ struct NaverMapCore: ReducerProtocol {
         state.cafes.append(contentsOf: cafes)
         state.shouldUpdateMarkers = true
         return .none
+
+      case .updateSelectedCafeState:
+        return .run { [selectedCafe = state.selectedCafe] send in
+          if let selectedCafe {
+            let selectedCafe = try await placeAPIClient.fetchPlace(placeId: selectedCafe.placeId)
+            await send(.selectCafe(cafe: selectedCafe))
+          }
+        }
 
       default:
         return .none
