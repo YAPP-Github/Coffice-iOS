@@ -215,12 +215,14 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         }
 
       case .reportReview:
-        guard let reviewId = state.selectedUserReviewCellState?.reviewId,
+        guard let selectedUserReviewCellState = state.selectedUserReviewCellState,
               let placeId = state.cafe?.placeId
         else { return .none }
+        let reviewId = selectedUserReviewCellState.reviewId
 
         return .run { send in
           let response = try await reviewAPIClient.reportReview(placeId: placeId, reviewId: reviewId)
+          await send(.removeReviewCellState(selectedUserReviewCellState))
           await send(.reportReviewResponse(.success(response)))
         } catch: { error, send in
           await send(.reportReviewResponse(.failure(error)))
