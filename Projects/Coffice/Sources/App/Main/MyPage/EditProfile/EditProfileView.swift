@@ -57,7 +57,7 @@ struct EditProfileView: View {
                     lineWidth: 1)
           HStack {
             TextField(
-              "닉네임을 입력해주세요",
+              "최소 2자, 최대 15자로 입력해 주세요",
               text: viewStore.binding(\.$nicknameTextField)
             )
             .applyCofficeFont(font: .subtitle1Medium)
