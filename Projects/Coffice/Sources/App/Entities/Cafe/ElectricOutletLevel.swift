@@ -60,7 +60,7 @@ enum ElectricOutletLevel: Hashable {
     case .many: return "넉넉"
     case .several: return "보통"
     case .few: return "부족"
-    default: return "정보 없음"
+    default: return "-"
     }
   }
 }

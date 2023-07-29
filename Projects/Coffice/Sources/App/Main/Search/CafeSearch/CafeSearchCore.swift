@@ -55,12 +55,14 @@ struct CafeSearchCore: ReducerProtocol {
     case fetchWaypoints
     case searchPlacesWithoutFilters
     case searchPlacesWithRequestValue(requestValue: SearchPlaceRequestValue)
+    case uploadSearchWord(text: String?)
 
     // MARK: Network Response
     case fetchWayPointsResponse(waypoints: [WayPoint])
     case recentSearchWordsResponse(TaskResult<[RecentSearchWord]>)
     case searchPlacesWithoutFiltersResponse(cafes: [Cafe])
     case searchPlacesWithRequestValueResponse(cafes: [Cafe])
+    case uploadSearchWordResponse(TaskResult<HTTPURLResponse>)
 
     // MARK: Delegate
     case delegate(CafeSearchCoreDelegate)
@@ -84,7 +86,6 @@ struct CafeSearchCore: ReducerProtocol {
       switch action {
 
         // MARK: - Binding
-
       case .binding(\.$searchText):
         if state.searchText.isEmpty {
           state.bodyType = .recentSearchWordsView
@@ -113,12 +114,17 @@ struct CafeSearchCore: ReducerProtocol {
         return .send(.fetchRecentSearchWords)
 
         // MARK: - View Tap Events
-
       case .waypointCellTapped(let waypoint):
-        return EffectTask(value: .delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint)))
+        return .merge(
+          EffectTask(value: .delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint))),
+          EffectTask(value: .uploadSearchWord(text: waypoint.name))
+        )
 
       case .placeCellTapped(let place):
-        return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: [place])))
+        return .merge(
+          EffectTask(value: .uploadSearchWord(text: place.name)),
+          EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: [place])))
+        )
 
       case .clearTextButtonTapped:
         state.searchText = ""
@@ -126,7 +132,15 @@ struct CafeSearchCore: ReducerProtocol {
         return .none
 
       case .recentSearchWordCellTapped(let recentWord):
-        return EffectTask(value: .delegate(.callSearchWithRequestValueByText(searchText: recentWord)))
+        return .run { send in
+          let waypoints = try await placeAPIClient.fetchWaypoints(name: recentWord)
+          if let waypoint = waypoints.first {
+            await send(.delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint)))
+          } else {
+            await send(.delegate(.callSearchWithRequestValueByText(searchText: recentWord)))
+          }
+          await send(.uploadSearchWord(text: recentWord))
+        }
 
       case .deleteRecentSearchWordButtonTapped(let id):
         return .run { send in
@@ -145,9 +159,17 @@ struct CafeSearchCore: ReducerProtocol {
           } else {
             await send(.delegate(.callSearchWithRequestValueByText(searchText: searchText)))
           }
+          await send(.uploadSearchWord(text: searchText))
         }
 
         // MARK: - Network Requests
+      case .uploadSearchWord(let text):
+        return .run { send in
+          let result = await TaskResult {
+            try await searchWordClient.uploadRecentSearchWord(text: text)
+          }
+          await send(.uploadSearchWordResponse(result))
+        }
 
       case .fetchRecentSearchWords:
         return .run { send in
@@ -184,7 +206,6 @@ struct CafeSearchCore: ReducerProtocol {
         }
 
         // MARK: - Network Responses
-
       case .recentSearchWordsResponse(let result):
         switch result {
         case .success(let recentSearchWords):
@@ -210,6 +231,15 @@ struct CafeSearchCore: ReducerProtocol {
           return .none
         }
         return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: cafes)))
+
+      case .uploadSearchWordResponse(let result):
+        switch result {
+        case .failure(let error):
+          debugPrint(error)
+          return .none
+        default:
+          return .none
+        }
 
       default:
         return .none

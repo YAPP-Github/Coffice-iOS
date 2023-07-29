@@ -24,7 +24,6 @@ struct AppCoordinator: ReducerProtocol {
     init() {
       if UserDefaults.standard.bool(forKey: "alreadyLaunched").isFalse {
         KeychainManager.shared.deleteUserToken()
-        UserDefaults.standard.setValue(true, forKey: "alreadyLaunched")
       }
 
       let isAlreadyLoggedIn = CoreNetwork.shared.token != nil
@@ -54,17 +53,26 @@ struct AppCoordinator: ReducerProtocol {
       switch action {
       case .routeAction(_, action: .login(.routeAction(_, action: .main(.loginCompleted)))):
         state.routes.dismissAll()
-        return .none
+        UserDefaults.standard.setValue(true, forKey: "alreadyLaunched")
+        return EffectTask(value: .routeAction(0, action: .main(.loginCompleted)))
 
       case .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.logoutCompleted)))))),
           .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.memberLeaveCompleted)))))):
         KeychainManager.shared.deleteUserToken()
+        UserDefaults.standard.setValue(false, forKey: "alreadyLaunched")
         return .merge(
           EffectTask(value: .dismissAllRoutes),
           EffectTask(value: .presentLoginView)
             .delay(for: 0.5, scheduler: DispatchQueue.main)
             .eraseToEffect()
         )
+
+      case .routeAction(_, action: .main(.myPage(.delegate(.pushLogin)))):
+        return EffectTask(value: .presentLoginView)
+
+      case .routeAction(_, action: .login(.routeAction(_, action: .main(.dismissButtonTapped)))):
+        state.routes.dismiss()
+        return .none
 
       case .dismissAllRoutes:
         state.routes.dismissAll()

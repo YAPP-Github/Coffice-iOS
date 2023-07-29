@@ -32,7 +32,7 @@ struct CafeMapCore: ReducerProtocol {
     var cafeFilterMenusState: CafeFilterMenus.State = .initialState
 
     // MARK: CafeFilter
-    var cafeFilterInformation: CafeFilterInformation = .initialState
+    var cafeFilterInformation: CafeFilterInformation?
 
     // MARK: NaverMapView
     var naverMapState = NaverMapCore.State()
@@ -65,7 +65,7 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: Common
     case binding(BindingAction<State>)
     case requestLocationAuthorization
-    case resetCafes(ResetState)
+    case resetCafes
     case cafeFilterMenusAction(CafeFilterMenus.Action)
     case cardViewTapped
     case showToastBySearch
@@ -73,6 +73,9 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: View LifeCycle
     case onAppear
     case onDisappear
+
+    // MARK: Need to improve
+    case resetCafesForSearchList(ResetState)
   }
 
   // MARK: - Dependencies
@@ -181,7 +184,7 @@ struct CafeMapCore: ReducerProtocol {
         )
 
       case .cafeSearchListAction(.dismiss):
-        return .send(.resetCafes(.dismissSearchResultView))
+        return .send(.resetCafesForSearchList(.dismissSearchResultView))
 
       case .cafeSearchListAction(.scrollAndRequestSearchPlace(let lastDistance)):
         let pageSize = state.cafeSearchListState.pageSize
@@ -193,10 +196,10 @@ struct CafeMapCore: ReducerProtocol {
               userLatitude: cameraPosition.latitude,
               userLongitude: cameraPosition.longitude,
               maximumSearchDistance: 2000,
-              isOpened: filterInformation.isOpened,
-              openAroundTheClock: filterInformation.openAroundTheClock,
-              hasCommunalTable: filterInformation.hasCommunalTable,
-              filters: filterInformation.cafeSearchFilters,
+              isOpened: filterInformation?.isOpened,
+              openAroundTheClock: filterInformation?.openAroundTheClock,
+              hasCommunalTable: filterInformation?.hasCommunalTable,
+              filters: filterInformation?.cafeSearchFilters,
               pageSize: pageSize,
               pageableKey: PageableKey(lastCafeDistance: lastDistance)
             )
@@ -215,10 +218,10 @@ struct CafeMapCore: ReducerProtocol {
           userLatitude: cameraPosition.latitude,
           userLongitude: cameraPosition.longitude,
           maximumSearchDistance: 500,
-          isOpened: filterInformation.isOpened,
-          openAroundTheClock: filterInformation.openAroundTheClock,
-          hasCommunalTable: filterInformation.hasCommunalTable,
-          filters: filterInformation.cafeSearchFilters,
+          isOpened: filterInformation?.isOpened,
+          openAroundTheClock: filterInformation?.openAroundTheClock,
+          hasCommunalTable: filterInformation?.hasCommunalTable,
+          filters: filterInformation?.cafeSearchFilters,
           pageSize: 9999999,
           pageableKey: nil
         )
@@ -240,11 +243,11 @@ struct CafeMapCore: ReducerProtocol {
           searchText: searchText,
           userLatitude: currentCameraPosition.latitude,
           userLongitude: currentCameraPosition.longitude,
-          maximumSearchDistance: 2000, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
-          isOpened: filterInformation.isOpened,
-          openAroundTheClock: filterInformation.openAroundTheClock,
-          hasCommunalTable: filterInformation.hasCommunalTable,
-          filters: filterInformation.cafeSearchFilters,
+          maximumSearchDistance: 800000, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
+          isOpened: filterInformation?.isOpened,
+          openAroundTheClock: filterInformation?.openAroundTheClock,
+          hasCommunalTable: filterInformation?.hasCommunalTable,
+          filters: filterInformation?.cafeSearchFilters,
           pageSize: 10, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
           pageableKey: nil
         )
@@ -257,10 +260,10 @@ struct CafeMapCore: ReducerProtocol {
           userLatitude: waypoint.latitude,
           userLongitude: waypoint.longitude,
           maximumSearchDistance: 2000, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
-          isOpened: filterInformation.isOpened,
-          openAroundTheClock: filterInformation.openAroundTheClock,
-          hasCommunalTable: filterInformation.hasCommunalTable,
-          filters: filterInformation.cafeSearchFilters,
+          isOpened: filterInformation?.isOpened,
+          openAroundTheClock: filterInformation?.openAroundTheClock,
+          hasCommunalTable: filterInformation?.hasCommunalTable,
+          filters: filterInformation?.cafeSearchFilters,
           pageSize: 10, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
           pageableKey: nil
         )
@@ -309,16 +312,17 @@ struct CafeMapCore: ReducerProtocol {
 
         // MARK: Search
       case .searchPlacesWithRequestValueByDefault:
+        let filterInformation = state.cafeFilterInformation
         let requestValue = SearchPlaceRequestValue(
           searchText: "",
           userLatitude: 37.4971,
           userLongitude: 127.0287,
           maximumSearchDistance: 3000,
-          isOpened: nil,
-          openAroundTheClock: nil,
-          hasCommunalTable: nil,
-          filters: nil,
-          pageSize: 30,
+          isOpened: filterInformation?.isOpened,
+          openAroundTheClock: filterInformation?.openAroundTheClock,
+          hasCommunalTable: filterInformation?.hasCommunalTable,
+          filters: filterInformation?.cafeSearchFilters,
+          pageSize: 9999,
           pageableKey: nil
         )
         return .merge(
@@ -371,7 +375,12 @@ struct CafeMapCore: ReducerProtocol {
         state.shouldShowToast = true
         return .none
 
-      case .resetCafes(let resetState):
+      case .resetCafes:
+        return .merge(
+          EffectTask(value: .naverMapAction(.removeAllMarkers))
+        )
+
+      case .resetCafesForSearchList(let resetState):
         switch resetState {
         case .searchResultIsEmpty:
           state.cafeSearchState.previousViewType = .mainMapView
@@ -415,10 +424,12 @@ struct CafeMapCore: ReducerProtocol {
             EffectTask(value: .requestLocationAuthorization)
           )
         }
-        return .none
+        return EffectTask(value: .naverMapAction(.updateSelectedCafeState))
+
       case .serviceAreaPopupAction(.confirmButtonTapped):
         state.serviceAreaPopupState = nil
         return .none
+
       default:
         return .none
       }

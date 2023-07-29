@@ -42,6 +42,21 @@ struct SearchWordAPIClient: DependencyKey {
     _ = try await coreNetwork.dataTask(request: request)
     return
   }
+
+  func uploadRecentSearchWord(text: String?) async throws -> HTTPURLResponse {
+    let coreNetwork = CoreNetwork.shared
+    var urlComponents = URLComponents(string: coreNetwork.baseURL)
+    urlComponents?.path = "/api/v1/search-words"
+    let requestValue = SearchWordUploadRequestValue(text: text)
+
+    guard let requestBody = try? JSONEncoder().encode(requestValue.toDTO())
+    else { throw CoreNetworkError.jsonEncodeFailed }
+
+    guard let request = urlComponents?.toURLRequest(method: .post, httpBody: requestBody)
+    else { throw CoreNetworkError.requestConvertFailed }
+
+    return try await coreNetwork.dataTask(request: request)
+  }
 }
 
 extension DependencyValues {

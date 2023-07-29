@@ -21,7 +21,7 @@ struct LoginView: View {
 
   var mainView: some View {
     WithViewStore(store) { viewStore in
-      VStack(spacing: 0) {
+      VStack(alignment: .leading, spacing: 0) {
         VStack(alignment: .center, spacing: 0) {
           CofficeAsset.Asset.loginAppLogo.swiftUIImage
             .padding(EdgeInsets(top: 0, leading: 60, bottom: 178, trailing: 60))
@@ -75,7 +75,19 @@ struct LoginView: View {
         }
         .padding(EdgeInsets(top: 163, leading: 36, bottom: 129, trailing: 36))
       }
-
+      .overlay(alignment: .topLeading) {
+        if viewStore.isOnboarding.isFalse {
+          Group {
+            Button {
+              viewStore.send(.dismissButtonTapped)
+            } label: {
+              CofficeAsset.Asset.close40px.swiftUIImage
+                .frame(width: 40, height: 40)
+            }
+          }
+          .padding(20)
+        }
+      }
       .popup(
         item: viewStore.binding(\.$loginServiceTermsBottomSheetState),
         itemView: { viewState in

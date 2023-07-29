@@ -29,22 +29,24 @@ struct MyPage: ReducerProtocol {
     case binding(BindingAction<State>)
     case bottomSheet(BottomSheetReducer.Action)
     case devTestAction(DevTest.Action)
+    case fetchUserData
     case contactEmailView(isPresented: Bool)
     case onAppear
     case menuButtonTapped(MenuItem)
-    case editProfileButtonTapped(nickname: String)
     case userInfoFetched(User)
     case logoutButtonTapped
     case memberLeaveButtonTapped
     case logout
     case memberLeave
     case presentDevTestView
+    case loginCompletion
     case delegate(MyPageDelegate)
   }
 
-  enum MyPageDelegate {
+  enum MyPageDelegate: Equatable {
     case logoutCompleted
     case memberLeaveCompleted
+    case editProfileButtonTapped(nickname: String, loginType: LoginType)
   }
 
   @Dependency(\.accountClient) private var accountClient
@@ -53,7 +55,10 @@ struct MyPage: ReducerProtocol {
     BindingReducer()
     Reduce { state, action in
       switch action {
-      case .onAppear:
+      case .onAppear, .loginCompletion:
+        return EffectTask(value: .fetchUserData)
+
+      case .fetchUserData:
         return .run { send in
           let userData = try await accountClient.fetchUserData()
           await send(.userInfoFetched(userData))

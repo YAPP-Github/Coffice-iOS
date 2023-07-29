@@ -22,6 +22,11 @@ struct MyPageCoordinator: ReducerProtocol {
     case routeAction(Int, action: MyPageScreen.Action)
     case updateRoutes([Route<MyPageScreen.State>])
     case binding(BindingAction<State>)
+    case delegate(MyPageCoordinatorDelegate)
+  }
+
+  enum MyPageCoordinatorDelegate {
+    case pushLogin
   }
 
   var body: some ReducerProtocolOf<MyPageCoordinator> {
@@ -41,8 +46,12 @@ struct MyPageCoordinator: ReducerProtocol {
         }
         return .none
 
-      case .routeAction(_, action: .myPage(.editProfileButtonTapped(let nickname))):
-        state.routes.push(.editProfile(.init(nickname: nickname)))
+      case .routeAction(_, action: .myPage(.delegate(.editProfileButtonTapped(let nickname, let loginType)))):
+        if loginType == .anonymous {
+          return EffectTask(value: .delegate(.pushLogin))
+        } else {
+          state.routes.push(.editProfile(.init(nickname: nickname)))
+        }
         return .none
 
       case .routeAction(_, action: .locationServiceTerms(.popView)),

@@ -31,7 +31,7 @@ enum CafeGroupSeatLevel: Hashable {
   var informationText: String {
     switch self {
     case .unknown:
-      return "정보 없음"
+      return "-"
     case .isTrue:
       return "있음"
     case .isFalse:

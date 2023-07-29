@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Kingfisher
 import SwiftUI
 
 struct CafeReviewWriteView: View {
@@ -35,14 +36,24 @@ struct CafeReviewWriteView: View {
         .padding(.horizontal, 20)
         .padding(.bottom, 16)
 
-        HStack {
-          CofficeAsset.Asset.cafeImage.swiftUIImage
-            .resizable()
-            .frame(width: 48, height: 48)
-            .cornerRadius(4, corners: .allCorners)
+        HStack(spacing: 16) {
+          Group {
+            if let imageUrl = viewStore.imageUrl {
+              KFImage.url(imageUrl)
+                .placeholder {
+                  imagePlaceholderView
+                }
+                .resizable()
+                .scaledToFill()
+            } else {
+              imagePlaceholderView
+            }
+          }
+          .frame(width: 48, height: 48)
+          .cornerRadius(4, corners: .allCorners)
 
           VStack(spacing: 0) {
-            Text("훅스턴")
+            Text(viewStore.cafeName)
               .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
               .applyCofficeFont(font: .subtitleSemiBold)
               .frame(maxWidth: .infinity, alignment: .leading)
@@ -50,7 +61,7 @@ struct CafeReviewWriteView: View {
 
             Spacer()
 
-            Text("서울 서대문구 연희로 91 2층")
+            Text(viewStore.cafeAddress)
               .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
               .applyCofficeFont(font: .body1Medium)
               .frame(maxWidth: .infinity, alignment: .leading)
@@ -114,7 +125,7 @@ struct CafeReviewWriteView: View {
 }
 
 extension CafeReviewWriteView: KeyboardPresentationReadable {
-  var reviewFormScrollView: some View {
+  private var reviewFormScrollView: some View {
     WithViewStore(store) { viewStore in
       ScrollViewReader { proxy in
         ScrollView(.vertical, showsIndicators: true) {
@@ -141,7 +152,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     }
   }
 
-  var reviewOptionMenuView: some View {
+  private var reviewOptionMenuView: some View {
     WithViewStore(store) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         ForEach(viewStore.optionButtonStates) { buttonState in
@@ -156,7 +167,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     }
   }
 
-  var reviewTextView: some View {
+  private var reviewTextView: some View {
     WithViewStore(store) { viewStore in
       ZStack(alignment: .topLeading) {
         VStack(alignment: .leading, spacing: 0) {
@@ -197,7 +208,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     }
   }
 
-  var textDescriptionView: some View {
+  private var textDescriptionView: some View {
     WithViewStore(store) { viewStore in
       HStack(alignment: .bottom, spacing: 0) {
         Text(viewStore.currentTextLengthDescription)
@@ -207,6 +218,19 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
           .foregroundColor(CofficeAsset.Colors.grayScale5.swiftUIColor)
           .applyCofficeFont(font: .body3Medium)
       }
+    }
+  }
+
+  private var imagePlaceholderView: some View {
+    LinearGradient(
+      gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+      startPoint: .top,
+      endPoint: .bottom
+    )
+    .background(alignment: .center) {
+      CofficeAsset.Asset.icPlaceholder.swiftUIImage
+        .resizable()
+        .frame(width: 20, height: 20)
     }
   }
 }

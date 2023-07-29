@@ -10,14 +10,14 @@ import ComposableArchitecture
 import SwiftUI
 
 struct CafeDetailSubInfoView: View {
-  private let store: StoreOf<CafeDetail>
+  private let store: StoreOf<CafeDetailSubInfoReducer>
 
-  init(store: StoreOf<CafeDetail>) {
+  init(store: StoreOf<CafeDetailSubInfoReducer>) {
     self.store = store
   }
 
   var body: some View {
-    WithViewStore(store) { _ in
+    WithViewStore(store) { viewStore in
       VStack(spacing: 0) {
         VStack(spacing: 0) {
           cafeSubPrimaryInfoView
@@ -29,6 +29,24 @@ struct CafeDetailSubInfoView: View {
           .frame(height: 4)
           .padding(.top, 20)
       }
+      .popup(
+        item: viewStore.binding(\.$bubbleMessageViewState),
+        itemView: { viewState in
+          BubbleMessageView(store: store.scope(
+            state: { _ in viewState },
+            action: CafeDetailSubInfoReducer.Action.bubbleMessageAction)
+          )
+        },
+        customize: { popup in
+          popup
+            .type(.default)
+            .position(.center)
+            .animation(.easeIn(duration: 0))
+            .isOpaque(true)
+            .closeOnTapOutside(true)
+            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+        }
+      )
     }
   }
 }
@@ -36,22 +54,21 @@ struct CafeDetailSubInfoView: View {
 extension CafeDetailSubInfoView {
   private var cafeSubPrimaryInfoView: some View {
     WithViewStore(store, observe: \.subPrimaryInfoViewStates) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
+      VStack(alignment: .center, spacing: 0) {
         Text("카페정보")
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
           .applyCofficeFont(font: .header3)
-          .frame(alignment: .leading)
           .frame(height: 20)
+          .frame(maxWidth: .infinity, alignment: .leading)
           .padding(.top, 15)
 
-        HStack {
+        HStack(alignment: .center, spacing: 40) {
           ForEach(viewStore.state) { viewState in
-            VStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .trailing, spacing: 8) {
               HStack(alignment: .top, spacing: 0) {
                 Image(viewState.iconName)
                   .resizable()
                   .frame(width: 44, height: 44)
-                  .padding(.vertical, 6)
                 Button {
                   viewStore.send(
                     .infoGuideButtonTapped(
@@ -66,7 +83,6 @@ extension CafeDetailSubInfoView {
                     .frame(width: 18, height: 18)
                 }
               }
-              .offset(x: 9, y: 0)
               HStack(spacing: 8) {
                 Text(viewState.title)
                   .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
@@ -79,15 +95,10 @@ extension CafeDetailSubInfoView {
               }
               .fixedSize(horizontal: true, vertical: true)
             }
-
-            if case . groupSeat = viewState.type {
-              EmptyView()
-            } else {
-              Spacer()
-            }
           }
           .padding(.top, 16)
         }
+        .frame(width: 300)
 
         CofficeAsset.Colors.grayScale3.swiftUIColor
           .frame(height: 1)
@@ -148,8 +159,8 @@ struct CafeSearchDetailSubInfoView_Previews: PreviewProvider {
   static var previews: some View {
     CafeDetailSubInfoView(
       store: .init(
-        initialState: .init(cafeId: 1),
-        reducer: CafeDetail()
+        initialState: .init(),
+        reducer: CafeDetailSubInfoReducer()
       )
     )
   }
