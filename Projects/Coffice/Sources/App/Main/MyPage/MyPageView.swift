@@ -76,7 +76,7 @@ struct MyPageView: View {
         nickNameView
           .padding(.top, 110)
 
-        if viewStore.user?.loginTypes.contains(.anonymous) == true {
+        if viewStore.user?.loginType == .anonymous {
           Color.clear
             .frame(width: 0, height: 0)
             .padding(.top, 56)
@@ -109,14 +109,14 @@ struct MyPageView: View {
             .delegate(
               .editProfileButtonTapped(
                 nickname: viewStore.user?.name ?? "-",
-                loginType: viewStore.user?.loginTypes.first ?? .anonymous
+                loginType: viewStore.user?.loginType ?? .anonymous
               )
             )
           )
         } label: {
           HStack(spacing: 0) {
             Text(
-              viewStore.user?.loginTypes.first == .anonymous
+              viewStore.user?.loginType == .anonymous
               ? "SNS 로그인"
               : "편집"
             )
@@ -145,10 +145,10 @@ struct MyPageView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
           HStack(spacing: 8) {
-            viewStore.user?.loginTypes.first?.image
+            viewStore.user?.loginType?.image
               .resizable()
               .frame(width: 18, height: 18)
-            Text(viewStore.user?.loginTypes.first?.displayName ?? "")
+            Text(viewStore.user?.loginType?.displayName ?? "")
               .applyCofficeFont(font: .body2Medium)
               .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
               .padding(.trailing, 10)

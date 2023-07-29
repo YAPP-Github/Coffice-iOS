@@ -13,6 +13,16 @@ struct User: Hashable {
   let id: Int
   let loginTypes: [LoginType]
   let name: String
+  var loginType: LoginType? {
+    loginTypes.sorted {
+      if $0 == .anonymous {
+        return false
+      } else if $1 == .anonymous {
+        return true
+      }
+      return true
+    }.first
+  }
 }
 
 extension MemberResponseDTO {
