@@ -25,6 +25,9 @@ struct SavedListView: View {
       .onAppear {
         viewStore.send(.onAppear)
       }
+      .onDisappear {
+        viewStore.send(.onDisappear)
+      }
       .customNavigationBar {
         Text(viewStore.title)
           .applyCofficeFont(font: .header1)
