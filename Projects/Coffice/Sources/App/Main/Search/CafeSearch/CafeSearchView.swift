@@ -27,6 +27,7 @@ struct CafeSearchView: View {
           }
         cafeSearchBodyView
       }
+      .ignoresSafeArea(.keyboard)
       .onAppear {
         focusField = .keyword
         viewStore.send(.onAppear)
