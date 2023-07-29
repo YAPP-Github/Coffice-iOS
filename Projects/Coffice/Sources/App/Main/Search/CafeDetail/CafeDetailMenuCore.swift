@@ -85,7 +85,9 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case deleteReview
     case deleteReviewResponse(TaskResult<HTTPURLResponse>)
-    case removeReviewCellState(UserReviewCellState)
+    case insertReviewCellState(review: Review)
+    case replaceReviewCellState(review: Review)
+    case removeReviewCellState(viewState: UserReviewCellState)
     case reviewModifyButtonTapped(viewState: UserReviewCellState)
     case reviewModifySheetDismissed
     case reviewEditSheetButtonTapped
@@ -118,6 +120,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         return EffectTask(value: .fetchUserData)
 
       case .userReviewCellDidAppear(let currentCellState):
+        debugPrint("@@@ lastSeenReviewId : \(currentCellState.reviewId)")
         guard let lastReviewCellState = state.userReviewCellStates.last,
               lastReviewCellState == currentCellState,
               state.lastSeenReviewId != currentCellState.reviewId,
@@ -222,7 +225,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
 
         return .run { send in
           let response = try await reviewAPIClient.reportReview(placeId: placeId, reviewId: reviewId)
-          await send(.removeReviewCellState(selectedUserReviewCellState))
+          await send(.removeReviewCellState(viewState: selectedUserReviewCellState))
           await send(.reportReviewResponse(.success(response)))
         } catch: { error, send in
           await send(.reportReviewResponse(.failure(error)))
@@ -236,7 +239,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
 
         return .run { send in
           let response = try await reviewAPIClient.deleteReview(placeId: placeId, reviewId: reviewId)
-          await send(.removeReviewCellState(selectedUserReviewCellState))
+          await send(.removeReviewCellState(viewState: selectedUserReviewCellState))
           await send(.deleteReviewResponse(.success(response)))
         } catch: { error, send in
           await send(.deleteReviewResponse(.failure(error)))
@@ -271,8 +274,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         switch result {
         case .success:
           return .merge(
-            EffectTask(value: .delegate(.presentToastView(message: state.reviewDeleteFinishedMessage))),
-            EffectTask(value: .fetchReviews)
+            EffectTask(value: .delegate(.presentToastView(message: state.reviewDeleteFinishedMessage)))
           )
         case .failure(let error):
           debugPrint(error.localizedDescription)
@@ -299,28 +301,77 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         state.cafeReviewWriteState = viewState
         return .none
 
-      case .cafeReviewWrite(let action):
+      case .cafeReviewWrite(.delegate(let action)):
         switch action {
-        case .uploadReviewResponse(.success):
+        case .uploadReviewFinished(let review):
           return .merge(
             EffectTask(value: .delegate(.presentToastView(message: state.reviewUploadFinishedMessage))),
-            EffectTask(value: .fetchReviews)
+            EffectTask(value: .insertReviewCellState(review: review))
           )
-        case .editReviewResponse(.success):
+        case .editReviewFinished(let review):
           return .merge(
             EffectTask(value: .delegate(.presentToastView(message: state.reviewEditFinishedMessage))),
-            EffectTask(value: .fetchReviews)
+            EffectTask(value: .replaceReviewCellState(review: review))
           )
         case .dismissView:
           state.cafeReviewWriteState = nil
-        default:
-          return .none
         }
+        return .none
+
+      case .insertReviewCellState(let review):
+        guard let userId = state.user?.id
+        else { return .none }
+
+        state.userReviewCellStates.insert(
+          .init(
+            reviewId: review.reviewId,
+            memberId: review.memberId,
+            userName: review.memberName,
+            date: review.createdDate,
+            content: review.content ?? "",
+            tagTypes: [
+              review.outletOption == .enough ? .enoughOutlets : nil,
+              review.wifiOption == .fast ? .fastWifi : nil,
+              review.noiseOption == .quiet ? .quiet : nil
+            ]
+              .compactMap { $0 },
+            isMyReview: review.memberId == userId,
+            outletOption: review.outletOption,
+            wifiOption: review.wifiOption,
+            noiseOption: review.noiseOption
+          ),
+          at: 0
+        )
+        return .none
+
+      case .replaceReviewCellState(let review):
+        guard let userId = state.user?.id,
+              let reviewIndex = state.userReviewCellStates.firstIndex(where: { $0.reviewId == review.reviewId })
+        else { return .none }
+
+        state.userReviewCellStates[reviewIndex] = .init(
+          reviewId: review.reviewId,
+          memberId: review.memberId,
+          userName: review.memberName,
+          date: review.createdDate,
+          content: review.content ?? "",
+          tagTypes: [
+            review.outletOption == .enough ? .enoughOutlets : nil,
+            review.wifiOption == .fast ? .fastWifi : nil,
+            review.noiseOption == .quiet ? .quiet : nil
+          ]
+            .compactMap { $0 },
+          isMyReview: review.memberId == userId,
+          outletOption: review.outletOption,
+          wifiOption: review.wifiOption,
+          noiseOption: review.noiseOption
+        )
         return .none
 
       case .reviewModifySheetDismissed:
         guard let cellState = state.selectedUserReviewCellState,
-              let placeId = state.cafe?.placeId
+              let placeId = state.cafe?.placeId,
+              let user = state.user
         else { return .none }
 
         var popActionEffectTask: EffectTask<Action> = .none
@@ -339,7 +390,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
                 outletOption: cellState.outletOption,
                 wifiOption: cellState.wifiOption,
                 noiseOption: cellState.noiseOption,
-                reviewText: cellState.content ?? ""
+                reviewText: cellState.content
               )
             )
           )

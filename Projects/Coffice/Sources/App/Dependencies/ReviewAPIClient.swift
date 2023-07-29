@@ -51,7 +51,7 @@ struct ReviewAPIClient: DependencyKey {
     )
   }
 
-  func uploadReview(requestValue: ReviewUploadRequestValue) async throws -> HTTPURLResponse {
+  func uploadReview(requestValue: ReviewUploadRequestValue) async throws -> Review {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places/\(requestValue.placeId)/reviews"
@@ -65,10 +65,21 @@ struct ReviewAPIClient: DependencyKey {
     )
     else { throw CoreNetworkError.requestConvertFailed }
 
-    return try await coreNetwork.dataTask(request: request)
+    let response: ReviewResponseDTO = try await coreNetwork.dataTask(request: request)
+    return .init(
+      reviewId: response.reviewId,
+      memberId: response.member.memberId,
+      memberName: response.member.name,
+      electricOutletLevel: response.electricOutletLevel,
+      wifiLevel: response.wifiLevel,
+      noiseLevel: response.noiseLevel,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+      content: response.content
+    )
   }
 
-  func editReview(requestValue: ReviewEditRequestValue) async throws -> HTTPURLResponse {
+  func editReview(requestValue: ReviewEditRequestValue) async throws -> Review {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places/\(requestValue.placeId)/reviews/\(requestValue.reviewId)"
@@ -82,7 +93,18 @@ struct ReviewAPIClient: DependencyKey {
     )
     else { throw CoreNetworkError.requestConvertFailed }
 
-    return try await coreNetwork.dataTask(request: request)
+    let response: ReviewResponseDTO = try await coreNetwork.dataTask(request: request)
+    return .init(
+      reviewId: response.reviewId,
+      memberId: response.member.memberId,
+      memberName: response.member.name,
+      electricOutletLevel: response.electricOutletLevel,
+      wifiLevel: response.wifiLevel,
+      noiseLevel: response.noiseLevel,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+      content: response.content
+    )
   }
 
   func deleteReview(placeId: Int, reviewId: Int) async throws -> HTTPURLResponse {

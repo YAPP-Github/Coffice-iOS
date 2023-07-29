@@ -20,7 +20,7 @@ struct CafeReviewWrite: ReducerProtocol {
   typealias NoiseOption = ReviewOption.NoiseOption
 
   struct State: Equatable, Identifiable {
-    static let mock: Self = .init(reviewType: .create, placeId: 1)
+    static let mock: Self = .mock
 
     let id = UUID()
     @BindingState var reviewText: String?
@@ -94,7 +94,6 @@ struct CafeReviewWrite: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
     case onAppear
-    case dismissView
     case dismissViewWithDelay
     case optionButtonsAction(CafeReviewOptionButtons.Action)
     case dismissConfirmBottomSheet(action: BottomSheetReducer.Action)
@@ -105,8 +104,15 @@ struct CafeReviewWrite: ReducerProtocol {
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
     case saveButtonTapped
     case uploadReview
-    case uploadReviewResponse(TaskResult<HTTPURLResponse>)
-    case editReviewResponse(TaskResult<HTTPURLResponse>)
+    case uploadReviewResponse(TaskResult<Review>)
+    case editReviewResponse(TaskResult<Review>)
+    case delegate(Delegate)
+  }
+
+  enum Delegate: Equatable {
+    case uploadReviewFinished(review: Review)
+    case editReviewFinished(review: Review)
+    case dismissView
   }
 
   @Dependency(\.reviewAPIClient) private var reviewAPIClient
@@ -120,7 +126,7 @@ struct CafeReviewWrite: ReducerProtocol {
         return .none
 
       case .dismissViewWithDelay:
-        return EffectTask(value: .dismissView)
+        return EffectTask(value: .delegate(.dismissView))
           .delay(for: 0.1, scheduler: DispatchQueue.main)
           .eraseToEffect()
 
@@ -165,6 +171,9 @@ struct CafeReviewWrite: ReducerProtocol {
           }
         }
 
+        // 리뷰 추가/수정 시, 이전화면 리뷰 리스트에서 임시로 수정된 정보를 보여주기 위해 만드는 모델로 createdAt, updatedAt은 현재시간 기준 설정하여 Entity 생성
+        let currentDateString = Date().utcDateString()
+
         switch state.reviewType {
         case .create:
           let requestValue = ReviewUploadRequestValue(
@@ -200,8 +209,11 @@ struct CafeReviewWrite: ReducerProtocol {
 
       case .uploadReviewResponse(let result):
         switch result {
-        case .success:
-          return EffectTask(value: .dismissView)
+        case .success(let review):
+          return .concatenate(
+            EffectTask(value: .delegate(.uploadReviewFinished(review: review))),
+            EffectTask(value: .delegate(.dismissView))
+          )
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
@@ -209,8 +221,11 @@ struct CafeReviewWrite: ReducerProtocol {
 
       case .editReviewResponse(let result):
         switch result {
-        case .success:
-          return EffectTask(value: .dismissView)
+        case .success(let review):
+          return .concatenate(
+            EffectTask(value: .delegate(.editReviewFinished(review: review))),
+            EffectTask(value: .delegate(.dismissView))
+          )
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
