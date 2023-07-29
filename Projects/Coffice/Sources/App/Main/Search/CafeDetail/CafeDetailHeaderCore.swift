@@ -26,6 +26,7 @@ struct CafeDetailHeaderReducer: ReducerProtocol {
 
   enum Action: Equatable {
     case bookmarkButtonTapped
+    case bookmarkResponse(isBookmarked: Bool)
     case addMyPlace
     case addMyPlaceFinished
     case deleteMyPlace
@@ -47,6 +48,9 @@ struct CafeDetailHeaderReducer: ReducerProtocol {
         state.cafe?.isBookmarked.toggle()
         let isBookmarked = state.cafe?.isBookmarked ?? false
 
+        return EffectTask(value: .bookmarkResponse(isBookmarked: isBookmarked))
+
+      case .bookmarkResponse(let isBookmarked):
         if isBookmarked {
           return .merge(
             EffectTask(value: .delegate(.updateBookmarkedState(isBookmarked))),
