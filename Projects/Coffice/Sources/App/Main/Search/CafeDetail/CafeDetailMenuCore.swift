@@ -85,6 +85,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case reportReviewResponse(TaskResult<HTTPURLResponse>)
     case deleteReview
     case deleteReviewResponse(TaskResult<HTTPURLResponse>)
+    case removeReviewCellState(UserReviewCellState)
     case reviewModifyButtonTapped(viewState: UserReviewCellState)
     case reviewModifySheetDismissed
     case reviewEditSheetButtonTapped
@@ -226,16 +227,24 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         }
 
       case .deleteReview:
-        guard let reviewId = state.selectedUserReviewCellState?.reviewId,
+        guard let selectedUserReviewCellState = state.selectedUserReviewCellState,
               let placeId = state.cafe?.placeId
         else { return .none }
+        let reviewId = selectedUserReviewCellState.reviewId
 
         return .run { send in
           let response = try await reviewAPIClient.deleteReview(placeId: placeId, reviewId: reviewId)
+          await send(.removeReviewCellState(selectedUserReviewCellState))
           await send(.deleteReviewResponse(.success(response)))
         } catch: { error, send in
           await send(.deleteReviewResponse(.failure(error)))
         }
+
+      case .removeReviewCellState(let reviewCellState):
+        guard let index = state.userReviewCellStates.firstIndex(of: reviewCellState)
+        else { return .none }
+        state.userReviewCellStates.remove(at: index)
+        return .none
 
       case .fetchReviewsResponse(let result):
         switch result {
