@@ -242,7 +242,7 @@ struct CafeMapCore: ReducerProtocol {
           searchText: searchText,
           userLatitude: currentCameraPosition.latitude,
           userLongitude: currentCameraPosition.longitude,
-          maximumSearchDistance: 2000, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
+          maximumSearchDistance: 800000, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
           isOpened: filterInformation?.isOpened,
           openAroundTheClock: filterInformation?.openAroundTheClock,
           hasCommunalTable: filterInformation?.hasCommunalTable,
