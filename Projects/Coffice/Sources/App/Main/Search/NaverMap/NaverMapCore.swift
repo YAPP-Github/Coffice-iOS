@@ -65,7 +65,7 @@ struct NaverMapCore: ReducerProtocol {
     mutating func toggleOpenTime() {
       if shouldShowOpenTime {
         markers.forEach {
-          $0.subCaptionText = $0.cafe.openingInformation?.quickFormattedString ?? "정보없음"
+          $0.subCaptionText = $0.cafe.openingInformation?.quickFormattedString ?? "-"
           $0.subCaptionColor = CofficeAsset.Colors.secondary1.color
         }
       } else {
