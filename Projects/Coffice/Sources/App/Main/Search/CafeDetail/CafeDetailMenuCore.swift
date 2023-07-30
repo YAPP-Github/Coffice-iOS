@@ -120,7 +120,6 @@ struct CafeDetailMenuReducer: ReducerProtocol {
         return EffectTask(value: .fetchUserData)
 
       case .userReviewCellDidAppear(let currentCellState):
-        debugPrint("@@@ lastSeenReviewId : \(currentCellState.reviewId)")
         guard let lastReviewCellState = state.userReviewCellStates.last,
               lastReviewCellState == currentCellState,
               state.lastSeenReviewId != currentCellState.reviewId,
