@@ -405,10 +405,23 @@ struct CafeMapCore: ReducerProtocol {
 
       case .cafeFilterMenusAction(.delegate(.updateCafeFilter(let information))):
         state.cafeFilterInformation = information
-        return EffectTask(value: .cafeSearchListAction(
-          .cafeFilterMenus(action: .updateCafeFilter(information: information))
-        ))
-
+        return .merge(
+          EffectTask(value: .cafeSearchListAction(
+            .cafeFilterMenus(action: .updateCafeFilter(information: information))
+          )),
+          EffectTask(value: .searchPlacesWithRequestValue(SearchPlaceRequestValue(
+            searchText: "",
+            userLatitude: state.naverMapState.currentCameraPosition.latitude,
+            userLongitude: state.naverMapState.currentCameraPosition.longitude,
+            maximumSearchDistance: 2000,
+            isOpened: information.isOpened,
+            openAroundTheClock: information.openAroundTheClock,
+            hasCommunalTable: information.hasCommunalTable,
+            filters: information.cafeSearchFilters,
+            pageSize: 30,
+            pageableKey: nil)
+          ))
+        )
       case .cardViewTapped:
         guard let cafe = state.naverMapState.selectedCafe
         else { return .none }
