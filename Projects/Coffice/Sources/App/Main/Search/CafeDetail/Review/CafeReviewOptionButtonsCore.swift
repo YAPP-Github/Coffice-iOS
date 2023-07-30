@@ -46,7 +46,7 @@ struct CafeReviewOptionButtons: ReducerProtocol {
         optionButtonViewStates = ReviewOption.OutletOption.allCases
           .map {
             OptionButtonViewState(
-              title: $0.title,
+              title: $0.buttonTitle,
               optionType: ReviewOption.outletState(option == $0 ? $0 : nil)
             )
           }
@@ -54,7 +54,7 @@ struct CafeReviewOptionButtons: ReducerProtocol {
         optionButtonViewStates = ReviewOption.WifiOption.allCases
           .map {
             OptionButtonViewState(
-              title: $0.title,
+              title: $0.buttonTitle,
               optionType: ReviewOption.wifiState(option == $0 ? $0 : nil)
             )
           }
@@ -62,7 +62,7 @@ struct CafeReviewOptionButtons: ReducerProtocol {
         optionButtonViewStates = ReviewOption.NoiseOption.allCases
           .map {
             OptionButtonViewState(
-              title: $0.title,
+              title: $0.buttonTitle,
               optionType: ReviewOption.noise(option == $0 ? $0 : nil)
             )
           }
@@ -134,7 +134,7 @@ extension CafeReviewOptionButtons.State {
   }
 }
 
-enum ReviewOption: Equatable {
+enum ReviewOption: Hashable {
   case outletState(OutletOption?)
   case wifiState(WifiOption?)
   case noise(NoiseOption?)
@@ -162,8 +162,23 @@ enum ReviewOption: Equatable {
       case .some:
         return "적당해요"
       case .enough:
-        return "넉넉해요 👍"
+        return "넉넉해요"
       }
+    }
+
+    var buttonTitle: String {
+      switch self {
+      case .few:
+        return title
+      case .some:
+        return title
+      case .enough:
+        return "\(title) 👍"
+      }
+    }
+
+    var tagTitle: String {
+      return "🔌 콘센트 \(title)"
     }
 
     var dtoName: String {
@@ -187,8 +202,21 @@ enum ReviewOption: Equatable {
       case .slow:
         return "아쉬워요"
       case .fast:
-        return "빨라요 👍"
+        return "빨라요"
       }
+    }
+
+    var buttonTitle: String {
+      switch self {
+      case .slow:
+        return title
+      case .fast:
+        return "\(title) 👍"
+      }
+    }
+
+    var tagTitle: String {
+      return "📶 와이파이 \(title)"
     }
 
     var dtoName: String {
@@ -213,8 +241,23 @@ enum ReviewOption: Equatable {
       case .normal:
         return "보통이에요"
       case .quiet:
-        return "조용해요 👍"
+        return "조용해요"
       }
+    }
+
+    var buttonTitle: String {
+      switch self {
+      case .loud:
+        return title
+      case .normal:
+        return title
+      case .quiet:
+        return "\(title) 👍"
+      }
+    }
+
+    var tagTitle: String {
+      return "🔊 \(title)"
     }
 
     var dtoName: String {
