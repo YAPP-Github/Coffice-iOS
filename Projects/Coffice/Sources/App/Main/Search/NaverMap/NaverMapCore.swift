@@ -63,7 +63,7 @@ struct NaverMapCore: ReducerProtocol {
       markers.removeAll()
     }
 
-    mutating func toggleOpenTime() {
+    mutating func setOpenTimeMarkers() {
       if shouldShowOpenTime {
         markers.forEach {
           $0.subCaptionText = $0.cafe.openingInformation?.quickFormattedString ?? "-"
@@ -120,6 +120,7 @@ struct NaverMapCore: ReducerProtocol {
     case delegate(NaverMapDelegate)
     case showBookmarkedToast
     case searchListCellBookmarkUpdated(cafe: Cafe)
+    case showOpenTimeIfNeeded
   }
 
   enum NaverMapDelegate: Equatable {
@@ -148,17 +149,14 @@ struct NaverMapCore: ReducerProtocol {
         switch buttonType {
         case .openTimeButton:
           if let clockButtonIndex = state.bottomFloatingButtons
-            .firstIndex(where: { $0.type == buttonType }) {
-            state.shouldUpdateMarkers = true
+            .firstIndex(where: { $0.type == .openTimeButton }) {
             state.bottomFloatingButtons[clockButtonIndex].isSelected.toggle()
-            state.shouldShowOpenTime = state.bottomFloatingButtons[clockButtonIndex].isSelected
-            state.toggleOpenTime()
             if state.bottomFloatingButtons[clockButtonIndex].isSelected
                 && state.zoomLevel ?? 0 < 15.5 {
               return EffectTask(value: .moveCameraTo(position: state.currentCameraPosition, zoomLevel: 15.5))
             }
           }
-          return .none
+          return EffectTask(value: .showOpenTimeIfNeeded)
         case .currentLocationButton:
           state.isUpdatingCameraPosition = true
           return .send(.moveCameraToUserPosition)
@@ -173,6 +171,15 @@ struct NaverMapCore: ReducerProtocol {
           }
           return .none
         }
+
+      case .showOpenTimeIfNeeded:
+        if let clockButtonIndex = state.bottomFloatingButtons
+          .firstIndex(where: { $0.type == .openTimeButton }) {
+          state.shouldUpdateMarkers = true
+          state.shouldShowOpenTime = state.bottomFloatingButtons[clockButtonIndex].isSelected
+          state.setOpenTimeMarkers()
+        }
+        return .none
 
       case .searchListCellBookmarkUpdated(let cafe):
         guard let selectedCafeIndex = state.cafes.firstIndex(where: { $0.placeId == cafe.placeId })
@@ -262,7 +269,7 @@ struct NaverMapCore: ReducerProtocol {
       case .markersUpdated:
         state.shouldUpdateMarkers = false
         NaverMapViewProgressChecker.shared.isUpdatingMarkers = false
-        return .none
+        return EffectTask(value: .showOpenTimeIfNeeded)
 
       case .markersCleared:
         state.shouldClearMarkers = false
