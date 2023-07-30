@@ -97,6 +97,7 @@ struct UserReviewCell: View {
         CofficeAsset.Colors.grayScale3.swiftUIColor
           .frame(height: 1)
           .padding(.top, 16)
+          .hiddenWithOpacity(isHidden: viewState == viewStore.userReviewCellStates.last)
       }
     }
   }
