@@ -407,7 +407,7 @@ struct CafeMapCore: ReducerProtocol {
         state.cafeFilterInformation = information
         return .merge(
           EffectTask(value: .cafeSearchListAction(
-          .cafeFilterMenus(action: .updateCafeFilter(information: information))
+            .cafeFilterMenus(action: .updateCafeFilter(information: information))
           )),
           EffectTask(value: .searchPlacesWithRequestValue(SearchPlaceRequestValue(
             searchText: "",
