@@ -78,6 +78,20 @@ struct CafeMapView: View {
       }
       .navigationBarHidden(true)
       .onAppear { viewStore.send(.onAppear) }
+      .popup(item: viewStore.binding(\.$serviceAreaPopupState)) { viewState in
+        ServiceAreaPopupView(
+          store: store.scope(
+            state: { _ in viewState },
+            action: CafeMapCore.Action.serviceAreaPopupAction
+          )
+        )
+      } customize: {
+        $0
+          .backgroundColor(.black.opacity(0.4))
+          .isOpaque(true)
+          .closeOnTap(false)
+          .dragToDismiss(false)
+      }
       .popup(isPresented: viewStore.$shouldShowToast) {
         ToastView(
           title: viewStore.toastType.title,

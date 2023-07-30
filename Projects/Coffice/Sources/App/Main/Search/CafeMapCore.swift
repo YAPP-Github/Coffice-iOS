@@ -26,6 +26,7 @@ struct CafeMapCore: ReducerProtocol {
 
     // MARK: Sub-Core States
     @BindingState var searchText = ""
+    @BindingState var serviceAreaPopupState: ServiceAreaPopup.State?
     var cafeSearchState = CafeSearchCore.State()
     var cafeSearchListState = CafeSearchListCore.State()
     var cafeFilterMenusState: CafeFilterMenus.State = .initialState
@@ -46,7 +47,7 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: Sub-Core Actions
     case cafeSearchAction(CafeSearchCore.Action)
     case cafeSearchListAction(CafeSearchListCore.Action)
-
+    case serviceAreaPopupAction(ServiceAreaPopup.Action)
     // MARK: NaverMapView
     case naverMapAction(NaverMapCore.Action)
     case refreshButtonTapped
@@ -417,17 +418,27 @@ struct CafeMapCore: ReducerProtocol {
       case .onAppear:
         if state.isFirstOnAppear {
           state.isFirstOnAppear = false
+          state.serviceAreaPopupState = .init()
           return .merge(
             EffectTask(value: .searchPlacesWithRequestValueByDefault),
             EffectTask(value: .requestLocationAuthorization)
           )
         }
-
         return EffectTask(value: .naverMapAction(.updateSelectedCafeState))
+
+      case .serviceAreaPopupAction(.confirmButtonTapped):
+        state.serviceAreaPopupState = nil
+        return .none
 
       default:
         return .none
       }
+    }
+    .ifLet(
+      \.serviceAreaPopupState,
+      action: /Action.serviceAreaPopupAction
+    ) {
+      ServiceAreaPopup()
     }
   }
 }
