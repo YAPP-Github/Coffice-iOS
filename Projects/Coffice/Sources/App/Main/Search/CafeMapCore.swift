@@ -414,7 +414,7 @@ struct CafeMapCore: ReducerProtocol {
             userLatitude: state.naverMapState.currentCameraPosition.latitude,
             userLongitude: state.naverMapState.currentCameraPosition.longitude,
             maximumSearchDistance: 2000,
-            isOpened: nil,
+            isOpened: information.isOpened,
             openAroundTheClock: information.openAroundTheClock,
             hasCommunalTable: information.hasCommunalTable,
             filters: information.cafeSearchFilters,
