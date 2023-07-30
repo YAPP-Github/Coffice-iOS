@@ -85,14 +85,12 @@ struct DevTest: ReducerProtocol {
     // MARK: Cafe Filter Bottom Sheet
     Reduce { state, action in
       switch action {
-      case .cafeFilterBottomSheetAction(let action):
+      case .cafeFilterBottomSheetAction(.delegate(let action)):
         switch action {
         case .saveCafeFilter(let information):
           debugPrint("saved information : \(information)")
         case .dismiss:
           state.cafeFilterBottomSheetState = nil
-        default:
-          return .none
         }
         return .none
 

@@ -106,15 +106,13 @@ struct CafeFilterMenus: ReducerProtocol {
         state.updateButtonViewStates()
         return .none
 
-      case .cafeFilterBottomSheetViewAction(let action):
+      case .cafeFilterBottomSheetViewAction(.delegate(let action)):
         switch action {
         case .saveCafeFilter(let information):
           state.cafeFilterBottomSheetState = nil
           return EffectTask(value: .delegate(.updateCafeFilter(information: information)))
         case .dismiss:
           state.cafeFilterBottomSheetState = nil
-          return .none
-        default:
           return .none
         }
 
