@@ -134,11 +134,6 @@ struct NaverMapCore: ReducerProtocol {
         // MARK: - View Tap Events
       case .refreshButtonTapped:
         state.recentCameraUpdateReason = .changedByDeveloper
-        for index in 0..<state.bottomFloatingButtons.count {
-          state.bottomFloatingButtons[index].isSelected = false
-        }
-        state.shouldShowBookmarkCafesOnly = false
-        state.shouldShowOpenTime = false
         return .run { send in
           await send(.removeAllMarkers)
           await send(.delegate(.callSearchPlacesWithRequestValue))
