@@ -370,8 +370,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
 
       case .reviewModifySheetDismissed:
         guard let cellState = state.selectedUserReviewCellState,
-              let placeId = state.cafe?.placeId,
-              let user = state.user
+              let placeId = state.cafe?.placeId
         else { return .none }
 
         var popActionEffectTask: EffectTask<Action> = .none

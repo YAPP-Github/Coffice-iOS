@@ -171,9 +171,6 @@ struct CafeReviewWrite: ReducerProtocol {
           }
         }
 
-        // 리뷰 추가/수정 시, 이전화면 리뷰 리스트에서 임시로 수정된 정보를 보여주기 위해 만드는 모델로 createdAt, updatedAt은 현재시간 기준 설정하여 Entity 생성
-        let currentDateString = Date().utcDateString()
-
         switch state.reviewType {
         case .create:
           let requestValue = ReviewUploadRequestValue(
