@@ -35,10 +35,12 @@ struct OpeningInformation: Hashable {
     if is24Open {
       return "24시간"
     } else if isOpened {
-      return "\(todayInformation.weekDaySymbol.rawValue) "
-      + "\(todayInformation.openAt.hour)" + ":\(todayInformation.openAt.minute) "
+      return "\(todayInformation.weekDaySymbol.weekDayString) "
+      + "\(String(format: "%02d", todayInformation.openAt.hour))"
+      + ":\(String(format: "%02d", todayInformation.openAt.minute)) "
       + "~ "
-      + "\(todayInformation.openAt.hour)" + "\(todayInformation.closeAt.hour)"
+      + "\(String(format: "%02d", todayInformation.closeAt.hour))"
+      + ":\(String(format: "%02d", todayInformation.closeAt.minute)) "
     } else {
       return "영업종료"
     }
@@ -49,10 +51,13 @@ struct OpeningInformation: Hashable {
       return "24시간"
     } else if isOpened {
       return dayOpenInformations.reduce("", { partialResult, dayInformation in
-        "\(dayInformation.weekDaySymbol.rawValue) "
-        + "\(dayInformation.openAt.hour)" + ":\(dayInformation.openAt.minute) "
+        return partialResult + "\(dayInformation.weekDaySymbol.weekDayString) "
+        + "\(String(format: "%02d", dayInformation.openAt.hour))"
+        + ":\(String(format: "%02d", dayInformation.openAt.minute)) "
         + "~ "
-        + "\(dayInformation.openAt.hour)" + "\(dayInformation.closeAt.hour)"
+        + "\(String(format: "%02d", dayInformation.closeAt.hour))"
+        + ":\(String(format: "%02d", dayInformation.closeAt.minute)) "
+        + "\n"
       })
     } else {
       return "영업종료"
@@ -92,13 +97,13 @@ enum WeekDaySymbol: String, Hashable {
 
   var weekDayValue: Int {
     switch self {
-    case .sunday: return 0
-    case .monday: return 1
-    case .tuesday: return 2
-    case .wednesday: return 3
-    case .thursday: return 4
-    case .friday: return 5
-    case .saturday: return 6
+    case .sunday: return 1
+    case .monday: return 2
+    case .tuesday: return 3
+    case .wednesday: return 4
+    case .thursday: return 5
+    case .friday: return 6
+    case .saturday: return 7
     }
   }
 
