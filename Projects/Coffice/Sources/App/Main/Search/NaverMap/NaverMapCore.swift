@@ -49,7 +49,7 @@ struct NaverMapCore: ReducerProtocol {
     fileprivate(set) var shouldShowBookmarkCafesOnly = false
     fileprivate(set) var shouldShowOpenTime = false
 
-    fileprivate(set) var zoomLevel: Double = 15.5
+    fileprivate(set) var zoomLevel: Double?
     fileprivate(set) var isMovingCameraPosition = false
     fileprivate(set) var recentCameraUpdateReason: NaverMapCameraUpdateReason = .changedByDeveloper
 
@@ -100,7 +100,11 @@ struct NaverMapCore: ReducerProtocol {
     case cameraMoved
     case markersUpdated
     case markersCleared
-    case cameraPositionUpdated(toPosition: CLLocationCoordinate2D, byReason: NaverMapCameraUpdateReason)
+    case cameraPositionUpdated(
+      toPosition: CLLocationCoordinate2D,
+      zoomLevel: Double,
+      byReason: NaverMapCameraUpdateReason
+    )
     case cameraPositionMoved(newCameraPosition: CLLocationCoordinate2D)
 
     // MARK: Functions
@@ -150,7 +154,7 @@ struct NaverMapCore: ReducerProtocol {
             state.shouldShowOpenTime = state.bottomFloatingButtons[clockButtonIndex].isSelected
             state.toggleOpenTime()
             if state.bottomFloatingButtons[clockButtonIndex].isSelected
-                && state.zoomLevel > 15.5 {
+                && state.zoomLevel ?? 0 < 15.5 {
               return EffectTask(value: .moveCameraTo(position: state.currentCameraPosition, zoomLevel: 15.5))
             }
           }
@@ -180,7 +184,10 @@ struct NaverMapCore: ReducerProtocol {
           EffectTask(value: .updatePinnedCafes(cafes: state.cafes)),
           .merge(
             EffectTask(value: .selectCafe(cafe: selectedCafe)),
-            EffectTask(value: .moveCameraTo(position: CLLocationCoordinate2DMake(cafe.latitude, cafe.longitude), zoomLevel: nil))
+            EffectTask(value: .moveCameraTo(
+              position: CLLocationCoordinate2DMake(cafe.latitude, cafe.longitude),
+              zoomLevel: nil
+            ))
           )
         )
 
@@ -261,8 +268,9 @@ struct NaverMapCore: ReducerProtocol {
         state.shouldClearMarkers = false
         return .none
 
-      case .cameraPositionUpdated(let updatedPosition, let updateReason):
+      case .cameraPositionUpdated(let updatedPosition, let zoomLevel, let updateReason):
         state.currentCameraPosition = updatedPosition
+        state.zoomLevel = zoomLevel
         state.recentCameraUpdateReason = updateReason
         state.isMovingCameraPosition = false
         return .none

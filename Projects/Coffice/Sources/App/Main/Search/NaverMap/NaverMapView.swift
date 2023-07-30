@@ -47,7 +47,7 @@ extension NaverMapView: UIViewRepresentable {
         lat: viewStore.currentCameraPosition.latitude,
         lng: viewStore.currentCameraPosition.longitude
       )
-      let zoomLevel = viewStore.zoomLevel
+      let zoomLevel = viewStore.zoomLevel ?? 15
       let cameraUpdate = NMFCameraUpdate(scrollTo: nmgLocation, zoomTo: zoomLevel)
       cameraUpdate.animation = .fly
       cameraUpdate.animationDuration = 0.3
@@ -168,6 +168,7 @@ extension Coordinator: NMFMapViewCameraDelegate {
         self?.target.viewStore.send(
           .cameraPositionUpdated(
             toPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+            zoomLevel: mapView.zoomLevel,
             byReason: updateReason
           )
         )
