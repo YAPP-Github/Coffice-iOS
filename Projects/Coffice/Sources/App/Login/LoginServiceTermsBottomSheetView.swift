@@ -27,18 +27,18 @@ struct LoginServiceTermsBottomSheetView: View {
           .padding(.top, 28)
           .padding(.bottom, 20)
 
-        HStack(spacing: 16) {
-          Button {
-            viewStore.send(.wholeTermsAgreementButtonTapped)
-          } label: {
+        Button {
+          viewStore.send(.wholeTermsAgreementButtonTapped)
+        } label: {
+          HStack(spacing: 16) {
             viewStore.wholeTermsAgreementCheckboxImage.swiftUIImage
               .renderingMode(.template)
               .foregroundColor(viewStore.wholeTermsAgreementCheckboxColor.swiftUIColor)
+            Text("약관 전체 동의")
+              .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+              .applyCofficeFont(font: .subtitle1Medium)
+              .frame(maxWidth: .infinity, alignment: .leading)
           }
-          Text("약관 전체 동의")
-            .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-            .applyCofficeFont(font: .subtitle1Medium)
-          Spacer()
         }
         .frame(height: 32)
         .padding(.vertical, 20)
