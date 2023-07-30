@@ -55,7 +55,6 @@ struct CafeFilterBottomSheet: ReducerProtocol {
 
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
-    case dismiss
     case presentBottomSheet
     case hideBottomSheet
     case optionButtonTapped(optionType: CafeFilter.OptionType)
@@ -66,8 +65,13 @@ struct CafeFilterBottomSheet: ReducerProtocol {
     case resetCafeFilter
     case saveCafeFilterButtonTapped
     case updateContainerView(height: CGFloat)
-    case saveCafeFilter(information: CafeFilterInformation)
     case bubbleMessageAction(BubbleMessage.Action)
+    case delegate(Delegate)
+  }
+
+  enum Delegate: Equatable {
+    case saveCafeFilter(information: CafeFilterInformation)
+    case dismiss
   }
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
@@ -158,10 +162,16 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         case .runningTime:
           state.cafeFilterInformation.runningTimeOptionSet.removeAll()
         }
-        return EffectTask(value: .updateMainViewState)
+        return .concatenate(
+          EffectTask(value: .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
+          EffectTask(value: .delegate(.dismiss))
+        )
 
       case .saveCafeFilterButtonTapped:
-        return EffectTask(value: .saveCafeFilter(information: state.cafeFilterInformation))
+        return .concatenate(
+          EffectTask(value: .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
+          EffectTask(value: .delegate(.dismiss))
+        )
 
       case .updateContainerView(let height):
         state.containerViewHeight = height
