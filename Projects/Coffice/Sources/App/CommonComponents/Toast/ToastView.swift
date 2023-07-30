@@ -32,7 +32,6 @@ struct ToastView: View {
       .background(config.backgroundColor)
       .cornerRadius(8)
     }
-    .padding(.bottom, 100)
   }
 }
 

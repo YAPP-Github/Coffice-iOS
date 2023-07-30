@@ -112,11 +112,11 @@ extension NaverMapView {
         }
         return true
       }
-      marker.captionText = cafe.name
+      marker.captionText = cafe.name.prefix(6) + "..."
       marker.captionColor = CofficeAsset.Colors.grayScale9.color
       marker.captionTextSize = CofficeFont.body2MediumSemiBold.size
       marker.captionMinZoom = 15.5
-      marker.captionRequestedWidth = 90
+      marker.captionRequestedWidth = 0
 
       marker.mapView = naverMapView.mapView
       markers.append(marker)

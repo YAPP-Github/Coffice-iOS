@@ -48,7 +48,7 @@ struct TabBarView: View {
 
                 Text(viewState.title)
                   .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale9))
-                  .font(.system(size: 10))
+                  .applyCofficeFont(font: .buttonNavi)
                   .frame(maxWidth: .infinity)
               }
             }

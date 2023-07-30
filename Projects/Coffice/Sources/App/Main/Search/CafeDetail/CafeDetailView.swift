@@ -89,7 +89,7 @@ struct CafeDetailView: View {
         },
         customize: {
           $0
-            .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: false))
+            .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: true))
             .autohideIn(2)
         }
       )

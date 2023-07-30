@@ -22,6 +22,7 @@ enum CofficeFont {
   case button
   case buttonSmall
   case buttonCTA
+  case buttonNavi
 
   /// Body
   case body1
@@ -57,6 +58,8 @@ extension CofficeFont {
     case .buttonSmall:
       return CofficeFontFamily.Pretendard.bold.name
     case .buttonCTA:
+      return CofficeFontFamily.Pretendard.bold.name
+    case .buttonNavi:
       return CofficeFontFamily.Pretendard.bold.name
 
     case .body1:
@@ -102,6 +105,8 @@ extension CofficeFont {
       return 12
     case .buttonCTA:
       return 16
+    case .buttonNavi:
+      return 10
 
     case .body1:
       return 14
@@ -147,6 +152,8 @@ extension CofficeFont {
       return 20
     case .buttonCTA:
       return 20
+    case .buttonNavi:
+      return 12
 
     case .body1:
       return 20
@@ -189,6 +196,8 @@ extension CofficeFont {
     case .buttonSmall:
       return 0
     case .buttonCTA:
+      return 0
+    case .buttonNavi:
       return 0
 
     case .body1:

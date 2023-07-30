@@ -253,6 +253,7 @@ extension CafeDetailMenuView {
 
           Button {
             UIPasteboard.general.string = viewStore.cafe?.address?.address ?? "-"
+            viewStore.send(.delegate(.presentToastView(message: "주소가 복사되었습니다.")))
           } label: {
             CofficeAsset.Asset.fileCopyLine18px.swiftUIImage
           }
@@ -269,11 +270,21 @@ extension CafeDetailMenuView {
     WithViewStore(store) { viewStore in
       HStack {
         CofficeAsset.Asset.phoneFill18px.swiftUIImage
-        Text(viewStore.cafe?.phoneNumber ?? "-")
-          .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
-          .applyCofficeFont(font: .body1Medium)
-          .frame(alignment: .leading)
-          .frame(height: 20)
+
+        Button {
+          if let phoneNumber = viewStore.cafe?.phoneNumber {
+            guard let url = URL(string: "tel://" + phoneNumber.replacingOccurrences(of: "-", with: "")) else { return }
+            UIApplication.shared.open(url)
+          }
+        } label: {
+          Text(viewStore.cafe?.phoneNumber ?? "-")
+            .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+            .applyCofficeFont(font: .body1Medium)
+            .frame(alignment: .leading)
+            .frame(height: 20)
+        }
+
+        Spacer()
       }
       .frame(height: 28)
       .padding(.top, 4)
