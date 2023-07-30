@@ -14,7 +14,7 @@ public struct ReviewEditRequestDTO: Encodable {
   let electricOutletLevel: String
   let wifiLevel: String
   let noiseLevel: String
-  let content: String
+  let content: String?
 
   public init(
     placeId: Int,
@@ -22,7 +22,7 @@ public struct ReviewEditRequestDTO: Encodable {
     electricOutletLevel: String,
     wifiLevel: String,
     noiseLevel: String,
-    content: String
+    content: String?
   ) {
     self.placeId = placeId
     self.reviewId = reviewId

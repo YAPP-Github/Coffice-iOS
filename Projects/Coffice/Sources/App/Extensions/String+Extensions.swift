@@ -20,14 +20,11 @@ extension String {
     return attributedString
   }
 
-  func utcDate(format: String) -> Date? {
+  func utcDate(format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS+09:00") -> Date? {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = format
     dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
 
-    guard let utcDate = dateFormatter.date(from: self)
-    else { return nil }
-
-    return utcDate
+    return dateFormatter.date(from: self)
   }
 }

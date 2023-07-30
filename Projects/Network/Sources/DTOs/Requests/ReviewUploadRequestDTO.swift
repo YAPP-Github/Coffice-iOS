@@ -13,14 +13,14 @@ public struct ReviewUploadRequestDTO: Encodable {
   let electricOutletLevel: String
   let wifiLevel: String
   let noiseLevel: String
-  let content: String
+  let content: String?
 
   public init(
     placeId: Int,
     electricOutletLevel: String,
     wifiLevel: String,
     noiseLevel: String,
-    content: String
+    content: String?
   ) {
     self.placeId = placeId
     self.electricOutletLevel = electricOutletLevel

@@ -8,9 +8,12 @@
 
 import Foundation
 
-typealias ReviewsResponse = [ReviewResponse]
+struct ReviewsResponse: Equatable {
+  let reviews: [Review]
+  let hasNext: Bool
+}
 
-struct ReviewResponse: Equatable {
+struct Review: Equatable {
   let reviewId: Int
   let memberId: Int
   let memberName: String
@@ -19,7 +22,7 @@ struct ReviewResponse: Equatable {
   var noiseOption: ReviewOption.NoiseOption
   let createdDate: Date?
   let updatedDate: Date?
-  let content: String
+  let content: String?
 
   init(
     reviewId: Int,
@@ -30,7 +33,7 @@ struct ReviewResponse: Equatable {
     noiseLevel: String,
     createdAt: String,
     updatedAt: String,
-    content: String
+    content: String?
   ) {
     self.reviewId = reviewId
     self.memberId = memberId

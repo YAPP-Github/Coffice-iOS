@@ -22,31 +22,36 @@ struct ReviewAPIClient: DependencyKey {
     urlComponents?.queryItems = [
       .init(name: "pageSize", value: "\(requestValue.pageSize)")
     ]
+    if let lastSeenReviewId = requestValue.lastSeenReviewId {
+      urlComponents?.queryItems?.append(.init(name: "lastSeenReviewId", value: "\(lastSeenReviewId)"))
+    }
 
     guard let request = urlComponents?.toURLRequest(method: .get)
     else { throw CoreNetworkError.requestConvertFailed }
 
-    // TODO: 페이징 업데이트 로직 추가 구현 필요
     let response: (
       dto: ReviewsResponseDTO,
       hasNext: Bool
     ) = try await coreNetwork.pageableDataTask(request: request)
-    return response.dto.map { element -> ReviewResponse in
-      return .init(
-        reviewId: element.reviewId,
-        memberId: element.member.memberId,
-        memberName: element.member.name,
-        electricOutletLevel: element.electricOutletLevel,
-        wifiLevel: element.wifiLevel,
-        noiseLevel: element.noiseLevel,
-        createdAt: element.createdAt,
-        updatedAt: element.updatedAt,
-        content: element.content
-      )
-    }
+    return .init(
+      reviews: response.dto.map { element -> Review in
+        return .init(
+          reviewId: element.reviewId,
+          memberId: element.member.memberId,
+          memberName: element.member.name,
+          electricOutletLevel: element.electricOutletLevel,
+          wifiLevel: element.wifiLevel,
+          noiseLevel: element.noiseLevel,
+          createdAt: element.createdAt,
+          updatedAt: element.updatedAt,
+          content: element.content
+        )
+      },
+      hasNext: response.hasNext
+    )
   }
 
-  func uploadReview(requestValue: ReviewUploadRequestValue) async throws -> HTTPURLResponse {
+  func uploadReview(requestValue: ReviewUploadRequestValue) async throws -> Review {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places/\(requestValue.placeId)/reviews"
@@ -60,10 +65,21 @@ struct ReviewAPIClient: DependencyKey {
     )
     else { throw CoreNetworkError.requestConvertFailed }
 
-    return try await coreNetwork.dataTask(request: request)
+    let response: ReviewResponseDTO = try await coreNetwork.dataTask(request: request)
+    return .init(
+      reviewId: response.reviewId,
+      memberId: response.member.memberId,
+      memberName: response.member.name,
+      electricOutletLevel: response.electricOutletLevel,
+      wifiLevel: response.wifiLevel,
+      noiseLevel: response.noiseLevel,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+      content: response.content
+    )
   }
 
-  func editReview(requestValue: ReviewEditRequestValue) async throws -> HTTPURLResponse {
+  func editReview(requestValue: ReviewEditRequestValue) async throws -> Review {
     let coreNetwork = CoreNetwork.shared
     var urlComponents = URLComponents(string: coreNetwork.baseURL)
     urlComponents?.path = "/api/v1/places/\(requestValue.placeId)/reviews/\(requestValue.reviewId)"
@@ -77,7 +93,18 @@ struct ReviewAPIClient: DependencyKey {
     )
     else { throw CoreNetworkError.requestConvertFailed }
 
-    return try await coreNetwork.dataTask(request: request)
+    let response: ReviewResponseDTO = try await coreNetwork.dataTask(request: request)
+    return .init(
+      reviewId: response.reviewId,
+      memberId: response.member.memberId,
+      memberName: response.member.name,
+      electricOutletLevel: response.electricOutletLevel,
+      wifiLevel: response.wifiLevel,
+      noiseLevel: response.noiseLevel,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+      content: response.content
+    )
   }
 
   func deleteReview(placeId: Int, reviewId: Int) async throws -> HTTPURLResponse {

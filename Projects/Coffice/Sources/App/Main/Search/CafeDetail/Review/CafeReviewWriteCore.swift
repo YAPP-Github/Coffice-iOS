@@ -20,10 +20,10 @@ struct CafeReviewWrite: ReducerProtocol {
   typealias NoiseOption = ReviewOption.NoiseOption
 
   struct State: Equatable, Identifiable {
-    static let mock: Self = .init(reviewType: .create, placeId: 1)
+    static let mock: Self = .mock
 
     let id = UUID()
-    @BindingState var reviewText = ""
+    @BindingState var reviewText: String?
     @BindingState var dismissConfirmBottomSheetState: BottomSheetReducer.State?
     var deleteConfirmBottomSheetType: BottomSheetType = .dismissConfirm
     var optionButtonStates: [CafeReviewOptionButtons.State]
@@ -41,10 +41,10 @@ struct CafeReviewWrite: ReducerProtocol {
     let maximumTextLength = 200
 
     var textViewBottomPadding: CGFloat = 0.0
-    var currentTextLengthDescription: String { "\(reviewText.count)" }
+    var currentTextLengthDescription: String { "\(reviewText?.count ?? 0)" }
     var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
     var shouldPresentTextViewPlaceholder: Bool {
-      reviewText.isEmpty
+      reviewText?.isEmpty == true
     }
     var saveButtonTitle: String {
       return reviewType == .create ? "등록하기" : "수정하기"
@@ -63,7 +63,7 @@ struct CafeReviewWrite: ReducerProtocol {
       outletOption: OutletStateOption? = nil,
       wifiOption: WifiStateOption? = nil,
       noiseOption: NoiseOption? = nil,
-      reviewText: String = ""
+      reviewText: String? = nil
     ) {
       self.reviewType = reviewType
       self.placeId = placeId
@@ -94,7 +94,6 @@ struct CafeReviewWrite: ReducerProtocol {
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
     case onAppear
-    case dismissView
     case dismissViewWithDelay
     case optionButtonsAction(CafeReviewOptionButtons.Action)
     case dismissConfirmBottomSheet(action: BottomSheetReducer.Action)
@@ -105,8 +104,15 @@ struct CafeReviewWrite: ReducerProtocol {
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
     case saveButtonTapped
     case uploadReview
-    case uploadReviewResponse(TaskResult<HTTPURLResponse>)
-    case editReviewResponse(TaskResult<HTTPURLResponse>)
+    case uploadReviewResponse(TaskResult<Review>)
+    case editReviewResponse(TaskResult<Review>)
+    case delegate(Delegate)
+  }
+
+  enum Delegate: Equatable {
+    case uploadReviewFinished(review: Review)
+    case editReviewFinished(review: Review)
+    case dismissView
   }
 
   @Dependency(\.reviewAPIClient) private var reviewAPIClient
@@ -120,7 +126,7 @@ struct CafeReviewWrite: ReducerProtocol {
         return .none
 
       case .dismissViewWithDelay:
-        return EffectTask(value: .dismissView)
+        return EffectTask(value: .delegate(.dismissView))
           .delay(for: 0.1, scheduler: DispatchQueue.main)
           .eraseToEffect()
 
@@ -200,8 +206,11 @@ struct CafeReviewWrite: ReducerProtocol {
 
       case .uploadReviewResponse(let result):
         switch result {
-        case .success:
-          return EffectTask(value: .dismissView)
+        case .success(let review):
+          return .concatenate(
+            EffectTask(value: .delegate(.uploadReviewFinished(review: review))),
+            EffectTask(value: .delegate(.dismissView))
+          )
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
@@ -209,8 +218,11 @@ struct CafeReviewWrite: ReducerProtocol {
 
       case .editReviewResponse(let result):
         switch result {
-        case .success:
-          return EffectTask(value: .dismissView)
+        case .success(let review):
+          return .concatenate(
+            EffectTask(value: .delegate(.editReviewFinished(review: review))),
+            EffectTask(value: .delegate(.dismissView))
+          )
         case .failure(let error):
           debugPrint(error.localizedDescription)
         }
