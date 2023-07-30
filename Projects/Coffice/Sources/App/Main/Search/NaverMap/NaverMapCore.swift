@@ -49,6 +49,7 @@ struct NaverMapCore: ReducerProtocol {
     fileprivate(set) var shouldShowBookmarkCafesOnly = false
     fileprivate(set) var shouldShowOpenTime = false
 
+    fileprivate(set) var zoomLevel: Double = 15.5
     fileprivate(set) var isMovingCameraPosition = false
     fileprivate(set) var recentCameraUpdateReason: NaverMapCameraUpdateReason = .changedByDeveloper
 
@@ -87,7 +88,7 @@ struct NaverMapCore: ReducerProtocol {
 
     // MARK: Move Camera
     case moveCameraToUserPosition
-    case moveCameraTo(position: CLLocationCoordinate2D)
+    case moveCameraTo(position: CLLocationCoordinate2D, zoomLevel: Double?)
 
     // MARK: Network Requests
     case searchPlacesWithRequestValue(requestValue: SearchPlaceRequestValue)
@@ -96,7 +97,7 @@ struct NaverMapCore: ReducerProtocol {
     case cafeListResponse(TaskResult<[Cafe]>)
 
     // MARK: On/Off Flag After Update UI Completed
-    case cameraMovedToUserPosition
+    case cameraMoved
     case markersUpdated
     case markersCleared
     case cameraPositionUpdated(toPosition: CLLocationCoordinate2D, byReason: NaverMapCameraUpdateReason)
@@ -148,6 +149,10 @@ struct NaverMapCore: ReducerProtocol {
             state.bottomFloatingButtons[clockButtonIndex].isSelected.toggle()
             state.shouldShowOpenTime = state.bottomFloatingButtons[clockButtonIndex].isSelected
             state.toggleOpenTime()
+            if state.bottomFloatingButtons[clockButtonIndex].isSelected
+                && state.zoomLevel > 15.5 {
+              return EffectTask(value: .moveCameraTo(position: state.currentCameraPosition, zoomLevel: 15.5))
+            }
           }
           return .none
         case .currentLocationButton:
@@ -175,7 +180,7 @@ struct NaverMapCore: ReducerProtocol {
           EffectTask(value: .updatePinnedCafes(cafes: state.cafes)),
           .merge(
             EffectTask(value: .selectCafe(cafe: selectedCafe)),
-            EffectTask(value: .moveCameraTo(position: CLLocationCoordinate2DMake(cafe.latitude, cafe.longitude)))
+            EffectTask(value: .moveCameraTo(position: CLLocationCoordinate2DMake(cafe.latitude, cafe.longitude), zoomLevel: nil))
           )
         )
 
@@ -213,9 +218,12 @@ struct NaverMapCore: ReducerProtocol {
         state.currentCameraPosition = locationManager.fetchCurrentLocation()
         return .none
 
-      case .moveCameraTo(let position):
+      case .moveCameraTo(let position, let zoomLevel):
         state.currentCameraPosition = position
         state.isUpdatingCameraPosition = true
+        if let zoomLevel {
+          state.zoomLevel = zoomLevel
+        }
         return .none
 
         // MARK: - Network Requests
@@ -240,7 +248,7 @@ struct NaverMapCore: ReducerProtocol {
 
         // MARK: - On/Off Flag After Update UI Completed
 
-      case .cameraMovedToUserPosition:
+      case .cameraMoved:
         state.isUpdatingCameraPosition = false
         return .none
 

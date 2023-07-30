@@ -130,7 +130,7 @@ struct CafeMapCore: ReducerProtocol {
         )
         return .concatenate(
           EffectTask(value: .naverMapAction(.selectCafe(cafe: selectedCafe))),
-          EffectTask(value: .naverMapAction(.moveCameraTo(position: newCameraPosition)))
+          EffectTask(value: .naverMapAction(.moveCameraTo(position: newCameraPosition, zoomLevel: nil)))
         )
 
         // MARK: CafeSearch Delegate
@@ -281,7 +281,8 @@ struct CafeMapCore: ReducerProtocol {
           )
           await send(
             .naverMapAction(
-              .moveCameraTo(position: .init(latitude: waypoint.latitude, longitude: waypoint.longitude))
+              .moveCameraTo(position: .init(latitude: waypoint.latitude, longitude: waypoint.longitude),
+                            zoomLevel: nil)
             )
           )
           await send(.updateDisplayType(.searchResultView))
@@ -300,7 +301,7 @@ struct CafeMapCore: ReducerProtocol {
         return .run { send in
           await send(.naverMapAction(.updatePinnedCafes(cafes: cafes)))
           await send(.naverMapAction(.selectCafe(cafe: cafe)))
-          await send(.naverMapAction(.moveCameraTo(position: newCameraPosition)))
+          await send(.naverMapAction(.moveCameraTo(position: newCameraPosition, zoomLevel: nil)))
           await send(.cafeSearchListAction(
             .updateCafeSearchListState(
               title: cafe.name,
@@ -325,12 +326,7 @@ struct CafeMapCore: ReducerProtocol {
           pageSize: 9999,
           pageableKey: nil
         )
-        return .merge(
-          EffectTask(value: .searchPlacesWithRequestValue(requestValue)),
-          EffectTask(value: .naverMapAction(.moveCameraTo(
-            position: .init(latitude: requestValue.userLatitude, longitude: requestValue.userLongitude)
-          )))
-        )
+        return EffectTask(value: .searchPlacesWithRequestValue(requestValue))
 
       case .searchPlacesWithRequestValue(let requestValue):
         return .run { send in
