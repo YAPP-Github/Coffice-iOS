@@ -72,10 +72,10 @@ struct UserReviewCell: View {
           .padding(.top, 20)
 
         // TODO: Tag가 한줄 넘어갈 경우 넘어가도록 커스텀 뷰 구현 필요
-        if viewState.tagTypes.isNotEmpty {
+        if viewState.reviewTagTitles.isNotEmpty {
           HStack(spacing: 8) {
-            ForEach(viewState.tagTypes, id: \.self) { tagType in
-              Text(tagType.title)
+            ForEach(viewState.reviewTagTitles, id: \.self) { tagTitle in
+              Text(tagTitle)
                 .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                 .applyCofficeFont(font: .body2Medium)
                 .frame(height: 18)

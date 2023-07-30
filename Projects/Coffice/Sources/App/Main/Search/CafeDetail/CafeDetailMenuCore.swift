@@ -188,12 +188,11 @@ struct CafeDetailMenuReducer: ReducerProtocol {
               userName: review.memberName,
               date: review.createdDate,
               content: review.content ?? "",
-              tagTypes: [
-                review.outletOption == .enough ? .enoughOutlets : nil,
-                review.wifiOption == .fast ? .fastWifi : nil,
-                review.noiseOption == .quiet ? .quiet : nil
-              ]
-                .compactMap { $0 },
+              reviewTagTitles: [
+                review.outletOption.tagTitle,
+                review.wifiOption.tagTitle,
+                review.noiseOption.tagTitle
+              ],
               isMyReview: review.memberId == userId,
               outletOption: review.outletOption,
               wifiOption: review.wifiOption,
@@ -328,12 +327,11 @@ struct CafeDetailMenuReducer: ReducerProtocol {
             userName: review.memberName,
             date: review.createdDate,
             content: review.content ?? "",
-            tagTypes: [
-              review.outletOption == .enough ? .enoughOutlets : nil,
-              review.wifiOption == .fast ? .fastWifi : nil,
-              review.noiseOption == .quiet ? .quiet : nil
-            ]
-              .compactMap { $0 },
+            reviewTagTitles: [
+              review.outletOption.tagTitle,
+              review.wifiOption.tagTitle,
+              review.noiseOption.tagTitle
+            ],
             isMyReview: review.memberId == userId,
             outletOption: review.outletOption,
             wifiOption: review.wifiOption,
@@ -354,12 +352,11 @@ struct CafeDetailMenuReducer: ReducerProtocol {
           userName: review.memberName,
           date: review.createdDate,
           content: review.content ?? "",
-          tagTypes: [
-            review.outletOption == .enough ? .enoughOutlets : nil,
-            review.wifiOption == .fast ? .fastWifi : nil,
-            review.noiseOption == .quiet ? .quiet : nil
-          ]
-            .compactMap { $0 },
+          reviewTagTitles: [
+            review.outletOption.tagTitle,
+            review.wifiOption.tagTitle,
+            review.noiseOption.tagTitle
+          ],
           isMyReview: review.memberId == userId,
           outletOption: review.outletOption,
           wifiOption: review.wifiOption,
@@ -558,7 +555,7 @@ struct UserReviewCellState: Hashable, Identifiable {
   let userName: String
   let date: Date?
   let content: String
-  let tagTypes: [ReviewTagType]
+  let reviewTagTitles: [String]
   let isMyReview: Bool
   let outletOption: ReviewOption.OutletOption
   let wifiOption: ReviewOption.WifiOption
@@ -571,23 +568,6 @@ struct UserReviewCellState: Hashable, Identifiable {
     dateFormatter.locale = Locale(identifier: "ko_KR")
     dateFormatter.dateFormat = "M.dd E"
     return dateFormatter.string(from: date)
-  }
-}
-
-enum ReviewTagType: CaseIterable {
-  case enoughOutlets
-  case fastWifi
-  case quiet
-
-  var title: String {
-    switch self {
-    case .enoughOutlets:
-      return "🔌 콘센트 넉넉해요"
-    case .fastWifi:
-      return "📶 와이파이 빨라요"
-    case .quiet:
-      return "🔊 조용해요"
-    }
   }
 }
 
