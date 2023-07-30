@@ -147,10 +147,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         return .none
 
       case .resetCafeFilterButtonTapped:
-        return .merge(
-          EffectTask(value: .resetCafeFilter),
-          EffectTask(value: .delegate(.saveCafeFilter(information: state.cafeFilterInformation)))
-        )
+        return EffectTask(value: .resetCafeFilter)
 
       case .resetCafeFilter:
         switch state.filterType {
@@ -165,10 +162,16 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         case .runningTime:
           state.cafeFilterInformation.runningTimeOptionSet.removeAll()
         }
-        return EffectTask(value: .updateMainViewState)
+        return .concatenate(
+          EffectTask(value: .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
+          EffectTask(value: .delegate(.dismiss))
+        )
 
       case .saveCafeFilterButtonTapped:
-        return EffectTask(value: .delegate(.saveCafeFilter(information: state.cafeFilterInformation)))
+        return .concatenate(
+          EffectTask(value: .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
+          EffectTask(value: .delegate(.dismiss))
+        )
 
       case .updateContainerView(let height):
         state.containerViewHeight = height
