@@ -19,8 +19,6 @@ struct BubbleMessageView: View {
   var body: some View {
     WithViewStore(store) { viewStore in
       ZStack(alignment: .center) {
-        Color.black.opacity(0.4).ignoresSafeArea()
-
         VStack(alignment: .leading, spacing: 0) {
           Text(viewStore.title)
             .foregroundColor(Color(asset: CofficeAsset.Colors.grayScale8))
@@ -55,7 +53,7 @@ struct BubbleMessageView: View {
         }
         .padding(20)
         .frame(width: 204, alignment: .center)
-        .background(Color(asset: CofficeAsset.Colors.grayScale1))
+        .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
         .cornerRadius(8)
       }
     }
