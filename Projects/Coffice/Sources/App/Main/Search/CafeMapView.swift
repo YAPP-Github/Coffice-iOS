@@ -157,6 +157,7 @@ extension CafeMapView {
       VStack(spacing: 0) {
         searchDescriptionView
         orderFilterView
+          .padding(.leading, 20)
       }
     }
   }
