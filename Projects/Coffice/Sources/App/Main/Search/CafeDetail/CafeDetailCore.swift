@@ -70,9 +70,7 @@ struct CafeDetail: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return .merge(
-          EffectTask(value: .fetchPlace)
-        )
+        return EffectTask(value: .fetchPlace)
 
       case .fetchPlace:
         return .run { [cafeId = state.cafeId] send in

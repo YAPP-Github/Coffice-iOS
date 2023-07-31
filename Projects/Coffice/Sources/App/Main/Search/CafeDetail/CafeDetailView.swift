@@ -45,6 +45,10 @@ struct CafeDetailView: View {
             )
           }
         }
+        .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
+        .refreshable { @MainActor in
+          viewStore.send(.fetchPlace)
+        }
       }
       .navigationBarHidden(true)
       .ignoresSafeArea(.all, edges: .top)

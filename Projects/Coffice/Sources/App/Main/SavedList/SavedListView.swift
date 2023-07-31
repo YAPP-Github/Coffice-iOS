@@ -100,6 +100,9 @@ struct SavedListView: View {
           }
           .padding(.horizontal, 20)
         }
+        .refreshable { @MainActor in
+          viewStore.send(.fetchMyPlaces)
+        }
       }
     }
   }
