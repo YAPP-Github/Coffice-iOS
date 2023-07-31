@@ -95,7 +95,7 @@ struct CafeDetailHeaderView: View {
               }
             }
           }
-          .padding(.top, 4)
+          .padding(.top, 4 + (UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0))
           .padding(.horizontal, 8)
         }
       )
@@ -127,7 +127,6 @@ extension CafeDetailHeaderView {
         }
       }
       .frame(height: viewStore.imagePageViewHeight)
-      .offset(y: -(UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0))
     }
   }
 

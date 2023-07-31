@@ -44,6 +44,7 @@ struct CafeDetailView: View {
               )
             )
           }
+          .offset(y: -(UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0))
         }
         .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
         .refreshable { @MainActor in
@@ -66,6 +67,7 @@ struct CafeDetailView: View {
 
             Spacer()
           }
+          .padding(.top, 4)
         }
       )
       .onAppear {
