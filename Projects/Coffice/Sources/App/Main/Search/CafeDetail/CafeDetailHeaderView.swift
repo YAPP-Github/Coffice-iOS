@@ -101,6 +101,7 @@ extension CafeDetailHeaderView {
         }
       }
       .frame(height: viewStore.imagePageViewHeight)
+      .offset(y: -(UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0))
     }
   }
 
