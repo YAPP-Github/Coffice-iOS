@@ -54,7 +54,7 @@ struct SavedListView: View {
             ForEach(viewStore.cafes, id: \.self) { cafe in
               VStack(spacing: 0) {
                 KFImage.url(URL(string: cafe.imageUrls?.first ?? ""))
-                  .onFailureImage(CofficeAsset.Asset.icPlaceholder.image)
+                  .onFailureImage(CofficeAsset.Asset.savedListFailImagePlaceholder.image)
                   .resizable()
                   .aspectRatio(contentMode: .fill)
                   .frame(
