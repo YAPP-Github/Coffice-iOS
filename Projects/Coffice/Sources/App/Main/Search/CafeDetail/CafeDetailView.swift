@@ -65,18 +65,7 @@ struct CafeDetailView: View {
             }
 
             Spacer()
-
-            Button {
-              // TODO: 공유하기 기능 추가 필요
-            } label: {
-              CofficeAsset.Asset.shareBoxFill40px.swiftUIImage
-                .renderingMode(.template)
-                .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-            }
-            .hiddenWithOpacity(isHidden: true)
           }
-          .padding(.top, 4)
-          .padding(.horizontal, 8)
         }
       )
       .onAppear {

@@ -73,6 +73,32 @@ struct CafeDetailHeaderView: View {
         }
         .padding(EdgeInsets(top: 20, leading: 20, bottom: 16, trailing: 20))
       }
+      .overlay(
+        alignment: .top,
+        content: {
+          HStack {
+            Spacer()
+
+            if let urlToShare = viewStore.urlToShare {
+              Button {
+                let activityViewController = UIActivityViewController(
+                  activityItems: [urlToShare],
+                  applicationActivities: nil
+                )
+                UIApplication.keyWindow?.rootViewController?.present(
+                  activityViewController, animated: true, completion: nil
+                )
+              } label: {
+                CofficeAsset.Asset.shareBoxFill40px.swiftUIImage
+                  .renderingMode(.template)
+                  .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+              }
+            }
+          }
+          .padding(.top, 4)
+          .padding(.horizontal, 8)
+        }
+      )
     }
   }
 }
