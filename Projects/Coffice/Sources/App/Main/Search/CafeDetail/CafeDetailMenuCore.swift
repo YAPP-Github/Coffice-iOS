@@ -56,7 +56,10 @@ struct CafeDetailMenuReducer: ReducerProtocol {
 
     mutating func update(cafe: Cafe?) -> EffectTask<Action> {
       self.cafe = cafe
-      return EffectTask(value: .fetchReviews)
+      return .concatenate(
+        EffectTask(value: .resetReviews),
+        EffectTask(value: .fetchReviews)
+      )
     }
   }
 
@@ -77,6 +80,7 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     case dismissWebView
 
     // MARK: User Review
+    case resetReviews
     case cafeReviewWrite(action: CafeReviewWrite.Action)
     case bottomSheet(action: BottomSheetReducer.Action)
     case fetchReviews
@@ -178,6 +182,12 @@ struct CafeDetailMenuReducer: ReducerProtocol {
     // MARK: - Review
     Reduce { state, action in
       switch action {
+      case .resetReviews:
+        state.hasNextReview = false
+        state.lastSeenReviewId = nil
+        state.userReviewCellStates = []
+        return .none
+
       case .updateReviewCellStates(let reviewsResponse):
         state.hasNextReview = reviewsResponse.hasNext
         state.userReviewCellStates += reviewsResponse.reviews
