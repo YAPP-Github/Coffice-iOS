@@ -25,6 +25,7 @@ struct SavedList: ReducerProtocol {
   enum Action: Equatable {
     case onAppear
     case onDisappear
+    case fetchMyPlaces
     case bookmarkButtonTapped(cafe: Cafe)
     case bookmarkedCafeResponse(cafes: [Cafe])
     case deleteCafesFromBookmark
@@ -37,6 +38,14 @@ struct SavedList: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        return EffectTask(value: .fetchMyPlaces)
+
+      case .onDisappear:
+        return .run { send in
+          await send(.deleteCafesFromBookmark)
+        }
+
+      case .fetchMyPlaces:
         return .run { send in
           let bookmarkedCafes = try await bookmarkClient.fetchMyPlaces()
           await send(
@@ -44,11 +53,6 @@ struct SavedList: ReducerProtocol {
           )
         } catch: { error, send in
           debugPrint(error)
-        }
-
-      case .onDisappear:
-        return .run { send in
-          await send(.deleteCafesFromBookmark)
         }
 
       case .bookmarkButtonTapped(let cafe):
