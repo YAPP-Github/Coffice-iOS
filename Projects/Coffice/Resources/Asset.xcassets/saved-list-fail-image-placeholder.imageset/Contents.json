@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "saved-list-fail-image-placeholder.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "saved-list-fail-image-placeholder@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "saved-list-fail-image-placeholder@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
