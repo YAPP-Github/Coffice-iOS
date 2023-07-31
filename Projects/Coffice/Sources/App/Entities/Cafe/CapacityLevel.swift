@@ -35,9 +35,9 @@ enum CapacityLevel: Hashable {
 
   var text: String {
     switch self {
-    case .high: return "🗄️ 대형카페"
-    case .medium: return "🗄️ 중형카페"
-    case .low: return "🗄️ 소형카페"
+    case .high: return "☕️ 대형카페"
+    case .medium: return "☕️ 중형카페"
+    case .low: return "☕️ 소형카페"
     default: return ""
     }
   }
