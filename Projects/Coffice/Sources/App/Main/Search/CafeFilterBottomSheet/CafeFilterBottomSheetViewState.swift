@@ -192,9 +192,9 @@ enum CafeFilter {
   }
 
   enum SpaceSizeOption: Int, Equatable, CaseIterable {
-    case small
-    case medium
     case large
+    case medium
+    case small
 
     var sectionTitle: String {
       return "공간크기"

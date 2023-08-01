@@ -39,9 +39,9 @@ struct BubbleMessage: ReducerProtocol {
         ]
       case .spaceSize:
         return [
-          .init(iconImageName: CapacityLevel.high.iconName, title: "대형:", description: "테이블 15개 이상"),
-          .init(iconImageName: CapacityLevel.medium.iconName, title: "보통:", description: "테이블 6 ~ 14개"),
-          .init(iconImageName: CapacityLevel.low.iconName, title: "부족:", description: "테이블 5개 이하")
+          .init(iconImageName: CapacityLevel.high.iconName, title: "대형카페:", description: "테이블 15개 이상"),
+          .init(iconImageName: CapacityLevel.medium.iconName, title: "중형카페:", description: "테이블 6 ~ 14개"),
+          .init(iconImageName: CapacityLevel.low.iconName, title: "소형카페:", description: "테이블 5개 이하")
         ]
       case .groupSeat:
         return [
