@@ -22,6 +22,15 @@ struct CafeDetailHeaderReducer: ReducerProtocol {
       self.cafe = cafe
       return .none
     }
+
+    var urlToShare: URL? {
+      guard let latitude = cafe?.latitude, let longitude = cafe?.longitude
+      else { return nil }
+      let longitudeInEPSG3857 = (longitude * 20037508.34 / 180)
+      let latitudeInEPSG3857 = (log(tan((90 + latitude) * Double.pi / 360)) / (Double.pi / 180)) * (20037508.34 / 180)
+
+      return URL(string: "https://map.naver.com/v5/?c=\(longitudeInEPSG3857),\(latitudeInEPSG3857),18,0,0,0,dh")
+    }
   }
 
   enum Action: Equatable {
