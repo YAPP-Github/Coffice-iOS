@@ -54,14 +54,14 @@ struct AppCoordinator: ReducerProtocol {
       case .routeAction(_, action: .login(.routeAction(_, action: .main(.loginCompleted)))):
         state.routes.dismissAll()
         UserDefaults.standard.setValue(true, forKey: "alreadyLaunched")
-        UserDefaults.standard.setValue(true, forKey: "onBoardingWithCafeMapView")
+        UserDefaults.standard.setValue(true, forKey: UserDefaultsKeyString.onBoardingWithCafeMapView.forKey)
         return EffectTask(value: .routeAction(0, action: .main(.loginCompleted)))
 
       case .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.logoutCompleted)))))),
           .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.memberLeaveCompleted)))))):
         KeychainManager.shared.deleteUserToken()
         UserDefaults.standard.setValue(false, forKey: "alreadyLaunched")
-        UserDefaults.standard.setValue(false, forKey: "onBoardingWithCafeMapView")
+        UserDefaults.standard.setValue(false, forKey: UserDefaultsKeyString.onBoardingWithCafeMapView.forKey)
         return .merge(
           EffectTask(value: .dismissAllRoutes),
           EffectTask(value: .presentLoginView)

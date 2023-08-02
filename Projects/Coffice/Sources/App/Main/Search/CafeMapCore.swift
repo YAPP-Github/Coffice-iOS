@@ -425,7 +425,7 @@ struct CafeMapCore: ReducerProtocol {
 
       // MARK: View LifeCycle
       case .onBoarding:
-        guard UserDefaults.standard.bool(forKey: "onBoardingWithCafeMapView")
+        guard UserDefaults.standard.bool(forKey: UserDefaultsKeyString.onBoardingWithCafeMapView.forKey)
         else { return .none }
 
         state.serviceAreaPopupState = .init()
