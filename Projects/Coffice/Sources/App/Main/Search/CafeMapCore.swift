@@ -73,7 +73,7 @@ struct CafeMapCore: ReducerProtocol {
     // MARK: View LifeCycle
     case onAppear
     case onDisappear
-
+    case onBoarding
     // MARK: Need to improve
     case resetCafesForSearchList(ResetState)
   }
@@ -424,16 +424,23 @@ struct CafeMapCore: ReducerProtocol {
         return EffectTask(value: .pushToCafeDetailView(cafeId: cafe.placeId))
 
       // MARK: View LifeCycle
+      case .onBoarding:
+        guard UserDefaults.standard.bool(forKey: UserDefaultsKeyString.onBoardingWithCafeMapView.forKey)
+        else { return .none }
+
+        state.serviceAreaPopupState = .init()
+        return .merge(
+          EffectTask(value: .requestLocationAuthorization),
+          EffectTask(value: .searchPlacesWithRequestValueByDefault)
+        )
+
       case .onAppear:
+        // 맵뷰 최초 진입 시 한번,(강남역 주변 마커 표출)
         if state.isFirstOnAppear {
           state.isFirstOnAppear = false
-          state.serviceAreaPopupState = .init()
-          return .merge(
-            EffectTask(value: .searchPlacesWithRequestValueByDefault),
-            EffectTask(value: .requestLocationAuthorization)
-          )
+          return EffectTask(value: .searchPlacesWithRequestValueByDefault)
         }
-        return EffectTask(value: .naverMapAction(.updateSelectedCafeState))
+        return .none
 
       case .serviceAreaPopupAction(.confirmButtonTapped):
         state.serviceAreaPopupState = nil

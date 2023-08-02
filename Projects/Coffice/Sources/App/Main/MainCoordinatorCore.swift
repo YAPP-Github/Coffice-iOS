@@ -71,7 +71,10 @@ struct MainCoordinator: ReducerProtocol {
         return .none
 
       case .loginCompleted:
-        return EffectTask(value: .tabBar(.selectTab(.search)))
+        return .concatenate(
+          EffectTask(value: .tabBar(.selectTab(.search))),
+          EffectTask(value: .search(.routeAction(0, action: .cafeMap(.onBoarding))))
+        )
 
       case .tabBar(.selectTab(let itemType)):
         debugPrint("selectedTab : \(itemType)")
