@@ -52,7 +52,7 @@ struct BubbleMessageView: View {
           .padding(.top, 24)
         }
         .padding(20)
-        .frame(width: 204, alignment: .center)
+        .frame(width: 210, alignment: .center)
         .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
         .cornerRadius(8)
       }
