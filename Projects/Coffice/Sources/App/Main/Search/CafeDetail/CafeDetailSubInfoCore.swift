@@ -141,7 +141,10 @@ extension CafeDetailSubInfoReducer.State {
         ? foodTypeTexts.joined(separator: "/")
         : "-"
       case .toilet:
-        description = "-" // FIXME: 서버에서 안내려오는중 (화장실 정보)
+        let toiletTexts = cafe.restroomType?.map(\.text) ?? []
+        description = toiletTexts.isNotEmpty
+        ? toiletTexts.joined(separator: "/")
+        : "-"
       case .beverage:
         let drinkTypeTexts = cafe.drinkTypes?.map(\.text) ?? []
         description = drinkTypeTexts.isNotEmpty

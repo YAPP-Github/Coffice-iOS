@@ -20,6 +20,15 @@ enum RestroomType: Hashable {
     }
   }
 
+  var text: String {
+    switch self {
+    case .indoors:
+      return "실내"
+    case .genderSeperated:
+      return "남녀개별"
+    }
+  }
+
   var dtoName: String {
     switch self {
     case .indoors: return "INDOORS"
