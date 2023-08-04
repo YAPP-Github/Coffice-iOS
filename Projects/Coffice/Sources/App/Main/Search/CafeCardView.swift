@@ -61,7 +61,7 @@ struct CafeCardView: View {
             if let imageUrls = viewStore.naverMapState.selectedCafe?.imageUrls, imageUrls.isNotEmpty {
               ForEach(imageUrls, id: \.self) { imageUrl in
                 KFImage.url(URL(string: imageUrl))
-                  .placeholder { CofficeAsset.Asset.cafePlaceholder.swiftUIImage }
+                  .onFailureImage(CofficeAsset.Asset.savedListFailImagePlaceholder.image)
                   .resizable()
                   .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
                   .scaledToFit()

@@ -440,7 +440,7 @@ struct CafeMapCore: ReducerProtocol {
           state.isFirstOnAppear = false
           return EffectTask(value: .searchPlacesWithRequestValueByDefault)
         }
-        return .none
+        return EffectTask(value: .naverMapAction(.updateSelectedCafeState))
 
       case .serviceAreaPopupAction(.confirmButtonTapped):
         state.serviceAreaPopupState = nil
