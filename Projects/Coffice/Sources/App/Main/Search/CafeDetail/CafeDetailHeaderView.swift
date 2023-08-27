@@ -18,7 +18,7 @@ struct CafeDetailHeaderView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         imagePageView
 
@@ -107,7 +107,7 @@ struct CafeDetailHeaderView: View {
 
 extension CafeDetailHeaderView {
   private var imagePageView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Group {
         if let imageUrls = viewStore.cafe?.imageUrls,
            imageUrls.isNotEmpty {
@@ -150,7 +150,9 @@ struct CafeDetailHeaderView_Previews: PreviewProvider {
     CafeDetailHeaderView(
       store: .init(
         initialState: .init(cafe: .dummy),
-        reducer: CafeDetailHeaderReducer()
+        reducer: {
+          CafeDetailHeaderReducer()
+        }
       )
     )
   }

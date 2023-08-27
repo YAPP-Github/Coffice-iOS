@@ -10,7 +10,7 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
-struct MyPage: ReducerProtocol {
+struct MyPage: Reducer {
   struct State: Equatable {
     @BindingState var contactEmailViewState: ContactEmailViewState?
     var user: User?
@@ -51,12 +51,12 @@ struct MyPage: ReducerProtocol {
 
   @Dependency(\.accountClient) private var accountClient
 
-  var body: some ReducerProtocolOf<MyPage> {
+  var body: some ReducerOf<MyPage> {
     BindingReducer()
     Reduce { state, action in
       switch action {
       case .onAppear, .loginCompletion:
-        return EffectTask(value: .fetchUserData)
+        return .send(.fetchUserData)
 
       case .fetchUserData:
         return .run { send in

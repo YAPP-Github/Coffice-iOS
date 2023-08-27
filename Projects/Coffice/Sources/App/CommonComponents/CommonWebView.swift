@@ -15,7 +15,7 @@ struct CommonWebView: UIViewRepresentable {
   private let webView: WKWebView
 
   init(store: StoreOf<CommonWebReducer>) {
-    viewStore = ViewStore(store)
+    viewStore = ViewStore(store, observe: { $0 })
     webView = .init(frame: .zero)
     viewStore.send(.load(webView: webView))
   }
@@ -27,7 +27,7 @@ struct CommonWebView: UIViewRepresentable {
   func updateUIView(_ uiView: WKWebView, context: Context) { }
 }
 
-struct CommonWebReducer: ReducerProtocol {
+struct CommonWebReducer: Reducer {
   struct State: Equatable, Identifiable {
     let id = UUID()
     let urlString: String
@@ -37,7 +37,7 @@ struct CommonWebReducer: ReducerProtocol {
     case load(webView: WKWebView)
   }
 
-  var body: some ReducerProtocolOf<Self> {
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .load(let webView):

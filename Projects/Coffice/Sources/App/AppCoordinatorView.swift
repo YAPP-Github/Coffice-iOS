@@ -15,18 +15,21 @@ struct AppCoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
-        CaseLet(
-          state: /AppScreen.State.main,
-          action: AppScreen.Action.main,
-          then: MainCoordinatorView.init
-        )
-
-        CaseLet(
-          state: /AppScreen.State.login,
-          action: AppScreen.Action.login,
-          then: LoginCoordinatorView.init
-        )
+      SwitchStore(screen) { state in
+        switch state {
+        case .main:
+          CaseLet(
+            /AppScreen.State.main,
+            action: AppScreen.Action.main,
+            then: MainCoordinatorView.init
+          )
+        case .login:
+          CaseLet(
+            /AppScreen.State.login,
+            action: AppScreen.Action.login,
+            then: LoginCoordinatorView.init
+          )
+        }
       }
     }
     .ignoresSafeArea(.keyboard)
@@ -38,7 +41,9 @@ struct AppCoordinatorView_Previews: PreviewProvider {
     AppCoordinatorView(
       store: .init(
         initialState: .mock,
-        reducer: AppCoordinator()
+        reducer: {
+          AppCoordinator()
+        }
       )
     )
   }

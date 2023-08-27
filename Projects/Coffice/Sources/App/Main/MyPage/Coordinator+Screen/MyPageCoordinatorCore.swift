@@ -9,7 +9,7 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-struct MyPageCoordinator: ReducerProtocol {
+struct MyPageCoordinator: Reducer {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
       routes: [.root(.myPage(.init()), embedInNavigationView: false)]
@@ -29,7 +29,7 @@ struct MyPageCoordinator: ReducerProtocol {
     case pushLogin
   }
 
-  var body: some ReducerProtocolOf<MyPageCoordinator> {
+  var body: some ReducerOf<MyPageCoordinator> {
     BindingReducer()
     Reduce<State, Action> { state, action in
       switch action {
@@ -48,7 +48,7 @@ struct MyPageCoordinator: ReducerProtocol {
 
       case .routeAction(_, action: .myPage(.delegate(.editProfileButtonTapped(let nickname, let loginType)))):
         if loginType == .anonymous {
-          return EffectTask(value: .delegate(.pushLogin))
+          return .send( .delegate(.pushLogin))
         } else {
           state.routes.push(.editProfile(.init(nickname: nickname)))
         }

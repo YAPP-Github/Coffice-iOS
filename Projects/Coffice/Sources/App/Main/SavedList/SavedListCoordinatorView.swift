@@ -15,18 +15,21 @@ struct SavedListCoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
-        CaseLet(
-          state: /SavedListScreen.State.savedList,
-          action: SavedListScreen.Action.savedList,
-          then: SavedListView.init
-        )
-
-        CaseLet(
-          state: /SavedListScreen.State.cafeSearchDetail,
-          action: SavedListScreen.Action.cafeSearchDetail,
-          then: CafeDetailView.init
-        )
+      SwitchStore(screen) { state in
+        switch state {
+        case .savedList:
+          CaseLet(
+            /SavedListScreen.State.savedList,
+            action: SavedListScreen.Action.savedList,
+            then: SavedListView.init
+          )
+        case .cafeSearchDetail:
+          CaseLet(
+            /SavedListScreen.State.cafeSearchDetail,
+            action: SavedListScreen.Action.cafeSearchDetail,
+            then: CafeDetailView.init
+          )
+        }
       }
     }
   }
@@ -37,7 +40,9 @@ struct SavedListCoordinatorView_Previews: PreviewProvider {
     SavedListCoordinatorView(
       store: .init(
         initialState: .initialState,
-        reducer: SavedListCoordinator()
+        reducer: {
+          SavedListCoordinator()
+        }
       )
     )
   }

@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct CafeDetailSubInfoReducer: ReducerProtocol {
+struct CafeDetailSubInfoReducer: Reducer {
   struct State: Equatable {
     @BindingState var bubbleMessageViewState: BubbleMessage.State?
 
@@ -27,7 +27,7 @@ struct CafeDetailSubInfoReducer: ReducerProtocol {
       return dateFormatter.string(from: updatedDate)
     }
 
-    mutating func update(cafe: Cafe?) -> EffectTask<Action> {
+    mutating func update(cafe: Cafe?) -> Effect<Action> {
       guard let cafe else { return .none }
       self.cafe = cafe
       subPrimaryInfoViewStates = [
@@ -37,7 +37,7 @@ struct CafeDetailSubInfoReducer: ReducerProtocol {
       ]
       subSecondaryInfoViewStates = State.SubSecondaryInfoType.allCases
         .map { State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
-      return EffectTask(value: .updateLastModifiedDate)
+      return .send( .updateLastModifiedDate)
     }
   }
 
@@ -49,7 +49,7 @@ struct CafeDetailSubInfoReducer: ReducerProtocol {
     case bubbleMessageAction(BubbleMessage.Action)
   }
 
-  var body: some ReducerProtocolOf<Self> {
+  var body: some ReducerOf<Self> {
     BindingReducer()
 
     Reduce { state, action in
@@ -59,8 +59,8 @@ struct CafeDetailSubInfoReducer: ReducerProtocol {
         return .none
 
       case .infoGuideButtonTapped(let guideType):
-        return EffectTask(
-          value: .presentBubbleMessageView(
+        return .send(
+          .presentBubbleMessageView(
             .init(guideType: guideType)
           )
         )

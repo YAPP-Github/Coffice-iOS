@@ -12,7 +12,7 @@ import TCACoordinators
 
 // MARK: - MainCoordniatorCore
 
-struct MainCoordinator: ReducerProtocol {
+struct MainCoordinator: Reducer {
   struct State: Equatable {
     static let initialState = MainCoordinator.State(
       homeState: .initialState,
@@ -43,7 +43,7 @@ struct MainCoordinator: ReducerProtocol {
     case onAppear
   }
 
-  var body: some ReducerProtocolOf<MainCoordinator> {
+  var body: some ReducerOf<MainCoordinator> {
     BindingReducer()
     Scope(state: \State.homeState, action: /Action.home) {
       HomeCoordinator()
@@ -72,8 +72,8 @@ struct MainCoordinator: ReducerProtocol {
 
       case .loginCompleted:
         return .concatenate(
-          EffectTask(value: .tabBar(.selectTab(.search))),
-          EffectTask(value: .search(.routeAction(0, action: .cafeMap(.onBoarding))))
+          .send( .tabBar(.selectTab(.search))),
+          .send( .search(.routeAction(0, action: .cafeMap(.onBoarding))))
         )
 
       case .tabBar(.selectTab(let itemType)):

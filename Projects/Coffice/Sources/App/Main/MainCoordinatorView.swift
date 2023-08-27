@@ -14,10 +14,15 @@ struct MainCoordinatorView: View {
   let store: StoreOf<MainCoordinator>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       ZStack {
         TabView(
-          selection: viewStore.binding(\MainCoordinator.State.tabBarState.$bindableSelectedTab)
+          selection: viewStore.binding(
+            get: \.tabBarState.bindableSelectedTab,
+            send: { state in
+              return .tabBar(.set(\.$bindableSelectedTab, state))
+            }
+          )
         ) {
           NavigationView {
             SearchCoordinatorView(
@@ -79,7 +84,9 @@ struct MainCoordinatorView_Previews: PreviewProvider {
     MainCoordinatorView(
       store: .init(
         initialState: .initialState,
-        reducer: MainCoordinator()
+        reducer: {
+          MainCoordinator()
+        }
       )
     )
   }

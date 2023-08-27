@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct LoginServiceTermsBottomSheet: ReducerProtocol {
+struct LoginServiceTermsBottomSheet: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     @BindingState var webViewState: CommonWebReducer.State?
@@ -41,7 +41,7 @@ struct LoginServiceTermsBottomSheet: ReducerProtocol {
     case dismissView
   }
 
-  var body: some ReducerProtocolOf<LoginServiceTermsBottomSheet> {
+  var body: some ReducerOf<LoginServiceTermsBottomSheet> {
     BindingReducer()
 
     Reduce { state, action in

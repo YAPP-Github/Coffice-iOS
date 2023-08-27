@@ -11,7 +11,7 @@ import CoreLocation
 import Network
 import SwiftUI
 
-struct CafeSearchListCore: ReducerProtocol {
+struct CafeSearchListCore: Reducer {
   enum ViewType {
     case mapView
     case listView
@@ -74,7 +74,7 @@ struct CafeSearchListCore: ReducerProtocol {
   @Dependency(\.placeAPIClient) private var placeAPIClient
   @Dependency(\.bookmarkClient) private var bookmarkClient
 
-  var body: some ReducerProtocolOf<CafeSearchListCore> {
+  var body: some ReducerOf<CafeSearchListCore> {
     BindingReducer()
 
     Scope(
@@ -96,8 +96,8 @@ struct CafeSearchListCore: ReducerProtocol {
         switch result {
         case .success(let response):
           return .merge(
-            EffectTask(value: .delegate(.didFinishSearchPlacesByFilter(response))),
-            EffectTask(value: .updateCafeSearchListState(
+            .send( .delegate(.didFinishSearchPlacesByFilter(response))),
+            .send( .updateCafeSearchListState(
               title: nil,
               cafeList: response.cafes,
               hasNext: response.hasNext
@@ -188,8 +188,8 @@ struct CafeSearchListCore: ReducerProtocol {
       case .cafeFilterMenus(.delegate(.updateCafeFilter(let information))):
         state.cafeFilterInformation = information
         return .concatenate(
-          EffectTask(value: .updateCafeFilter(information: information)),
-          EffectTask(value: .delegate(.callSearchPlacesByFilter))
+          .send( .updateCafeFilter(information: information)),
+          .send( .delegate(.callSearchPlacesByFilter))
         )
 
       default:

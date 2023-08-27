@@ -8,7 +8,7 @@
 
 import ComposableArchitecture
 
-struct SavedList: ReducerProtocol {
+struct SavedList: Reducer {
 
   struct State: Equatable {
     let title = "저장 리스트"
@@ -34,11 +34,11 @@ struct SavedList: ReducerProtocol {
 
   @Dependency(\.bookmarkClient) private var bookmarkClient
 
-  var body: some ReducerProtocolOf<SavedList> {
+  var body: some ReducerOf<SavedList> {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return EffectTask(value: .fetchMyPlaces)
+        return .send( .fetchMyPlaces)
 
       case .onDisappear:
         return .run { send in

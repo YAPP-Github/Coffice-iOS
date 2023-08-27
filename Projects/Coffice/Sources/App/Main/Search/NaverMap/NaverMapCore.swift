@@ -11,7 +11,7 @@ import CoreLocation
 import NMapsMap
 import SwiftUI
 
-struct NaverMapCore: ReducerProtocol {
+struct NaverMapCore: Reducer {
 
   struct State: Equatable {
     var shouldShowRefreshButtonView: Bool {
@@ -133,7 +133,7 @@ struct NaverMapCore: ReducerProtocol {
   @Dependency(\.locationManager) private var locationManager
   @Dependency(\.bookmarkClient) private var bookmarkClient
 
-  var body: some ReducerProtocolOf<Self> {
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
 
@@ -153,10 +153,10 @@ struct NaverMapCore: ReducerProtocol {
             state.bottomFloatingButtons[clockButtonIndex].isSelected.toggle()
             if state.bottomFloatingButtons[clockButtonIndex].isSelected
                 && state.zoomLevel ?? 0 < 15.5 {
-              return EffectTask(value: .moveCameraTo(position: state.currentCameraPosition, zoomLevel: 15.5))
+              return .send(.moveCameraTo(position: state.currentCameraPosition, zoomLevel: 15.5))
             }
           }
-          return EffectTask(value: .showOpenTimeIfNeeded)
+          return .send(.showOpenTimeIfNeeded)
         case .currentLocationButton:
           state.isUpdatingCameraPosition = true
           return .send(.moveCameraToUserPosition)
@@ -188,10 +188,10 @@ struct NaverMapCore: ReducerProtocol {
         let selectedCafe = state.cafes[selectedCafeIndex]
 
         return .concatenate(
-          EffectTask(value: .updatePinnedCafes(cafes: state.cafes)),
+          .send(.updatePinnedCafes(cafes: state.cafes)),
           .merge(
-            EffectTask(value: .selectCafe(cafe: selectedCafe)),
-            EffectTask(value: .moveCameraTo(
+            .send(.selectCafe(cafe: selectedCafe)),
+            .send(.moveCameraTo(
               position: CLLocationCoordinate2DMake(cafe.latitude, cafe.longitude),
               zoomLevel: nil
             ))
@@ -269,7 +269,7 @@ struct NaverMapCore: ReducerProtocol {
       case .markersUpdated:
         state.shouldUpdateMarkers = false
         NaverMapViewProgressChecker.shared.isUpdatingMarkers = false
-        return EffectTask(value: .showOpenTimeIfNeeded)
+        return .send(.showOpenTimeIfNeeded)
 
       case .markersCleared:
         state.shouldClearMarkers = false

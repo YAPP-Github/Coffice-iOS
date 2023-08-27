@@ -10,7 +10,7 @@ import SwiftUI
 import TCACoordinators
 
 /// Main Tab 화면 전환, 이벤트 관리
-struct HomeCoordinator: ReducerProtocol {
+struct HomeCoordinator: Reducer {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
       routes: [.root(.home(.init()), embedInNavigationView: false)]
@@ -24,7 +24,7 @@ struct HomeCoordinator: ReducerProtocol {
     case updateRoutes([Route<HomeScreen.State>])
   }
 
-  var body: some ReducerProtocolOf<HomeCoordinator> {
+  var body: some ReducerOf<HomeCoordinator> {
     Reduce<State, Action> { _, action in
       switch action {
       default:

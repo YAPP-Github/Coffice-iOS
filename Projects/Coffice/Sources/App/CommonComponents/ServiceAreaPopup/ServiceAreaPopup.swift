@@ -8,14 +8,14 @@
 
 import ComposableArchitecture
 
-struct ServiceAreaPopup: ReducerProtocol {
+struct ServiceAreaPopup: Reducer {
   struct State: Equatable { }
 
   enum Action: Equatable {
     case confirmButtonTapped
   }
 
-  var body: some ReducerProtocolOf<ServiceAreaPopup> {
+  var body: some ReducerOf<ServiceAreaPopup> {
     Reduce { state, action in
       switch action {
       default:

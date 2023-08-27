@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct CafeDetailHeaderReducer: ReducerProtocol {
+struct CafeDetailHeaderReducer: Reducer {
   struct State: Equatable {
     // MARK: Entity
     var cafe: Cafe?
@@ -18,7 +18,7 @@ struct CafeDetailHeaderReducer: ReducerProtocol {
     let bookmarkedMessage = "장소가 저장되었습니다."
     let imagePageViewHeight: CGFloat = 346.0
 
-    mutating func update(cafe: Cafe?) -> EffectTask<Action> {
+    mutating func update(cafe: Cafe?) -> Effect<Action> {
       self.cafe = cafe
       return .none
     }
@@ -50,25 +50,25 @@ struct CafeDetailHeaderReducer: ReducerProtocol {
 
   @Dependency(\.bookmarkClient) private var bookmarkAPIClient
 
-  var body: some ReducerProtocolOf<CafeDetailHeaderReducer> {
+  var body: some ReducerOf<CafeDetailHeaderReducer> {
     Reduce { state, action in
       switch action {
       case .bookmarkButtonTapped:
         state.cafe?.isBookmarked.toggle()
         let isBookmarked = state.cafe?.isBookmarked ?? false
 
-        return EffectTask(value: .bookmarkResponse(isBookmarked: isBookmarked))
+        return .send( .bookmarkResponse(isBookmarked: isBookmarked))
 
       case .bookmarkResponse(let isBookmarked):
         if isBookmarked {
           return .merge(
-            EffectTask(value: .delegate(.updateBookmarkedState(isBookmarked))),
-            EffectTask(value: .addMyPlace)
+            .send( .delegate(.updateBookmarkedState(isBookmarked))),
+            .send( .addMyPlace)
           )
         } else {
           return .merge(
-            EffectTask(value: .delegate(.updateBookmarkedState(isBookmarked))),
-            EffectTask(value: .deleteMyPlace)
+            .send( .delegate(.updateBookmarkedState(isBookmarked))),
+            .send( .deleteMyPlace)
           )
         }
 
@@ -87,8 +87,8 @@ struct CafeDetailHeaderReducer: ReducerProtocol {
         let bookmarkedMessage = state.bookmarkedMessage
 
         return .merge(
-          EffectTask(value: .delegate(.fetchPlace)),
-          EffectTask(value: .delegate(.presentToastView(message: bookmarkedMessage)))
+          .send( .delegate(.fetchPlace)),
+          .send( .delegate(.presentToastView(message: bookmarkedMessage)))
         )
 
       case .deleteMyPlace:

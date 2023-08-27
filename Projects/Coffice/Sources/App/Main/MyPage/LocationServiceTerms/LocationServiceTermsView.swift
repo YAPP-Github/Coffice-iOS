@@ -13,7 +13,7 @@ struct LocationServiceTermsView: View {
   let store: StoreOf<LocationServiceTerms>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack {
         CommonWebView(store: store.scope(
           state: \.webViewState,
@@ -41,7 +41,9 @@ struct LocationServiceTermsView_Previews: PreviewProvider {
     LocationServiceTermsView(
       store: .init(
         initialState: .init(),
-        reducer: LocationServiceTerms()
+        reducer: {
+          LocationServiceTerms()
+        }
       )
     )
   }

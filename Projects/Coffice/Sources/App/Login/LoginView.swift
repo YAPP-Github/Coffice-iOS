@@ -14,13 +14,13 @@ struct LoginView: View {
   let store: StoreOf<Login>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       mainView
     }
   }
 
   var mainView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         VStack(alignment: .center, spacing: 0) {
           CofficeAsset.Asset.loginAppLogo.swiftUIImage
@@ -89,7 +89,12 @@ struct LoginView: View {
         }
       }
       .popup(
-        item: viewStore.binding(\.$loginServiceTermsBottomSheetState),
+        item: viewStore.binding(
+          get: \.loginServiceTermsBottomSheetState,
+          send: { state in
+            return .set(\.$loginServiceTermsBottomSheetState, state)
+          }
+        ),
         itemView: { viewState in
           LoginServiceTermsBottomSheetView(
             store: store.scope(
@@ -109,7 +114,9 @@ struct LoginView_Previews: PreviewProvider {
     LoginView(
       store: .init(
         initialState: .initialState,
-        reducer: Login()
+        reducer: {
+          Login()
+        }
       )
     )
   }

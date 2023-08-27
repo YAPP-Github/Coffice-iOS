@@ -8,7 +8,7 @@
 
 import ComposableArchitecture
 
-struct LocationServiceTerms: ReducerProtocol {
+struct LocationServiceTerms: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     var webViewState: CommonWebReducer.State
@@ -28,7 +28,7 @@ struct LocationServiceTerms: ReducerProtocol {
 
   @Dependency(\.apiClient) private var apiClient
 
-  var body: some ReducerProtocolOf<LocationServiceTerms> {
+  var body: some ReducerOf<LocationServiceTerms> {
     Scope(
       state: \.webViewState,
       action: /Action.webAction

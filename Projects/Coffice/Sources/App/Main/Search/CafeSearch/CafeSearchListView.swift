@@ -14,7 +14,7 @@ struct CafeSearchListView: View {
   let store: StoreOf<CafeSearchListCore>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         headerView
           .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
@@ -57,7 +57,7 @@ struct CafeSearchListView: View {
 
 extension CafeSearchListView {
   var headerView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 8) {
         headLine
         filterMenusView
@@ -68,7 +68,7 @@ extension CafeSearchListView {
   }
 
   var headLine: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack(spacing: 0) {
         Button {
           viewStore.send(.backbuttonTapped)
@@ -120,7 +120,9 @@ struct CafeSearchListView_Previews: PreviewProvider {
   static var previews: some View {
     CafeSearchListView(store: .init(
       initialState: .init(filterBottomSheetState: .mock),
-      reducer: CafeSearchListCore()
+      reducer: {
+        CafeSearchListCore()
+      }
     ))
   }
 }

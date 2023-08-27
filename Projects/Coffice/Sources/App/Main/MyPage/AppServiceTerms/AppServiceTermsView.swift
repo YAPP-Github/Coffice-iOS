@@ -13,7 +13,7 @@ struct AppServiceTermsView: View {
   let store: StoreOf<AppServiceTermsReducer>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack {
         CommonWebView(store: store.scope(
           state: \.webViewState,
@@ -44,7 +44,9 @@ struct AppServiceTermsView_Previews: PreviewProvider {
     AppServiceTermsView(
       store: .init(
         initialState: .initialState,
-        reducer: AppServiceTermsReducer()
+        reducer: {
+          AppServiceTermsReducer()
+        }
       )
     )
   }

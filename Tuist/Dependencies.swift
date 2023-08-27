@@ -11,7 +11,7 @@ let dependencies = Dependencies(
   carthage: [],
   swiftPackageManager: [
     .remote(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", requirement: .upToNextMajor(from: "0.3.0")),
-    .remote(url: "https://github.com/pointfreeco/swift-composable-architecture", requirement: .exact("0.56.0")),
+    .remote(url: "https://github.com/pointfreeco/swift-composable-architecture", requirement: .exact("1.0.0")),
     .remote(url: "https://github.com/jaemyeong/NMapsMap-SPM.git", requirement: .upToNextMajor(from: "3.16.2")),
     .remote(url: "https://github.com/firebase/firebase-ios-sdk.git", requirement: .upToNextMajor(from: "10.10.0")),
     .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .branch("master")),

@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import TCACoordinators
 
-struct SavedListScreen: ReducerProtocol {
+struct SavedListScreen: Reducer {
   enum State: Equatable {
     /// 메인 페이지
     case savedList(SavedList.State)
@@ -21,7 +21,7 @@ struct SavedListScreen: ReducerProtocol {
     case cafeSearchDetail(CafeDetail.Action)
   }
 
-  var body: some ReducerProtocolOf<SavedListScreen> {
+  var body: some ReducerOf<SavedListScreen> {
     Scope(
       state: /State.savedList,
       action: /Action.savedList

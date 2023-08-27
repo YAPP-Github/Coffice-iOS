@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct DevTest: ReducerProtocol {
+struct DevTest: Reducer {
   struct State: Equatable, Identifiable {
     static let initialState: State = .init()
     let id = UUID()
@@ -47,7 +47,7 @@ struct DevTest: ReducerProtocol {
     case cafeFilterBottomSheetAction(CafeFilterBottomSheet.Action)
   }
 
-  var body: some ReducerProtocolOf<DevTest> {
+  var body: some ReducerOf<DevTest> {
     BindingReducer()
 
     Reduce { state, action in
@@ -64,7 +64,7 @@ struct DevTest: ReducerProtocol {
         return .none
 
       case .dismissButtonTapped:
-        return EffectTask(value: .dismissView)
+        return .send(.dismissView)
 
       default:
         return .none

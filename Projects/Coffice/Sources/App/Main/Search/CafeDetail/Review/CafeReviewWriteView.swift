@@ -18,7 +18,7 @@ struct CafeReviewWriteView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         HStack {
           Text("리뷰 쓰기")
@@ -103,7 +103,10 @@ struct CafeReviewWriteView: View {
         UIApplication.keyWindow?.endEditing(true)
       }
       .popup(
-        item: viewStore.binding(\.$dismissConfirmBottomSheetState),
+        item: viewStore.binding(
+          get: \.dismissConfirmBottomSheetState,
+          send: { .set(\.$dismissConfirmBottomSheetState, $0) }
+        ),
         itemView: { sheetState in
           BottomSheetView(
             store: store.scope(
@@ -126,7 +129,7 @@ struct CafeReviewWriteView: View {
 
 extension CafeReviewWriteView: KeyboardPresentationReadable {
   private var reviewFormScrollView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       ScrollViewReader { proxy in
         ScrollView(.vertical, showsIndicators: true) {
           VStack(spacing: 0) {
@@ -153,7 +156,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
   }
 
   private var reviewOptionMenuView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         ForEach(viewStore.optionButtonStates) { buttonState in
           CafeReviewOptionButtonsView(
@@ -168,24 +171,29 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
   }
 
   private var reviewTextView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       ZStack(alignment: .topLeading) {
         VStack(alignment: .leading, spacing: 0) {
-          CafeReviewTextView(text: viewStore.binding(\.$reviewText))
-            .textFieldStyle(.plain)
-            .frame(height: 206)
-            .overlay(
-              textDescriptionView,
-              alignment: .bottomTrailing
+          CafeReviewTextView(
+            text: viewStore.binding(
+              get: \.reviewText,
+              send: { .set(\.$reviewText, $0) }
             )
-            .padding(13)
-            .overlay {
-              RoundedRectangle(cornerRadius: 8)
-                .stroke(
-                  CofficeAsset.Colors.grayScale3.swiftUIColor,
-                  lineWidth: 1
-                )
-            }
+          )
+          .textFieldStyle(.plain)
+          .frame(height: 206)
+          .overlay(
+            textDescriptionView,
+            alignment: .bottomTrailing
+          )
+          .padding(13)
+          .overlay {
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(
+                CofficeAsset.Colors.grayScale3.swiftUIColor,
+                lineWidth: 1
+              )
+          }
         }
         .padding(.top, 16)
 
@@ -209,7 +217,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
   }
 
   private var textDescriptionView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack(alignment: .bottom, spacing: 0) {
         Text(viewStore.currentTextLengthDescription)
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -240,7 +248,9 @@ struct CafeReviewWriteView_Previews: PreviewProvider {
     CafeReviewWriteView(
       store: .init(
         initialState: .mock,
-        reducer: CafeReviewWrite()
+        reducer: {
+          CafeReviewWrite()
+        }
       )
     )
   }

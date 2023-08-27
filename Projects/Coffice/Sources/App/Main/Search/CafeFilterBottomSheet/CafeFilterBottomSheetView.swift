@@ -17,7 +17,7 @@ struct CafeFilterBottomSheetView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         filterOptionButtonContainerView
         footerView
@@ -27,7 +27,10 @@ struct CafeFilterBottomSheetView: View {
           .cornerRadius(18, corners: [.topLeft, .topRight])
       )
       .popup(
-        item: viewStore.binding(\.$bubbleMessageViewState),
+        item: viewStore.binding(
+          get: \.bubbleMessageViewState,
+          send: { .set(\.$bubbleMessageViewState, $0) }
+        ),
         itemView: { viewState in
           BubbleMessageView(store: store.scope(
             state: { _ in viewState },
@@ -50,7 +53,7 @@ struct CafeFilterBottomSheetView: View {
 
 extension CafeFilterBottomSheetView {
   var headerView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack(spacing: 0) {
         Text(viewStore.filterType.title)
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -85,7 +88,7 @@ extension CafeFilterBottomSheetView {
   }
 
   var filterOptionButtonContainerView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         headerView
         mainScrollView
@@ -94,7 +97,7 @@ extension CafeFilterBottomSheetView {
   }
 
   var mainScrollView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       ScrollView(.vertical) {
         VStack(alignment: .leading, spacing: 0) {
           ForEach(viewStore.mainViewState.optionButtonCellViewStates) { cellViewState in
@@ -147,7 +150,7 @@ extension CafeFilterBottomSheetView {
   }
 
   var footerView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack(alignment: .center, spacing: 12) {
         Button {
           viewStore.send(.resetCafeFilterButtonTapped)
@@ -190,7 +193,9 @@ struct CafeFilterBottomSheetView_Previews: PreviewProvider {
     CafeFilterBottomSheetView(
       store: .init(
         initialState: .mock,
-        reducer: CafeFilterBottomSheet()
+        reducer: {
+          CafeFilterBottomSheet()
+        }
       )
     )
   }

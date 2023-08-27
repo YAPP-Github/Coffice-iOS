@@ -17,7 +17,7 @@ struct CafeDetailMenuView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         cafeSubMenuButtonView
 
@@ -33,7 +33,10 @@ struct CafeDetailMenuView: View {
         viewStore.send(.onAppear)
       }
       .sheet(
-        item: viewStore.binding(\.$cafeReviewWriteState),
+        item: viewStore.binding(
+          get: \.cafeReviewWriteState,
+          send: { .set(\.$cafeReviewWriteState, $0) }
+        ),
         content: { viewState in
           CafeReviewWriteView(
             store: store.scope(
@@ -44,7 +47,10 @@ struct CafeDetailMenuView: View {
         }
       )
       .popup(
-        isPresented: viewStore.binding(\.$isReviewModifySheetPresented),
+        isPresented: viewStore.binding(
+          get: \.isReviewModifySheetPresented,
+          send: { .set(\.$isReviewModifySheetPresented, $0) }
+        ),
         view: {
           VStack(spacing: 12) {
             Button {
@@ -88,7 +94,10 @@ struct CafeDetailMenuView: View {
         }
       )
       .popup(
-        isPresented: viewStore.binding(\.$isReviewReportSheetPresented),
+        isPresented: viewStore.binding(
+          get: \.isReviewReportSheetPresented,
+          send: { .set(\.$isReviewReportSheetPresented, $0) }
+        ),
         view: {
           VStack(spacing: 12) {
             Button {
@@ -119,7 +128,10 @@ struct CafeDetailMenuView: View {
         }
       )
       .popup(
-        item: viewStore.binding(\.$deleteConfirmBottomSheetState),
+        item: viewStore.binding(
+          get: \.deleteConfirmBottomSheetState,
+          send: { .set(\.$deleteConfirmBottomSheetState, $0) }
+        ),
         itemView: { sheetState in
           BottomSheetView(
             store: store.scope(
@@ -132,7 +144,10 @@ struct CafeDetailMenuView: View {
         customize: { BottomSheetContent.customize($0) }
       )
       .sheet(
-        item: viewStore.binding(\.$webViewState),
+        item: viewStore.binding(
+          get: \.webViewState,
+          send: { .set(\.$webViewState, $0) }
+        ),
         content: { viewState in
           VStack(spacing: 0) {
             CommonWebView(
@@ -216,7 +231,7 @@ extension CafeDetailMenuView {
   }
 
   private var snsInfoView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack {
         CofficeAsset.Asset.globalLine18px.swiftUIImage
         Button {
@@ -233,14 +248,14 @@ extension CafeDetailMenuView {
   }
 
   private var mapInfoView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       CafeDetailNaverMapView(viewStore: viewStore)
         .frame(height: 123)
     }
   }
 
   private var locationInfoView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         HStack {
           CofficeAsset.Asset.mapPinLine18px.swiftUIImage
@@ -267,7 +282,7 @@ extension CafeDetailMenuView {
   }
 
   private var contactInfoView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack {
         CofficeAsset.Asset.phoneFill18px.swiftUIImage
 
@@ -292,7 +307,7 @@ extension CafeDetailMenuView {
   }
 
   private var runningTimeView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         HStack {
           VStack {
@@ -341,7 +356,7 @@ extension CafeDetailMenuView {
 
 extension CafeDetailMenuView {
   private var reviewMenuView: some View {
-    WithViewStore(store) { _ in
+    WithViewStore(store, observe: { $0 }) { _ in
       VStack(alignment: .leading, spacing: 0) {
         reviewHeaderView
         userReviewListView
@@ -351,7 +366,7 @@ extension CafeDetailMenuView {
   }
 
   private var reviewHeaderView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack {
         Text(viewStore.userReviewHeaderTitle)
           .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
@@ -385,7 +400,7 @@ extension CafeDetailMenuView {
   }
 
   private var userReviewListView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       if viewStore.userReviewCellStates.isNotEmpty {
         userReviewsView
       } else {
@@ -395,7 +410,7 @@ extension CafeDetailMenuView {
   }
 
   private var userReviewsView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       LazyVStack(spacing: 0) {
         ForEach(viewStore.userReviewCellStates) { viewState in
           UserReviewCell(store: store, viewState: viewState)
@@ -426,7 +441,9 @@ struct CafeDetailMenuView_Previews: PreviewProvider {
     CafeDetailMenuView(
       store: .init(
         initialState: .init(),
-        reducer: CafeDetailMenuReducer()
+        reducer: {
+          CafeDetailMenuReducer()
+        }
       )
     )
   }

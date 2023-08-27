@@ -18,7 +18,7 @@ struct MyPageView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       mainView
         .navigationBarHidden(true)
         .onAppear {
@@ -38,7 +38,10 @@ struct MyPageView: View {
           customize: { BottomSheetContent.customize($0) }
         )
         .sheet(
-          item: viewStore.binding(\.$contactEmailViewState),
+          item: viewStore.binding(
+            get: \.contactEmailViewState,
+            send: { .set(\.$contactEmailViewState, $0) }
+          ),
           content: { viewState in
             ContactEmailView(
               contactEmailViewState: Binding(
@@ -70,7 +73,7 @@ struct MyPageView: View {
   }
 
   private var mainView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
 
       VStack(alignment: .leading, spacing: 0) {
         nickNameView
@@ -98,7 +101,7 @@ struct MyPageView: View {
   }
 
   private var nickNameView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack {
         Text(viewStore.user?.name ?? "닉네임")
           .applyCofficeFont(font: .header1)
@@ -135,7 +138,7 @@ struct MyPageView: View {
   }
 
   private var linkedAccountTypeView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         Divider()
         HStack(alignment: .center, spacing: 0) {
@@ -162,7 +165,7 @@ struct MyPageView: View {
   }
 
   private func menuItemView(menuItem: MyPage.MenuItem) -> some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
 
       VStack(alignment: .leading, spacing: 0) {
         HStack {
@@ -204,7 +207,9 @@ struct MyPageView_Previews: PreviewProvider {
     MyPageView(
       store: .init(
         initialState: .init(),
-        reducer: MyPage()
+        reducer: {
+          MyPage()
+        }
       )
     )
   }

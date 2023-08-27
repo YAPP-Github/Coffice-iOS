@@ -15,36 +15,39 @@ struct MyPageCoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
-        CaseLet(
-          state: /MyPageScreen.State.myPage,
-          action: MyPageScreen.Action.myPage,
-          then: MyPageView.init
-        )
-
-        CaseLet(
-          state: /MyPageScreen.State.locationServiceTerms,
-          action: MyPageScreen.Action.locationServiceTerms,
-          then: LocationServiceTermsView.init
-        )
-
-        CaseLet(
-          state: /MyPageScreen.State.appServiceTerms,
-          action: MyPageScreen.Action.appServiceTerms,
-          then: AppServiceTermsView.init
-        )
-
-        CaseLet(
-          state: /MyPageScreen.State.privacyPolicy,
-          action: MyPageScreen.Action.privacyPolicy,
-          then: PrivacyPolicyView.init
-        )
-
-        CaseLet(
-          state: /MyPageScreen.State.editProfile,
-          action: MyPageScreen.Action.editProfile,
-          then: EditProfileView.init
-        )
+      SwitchStore(screen) { state in
+        switch state {
+        case .myPage:
+          CaseLet(
+            /MyPageScreen.State.myPage,
+            action: MyPageScreen.Action.myPage,
+            then: MyPageView.init
+          )
+        case .locationServiceTerms:
+          CaseLet(
+            /MyPageScreen.State.locationServiceTerms,
+            action: MyPageScreen.Action.locationServiceTerms,
+            then: LocationServiceTermsView.init
+          )
+        case .appServiceTerms:
+          CaseLet(
+            /MyPageScreen.State.appServiceTerms,
+            action: MyPageScreen.Action.appServiceTerms,
+            then: AppServiceTermsView.init
+          )
+        case .privacyPolicy:
+          CaseLet(
+            /MyPageScreen.State.privacyPolicy,
+            action: MyPageScreen.Action.privacyPolicy,
+            then: PrivacyPolicyView.init
+          )
+        case .editProfile:
+          CaseLet(
+            /MyPageScreen.State.editProfile,
+            action: MyPageScreen.Action.editProfile,
+            then: EditProfileView.init
+          )
+        }
       }
     }
   }
@@ -55,7 +58,9 @@ struct MyPageCoordinatorView_Previews: PreviewProvider {
     MyPageCoordinatorView(
       store: .init(
         initialState: .initialState,
-        reducer: MyPageCoordinator()
+        reducer: {
+          MyPageCoordinator()
+        }
       )
     )
   }

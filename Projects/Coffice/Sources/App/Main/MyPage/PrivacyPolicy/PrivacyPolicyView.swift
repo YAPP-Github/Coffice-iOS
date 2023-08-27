@@ -13,7 +13,7 @@ struct PrivacyPolicyView: View {
   let store: StoreOf<PrivacyPolicy>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 10) {
         CommonWebView(store: store.scope(
           state: \.webViewState,
@@ -44,7 +44,9 @@ struct PrivacyPolicyView_Previews: PreviewProvider {
     PrivacyPolicyView(
       store: .init(
         initialState: .initialState,
-        reducer: PrivacyPolicy()
+        reducer: {
+          PrivacyPolicy()
+        }
       )
     )
   }

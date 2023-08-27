@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct CafeFilterBottomSheet: ReducerProtocol {
+struct CafeFilterBottomSheet: Reducer {
   struct State: Equatable {
     static var mock: Self {
       .init(
@@ -76,7 +76,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
 
-  var body: some ReducerProtocolOf<CafeFilterBottomSheet> {
+  var body: some ReducerOf<CafeFilterBottomSheet> {
     BindingReducer()
 
     Reduce { state, action in
@@ -126,14 +126,14 @@ struct CafeFilterBottomSheet: ReducerProtocol {
             state.cafeFilterInformation.drinkOptionSet.insert(option)
           }
         }
-        return EffectTask(value: .updateMainViewState)
+        return .send( .updateMainViewState)
 
       case .infoGuideButtonTapped:
         guard let guideType = state.guideType
         else { return .none }
 
-        return EffectTask(
-          value: .presentBubbleMessageView(
+        return .send(
+          .presentBubbleMessageView(
             .init(guideType: guideType)
           )
         )
@@ -147,7 +147,7 @@ struct CafeFilterBottomSheet: ReducerProtocol {
         return .none
 
       case .resetCafeFilterButtonTapped:
-        return EffectTask(value: .resetCafeFilter)
+        return .send( .resetCafeFilter)
 
       case .resetCafeFilter:
         switch state.filterType {
@@ -163,14 +163,14 @@ struct CafeFilterBottomSheet: ReducerProtocol {
           state.cafeFilterInformation.runningTimeOptionSet.removeAll()
         }
         return .concatenate(
-          EffectTask(value: .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
-          EffectTask(value: .delegate(.dismiss))
+          .send( .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
+          .send( .delegate(.dismiss))
         )
 
       case .saveCafeFilterButtonTapped:
         return .concatenate(
-          EffectTask(value: .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
-          EffectTask(value: .delegate(.dismiss))
+          .send( .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
+          .send( .delegate(.dismiss))
         )
 
       case .updateContainerView(let height):

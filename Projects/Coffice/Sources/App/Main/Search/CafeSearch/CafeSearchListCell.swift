@@ -16,7 +16,7 @@ struct CafeSearchListCell: View {
   let cafe: Cafe
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         HStack(alignment: .top, spacing: 0) {
           VStack(alignment: .leading, spacing: 8) {
@@ -91,7 +91,9 @@ struct CafeSearchListCell_Previews: PreviewProvider {
     CafeSearchListCell(
       store: .init(
         initialState: .init(filterMenusState: .mock),
-        reducer: CafeSearchListCore()
+        reducer: {
+          CafeSearchListCore()
+        }
       ),
       cafe: Cafe.dummy
     )

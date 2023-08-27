@@ -21,7 +21,7 @@ struct CafeDetailView: View {
   }
 
   var mainView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         ScrollView(.vertical) {
           VStack(spacing: 0) {
@@ -74,7 +74,10 @@ struct CafeDetailView: View {
         viewStore.send(.onAppear)
       }
       .popup(
-        item: viewStore.binding(\.$toastViewMessage),
+        item: viewStore.binding(
+          get: \.toastViewMessage,
+          send: { .set(\.$toastViewMessage, $0) }
+        ),
         itemView: { message in
           ToastView(
             title: message,
@@ -97,7 +100,9 @@ struct CafeSearchDetailView_Previews: PreviewProvider {
     CafeDetailView(
       store: .init(
         initialState: .init(cafeId: 1),
-        reducer: CafeDetail()
+        reducer: {
+          CafeDetail()
+        }
       )
     )
   }

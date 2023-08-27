@@ -17,7 +17,7 @@ struct BubbleMessageView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       ZStack(alignment: .center) {
         VStack(alignment: .leading, spacing: 0) {
           Text(viewStore.title)
@@ -65,7 +65,9 @@ struct BubbleMessageView_Previews: PreviewProvider {
     BubbleMessageView(
       store: .init(
         initialState: .mock,
-        reducer: BubbleMessage()
+        reducer: {
+          BubbleMessage()
+        }
       )
     )
   }

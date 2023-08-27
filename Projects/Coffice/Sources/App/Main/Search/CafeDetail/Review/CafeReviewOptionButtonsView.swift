@@ -13,7 +13,7 @@ struct CafeReviewOptionButtonsView: View {
   let store: StoreOf<CafeReviewOptionButtons>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         Text(viewStore.title)
           .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
@@ -61,7 +61,9 @@ struct CafeReviewOptionButtonsView_Previews: PreviewProvider {
     CafeReviewOptionButtonsView(
       store: .init(
         initialState: .mock,
-        reducer: CafeReviewOptionButtons()
+        reducer: {
+          CafeReviewOptionButtons()
+        }
       )
     )
     .previewLayout(.sizeThatFits)

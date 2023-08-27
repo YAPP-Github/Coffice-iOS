@@ -91,7 +91,7 @@ extension BottomSheetView {
   }
 
   private var cancelButton: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Button {
         viewStore.send(.cancelButtonTapped)
       } label: {
@@ -109,7 +109,7 @@ extension BottomSheetView {
   }
 
   private var confirmButton: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Button {
         viewStore.send(.confirmButtonTapped)
       } label: {
@@ -131,9 +131,12 @@ extension BottomSheetView {
 struct BottomSheetView_Previews: PreviewProvider {
   static var previews: some View {
     BottomSheetView(
-      store: .init(initialState: .initialState, reducer: {
-        BottomSheetReducer()
-      }),
+      store: .init(
+        initialState: .initialState,
+        reducer: {
+          BottomSheetReducer()
+        }
+      ),
       bottomSheetContent: .mock
     )
   }

@@ -7,7 +7,7 @@
 
 import ComposableArchitecture
 
-struct Home: ReducerProtocol {
+struct Home: Reducer {
   struct State: Equatable {
     let title = "Home"
     var isSplashView = false
@@ -33,7 +33,7 @@ struct Home: ReducerProtocol {
 
   @Dependency(\.apiClient) private var apiClient
 
-  var body: some ReducerProtocolOf<Home> {
+  var body: some ReducerOf<Home> {
     Reduce { _, action in
       switch action {
       default:

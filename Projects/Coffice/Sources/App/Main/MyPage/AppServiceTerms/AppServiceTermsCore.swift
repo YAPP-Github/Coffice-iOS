@@ -8,7 +8,7 @@
 
 import ComposableArchitecture
 
-struct AppServiceTermsReducer: ReducerProtocol {
+struct AppServiceTermsReducer: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     var webViewState: CommonWebReducer.State
@@ -26,7 +26,7 @@ struct AppServiceTermsReducer: ReducerProtocol {
     case webAction(CommonWebReducer.Action)
   }
 
-  var body: some ReducerProtocolOf<Self> {
+  var body: some ReducerOf<Self> {
     Scope(
       state: \.webViewState,
       action: /Action.webAction

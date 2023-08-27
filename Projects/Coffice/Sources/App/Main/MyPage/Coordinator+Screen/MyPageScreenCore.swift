@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import TCACoordinators
 
-struct MyPageScreen: ReducerProtocol {
+struct MyPageScreen: Reducer {
   enum State: Equatable {
     /// 메인 페이지
     case myPage(MyPage.State)
@@ -26,7 +26,7 @@ struct MyPageScreen: ReducerProtocol {
     case editProfile(EditProfile.Action)
   }
 
-  var body: some ReducerProtocolOf<MyPageScreen> {
+  var body: some ReducerOf<MyPageScreen> {
     Scope(
       state: /State.myPage,
       action: /Action.myPage

@@ -17,7 +17,7 @@ struct CafeFilterMenusView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
@@ -73,7 +73,10 @@ struct CafeFilterMenusView: View {
         .padding(.bottom, 16)
       }
       .popup(
-        item: viewStore.binding(\.$cafeFilterBottomSheetState),
+        item: viewStore.binding(
+          get: \.cafeFilterBottomSheetState,
+          send: { .set(\.$cafeFilterBottomSheetState, $0) }
+        ),
         itemView: { viewState in
           CafeFilterBottomSheetView(store: store.scope(
             state: { _ in viewState },
@@ -96,7 +99,9 @@ struct CafeFilterMenusView_Previews: PreviewProvider {
     CafeFilterMenusView(
       store: .init(
         initialState: .mock,
-        reducer: CafeFilterMenus()
+        reducer: {
+          CafeFilterMenus()
+        }
       )
     )
   }

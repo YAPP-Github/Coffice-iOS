@@ -11,7 +11,7 @@ import Foundation
 import Network
 import TCACoordinators
 
-struct AppCoordinator: ReducerProtocol {
+struct AppCoordinator: Reducer {
   struct State: Equatable, IndexedRouterState {
     static let mock: State = .init(
       routes: [.root(.login(.initialState), embedInNavigationView: false)]
@@ -48,14 +48,14 @@ struct AppCoordinator: ReducerProtocol {
     case presentLoginView
   }
 
-  var body: some ReducerProtocolOf<AppCoordinator> {
+  var body: some ReducerOf<AppCoordinator> {
     Reduce { state, action in
       switch action {
       case .routeAction(_, action: .login(.routeAction(_, action: .main(.loginCompleted)))):
         state.routes.dismissAll()
         UserDefaults.standard.setValue(true, forKey: "alreadyLaunched")
         UserDefaults.standard.setValue(true, forKey: UserDefaultsKeyString.onBoardingWithCafeMapView.forKey)
-        return EffectTask(value: .routeAction(0, action: .main(.loginCompleted)))
+        return .send(.routeAction(0, action: .main(.loginCompleted)))
 
       case .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.logoutCompleted)))))),
           .routeAction(_, action: .main(.myPage(.routeAction(_, action: .myPage(.delegate(.memberLeaveCompleted)))))):
@@ -63,14 +63,15 @@ struct AppCoordinator: ReducerProtocol {
         UserDefaults.standard.setValue(false, forKey: "alreadyLaunched")
         UserDefaults.standard.setValue(false, forKey: UserDefaultsKeyString.onBoardingWithCafeMapView.forKey)
         return .merge(
-          EffectTask(value: .dismissAllRoutes),
-          EffectTask(value: .presentLoginView)
-            .delay(for: 0.5, scheduler: DispatchQueue.main)
-            .eraseToEffect()
+          .send(.dismissAllRoutes),
+          .run { send in
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            await send(.presentLoginView)
+          }
         )
 
       case .routeAction(_, action: .main(.myPage(.delegate(.pushLogin)))):
-        return EffectTask(value: .presentLoginView)
+        return .send(.presentLoginView)
 
       case .routeAction(_, action: .login(.routeAction(_, action: .main(.dismissButtonTapped)))):
         state.routes.dismiss()

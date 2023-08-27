@@ -12,7 +12,7 @@ import Foundation
 import Network
 import SwiftUI
 
-struct CafeSearchCore: ReducerProtocol {
+struct CafeSearchCore: Reducer {
   struct DebouncingCancelId: Hashable {}
 
   enum CafeSearchViewBodyType {
@@ -49,6 +49,7 @@ struct CafeSearchCore: ReducerProtocol {
     case recentSearchWordCellTapped(recentWord: String)
     case placeCellTapped(place: Cafe)
     case waypointCellTapped(waypoint: WayPoint)
+    case searchTextDidChange
 
     // MARK: Network Requests
     case fetchRecentSearchWords
@@ -80,7 +81,7 @@ struct CafeSearchCore: ReducerProtocol {
 
   // MARK: - Body
 
-  var body: some ReducerProtocolOf<Self> {
+  var body: some ReducerOf<Self> {
     BindingReducer()
     Reduce { state, action in
       switch action {
@@ -92,14 +93,20 @@ struct CafeSearchCore: ReducerProtocol {
         } else {
           state.bodyType = .searchResultListView
         }
+        return .run { send in
+          await withTaskCancellation(
+            id: DebouncingCancelId(),
+            cancelInFlight: true,
+            operation: {
+              await send(.searchTextDidChange)
+            }
+          )
+        }
+
+      case .searchTextDidChange:
         return .merge(
-          EffectTask(value: .fetchWaypoints),
-          EffectTask(value: .searchPlacesWithoutFilters)
-        )
-        .debounce(
-          id: DebouncingCancelId(),
-          for: 0.5,
-          scheduler: DispatchQueue.main
+          .send(.fetchWaypoints),
+          .send(.searchPlacesWithoutFilters)
         )
 
         // MARK: - View Life Cycle
@@ -116,14 +123,14 @@ struct CafeSearchCore: ReducerProtocol {
         // MARK: - View Tap Events
       case .waypointCellTapped(let waypoint):
         return .merge(
-          EffectTask(value: .delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint))),
-          EffectTask(value: .uploadSearchWord(text: waypoint.name))
+          .send( .delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint))),
+          .send( .uploadSearchWord(text: waypoint.name))
         )
 
       case .placeCellTapped(let place):
         return .merge(
-          EffectTask(value: .uploadSearchWord(text: place.name)),
-          EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: [place])))
+          .send( .uploadSearchWord(text: place.name)),
+          .send( .delegate(.focusSelectedPlace(selectedPlace: [place])))
         )
 
       case .clearTextButtonTapped:
@@ -230,7 +237,7 @@ struct CafeSearchCore: ReducerProtocol {
           state.bodyType = .searchResultEmptyView
           return .none
         }
-        return EffectTask(value: .delegate(.focusSelectedPlace(selectedPlace: cafes)))
+        return .send( .delegate(.focusSelectedPlace(selectedPlace: cafes)))
 
       case .uploadSearchWordResponse(let result):
         switch result {

@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct PrivacyPolicy: ReducerProtocol {
+struct PrivacyPolicy: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     var webViewState: CommonWebReducer.State
@@ -27,7 +27,7 @@ struct PrivacyPolicy: ReducerProtocol {
     case webAction(CommonWebReducer.Action)
   }
 
-  var body: some ReducerProtocolOf<PrivacyPolicy> {
+  var body: some ReducerOf<PrivacyPolicy> {
     Scope(
       state: \.webViewState,
       action: /Action.webAction

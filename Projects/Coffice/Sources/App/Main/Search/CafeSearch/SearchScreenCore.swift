@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import TCACoordinators
 
-struct SearchScreen: ReducerProtocol {
+struct SearchScreen: Reducer {
   enum State: Equatable {
     /// 메인 페이지
     case cafeMap(CafeMapCore.State)
@@ -26,7 +26,7 @@ struct SearchScreen: ReducerProtocol {
     case popView
   }
 
-  var body: some ReducerProtocolOf<SearchScreen> {
+  var body: some ReducerOf<SearchScreen> {
     Scope(
       state: /State.cafeMap,
       action: /Action.cafeMap

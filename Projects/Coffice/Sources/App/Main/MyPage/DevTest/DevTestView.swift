@@ -13,7 +13,7 @@ struct DevTestView: View {
   let store: StoreOf<DevTest>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 10) {
         textFieldWithBindingState
         textFieldWithoutBindingState
@@ -36,7 +36,10 @@ struct DevTestView: View {
         }
       )
       .popup(
-        item: viewStore.binding(\.$cafeFilterBottomSheetState),
+        item: viewStore.binding(
+          get: \.cafeFilterBottomSheetState,
+          send: { .set(\.$cafeFilterBottomSheetState, $0) }
+        ),
         itemView: { viewState in
           CafeFilterBottomSheetView(
             store: store.scope(
@@ -56,10 +59,13 @@ struct DevTestView: View {
 
 extension DevTestView {
   private var textFieldWithBindingState: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       TextField(
         "textField with BindingState",
-        text: viewStore.binding(\.$textFieldStringWithBindingState)
+        text: viewStore.binding(
+          get: \.textFieldStringWithBindingState,
+          send: { .set(\.$textFieldStringWithBindingState, $0) }
+        )
       )
       .textFieldStyle(.plain)
       .frame(height: 35)
@@ -73,7 +79,7 @@ extension DevTestView {
   }
 
   private var textFieldWithoutBindingState: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       EmptyView()
       TextField(
         "textField without BindingState",
@@ -94,7 +100,7 @@ extension DevTestView {
   }
 
   private var cafeFilterBottomSheetTestView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Button {
         viewStore.send(.presentCafeFilterBottomSheetView)
       } label: {
@@ -117,7 +123,9 @@ struct DevTestView_Previews: PreviewProvider {
     DevTestView(
       store: .init(
         initialState: .initialState,
-        reducer: DevTest()
+        reducer: {
+          DevTest()
+        }
       )
     )
   }

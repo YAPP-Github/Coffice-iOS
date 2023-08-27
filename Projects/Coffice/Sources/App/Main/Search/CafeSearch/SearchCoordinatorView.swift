@@ -15,30 +15,33 @@ struct SearchCoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
-        CaseLet(
-          state: /SearchScreen.State.cafeMap,
-          action: SearchScreen.Action.cafeMap,
-          then: CafeMapView.init
-        )
-
-        CaseLet(
-          state: /SearchScreen.State.cafeSearchList,
-          action: SearchScreen.Action.cafeSearchList,
-          then: CafeSearchListView.init
-        )
-
-        CaseLet(
-          state: /SearchScreen.State.cafeSearchDetail,
-          action: SearchScreen.Action.cafeSearchDetail,
-          then: CafeDetailView.init
-        )
-
-        CaseLet(
-          state: /SearchScreen.State.cafeReviewWrite,
-          action: SearchScreen.Action.cafeReviewWrite,
-          then: CafeReviewWriteView.init
-        )
+      SwitchStore(screen) { state in
+        switch state {
+        case .cafeMap:
+          CaseLet(
+            /SearchScreen.State.cafeMap,
+             action: SearchScreen.Action.cafeMap,
+             then: CafeMapView.init
+          )
+        case .cafeSearchList:
+          CaseLet(
+            /SearchScreen.State.cafeSearchList,
+             action: SearchScreen.Action.cafeSearchList,
+             then: CafeSearchListView.init
+          )
+        case .cafeSearchDetail:
+          CaseLet(
+            /SearchScreen.State.cafeSearchDetail,
+             action: SearchScreen.Action.cafeSearchDetail,
+             then: CafeDetailView.init
+          )
+        case .cafeReviewWrite:
+          CaseLet(
+            /SearchScreen.State.cafeReviewWrite,
+             action: SearchScreen.Action.cafeReviewWrite,
+             then: CafeReviewWriteView.init
+          )
+        }
       }
     }
   }
@@ -49,7 +52,9 @@ struct SearchCoordinatorView_Previews: PreviewProvider {
     SearchCoordinatorView(
       store: .init(
         initialState: .initialState,
-        reducer: SearchCoordinator()
+        reducer: {
+          SearchCoordinator()
+        }
       )
     )
   }

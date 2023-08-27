@@ -17,7 +17,7 @@ struct CafeDetailSubInfoView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         VStack(spacing: 0) {
           cafeSubPrimaryInfoView
@@ -30,7 +30,10 @@ struct CafeDetailSubInfoView: View {
           .padding(.top, 20)
       }
       .popup(
-        item: viewStore.binding(\.$bubbleMessageViewState),
+        item: viewStore.binding(
+          get: \.bubbleMessageViewState,
+          send: { .set(\.$bubbleMessageViewState, $0) }
+        ),
         itemView: { viewState in
           BubbleMessageView(store: store.scope(
             state: { _ in viewState },
@@ -108,7 +111,7 @@ extension CafeDetailSubInfoView {
   }
 
   private var cafeSecondaryInfoView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         HStack {
           VStack(spacing: 0) {
@@ -160,7 +163,9 @@ struct CafeSearchDetailSubInfoView_Previews: PreviewProvider {
     CafeDetailSubInfoView(
       store: .init(
         initialState: .init(),
-        reducer: CafeDetailSubInfoReducer()
+        reducer: {
+          CafeDetailSubInfoReducer()
+        }
       )
     )
   }

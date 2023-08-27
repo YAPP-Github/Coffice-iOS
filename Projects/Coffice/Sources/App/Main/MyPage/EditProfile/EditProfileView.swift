@@ -18,7 +18,7 @@ struct EditProfileView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       nickNameView
         .customNavigationBar(
           centerView: {
@@ -42,7 +42,7 @@ struct EditProfileView: View {
   }
 
   private var nickNameView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 24) {
         Spacer()
         Text("닉네임")
@@ -58,7 +58,10 @@ struct EditProfileView: View {
           HStack {
             TextField(
               "최소 2자, 최대 15자로 입력해 주세요",
-              text: viewStore.binding(\.$nicknameTextField)
+              text: viewStore.binding(
+                get: \.nicknameTextField,
+                send: { .set(\.$nicknameTextField, $0) }
+              )
             )
             .applyCofficeFont(font: .subtitle1Medium)
             .keyboardType(.default)
@@ -128,7 +131,9 @@ struct EditProfileView_Previews: PreviewProvider {
     EditProfileView(
       store: .init(
         initialState: .initialState,
-        reducer: EditProfile()
+        reducer: {
+          EditProfile()
+        }
       )
     )
   }

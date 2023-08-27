@@ -14,12 +14,15 @@ struct HomeCoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
-        CaseLet(
-          state: /HomeScreen.State.home,
-          action: HomeScreen.Action.home,
-          then: HomeView.init
-        )
+      SwitchStore(screen) { state in
+        switch state {
+        case .home:
+          CaseLet(
+            /HomeScreen.State.home,
+            action: HomeScreen.Action.home,
+            then: HomeView.init
+          )
+        }
       }
     }
   }
@@ -30,7 +33,9 @@ struct HomeCoordinatorView_Previews: PreviewProvider {
     HomeCoordinatorView(
       store: .init(
         initialState: .initialState,
-        reducer: HomeCoordinator()
+        reducer: {
+          HomeCoordinator()
+        }
       )
     )
   }

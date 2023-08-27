@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct BottomSheetReducer: ReducerProtocol {
+struct BottomSheetReducer: Reducer {
   struct State: Equatable {
     static let initialState: Self = .init()
 
@@ -20,7 +20,7 @@ struct BottomSheetReducer: ReducerProtocol {
     case cancelButtonTapped
   }
 
-  var body: some ReducerProtocolOf<BottomSheetReducer> {
+  var body: some ReducerOf<BottomSheetReducer> {
     Reduce { state, action in
       switch action {
       default:

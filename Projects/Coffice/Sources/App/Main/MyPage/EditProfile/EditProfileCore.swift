@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct EditProfile: ReducerProtocol {
+struct EditProfile: Reducer {
   // TODO: ex) 서버 응답 결과에 따라, empty, tooLong, 등등..
   enum NicknameValidationType: Equatable {
     case checked(response: CheckNicknameResponse)
@@ -48,7 +48,7 @@ struct EditProfile: ReducerProtocol {
 
   @Dependency(\.checkNicknameAPIClient) private var checkNicknameClient
 
-  var body: some ReducerProtocolOf<EditProfile> {
+  var body: some ReducerOf<EditProfile> {
     BindingReducer()
     Reduce { state, action in
       switch action {
@@ -57,8 +57,8 @@ struct EditProfile: ReducerProtocol {
 
       case .dismissButtonTapped:
         return .concatenate(
-          EffectTask(value: .showTabBar),
-          EffectTask(value: .popView)
+          .send(.showTabBar),
+          .send(.popView)
         )
 
       case .binding(\.$nicknameTextField):
@@ -78,8 +78,8 @@ struct EditProfile: ReducerProtocol {
         state.nicknameValidationType = .checked(response: response)
         if state.nicknameValidationType == .checked(response: .valid) {
           return .concatenate(
-            EffectTask(value: .showTabBar),
-            EffectTask(value: .popView)
+            .send( .showTabBar),
+            .send( .popView)
           )
         }
         return .none

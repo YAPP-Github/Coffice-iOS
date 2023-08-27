@@ -17,7 +17,7 @@ struct ServiceAreaPopupView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(alignment: .center, spacing: 0) {
         Text("서비스 운영지역")
           .applyCofficeFont(font: .header1)

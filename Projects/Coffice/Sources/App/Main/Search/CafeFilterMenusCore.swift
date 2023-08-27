@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct CafeFilterMenus: ReducerProtocol {
+struct CafeFilterMenus: Reducer {
   struct State: Equatable {
     static let initialState: State = .init(filterInformation: .initialState)
     static let mock: State = .init(filterInformation: .mock)
@@ -74,7 +74,7 @@ struct CafeFilterMenus: ReducerProtocol {
     case updateCafeFilter(information: CafeFilterInformation)
   }
 
-  var body: some ReducerProtocolOf<CafeFilterMenus> {
+  var body: some ReducerOf<CafeFilterMenus> {
     BindingReducer()
 
     Reduce { state, action in
@@ -84,8 +84,8 @@ struct CafeFilterMenus: ReducerProtocol {
         else { return .none }
 
         state.buttonViewStates[buttonViewStateIndex].focusButton()
-        return EffectTask(
-          value: .presentFilterBottomSheetView(
+        return .send(
+          .presentFilterBottomSheetView(
             .init(filterType: menuType, cafeFilterInformation: state.filterInformation)
           )
         )
@@ -96,11 +96,11 @@ struct CafeFilterMenus: ReducerProtocol {
 
       case .delegate(.updateCafeFilter(let information)):
         state.filterInformation = information
-        return EffectTask(value: .updateButtonViewStates)
+        return .send( .updateButtonViewStates)
 
       case .updateCafeFilter(let information):
         state.filterInformation = information
-        return EffectTask(value: .updateButtonViewStates)
+        return .send( .updateButtonViewStates)
 
       case .updateButtonViewStates:
         state.updateButtonViewStates()
@@ -109,7 +109,7 @@ struct CafeFilterMenus: ReducerProtocol {
       case .cafeFilterBottomSheetViewAction(.delegate(let action)):
         switch action {
         case .saveCafeFilter(let information):
-          return EffectTask(value: .delegate(.updateCafeFilter(information: information)))
+          return .send( .delegate(.updateCafeFilter(information: information)))
         case .dismiss:
           state.cafeFilterBottomSheetState = nil
           return .none

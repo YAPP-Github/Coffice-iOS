@@ -14,7 +14,7 @@ struct NaverMapView {
   @ObservedObject var viewStore: ViewStoreOf<NaverMapCore>
 
   init(store: StoreOf<NaverMapCore>) {
-    self.viewStore = ViewStoreOf<NaverMapCore>(store)
+    self.viewStore = ViewStoreOf<NaverMapCore>(store, observe: { $0 })
   }
 }
 

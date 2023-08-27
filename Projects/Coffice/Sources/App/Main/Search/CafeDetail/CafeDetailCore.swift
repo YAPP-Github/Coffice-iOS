@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct CafeDetail: ReducerProtocol {
+struct CafeDetail: Reducer {
   struct State: Equatable {
     @BindingState var toastViewMessage: String?
     var headerViewState: CafeDetailHeaderReducer.State = .init()
@@ -40,7 +40,7 @@ struct CafeDetail: ReducerProtocol {
 
   @Dependency(\.placeAPIClient) private var placeAPIClient
 
-  var body: some ReducerProtocolOf<CafeDetail> {
+  var body: some ReducerOf<CafeDetail> {
     BindingReducer()
 
     Scope(
@@ -70,7 +70,7 @@ struct CafeDetail: ReducerProtocol {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return EffectTask(value: .fetchPlace)
+        return .send(.fetchPlace)
 
       case .fetchPlace:
         return .run { [cafeId = state.cafeId] send in
@@ -96,9 +96,9 @@ struct CafeDetail: ReducerProtocol {
       case .cafeDetailHeaderAction(.delegate(let action)):
         switch action {
         case .presentToastView(message: let message):
-          return EffectTask(value: .presentToastView(message: message))
+          return .send(.presentToastView(message: message))
         case .fetchPlace:
-          return EffectTask(value: .fetchPlace)
+          return .send(.fetchPlace)
         case .updateBookmarkedState(let isBookmarked):
           state.cafe?.isBookmarked = isBookmarked
           return .none
@@ -106,7 +106,7 @@ struct CafeDetail: ReducerProtocol {
 
         // MARK: Cafe Detail Menu
       case .cafeDetailMenuAction(.delegate(.presentToastView(let message))):
-        return EffectTask(value: .presentToastView(message: message))
+        return .send(.presentToastView(message: message))
 
       default:
         return .none

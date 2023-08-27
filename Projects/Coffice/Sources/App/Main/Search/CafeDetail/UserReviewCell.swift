@@ -19,7 +19,7 @@ struct UserReviewCell: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         VStack(spacing: 0) {
           HStack {

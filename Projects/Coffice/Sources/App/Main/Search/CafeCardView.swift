@@ -14,7 +14,7 @@ struct CafeCardView: View {
   let store: StoreOf<CafeMapCore>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(alignment: .leading, spacing: 16) {
         HStack(alignment: .top, spacing: 0) {
           VStack(alignment: .leading, spacing: 8) {
@@ -106,7 +106,9 @@ struct CafeCardView_Previews: PreviewProvider {
     CafeCardView(
       store: .init(
         initialState: .init(),
-        reducer: CafeMapCore()
+        reducer: {
+          CafeMapCore()
+        }
       )
     )
   }

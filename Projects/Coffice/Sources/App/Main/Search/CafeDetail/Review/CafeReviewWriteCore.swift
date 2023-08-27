@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct CafeReviewWrite: ReducerProtocol {
+struct CafeReviewWrite: Reducer {
   enum ReviewType {
     case create
     case edit
@@ -117,7 +117,7 @@ struct CafeReviewWrite: ReducerProtocol {
 
   @Dependency(\.reviewAPIClient) private var reviewAPIClient
 
-  var body: some ReducerProtocolOf<CafeReviewWrite> {
+  var body: some ReducerOf<CafeReviewWrite> {
     BindingReducer()
 
     Reduce { state, action in
@@ -126,9 +126,10 @@ struct CafeReviewWrite: ReducerProtocol {
         return .none
 
       case .dismissViewWithDelay:
-        return EffectTask(value: .delegate(.dismissView))
-          .delay(for: 0.1, scheduler: DispatchQueue.main)
-          .eraseToEffect()
+        return .run { send in
+          try await Task.sleep(nanoseconds: 100_000_000)
+          await send(.delegate(.dismissView))
+        }
 
       case .optionButtonsAction(.optionButtonTapped(let optionType, let index)):
         switch optionType {
@@ -142,7 +143,7 @@ struct CafeReviewWrite: ReducerProtocol {
 
         state.optionButtonStates[optionType.index].updateOptionButtons()
         debugPrint("tapped optionButtonState : \(state.optionButtonStates[optionType.index]) at \(index)")
-        return EffectTask(value: .updateSaveButtonState)
+        return .send( .updateSaveButtonState)
 
       case .updateSaveButtonState:
         state.isSaveButtonEnabled = state.optionButtonStates.allSatisfy(\.isSelectedOptionButton)
@@ -153,7 +154,7 @@ struct CafeReviewWrite: ReducerProtocol {
         return .none
 
       case .saveButtonTapped:
-        return EffectTask(value: .uploadReview)
+        return .send( .uploadReview)
 
       case .uploadReview:
         var electricOutletLevel: OutletStateOption = .few
@@ -208,8 +209,8 @@ struct CafeReviewWrite: ReducerProtocol {
         switch result {
         case .success(let review):
           return .concatenate(
-            EffectTask(value: .delegate(.uploadReviewFinished(review: review))),
-            EffectTask(value: .delegate(.dismissView))
+            .send( .delegate(.uploadReviewFinished(review: review))),
+            .send( .delegate(.dismissView))
           )
         case .failure(let error):
           debugPrint(error.localizedDescription)
@@ -220,8 +221,8 @@ struct CafeReviewWrite: ReducerProtocol {
         switch result {
         case .success(let review):
           return .concatenate(
-            EffectTask(value: .delegate(.editReviewFinished(review: review))),
-            EffectTask(value: .delegate(.dismissView))
+            .send( .delegate(.editReviewFinished(review: review))),
+            .send( .delegate(.dismissView))
           )
         case .failure(let error):
           debugPrint(error.localizedDescription)
@@ -231,10 +232,10 @@ struct CafeReviewWrite: ReducerProtocol {
       case .dismissConfirmBottomSheet(let action):
         switch action {
         case .confirmButtonTapped:
-          return EffectTask(value: .dismissDeleteConfirmBottomSheet)
+          return .send( .dismissDeleteConfirmBottomSheet)
         case .cancelButtonTapped:
           state.isDismissConfirmed = true
-          return EffectTask(value: .dismissDeleteConfirmBottomSheet)
+          return .send( .dismissDeleteConfirmBottomSheet)
         }
 
       case .presentDeleteConfirmBottomSheet:
@@ -247,7 +248,7 @@ struct CafeReviewWrite: ReducerProtocol {
 
       case .dismissConfirmBottomSheetDismissed:
         if state.isDismissConfirmed {
-          return EffectTask(value: .dismissViewWithDelay)
+          return .send( .dismissViewWithDelay)
         }
         return .none
 

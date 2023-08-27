@@ -10,7 +10,7 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-struct SavedListCoordinator: ReducerProtocol {
+struct SavedListCoordinator: Reducer {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
       routes: [.root(.savedList(.init()), embedInNavigationView: false)]
@@ -24,7 +24,7 @@ struct SavedListCoordinator: ReducerProtocol {
     case updateRoutes([Route<SavedListScreen.State>])
   }
 
-  var body: some ReducerProtocolOf<SavedListCoordinator> {
+  var body: some ReducerOf<SavedListCoordinator> {
     Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, action: .savedList(.pushCafeDetail(let cafeId))):

@@ -10,7 +10,7 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-struct LoginCoordinator: ReducerProtocol {
+struct LoginCoordinator: Reducer {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
       routes: [.root(.main(.init()), embedInNavigationView: true)]
@@ -35,7 +35,7 @@ struct LoginCoordinator: ReducerProtocol {
     case updateRoutes([Route<LoginScreen.State>])
   }
 
-  var body: some ReducerProtocolOf<LoginCoordinator> {
+  var body: some ReducerOf<LoginCoordinator> {
     Reduce<State, Action> { _, action in
       switch action {
       default:

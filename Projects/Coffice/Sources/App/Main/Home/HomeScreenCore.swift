@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import TCACoordinators
 
-struct HomeScreen: ReducerProtocol {
+struct HomeScreen: Reducer {
   enum State: Equatable {
     /// 메인 페이지
     case home(Home.State)
@@ -18,7 +18,7 @@ struct HomeScreen: ReducerProtocol {
     case home(Home.Action)
   }
 
-  var body: some ReducerProtocolOf<HomeScreen> {
+  var body: some ReducerOf<HomeScreen> {
     Scope(
       state: /State.home,
       action: /Action.home

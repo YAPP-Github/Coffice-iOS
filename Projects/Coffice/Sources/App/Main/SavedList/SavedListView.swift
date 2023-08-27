@@ -14,7 +14,7 @@ struct SavedListView: View {
   let store: StoreOf<SavedList>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Group {
         if viewStore.shouldShowEmptyListReplaceView {
           emptyListReplaceView
@@ -40,7 +40,7 @@ struct SavedListView: View {
   }
 
   var mainView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       GeometryReader { proxy in
         ScrollView(.vertical) {
           LazyVGrid(
@@ -127,7 +127,9 @@ struct SavedListView_Previews: PreviewProvider {
     SavedListView(
       store: .init(
         initialState: .init(),
-        reducer: SavedList()
+        reducer: {
+          SavedList()
+        }
       )
     )
   }

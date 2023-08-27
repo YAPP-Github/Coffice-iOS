@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct BubbleMessage: ReducerProtocol {
+struct BubbleMessage: Reducer {
   struct State: Equatable {
     let guideType: CafeFilter.GuideType
 
@@ -62,7 +62,7 @@ struct BubbleMessage: ReducerProtocol {
     case onAppear
   }
 
-  var body: some ReducerProtocolOf<BubbleMessage> {
+  var body: some ReducerOf<BubbleMessage> {
     Reduce { state, action in
       switch action {
       case .onAppear:

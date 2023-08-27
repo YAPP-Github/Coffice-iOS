@@ -16,7 +16,7 @@ struct HomeView: View {
   }
 
   var mainView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack {
         Spacer()
         Text("HomeView")
@@ -40,7 +40,9 @@ struct HomeView_Previews: PreviewProvider {
     HomeView(
       store: .init(
         initialState: .init(),
-        reducer: Home()
+        reducer: {
+          Home()
+        }
       )
     )
   }

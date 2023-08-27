@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct CafeReviewOptionButtons: ReducerProtocol {
+struct CafeReviewOptionButtons: Reducer {
   struct State: Equatable, Identifiable {
     static let mock: State = .init(optionType: .outletState(.enough))
 
@@ -75,7 +75,7 @@ struct CafeReviewOptionButtons: ReducerProtocol {
     case optionButtonTapped(optionType: ReviewOption, index: Int)
   }
 
-  var body: some ReducerProtocolOf<Self> {
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .onAppear:

@@ -12,7 +12,7 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import Network
 
-struct Login: ReducerProtocol {
+struct Login: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     var appleLoginToken: String?
@@ -42,7 +42,7 @@ struct Login: ReducerProtocol {
 
   @Dependency(\.accountClient) private var accountClient
 
-  var body: some ReducerProtocolOf<Login> {
+  var body: some ReducerOf<Login> {
     BindingReducer()
     Reduce { state, action in
       switch action {
@@ -51,12 +51,12 @@ struct Login: ReducerProtocol {
 
       case .kakaoLoginButtonTapped:
         state.selectedLoginType = .kakao
-        return EffectTask(value: .presentLoginServiceTermsBottomSheet)
+        return .send( .presentLoginServiceTermsBottomSheet)
 
       case .appleLoginButtonTapped(let token):
         state.selectedLoginType = .apple
         state.appleLoginToken = token
-        return EffectTask(value: .presentLoginServiceTermsBottomSheet)
+        return .send( .presentLoginServiceTermsBottomSheet)
 
       case .loginKakaoAccount:
         return .run { send in
@@ -112,9 +112,9 @@ struct Login: ReducerProtocol {
           state.loginServiceTermsBottomSheetState = nil
           switch state.selectedLoginType {
           case .apple:
-            return EffectTask(value: .loginAppleAccount)
+            return .send( .loginAppleAccount)
           case .kakao:
-            return EffectTask(value: .loginKakaoAccount)
+            return .send( .loginKakaoAccount)
           default:
             return .none
           }

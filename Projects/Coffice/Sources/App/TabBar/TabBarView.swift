@@ -13,7 +13,7 @@ struct TabBarView: View {
   let store: StoreOf<TabBar>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       if viewStore.isTabBarViewPresented {
         mainView
           .overlay(
@@ -67,7 +67,9 @@ struct TabBarView_Previews: PreviewProvider {
     TabBarView(
       store: .init(
         initialState: .initialState,
-        reducer: TabBar()
+        reducer: {
+          TabBar()
+        }
       )
     )
   }

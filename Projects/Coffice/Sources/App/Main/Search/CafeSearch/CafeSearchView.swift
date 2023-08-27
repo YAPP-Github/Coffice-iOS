@@ -18,7 +18,7 @@ struct CafeSearchView: View {
   let store: StoreOf<CafeSearchCore>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         cafeSearchHeaderView
           .background(alignment: .bottom) {
@@ -53,7 +53,7 @@ extension CafeSearchView {
   }
 
   var cafeSearchHeaderView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack(alignment: .top, spacing: 0) {
         HStack(spacing: 0) {
           CofficeAsset.Asset.searchLine24px.swiftUIImage
@@ -61,7 +61,13 @@ extension CafeSearchView {
             .frame(width: 24, height: 24)
             .scaledToFit()
             .padding(.trailing, 12)
-          TextField("지하철, 카페 이름으로 검색", text: viewStore.binding(\.$searchText))
+          TextField(
+            "지하철, 카페 이름으로 검색",
+            text: viewStore.binding(
+              get: \.searchText,
+              send: { .set(\.$searchText, $0) }
+            )
+          )
             .applyCofficeFont(font: .subtitle1Medium)
             .tint(CofficeAsset.Colors.grayScale9.swiftUIColor)
             .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -99,7 +105,7 @@ extension CafeSearchView {
   }
 
   var searchResultListView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       ScrollView {
         VStack(spacing: 0) {
           VStack(spacing: 0) {
@@ -155,7 +161,7 @@ extension CafeSearchView {
   }
 
   var recentSearchWordsView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(alignment: .leading, spacing: 0) {
         Text("최근검색어")
           .applyCofficeFont(font: .header3)
@@ -182,7 +188,7 @@ extension CafeSearchView {
   }
 
   func listCell(_ recentWord: String, _ id: Int) -> some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack(spacing: 0) {
         HStack(spacing: 16) {
           CofficeAsset.Asset.searchLine24px.swiftUIImage

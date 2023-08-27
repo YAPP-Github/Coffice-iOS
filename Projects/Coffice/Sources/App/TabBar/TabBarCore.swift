@@ -10,7 +10,7 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-struct TabBar: ReducerProtocol {
+struct TabBar: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     private let tabBarItemTypes: [TabBarItemType] = [.search, .savedList, .myPage]
@@ -36,7 +36,7 @@ struct TabBar: ReducerProtocol {
     case tabBarView(isPresented: Bool)
   }
 
-  var body: some ReducerProtocolOf<TabBar> {
+  var body: some ReducerOf<TabBar> {
     BindingReducer()
     Reduce { state, action in
       switch action {

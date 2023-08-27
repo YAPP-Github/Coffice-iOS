@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import TCACoordinators
 
-struct LoginScreen: ReducerProtocol {
+struct LoginScreen: Reducer {
   enum State: Equatable {
     /// 로그인 메인 페이지
     case main(Login.State)
@@ -19,7 +19,7 @@ struct LoginScreen: ReducerProtocol {
     case main(Login.Action)
   }
 
-  var body: some ReducerProtocolOf<LoginScreen> {
+  var body: some ReducerOf<LoginScreen> {
     Scope(
       state: /State.main,
       action: /Action.main

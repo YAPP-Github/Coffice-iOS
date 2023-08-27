@@ -17,7 +17,7 @@ struct LoginServiceTermsBottomSheetView: View {
   }
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         Text("이용 약관 동의")
           .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -141,7 +141,9 @@ struct LoginServiceTermsSheetView_Previews: PreviewProvider {
     LoginServiceTermsBottomSheetView(
       store: .init(
         initialState: .initialState,
-        reducer: LoginServiceTermsBottomSheet()
+        reducer: {
+          LoginServiceTermsBottomSheet()
+        }
       )
     )
   }

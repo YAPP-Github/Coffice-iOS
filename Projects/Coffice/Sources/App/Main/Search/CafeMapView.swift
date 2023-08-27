@@ -14,7 +14,7 @@ import PopupView
 struct CafeMapView: View {
   let store: StoreOf<CafeMapCore>
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       GeometryReader { geometry in
         ZStack {
           NaverMapView(
@@ -78,7 +78,12 @@ struct CafeMapView: View {
       }
       .navigationBarHidden(true)
       .onAppear { viewStore.send(.onAppear) }
-      .popup(item: viewStore.binding(\.$serviceAreaPopupState)) { viewState in
+      .popup(
+        item: viewStore.binding(
+          get: \.serviceAreaPopupState,
+          send: { .set(\.$serviceAreaPopupState, $0) }
+        )
+      ) { viewState in
         ServiceAreaPopupView(
           store: store.scope(
             state: { _ in viewState },
@@ -109,7 +114,7 @@ struct CafeMapView: View {
 
 extension CafeMapView {
   var refreshButtonView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Button {
         viewStore.send(.naverMapAction(.refreshButtonTapped))
       } label: {
@@ -134,7 +139,7 @@ extension CafeMapView {
   }
 
   var bottomFloatingButtonView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack(spacing: 0) {
         Spacer()
         VStack(spacing: 16) {
@@ -153,7 +158,7 @@ extension CafeMapView {
   }
 
   var headerView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       VStack(spacing: 0) {
         searchDescriptionView
         orderFilterView
@@ -163,7 +168,7 @@ extension CafeMapView {
   }
 
   var searchDescriptionView: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       HStack(spacing: 12) {
         CofficeAsset.Asset.searchLine24px.swiftUIImage
           .padding(.vertical, 12)
@@ -194,7 +199,9 @@ struct CafeMapView_Previews: PreviewProvider {
     CafeMapView(
       store: .init(
         initialState: .init(),
-        reducer: CafeMapCore()
+        reducer: {
+          CafeMapCore()
+        }
       )
     )
   }

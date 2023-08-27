@@ -10,7 +10,7 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-struct SearchCoordinator: ReducerProtocol {
+struct SearchCoordinator: Reducer {
   struct State: Equatable, IndexedRouterState {
     static let initialState: State = .init(
       routes: [.root(.cafeMap(.init()), embedInNavigationView: false)]
@@ -24,7 +24,7 @@ struct SearchCoordinator: ReducerProtocol {
     case updateRoutes([Route<SearchScreen.State>])
   }
 
-  var body: some ReducerProtocolOf<SearchCoordinator> {
+  var body: some ReducerOf<SearchCoordinator> {
     Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, action: .cafeMap(.pushToSearchListForTest)):

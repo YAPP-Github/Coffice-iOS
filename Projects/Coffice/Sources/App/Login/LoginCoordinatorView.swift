@@ -15,9 +15,9 @@ struct LoginCoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
+      SwitchStore(screen) { _ in
         CaseLet(
-          state: /LoginScreen.State.main,
+          /LoginScreen.State.main,
           action: LoginScreen.Action.main,
           then: LoginView.init
         )
@@ -31,7 +31,9 @@ struct LoginCoordinatorView_Previews: PreviewProvider {
     LoginCoordinatorView(
       store: .init(
         initialState: .initialState,
-        reducer: LoginCoordinator()
+        reducer: {
+          LoginCoordinator()
+        }
       )
     )
   }
