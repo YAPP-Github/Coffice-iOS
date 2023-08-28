@@ -123,14 +123,14 @@ struct CafeSearchCore: Reducer {
         // MARK: - View Tap Events
       case .waypointCellTapped(let waypoint):
         return .merge(
-          .send( .delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint))),
-          .send( .uploadSearchWord(text: waypoint.name))
+          .send(.delegate(.searchWithRequestValueByWaypoint(waypoint: waypoint))),
+          .send(.uploadSearchWord(text: waypoint.name))
         )
 
       case .placeCellTapped(let place):
         return .merge(
-          .send( .uploadSearchWord(text: place.name)),
-          .send( .delegate(.focusSelectedPlace(selectedPlace: [place])))
+          .send(.uploadSearchWord(text: place.name)),
+          .send(.delegate(.focusSelectedPlace(selectedPlace: [place])))
         )
 
       case .clearTextButtonTapped:
@@ -237,7 +237,7 @@ struct CafeSearchCore: Reducer {
           state.bodyType = .searchResultEmptyView
           return .none
         }
-        return .send( .delegate(.focusSelectedPlace(selectedPlace: cafes)))
+        return .send(.delegate(.focusSelectedPlace(selectedPlace: cafes)))
 
       case .uploadSearchWordResponse(let result):
         switch result {

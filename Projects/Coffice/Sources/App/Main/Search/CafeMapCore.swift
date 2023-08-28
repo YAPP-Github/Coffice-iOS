@@ -129,8 +129,8 @@ struct CafeMapCore: Reducer {
           longitude: selectedCafe.longitude
         )
         return .concatenate(
-          .send( .naverMapAction(.selectCafe(cafe: selectedCafe))),
-          .send( .naverMapAction(.moveCameraTo(position: newCameraPosition, zoomLevel: nil)))
+          .send(.naverMapAction(.selectCafe(cafe: selectedCafe))),
+          .send(.naverMapAction(.moveCameraTo(position: newCameraPosition, zoomLevel: nil)))
         )
 
         // MARK: CafeSearch Delegate
@@ -149,12 +149,12 @@ struct CafeMapCore: Reducer {
           pageSize: 10,
           pageableKey: nil
         )
-        return .send( .cafeSearchListAction(.searchPlacesByFilter(requestValue)))
+        return .send(.cafeSearchListAction(.searchPlacesByFilter(requestValue)))
 
       case .cafeSearchListAction(.delegate(.didFinishSearchPlacesByFilter(let cafeResponse))):
         return .concatenate(
-          .send( .naverMapAction(.updatePinnedCafes(cafes: cafeResponse.cafes))),
-          .send( .updateDisplayType(.searchResultView))
+          .send(.naverMapAction(.updatePinnedCafes(cafes: cafeResponse.cafes))),
+          .send(.updateDisplayType(.searchResultView))
         )
 
       case .cafeSearchAction(.delegate(.dismiss)):
@@ -170,10 +170,10 @@ struct CafeMapCore: Reducer {
         }
 
       case .cafeSearchListAction(.searchListCellBookmarkUpdated(let cafe)):
-        return .send( .naverMapAction(.searchListCellBookmarkUpdated(cafe: cafe)))
+        return .send(.naverMapAction(.searchListCellBookmarkUpdated(cafe: cafe)))
 
       case .cafeSearchListAction(.titleLabelTapped):
-        return .send( .updateDisplayType(.searchView))
+        return .send(.updateDisplayType(.searchView))
 
       case .cafeSearchListAction(.updateCafeFilter(let information)):
         state.cafeFilterInformation = information
@@ -225,7 +225,7 @@ struct CafeMapCore: Reducer {
           pageSize: 9999999,
           pageableKey: nil
         )
-        return .send( .naverMapAction(.searchPlacesWithRequestValue(requestValue: requestValue)))
+        return .send(.naverMapAction(.searchPlacesWithRequestValue(requestValue: requestValue)))
 
       case .naverMapAction(.showBookmarkedToast):
         state.toastType = .toastByBookmark
@@ -233,7 +233,7 @@ struct CafeMapCore: Reducer {
         return .none
 
       case .naverMapAction(.delegate(.callUpdateBookmarkSearchListCell(let cafe))):
-        return .send( .cafeSearchListAction(.updateBookmarkedSearchListCell(cafe: cafe)))
+        return .send(.cafeSearchListAction(.updateBookmarkedSearchListCell(cafe: cafe)))
 
       // MARK: Search Delegate
       case .cafeSearchAction(.delegate(.callSearchWithRequestValueByText(let searchText))):
@@ -251,7 +251,7 @@ struct CafeMapCore: Reducer {
           pageSize: 10, // TODO: 제한 없이 MAX로 받는 방법 서버와 논의 필요
           pageableKey: nil
         )
-        return .send( .cafeSearchAction(.searchPlacesWithRequestValue(requestValue: requestValue)))
+        return .send(.cafeSearchAction(.searchPlacesWithRequestValue(requestValue: requestValue)))
 
       case .cafeSearchAction(.delegate(.searchWithRequestValueByWaypoint(let waypoint))):
         let filterInformation = state.cafeFilterInformation
@@ -326,7 +326,7 @@ struct CafeMapCore: Reducer {
           pageSize: 9999,
           pageableKey: nil
         )
-        return .send( .searchPlacesWithRequestValue(requestValue))
+        return .send(.searchPlacesWithRequestValue(requestValue))
 
       case .searchPlacesWithRequestValue(let requestValue):
         return .run { send in
@@ -373,7 +373,7 @@ struct CafeMapCore: Reducer {
 
       case .resetCafes:
         return .merge(
-          .send( .naverMapAction(.removeAllMarkers))
+          .send(.naverMapAction(.removeAllMarkers))
         )
 
       case .resetCafesForSearchList(let resetState):
@@ -385,8 +385,8 @@ struct CafeMapCore: Reducer {
           state.displayViewType = .mainMapView
         }
         return .merge(
-          .send( .naverMapAction(.removeAllMarkers)),
-          .send( .cafeSearchListAction(
+          .send(.naverMapAction(.removeAllMarkers)),
+          .send(.cafeSearchListAction(
             .updateCafeSearchListState(
               title: "",
               cafeList: [],
@@ -402,10 +402,10 @@ struct CafeMapCore: Reducer {
       case .cafeFilterMenusAction(.delegate(.updateCafeFilter(let information))):
         state.cafeFilterInformation = information
         return .merge(
-          .send( .cafeSearchListAction(
+          .send(.cafeSearchListAction(
             .cafeFilterMenus(action: .updateCafeFilter(information: information))
           )),
-          .send( .searchPlacesWithRequestValue(SearchPlaceRequestValue(
+          .send(.searchPlacesWithRequestValue(SearchPlaceRequestValue(
             searchText: "",
             userLatitude: state.naverMapState.currentCameraPosition.latitude,
             userLongitude: state.naverMapState.currentCameraPosition.longitude,
@@ -421,7 +421,7 @@ struct CafeMapCore: Reducer {
       case .cardViewTapped:
         guard let cafe = state.naverMapState.selectedCafe
         else { return .none }
-        return .send( .pushToCafeDetailView(cafeId: cafe.placeId))
+        return .send(.pushToCafeDetailView(cafeId: cafe.placeId))
 
       // MARK: View LifeCycle
       case .onBoarding:
@@ -430,17 +430,17 @@ struct CafeMapCore: Reducer {
 
         state.serviceAreaPopupState = .init()
         return .merge(
-          .send( .requestLocationAuthorization),
-          .send( .searchPlacesWithRequestValueByDefault)
+          .send(.requestLocationAuthorization),
+          .send(.searchPlacesWithRequestValueByDefault)
         )
 
       case .onAppear:
         // 맵뷰 최초 진입 시 한번,(강남역 주변 마커 표출)
         if state.isFirstOnAppear {
           state.isFirstOnAppear = false
-          return .send( .searchPlacesWithRequestValueByDefault)
+          return .send(.searchPlacesWithRequestValueByDefault)
         }
-        return .send( .naverMapAction(.updateSelectedCafeState))
+        return .send(.naverMapAction(.updateSelectedCafeState))
 
       case .serviceAreaPopupAction(.confirmButtonTapped):
         state.serviceAreaPopupState = nil

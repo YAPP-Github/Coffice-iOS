@@ -51,12 +51,12 @@ struct Login: Reducer {
 
       case .kakaoLoginButtonTapped:
         state.selectedLoginType = .kakao
-        return .send( .presentLoginServiceTermsBottomSheet)
+        return .send(.presentLoginServiceTermsBottomSheet)
 
       case .appleLoginButtonTapped(let token):
         state.selectedLoginType = .apple
         state.appleLoginToken = token
-        return .send( .presentLoginServiceTermsBottomSheet)
+        return .send(.presentLoginServiceTermsBottomSheet)
 
       case .loginKakaoAccount:
         return .run { send in
@@ -112,9 +112,9 @@ struct Login: Reducer {
           state.loginServiceTermsBottomSheetState = nil
           switch state.selectedLoginType {
           case .apple:
-            return .send( .loginAppleAccount)
+            return .send(.loginAppleAccount)
           case .kakao:
-            return .send( .loginKakaoAccount)
+            return .send(.loginKakaoAccount)
           default:
             return .none
           }

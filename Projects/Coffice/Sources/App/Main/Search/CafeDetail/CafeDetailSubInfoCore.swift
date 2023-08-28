@@ -37,7 +37,7 @@ struct CafeDetailSubInfoReducer: Reducer {
       ]
       subSecondaryInfoViewStates = State.SubSecondaryInfoType.allCases
         .map { State.SubSecondaryInfoViewState(cafe: cafe, type: $0) }
-      return .send( .updateLastModifiedDate)
+      return .send(.updateLastModifiedDate)
     }
   }
 

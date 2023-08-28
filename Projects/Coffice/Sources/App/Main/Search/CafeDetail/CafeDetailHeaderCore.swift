@@ -57,18 +57,18 @@ struct CafeDetailHeaderReducer: Reducer {
         state.cafe?.isBookmarked.toggle()
         let isBookmarked = state.cafe?.isBookmarked ?? false
 
-        return .send( .bookmarkResponse(isBookmarked: isBookmarked))
+        return .send(.bookmarkResponse(isBookmarked: isBookmarked))
 
       case .bookmarkResponse(let isBookmarked):
         if isBookmarked {
           return .merge(
-            .send( .delegate(.updateBookmarkedState(isBookmarked))),
-            .send( .addMyPlace)
+            .send(.delegate(.updateBookmarkedState(isBookmarked))),
+            .send(.addMyPlace)
           )
         } else {
           return .merge(
-            .send( .delegate(.updateBookmarkedState(isBookmarked))),
-            .send( .deleteMyPlace)
+            .send(.delegate(.updateBookmarkedState(isBookmarked))),
+            .send(.deleteMyPlace)
           )
         }
 
@@ -87,8 +87,8 @@ struct CafeDetailHeaderReducer: Reducer {
         let bookmarkedMessage = state.bookmarkedMessage
 
         return .merge(
-          .send( .delegate(.fetchPlace)),
-          .send( .delegate(.presentToastView(message: bookmarkedMessage)))
+          .send(.delegate(.fetchPlace)),
+          .send(.delegate(.presentToastView(message: bookmarkedMessage)))
         )
 
       case .deleteMyPlace:

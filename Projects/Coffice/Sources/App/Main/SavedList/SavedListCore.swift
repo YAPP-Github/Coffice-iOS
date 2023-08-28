@@ -38,7 +38,7 @@ struct SavedList: Reducer {
     Reduce { state, action in
       switch action {
       case .onAppear:
-        return .send( .fetchMyPlaces)
+        return .send(.fetchMyPlaces)
 
       case .onDisappear:
         return .run { send in

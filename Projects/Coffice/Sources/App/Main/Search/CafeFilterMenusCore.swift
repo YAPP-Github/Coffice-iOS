@@ -96,11 +96,11 @@ struct CafeFilterMenus: Reducer {
 
       case .delegate(.updateCafeFilter(let information)):
         state.filterInformation = information
-        return .send( .updateButtonViewStates)
+        return .send(.updateButtonViewStates)
 
       case .updateCafeFilter(let information):
         state.filterInformation = information
-        return .send( .updateButtonViewStates)
+        return .send(.updateButtonViewStates)
 
       case .updateButtonViewStates:
         state.updateButtonViewStates()
@@ -109,7 +109,7 @@ struct CafeFilterMenus: Reducer {
       case .cafeFilterBottomSheetViewAction(.delegate(let action)):
         switch action {
         case .saveCafeFilter(let information):
-          return .send( .delegate(.updateCafeFilter(information: information)))
+          return .send(.delegate(.updateCafeFilter(information: information)))
         case .dismiss:
           state.cafeFilterBottomSheetState = nil
           return .none

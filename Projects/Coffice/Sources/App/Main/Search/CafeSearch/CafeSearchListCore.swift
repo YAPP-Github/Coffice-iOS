@@ -96,8 +96,8 @@ struct CafeSearchListCore: Reducer {
         switch result {
         case .success(let response):
           return .merge(
-            .send( .delegate(.didFinishSearchPlacesByFilter(response))),
-            .send( .updateCafeSearchListState(
+            .send(.delegate(.didFinishSearchPlacesByFilter(response))),
+            .send(.updateCafeSearchListState(
               title: nil,
               cafeList: response.cafes,
               hasNext: response.hasNext
@@ -188,8 +188,8 @@ struct CafeSearchListCore: Reducer {
       case .cafeFilterMenus(.delegate(.updateCafeFilter(let information))):
         state.cafeFilterInformation = information
         return .concatenate(
-          .send( .updateCafeFilter(information: information)),
-          .send( .delegate(.callSearchPlacesByFilter))
+          .send(.updateCafeFilter(information: information)),
+          .send(.delegate(.callSearchPlacesByFilter))
         )
 
       default:

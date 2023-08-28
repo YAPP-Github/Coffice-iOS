@@ -143,7 +143,7 @@ struct CafeReviewWrite: Reducer {
 
         state.optionButtonStates[optionType.index].updateOptionButtons()
         debugPrint("tapped optionButtonState : \(state.optionButtonStates[optionType.index]) at \(index)")
-        return .send( .updateSaveButtonState)
+        return .send(.updateSaveButtonState)
 
       case .updateSaveButtonState:
         state.isSaveButtonEnabled = state.optionButtonStates.allSatisfy(\.isSelectedOptionButton)
@@ -154,7 +154,7 @@ struct CafeReviewWrite: Reducer {
         return .none
 
       case .saveButtonTapped:
-        return .send( .uploadReview)
+        return .send(.uploadReview)
 
       case .uploadReview:
         var electricOutletLevel: OutletStateOption = .few
@@ -209,8 +209,8 @@ struct CafeReviewWrite: Reducer {
         switch result {
         case .success(let review):
           return .concatenate(
-            .send( .delegate(.uploadReviewFinished(review: review))),
-            .send( .delegate(.dismissView))
+            .send(.delegate(.uploadReviewFinished(review: review))),
+            .send(.delegate(.dismissView))
           )
         case .failure(let error):
           debugPrint(error.localizedDescription)
@@ -221,8 +221,8 @@ struct CafeReviewWrite: Reducer {
         switch result {
         case .success(let review):
           return .concatenate(
-            .send( .delegate(.editReviewFinished(review: review))),
-            .send( .delegate(.dismissView))
+            .send(.delegate(.editReviewFinished(review: review))),
+            .send(.delegate(.dismissView))
           )
         case .failure(let error):
           debugPrint(error.localizedDescription)
@@ -232,10 +232,10 @@ struct CafeReviewWrite: Reducer {
       case .dismissConfirmBottomSheet(let action):
         switch action {
         case .confirmButtonTapped:
-          return .send( .dismissDeleteConfirmBottomSheet)
+          return .send(.dismissDeleteConfirmBottomSheet)
         case .cancelButtonTapped:
           state.isDismissConfirmed = true
-          return .send( .dismissDeleteConfirmBottomSheet)
+          return .send(.dismissDeleteConfirmBottomSheet)
         }
 
       case .presentDeleteConfirmBottomSheet:
@@ -248,7 +248,7 @@ struct CafeReviewWrite: Reducer {
 
       case .dismissConfirmBottomSheetDismissed:
         if state.isDismissConfirmed {
-          return .send( .dismissViewWithDelay)
+          return .send(.dismissViewWithDelay)
         }
         return .none
 

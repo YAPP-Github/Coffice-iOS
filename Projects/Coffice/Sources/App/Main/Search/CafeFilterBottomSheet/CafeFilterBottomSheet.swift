@@ -126,7 +126,7 @@ struct CafeFilterBottomSheet: Reducer {
             state.cafeFilterInformation.drinkOptionSet.insert(option)
           }
         }
-        return .send( .updateMainViewState)
+        return .send(.updateMainViewState)
 
       case .infoGuideButtonTapped:
         guard let guideType = state.guideType
@@ -147,7 +147,7 @@ struct CafeFilterBottomSheet: Reducer {
         return .none
 
       case .resetCafeFilterButtonTapped:
-        return .send( .resetCafeFilter)
+        return .send(.resetCafeFilter)
 
       case .resetCafeFilter:
         switch state.filterType {
@@ -163,14 +163,14 @@ struct CafeFilterBottomSheet: Reducer {
           state.cafeFilterInformation.runningTimeOptionSet.removeAll()
         }
         return .concatenate(
-          .send( .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
-          .send( .delegate(.dismiss))
+          .send(.delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
+          .send(.delegate(.dismiss))
         )
 
       case .saveCafeFilterButtonTapped:
         return .concatenate(
-          .send( .delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
-          .send( .delegate(.dismiss))
+          .send(.delegate(.saveCafeFilter(information: state.cafeFilterInformation))),
+          .send(.delegate(.dismiss))
         )
 
       case .updateContainerView(let height):

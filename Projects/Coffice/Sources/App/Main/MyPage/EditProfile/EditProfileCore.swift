@@ -78,8 +78,8 @@ struct EditProfile: Reducer {
         state.nicknameValidationType = .checked(response: response)
         if state.nicknameValidationType == .checked(response: .valid) {
           return .concatenate(
-            .send( .showTabBar),
-            .send( .popView)
+            .send(.showTabBar),
+            .send(.popView)
           )
         }
         return .none

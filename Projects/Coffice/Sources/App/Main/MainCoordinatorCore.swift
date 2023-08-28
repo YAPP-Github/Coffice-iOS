@@ -72,8 +72,8 @@ struct MainCoordinator: Reducer {
 
       case .loginCompleted:
         return .concatenate(
-          .send( .tabBar(.selectTab(.search))),
-          .send( .search(.routeAction(0, action: .cafeMap(.onBoarding))))
+          .send(.tabBar(.selectTab(.search))),
+          .send(.search(.routeAction(0, action: .cafeMap(.onBoarding))))
         )
 
       case .tabBar(.selectTab(let itemType)):

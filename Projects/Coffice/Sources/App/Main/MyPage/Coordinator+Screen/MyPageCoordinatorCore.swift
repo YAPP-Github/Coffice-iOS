@@ -48,7 +48,7 @@ struct MyPageCoordinator: Reducer {
 
       case .routeAction(_, action: .myPage(.delegate(.editProfileButtonTapped(let nickname, let loginType)))):
         if loginType == .anonymous {
-          return .send( .delegate(.pushLogin))
+          return .send(.delegate(.pushLogin))
         } else {
           state.routes.push(.editProfile(.init(nickname: nickname)))
         }
