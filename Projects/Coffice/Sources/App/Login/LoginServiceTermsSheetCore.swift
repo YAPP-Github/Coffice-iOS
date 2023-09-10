@@ -93,11 +93,11 @@ extension LoginServiceTermsBottomSheet {
     var urlString: String {
       switch self {
       case .appService:
-        return "https://traveling-jade-4ad.notion.site/0b8d9c87d5be459c97860ddb4bffaa31"
+        return "https://coffice-official.notion.site/0b8d9c87d5be459c97860ddb4bffaa31"
       case .locationService:
-        return "https://traveling-jade-4ad.notion.site/f946b1a337704f108f11d3c6333569d8"
+        return "https://coffice-official.notion.site/f946b1a337704f108f11d3c6333569d8"
       case .privacyPolicy:
-        return "https://traveling-jade-4ad.notion.site/74a66cfd0dc34c17b0f2f8da4f1cd1bb"
+        return "https://coffice-official.notion.site/74a66cfd0dc34c17b0f2f8da4f1cd1bb"
       }
     }
   }

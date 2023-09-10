@@ -13,7 +13,7 @@ struct AppServiceTermsReducer: Reducer {
     static let initialState: State = .init()
     var webViewState: CommonWebReducer.State
     let title = "서비스 이용약관"
-    let webUrlString = "https://traveling-jade-4ad.notion.site/0b8d9c87d5be459c97860ddb4bffaa31"
+    let webUrlString = "https://coffice-official.notion.site/0b8d9c87d5be459c97860ddb4bffaa31"
 
     init() {
       webViewState = .init(urlString: webUrlString)

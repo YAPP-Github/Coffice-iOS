@@ -13,7 +13,7 @@ struct PrivacyPolicy: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     var webViewState: CommonWebReducer.State
-    let webUrlString = "https://traveling-jade-4ad.notion.site/74a66cfd0dc34c17b0f2f8da4f1cd1bb"
+    let webUrlString = "https://coffice-official.notion.site/74a66cfd0dc34c17b0f2f8da4f1cd1bb"
     let title = "개인정보 처리방침"
 
     init() {
