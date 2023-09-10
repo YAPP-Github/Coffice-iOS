@@ -48,6 +48,7 @@ struct CafeMapCore: Reducer {
     case cafeSearchAction(CafeSearchCore.Action)
     case cafeSearchListAction(CafeSearchListCore.Action)
     case serviceAreaPopupAction(ServiceAreaPopup.Action)
+
     // MARK: NaverMapView
     case naverMapAction(NaverMapCore.Action)
     case refreshButtonTapped
@@ -69,11 +70,13 @@ struct CafeMapCore: Reducer {
     case cafeFilterMenusAction(CafeFilterMenus.Action)
     case cardViewTapped
     case showToastBySearch
+    case presentServiceAreaPopup
 
     // MARK: View LifeCycle
     case onAppear
     case onDisappear
     case onBoarding
+
     // MARK: Need to improve
     case resetCafesForSearchList(ResetState)
   }
@@ -428,11 +431,18 @@ struct CafeMapCore: Reducer {
         guard UserDefaults.standard.bool(forKey: UserDefaultsKeyString.onBoardingWithCafeMapView.forKey)
         else { return .none }
 
-        state.serviceAreaPopupState = .init()
         return .merge(
           .send(.requestLocationAuthorization),
-          .send(.searchPlacesWithRequestValueByDefault)
+          .send(.searchPlacesWithRequestValueByDefault),
+          .run { send in
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            await send(.presentServiceAreaPopup)
+          }
         )
+
+      case .presentServiceAreaPopup:
+        state.serviceAreaPopupState = .init()
+        return .none
 
       case .onAppear:
         // 맵뷰 최초 진입 시 한번,(강남역 주변 마커 표출)
