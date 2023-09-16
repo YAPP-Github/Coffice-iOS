@@ -113,12 +113,19 @@ extension CafeDetailHeaderView {
            imageUrls.isNotEmpty {
           TabView {
             ForEach(imageUrls, id: \.self) { imageUrl in
-              KFImage.url(URL(string: imageUrl))
-                .placeholder {
-                  imagePlaceholderView
-                }
-                .resizable()
-                .scaledToFill()
+              LinearGradient(
+                gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+                startPoint: .top,
+                endPoint: .bottom
+              )
+              .background(alignment: .center) {
+                KFImage.url(URL(string: imageUrl))
+                  .placeholder {
+                    imagePlaceholderView
+                  }
+                  .resizable()
+                  .scaledToFill()
+              }
             }
           }
           .tabViewStyle(PageTabViewStyle())
