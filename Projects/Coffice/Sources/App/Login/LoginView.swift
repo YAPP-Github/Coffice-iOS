@@ -72,21 +72,21 @@ struct LoginView: View {
             }
           }
           .applyCofficeFont(font: .body1Medium)
+          .hiddenWithOpacity(isHidden: viewStore.isOnboarding.isFalse)
         }
         .padding(EdgeInsets(top: 163, leading: 36, bottom: 129, trailing: 36))
       }
       .overlay(alignment: .topLeading) {
-        if viewStore.isOnboarding.isFalse {
-          Group {
-            Button {
-              viewStore.send(.dismissButtonTapped)
-            } label: {
-              CofficeAsset.Asset.close40px.swiftUIImage
-                .frame(width: 40, height: 40)
-            }
+        Group {
+          Button {
+            viewStore.send(.dismissButtonTapped)
+          } label: {
+            CofficeAsset.Asset.close40px.swiftUIImage
+              .frame(width: 40, height: 40)
           }
-          .padding(20)
         }
+        .padding(20)
+        .hiddenWithOpacity(isHidden: viewStore.isOnboarding)
       }
       .popup(
         item: viewStore.binding(
