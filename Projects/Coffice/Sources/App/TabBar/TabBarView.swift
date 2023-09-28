@@ -14,19 +14,15 @@ struct TabBarView: View {
 
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
-      if viewStore.isTabBarViewPresented {
-        mainView
-          .overlay(
-              GeometryReader { proxy in
-                  Color.clear.preference(key: TabBarSizePreferenceKey.self, value: proxy.size)
-              }
-          )
-          .onPreferenceChange(TabBarSizePreferenceKey.self) { size in
-            TabBarSizePreferenceKey.defaultValue = size
+      mainView
+        .overlay(
+          GeometryReader { proxy in
+            Color.clear.preference(key: TabBarSizePreferenceKey.self, value: proxy.size)
           }
-      } else {
-        EmptyView()
-      }
+        )
+        .onPreferenceChange(TabBarSizePreferenceKey.self) { size in
+          TabBarSizePreferenceKey.defaultValue = size
+        }
     }
   }
 

@@ -14,7 +14,6 @@ struct TabBar: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     private let tabBarItemTypes: [TabBarItemType] = [.search, .savedList, .myPage]
-    private(set) var isTabBarViewPresented = true
     private(set) var tabBarItemViewStates: [TabBarItemViewState] = [
       .init(type: .search, isSelected: true),
       .init(type: .savedList, isSelected: false),
@@ -33,7 +32,6 @@ struct TabBar: Reducer {
   enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
     case selectTab(TabBar.State.TabBarItemType)
-    case tabBarView(isPresented: Bool)
   }
 
   var body: some ReducerOf<TabBar> {
