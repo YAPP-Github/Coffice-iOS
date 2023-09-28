@@ -16,66 +16,65 @@ struct MainCoordinatorView: View {
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       ZStack {
-        TabView(
-          selection: viewStore.binding(
-            get: \.tabBarState.bindableSelectedTab,
-            send: { state in
-              return .tabBar(.set(\.$bindableSelectedTab, state))
-            }
+        NavigationView {
+          mainView
+            .overlay(
+              alignment: .bottom,
+              content: {
+                tabBarView
+                  .hiddenWithOpacity(isHidden: viewStore.shouldShowTabBarView.isFalse)
+              }
+            )
+        }
+      }
+      .onAppear {
+        viewStore.send(.onAppear)
+      }
+    }
+  }
+
+  var mainView: some View {
+    WithViewStore(store, observe: \.selectedTab) { viewStore in
+      Group {
+        switch viewStore.state {
+        case .search:
+          SearchCoordinatorView(
+            store: store.scope(
+              state: \.searchState,
+              action: MainCoordinator.Action.search
+            )
           )
-        ) {
-          NavigationView {
-            SearchCoordinatorView(
-              store: store.scope(
-                state: \.searchState,
-                action: MainCoordinator.Action.search
-              )
+        case .savedList:
+          SavedListCoordinatorView(
+            store: store.scope(
+              state: \.savedListState,
+              action: MainCoordinator.Action.savedList
             )
-          }
-          .tag(TabBar.State.TabBarItemType.search)
-
-          NavigationView {
-            SavedListCoordinatorView(
-              store: store.scope(
-                state: \.savedListState,
-                action: MainCoordinator.Action.savedList
-              )
+          )
+        case .myPage:
+          MyPageCoordinatorView(
+            store: store.scope(
+              state: \.myPageState,
+              action: MainCoordinator.Action.myPage
             )
-          }
-          .tag(TabBar.State.TabBarItemType.savedList)
-
-          NavigationView {
-            MyPageCoordinatorView(
-              store: store.scope(
-                state: \.myPageState,
-                action: MainCoordinator.Action.myPage
-              )
-            )
-          }
-          .tag(TabBar.State.TabBarItemType.myPage)
-        }
-        .padding(.bottom, 16)
-        .overlay(alignment: .bottom) {
-          if viewStore.shouldShowTabBarView {
-            TabBarView(
-              store: store.scope(
-                state: \.tabBarState,
-                action: MainCoordinator.Action.tabBar
-              )
-            )
-          } else {
-            tabBarTouchBlockerView
-          }
-        }
-        .onAppear {
-          viewStore.send(.onAppear)
+          )
         }
       }
     }
   }
-  private var tabBarTouchBlockerView: some View {
-    Color.white.opacity(0.0001)
-      .frame(height: 65)
+
+  var tabBarView: some View {
+    WithViewStore(store, observe: { $0 }) { viewStore in
+      VStack {
+        Spacer()
+        TabBarView(
+          store: store.scope(
+            state: \.tabBarState,
+            action: MainCoordinator.Action.tabBar
+          )
+        )
+      }
+    }
   }
 }
 

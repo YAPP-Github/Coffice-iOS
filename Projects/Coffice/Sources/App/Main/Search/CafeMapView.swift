@@ -76,6 +76,7 @@ struct CafeMapView: View {
           }
         }
       }
+      .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
       .navigationBarHidden(true)
       .onAppear { viewStore.send(.onAppear) }
       .popup(
@@ -103,6 +104,7 @@ struct CafeMapView: View {
           image: viewStore.toastType.image,
           config: ToastConfiguration.default
         )
+        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
       } customize: {
         $0
           .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: true))

@@ -27,6 +27,7 @@ struct MainCoordinator: Reducer {
     var savedListState: SavedListCoordinator.State
     var myPageState: MyPageCoordinator.State
     var tabBarState: TabBar.State
+    var selectedTab: TabBar.State.TabBarItemType = .search
 
     var shouldShowTabBarView = true
   }
@@ -78,6 +79,7 @@ struct MainCoordinator: Reducer {
 
       case .tabBar(.selectTab(let itemType)):
         debugPrint("selectedTab : \(itemType)")
+        state.selectedTab = itemType
         return .none
 
       case .myPage(.routeAction(_, .editProfile(.hideTabBar))):
