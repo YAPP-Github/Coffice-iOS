@@ -78,6 +78,10 @@ struct SavedListView: View {
                   thumbnailImageView(cafe: cafe, proxy: proxy)
                 } else {
                   CofficeAsset.Colors.grayScale2.swiftUIColor
+                    .frame(
+                      width: (proxy.size.width - 60) / 2,
+                      height: (proxy.size.width - 60) / 2
+                    )
                     .overlay(
                       alignment: .center,
                       content: {
