@@ -42,10 +42,13 @@ struct CafeSearchListView: View {
           image: CofficeAsset.Asset.checkboxCircleFill18px,
           config: ToastConfiguration.default
         )
+        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
       } customize: {
         $0
           .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: true))
           .autohideIn(2)
+          .closeOnTap(true)
+          .closeOnTapOutside(true)
       }
       .onAppear {
         viewStore.send(.onAppear)
