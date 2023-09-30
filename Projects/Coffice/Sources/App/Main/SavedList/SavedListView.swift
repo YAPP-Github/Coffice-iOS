@@ -74,33 +74,44 @@ struct SavedListView: View {
           ) {
             ForEach(viewStore.cafes, id: \.self) { cafe in
               VStack(spacing: 0) {
-                KFImage.url(URL(string: cafe.imageUrls?.first ?? ""))
-                  .onFailureImage(CofficeAsset.Asset.savedListFailImagePlaceholder.image)
-                  .resizable()
-                  .aspectRatio(contentMode: .fill)
-                  .frame(
-                    width: (proxy.size.width - 60) / 2,
-                    height: (proxy.size.width - 60) / 2
-                  )
-                  .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
-                  .clipped()
-                  .cornerRadius(5)
-                  .overlay(alignment: .topTrailing) {
-                    Button {
-                      viewStore.send(.bookmarkButtonTapped(cafe: cafe))
-                    } label: {
-                      (
-                        cafe.isBookmarked
-                        ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-                        : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
-                      )
-                      .resizable()
-                      .renderingMode(.template)
-                      .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-                      .frame(width: 40, height: 40)
-                      .opacity(0.8)
-                    }
+                LinearGradient(
+                  gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+                  startPoint: .top,
+                  endPoint: .bottom
+                )
+                .frame(
+                  width: (proxy.size.width - 60) / 2,
+                  height: (proxy.size.width - 60) / 2
+                )
+                .overlay(alignment: .topTrailing) {
+                  Button {
+                    viewStore.send(.bookmarkButtonTapped(cafe: cafe))
+                  } label: {
+                    (
+                      cafe.isBookmarked
+                      ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
+                      : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+                    )
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+                    .frame(width: 40, height: 40)
+                    .opacity(0.8)
                   }
+                }
+                .background(alignment: .center) {
+                  KFImage.url(URL(string: cafe.imageUrls?.first ?? ""))
+                    .onFailureImage(CofficeAsset.Asset.savedListFailImagePlaceholder.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(
+                      width: (proxy.size.width - 60) / 2,
+                      height: (proxy.size.width - 60) / 2
+                    )
+                    .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
+                    .clipped()
+                    .cornerRadius(5)
+                }
                 Text(cafe.name)
                   .lineLimit(1)
                   .frame(maxWidth: .infinity, alignment: .leading)
