@@ -53,7 +53,7 @@ struct CafeReviewWriteView: View {
                     .scaledToFill()
                 }
               } else {
-                imagePlaceholderView
+                placeholderImage
               }
             }
           }
@@ -237,7 +237,7 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     }
   }
 
-  private var imagePlaceholderView: some View {
+  private var placeholderImage: some View {
     CofficeAsset.Asset.icPlaceholder.swiftUIImage
       .resizable()
       .frame(width: 20, height: 20)

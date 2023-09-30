@@ -126,21 +126,21 @@ extension CafeDetailHeaderView {
                       .scaledToFill()
                   }
                 } else {
-                  imagePlaceholderView
+                  placeholderImage
                 }
               }
             }
           }
           .tabViewStyle(PageTabViewStyle())
         } else {
-          imagePlaceholderView
+          placeholderImage
         }
       }
       .frame(height: viewStore.imagePageViewHeight)
     }
   }
 
-  private var imagePlaceholderView: some View {
+  private var placeholderImage: some View {
     CofficeAsset.Colors.grayScale2.swiftUIColor
       .overlay(
         alignment: .center,
