@@ -36,6 +36,27 @@ struct SavedListView: View {
           .padding(.leading, 20)
           .padding(.vertical, 12)
       }
+      .popup(
+        item: viewStore.binding(
+          get: \.toastMessage,
+          send: { .set(\.$toastMessage, $0) }
+        ),
+        itemView: { message in
+          ToastView(
+            title: message,
+            image: CofficeAsset.Asset.checkboxCircleFill18px,
+            config: ToastConfiguration.default
+          )
+          .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
+        },
+        customize: {
+          $0
+            .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: true))
+            .autohideIn(2)
+            .closeOnTap(true)
+            .closeOnTapOutside(true)
+        }
+      )
     }
   }
 

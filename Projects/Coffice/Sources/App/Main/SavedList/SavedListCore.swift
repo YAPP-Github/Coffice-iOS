@@ -20,14 +20,19 @@ struct SavedList: Reducer {
     var shouldShowEmptyListReplaceView: Bool {
       return didFetchComplete && cafes.isEmpty
     }
+
+    // MARK: Toast View
+    @BindingState var toastMessage: String?
+    let bookmarkFinishedMessage = "장소가 저장되었습니다."
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, BindableAction {
+    case binding(BindingAction<SavedList.State>)
     case onAppear
     case onDisappear
     case fetchMyPlaces
     case bookmarkButtonTapped(cafe: Cafe)
-    case bookmarkedCafeResponse(cafes: [Cafe])
+    case bookmarkedCafeResult(TaskResult<[Cafe]>)
     case deleteCafesFromBookmark
     case pushCafeDetail(cafeId: Int)
   }
@@ -35,6 +40,8 @@ struct SavedList: Reducer {
   @Dependency(\.bookmarkClient) private var bookmarkClient
 
   var body: some ReducerOf<SavedList> {
+    BindingReducer()
+
     Reduce { state, action in
       switch action {
       case .onAppear:
@@ -48,22 +55,28 @@ struct SavedList: Reducer {
       case .fetchMyPlaces:
         return .run { send in
           let bookmarkedCafes = try await bookmarkClient.fetchMyPlaces()
-          await send(
-            .bookmarkedCafeResponse(cafes: bookmarkedCafes)
-          )
+          await send(.bookmarkedCafeResult(.success(bookmarkedCafes)))
         } catch: { error, send in
-          debugPrint(error)
+          await send(.bookmarkedCafeResult(.failure(error)))
         }
 
       case .bookmarkButtonTapped(let cafe):
         if let index = state.cafes.firstIndex(of: cafe) {
           state.cafes[index].isBookmarked.toggle()
+          if state.cafes[index].isBookmarked {
+            state.toastMessage = state.bookmarkFinishedMessage
+          }
         }
         return .none
 
-      case .bookmarkedCafeResponse(let cafes):
-        state.cafes = cafes
-        state.didFetchComplete = true
+      case .bookmarkedCafeResult(let result):
+        switch result {
+        case .success(let cafes):
+          state.cafes = cafes
+          state.didFetchComplete = true
+        case .failure(let error):
+          debugPrint(error)
+        }
         return .none
 
       case .deleteCafesFromBookmark:
