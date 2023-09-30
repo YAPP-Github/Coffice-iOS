@@ -90,6 +90,9 @@ struct SavedListView: View {
                           .frame(width: 44, height: 44)
                       }
                     )
+                    .overlay(alignment: .topTrailing) {
+                      bookmarkButton(cafe: cafe)
+                    }
                 }
                 Text(cafe.name)
                   .lineLimit(1)
@@ -130,20 +133,7 @@ struct SavedListView: View {
         height: (proxy.size.width - 60) / 2
       )
       .overlay(alignment: .topTrailing) {
-        Button {
-          viewStore.send(.bookmarkButtonTapped(cafe: cafe))
-        } label: {
-          (
-            cafe.isBookmarked
-            ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-            : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
-          )
-          .resizable()
-          .renderingMode(.template)
-          .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          .frame(width: 40, height: 40)
-          .opacity(0.8)
-        }
+        bookmarkButton(cafe: cafe)
       }
       .background(alignment: .center) {
         KFImage.url(URL(string: cafe.imageUrls?.first ?? ""))
@@ -157,6 +147,25 @@ struct SavedListView: View {
           .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
           .clipped()
           .cornerRadius(5)
+      }
+    }
+  }
+
+  private func bookmarkButton(cafe: Cafe) -> some View {
+    WithViewStore(store, observe: { $0 }) { viewStore in
+      Button {
+        viewStore.send(.bookmarkButtonTapped(cafe: cafe))
+      } label: {
+        (
+          cafe.isBookmarked
+          ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
+          : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
+        )
+        .resizable()
+        .renderingMode(.template)
+        .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+        .frame(width: 40, height: 40)
+        .opacity(0.8)
       }
     }
   }
