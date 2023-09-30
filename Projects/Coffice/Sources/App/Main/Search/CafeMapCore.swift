@@ -71,6 +71,7 @@ struct CafeMapCore: Reducer {
     case cardViewTapped
     case showToastBySearch
     case presentServiceAreaPopup
+    case presentToast
 
     // MARK: View LifeCycle
     case onAppear
@@ -232,8 +233,7 @@ struct CafeMapCore: Reducer {
 
       case .naverMapAction(.showBookmarkedToast):
         state.toastType = .toastByBookmark
-        state.shouldShowToast = true
-        return .none
+        return .send(.presentToast)
 
       case .naverMapAction(.delegate(.callUpdateBookmarkSearchListCell(let cafe))):
         return .send(.cafeSearchListAction(.updateBookmarkedSearchListCell(cafe: cafe)))
@@ -371,8 +371,7 @@ struct CafeMapCore: Reducer {
         // MARK: Common
       case .showToastBySearch:
         state.toastType = .toastBySearch
-        state.shouldShowToast = true
-        return .none
+        return .send(.presentToast)
 
       case .resetCafes:
         return .merge(
@@ -442,6 +441,10 @@ struct CafeMapCore: Reducer {
 
       case .presentServiceAreaPopup:
         state.serviceAreaPopupState = .init()
+        return .none
+
+      case .presentToast:
+        state.shouldShowToast = true
         return .none
 
       case .onAppear:

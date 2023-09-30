@@ -109,6 +109,8 @@ struct CafeMapView: View {
         $0
           .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: true))
           .autohideIn(2)
+          .closeOnTap(true)
+          .closeOnTapOutside(true)
       }
     }
   }
