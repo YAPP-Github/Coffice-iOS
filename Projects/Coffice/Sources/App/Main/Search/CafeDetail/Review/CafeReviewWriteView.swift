@@ -37,24 +37,16 @@ struct CafeReviewWriteView: View {
         .padding(.bottom, 16)
 
         HStack(spacing: 16) {
-          ZStack {
-            CofficeAsset.Colors.grayScale2.swiftUIColor
-
-            Group {
-              if let imageUrl = viewStore.imageUrl {
-                LinearGradient(
-                  gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
-                  startPoint: .top,
-                  endPoint: .bottom
-                )
-                .background(alignment: .center) {
-                  KFImage.url(imageUrl)
-                    .resizable()
-                    .scaledToFill()
+          Group {
+            if let imageUrl = viewStore.imageUrl {
+              KFImage.url(imageUrl)
+                .placeholder {
+                  imagePlaceholderView
                 }
-              } else {
-                placeholderImage
-              }
+                .resizable()
+                .scaledToFill()
+            } else {
+              imagePlaceholderView
             }
           }
           .frame(width: 48, height: 48)
@@ -237,10 +229,17 @@ extension CafeReviewWriteView: KeyboardPresentationReadable {
     }
   }
 
-  private var placeholderImage: some View {
-    CofficeAsset.Asset.icPlaceholder.swiftUIImage
-      .resizable()
-      .frame(width: 20, height: 20)
+  private var imagePlaceholderView: some View {
+    LinearGradient(
+      gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+      startPoint: .top,
+      endPoint: .bottom
+    )
+    .background(alignment: .center) {
+      CofficeAsset.Asset.icPlaceholder.swiftUIImage
+        .resizable()
+        .frame(width: 20, height: 20)
+    }
   }
 }
 

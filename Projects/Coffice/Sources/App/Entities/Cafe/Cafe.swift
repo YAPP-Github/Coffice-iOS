@@ -53,10 +53,6 @@ extension Cafe {
     ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
     : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
   }
-
-  var isValidImageUrl: Bool {
-    return URL(string: imageUrls?.first ?? "") != nil
-  }
 }
 
 extension SearchPlaceResponseDTO {

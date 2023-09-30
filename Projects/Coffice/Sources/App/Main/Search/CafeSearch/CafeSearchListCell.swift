@@ -56,31 +56,21 @@ struct CafeSearchListCell: View {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
             if let imageUrls = cafe.imageUrls, imageUrls.isNotEmpty {
-              ForEach(imageUrls, id: \.self) { imageUrlString in
-                if let imageUrl = URL(string: imageUrlString) {
-                  LinearGradient(
-                    gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                  )
-                  .background(
-                    alignment: .center,
-                    content: {
-                      KFImage.url(imageUrl)
-                        .resizable()
-                        .scaledToFill()
-                    }
-                  )
+              ForEach(imageUrls, id: \.self) { imageUrl in
+                KFImage.url(URL(string: imageUrl))
+                  .placeholder { CofficeAsset.Asset.cafePlaceholder.swiftUIImage }
+                  .resizable()
                   .frame(width: 124, height: 112)
-                  .clipped()
+                  .scaledToFit()
                   .cornerRadius(4, corners: .allCorners)
-                } else {
-                  placeholderImage
-                }
               }
             } else {
               ForEach(1...3, id: \.self) { imageAsset in
-                placeholderImage
+                CofficeAsset.Asset.cafePlaceholder.swiftUIImage
+                  .resizable()
+                  .frame(width: 124, height: 112)
+                  .scaledToFit()
+                  .cornerRadius(4, corners: .allCorners)
               }
             }
           }
@@ -93,20 +83,6 @@ struct CafeSearchListCell: View {
         }
       }
     }
-  }
-
-  var placeholderImage: some View {
-    CofficeAsset.Colors.grayScale2.swiftUIColor
-      .frame(width: 124, height: 112)
-      .cornerRadius(4, corners: .allCorners)
-      .overlay(
-        alignment: .center,
-        content: {
-          CofficeAsset.Asset.icPlaceholder.swiftUIImage
-            .resizable()
-            .frame(width: 44, height: 44)
-        }
-      )
   }
 }
 

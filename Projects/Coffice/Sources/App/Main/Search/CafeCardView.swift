@@ -60,26 +60,20 @@ struct CafeCardView: View {
           HStack(spacing: 8) {
             if let imageUrls = viewStore.naverMapState.selectedCafe?.imageUrls, imageUrls.isNotEmpty {
               ForEach(imageUrls, id: \.self) { imageUrl in
-                LinearGradient(
-                  gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
-                  startPoint: .top,
-                  endPoint: .bottom
-                )
-                .background(
-                  alignment: .center,
-                  content: {
-                    KFImage.url(URL(string: imageUrl))
-                      .onFailureImage(CofficeAsset.Asset.savedListFailImagePlaceholder.image)
-                      .resizable()
-                      .scaledToFill()
-                  }
-                )
-                .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
-                .cornerRadius(4, corners: .allCorners)
+                KFImage.url(URL(string: imageUrl))
+                  .onFailureImage(CofficeAsset.Asset.savedListFailImagePlaceholder.image)
+                  .resizable()
+                  .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
+                  .scaledToFit()
+                  .cornerRadius(4, corners: .allCorners)
               }
             } else {
               ForEach(1...3, id: \.self) { imageAsset in
-                placeholderImage
+                CofficeAsset.Asset.cafePlaceholder.swiftUIImage
+                  .resizable()
+                  .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
+                  .scaledToFit()
+                  .cornerRadius(4, corners: .allCorners)
               }
             }
           }
@@ -103,16 +97,6 @@ struct CafeCardView: View {
           .cornerRadius(12, corners: [.topLeft, .topRight])
           .shadow(color: .black.opacity(0.16), radius: 5, x: 0, y: 0)
       }
-    }
-  }
-
-  var placeholderImage: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      CofficeAsset.Asset.cafePlaceholder.swiftUIImage
-        .resizable()
-        .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
-        .scaledToFit()
-        .cornerRadius(4, corners: .allCorners)
     }
   }
 }

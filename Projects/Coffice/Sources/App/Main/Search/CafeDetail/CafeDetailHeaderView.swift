@@ -112,43 +112,41 @@ extension CafeDetailHeaderView {
         if let imageUrls = viewStore.cafe?.imageUrls,
            imageUrls.isNotEmpty {
           TabView {
-            ForEach(imageUrls, id: \.self) { imageUrlString in
-              Group {
-                if let imageUrl = URL(string: imageUrlString) {
-                  LinearGradient(
-                    gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                  )
-                  .background(alignment: .center) {
-                    KFImage.url(imageUrl)
-                      .resizable()
-                      .scaledToFill()
+            ForEach(imageUrls, id: \.self) { imageUrl in
+              LinearGradient(
+                gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+                startPoint: .top,
+                endPoint: .bottom
+              )
+              .background(alignment: .center) {
+                KFImage.url(URL(string: imageUrl))
+                  .placeholder {
+                    imagePlaceholderView
                   }
-                } else {
-                  placeholderImage
-                }
+                  .resizable()
+                  .scaledToFill()
               }
             }
           }
           .tabViewStyle(PageTabViewStyle())
         } else {
-          placeholderImage
+          imagePlaceholderView
         }
       }
       .frame(height: viewStore.imagePageViewHeight)
     }
   }
 
-  private var placeholderImage: some View {
-    CofficeAsset.Colors.grayScale2.swiftUIColor
-      .overlay(
-        alignment: .center,
-        content: {
-          CofficeAsset.Asset.icPlaceholder.swiftUIImage
-            .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
-        }
-      )
+  private var imagePlaceholderView: some View {
+    LinearGradient(
+      gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
+      startPoint: .top,
+      endPoint: .bottom
+    )
+    .background(alignment: .center) {
+      CofficeAsset.Asset.icPlaceholder.swiftUIImage
+        .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
+    }
   }
 }
 
