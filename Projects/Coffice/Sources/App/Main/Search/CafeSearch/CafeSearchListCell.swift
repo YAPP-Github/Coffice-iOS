@@ -112,6 +112,20 @@ struct CafeSearchListCell: View {
         }
       )
   }
+
+  var placeholderImage: some View {
+    CofficeAsset.Colors.grayScale2.swiftUIColor
+      .frame(width: 124, height: 112)
+      .cornerRadius(4, corners: .allCorners)
+      .overlay(
+        alignment: .center,
+        content: {
+          CofficeAsset.Asset.icPlaceholder.swiftUIImage
+            .resizable()
+            .frame(width: 44, height: 44)
+        }
+      )
+  }
 }
 
 struct CafeSearchListCell_Previews: PreviewProvider {
