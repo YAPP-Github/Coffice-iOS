@@ -22,6 +22,7 @@ struct SavedListView: View {
           mainView
         }
       }
+      .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
       .onAppear {
         viewStore.send(.onAppear)
       }
