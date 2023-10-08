@@ -82,14 +82,6 @@ struct MainCoordinator: Reducer {
         state.selectedTab = itemType
         return .none
 
-      case .myPage(.routeAction(_, .editProfile(.hideTabBar))):
-        state.shouldShowTabBarView = false
-        return .none
-
-      case .myPage(.routeAction(_, .editProfile(.showTabBar))):
-        state.shouldShowTabBarView = true
-        return .none
-
       default:
         return .none
       }
