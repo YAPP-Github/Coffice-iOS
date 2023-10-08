@@ -213,9 +213,9 @@ struct SavedListView: View {
             height: (proxy.size.width - 60) / 2
           )
           .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
-          .clipped()
-          .cornerRadius(5)
       }
+      .clipped()
+      .cornerRadius(4)
     }
   }
 
