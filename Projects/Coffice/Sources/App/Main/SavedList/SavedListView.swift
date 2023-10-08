@@ -94,6 +94,8 @@ struct SavedListView: View {
                     .overlay(alignment: .topTrailing) {
                       bookmarkButton(cafe: cafe)
                     }
+                    .clipped()
+                    .cornerRadius(4)
                 }
                 Text(cafe.name)
                   .lineLimit(1)
@@ -146,9 +148,9 @@ struct SavedListView: View {
             height: (proxy.size.width - 60) / 2
           )
           .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
-          .clipped()
-          .cornerRadius(5)
       }
+      .clipped()
+      .cornerRadius(4)
     }
   }
 
