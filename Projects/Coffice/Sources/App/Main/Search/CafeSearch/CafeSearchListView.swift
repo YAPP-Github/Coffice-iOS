@@ -92,7 +92,7 @@ extension CafeSearchListView {
               .frame(width: 24, height: 24)
           }
           .padding(.trailing, 12)
-          
+
           Text(viewStore.title)
             .applyCofficeFont(font: .subtitle1Medium)
             .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)

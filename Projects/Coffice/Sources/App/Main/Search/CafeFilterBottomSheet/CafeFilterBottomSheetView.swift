@@ -184,7 +184,7 @@ extension CafeFilterBottomSheetView {
                   .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
               }
           }
-          
+
           Button {
             viewStore.send(.saveCafeFilterButtonTapped)
           } label: {

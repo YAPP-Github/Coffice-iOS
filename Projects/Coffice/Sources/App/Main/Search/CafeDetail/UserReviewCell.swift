@@ -30,7 +30,7 @@ struct UserReviewCell: View {
                 CofficeAsset.Asset.userProfile40px.swiftUIImage
                 Spacer()
               }
-              
+
               VStack(spacing: 4) {
                 Text(viewState.userName)
                   .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -42,9 +42,9 @@ struct UserReviewCell: View {
                   .frame(maxWidth: .infinity, alignment: .leading)
                 Spacer()
               }
-              
+
               Spacer()
-              
+
               VStack {
                 if viewState.isMyReview {
                   Button {
@@ -67,13 +67,13 @@ struct UserReviewCell: View {
           }
           .frame(height: 42)
           .padding(.top, 20)
-          
+
           Text(viewState.content)
             .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
             .applyCofficeFont(font: .body1)
             .multilineTextAlignment(.leading)
             .padding(.top, 20)
-          
+
           // TODO: Tag가 한줄 넘어갈 경우 넘어가도록 커스텀 뷰 구현 필요
           if viewState.reviewTagTitles.isNotEmpty {
             HStack(spacing: 8) {
@@ -96,7 +96,7 @@ struct UserReviewCell: View {
             .frame(height: 26)
             .padding(.top, 20)
           }
-          
+
           CofficeAsset.Colors.grayScale3.swiftUIColor
             .frame(height: 1)
             .padding(.top, 16)

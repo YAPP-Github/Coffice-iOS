@@ -27,7 +27,7 @@ struct CafeReviewOptionButtonsView: View {
             HStack(spacing: 8) {
               ForEach(viewStore.optionButtonViewStates.indices, id: \.self) { viewStateIndex in
                 let viewState = viewStore.optionButtonViewStates[viewStateIndex]
-                
+
                 Button {
                   viewStore.send(.optionButtonTapped(optionType: viewState.optionType, index: viewStateIndex))
                 } label: {

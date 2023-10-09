@@ -29,7 +29,7 @@ struct LoginServiceTermsBottomSheetView: View {
             .frame(height: 32)
             .padding(.top, 28)
             .padding(.bottom, 20)
-          
+
           Button {
             viewStore.send(.wholeTermsAgreementButtonTapped)
           } label: {
@@ -45,11 +45,11 @@ struct LoginServiceTermsBottomSheetView: View {
           }
           .frame(height: 32)
           .padding(.vertical, 20)
-          
+
           CofficeAsset.Colors.grayScale3.swiftUIColor
             .frame(height: 1)
             .padding(.bottom, 20)
-          
+
           VStack(spacing: 0) {
             ForEach(viewStore.termsOptionButtonViewStates) { viewState in
               HStack(spacing: 16) {
@@ -70,7 +70,7 @@ struct LoginServiceTermsBottomSheetView: View {
                   }
                   .frame(height: 32)
                 }
-                
+
                 Button {
                   viewStore.send(.termsWebMenuButtonTapped(viewState: viewState))
                 } label: {
@@ -80,7 +80,7 @@ struct LoginServiceTermsBottomSheetView: View {
               .padding(.bottom, 20)
             }
           }
-          
+
           Button {
             viewStore.send(.delegate(.confirmButtonTapped))
           } label: {

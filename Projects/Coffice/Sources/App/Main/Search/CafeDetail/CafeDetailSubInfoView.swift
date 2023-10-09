@@ -131,7 +131,7 @@ extension CafeDetailSubInfoView {
                   .padding(.bottom, 16)
               }
             }
-            
+
             VStack(alignment: .leading, spacing: 0) {
               ForEach(viewStore.subSecondaryInfoViewStates) { viewState in
                 HStack {
@@ -139,15 +139,15 @@ extension CafeDetailSubInfoView {
                     .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                     .applyCofficeFont(font: .body1Medium)
                     .frame(alignment: .leading)
-                  
+
                   if viewState.type == .congestion {
                     // FIXME: 혼잡도 어떤식으로 나타낼지 정의 필요
                     //                  Text(viewState.congestionDescription)
                     //                    .foregroundColor(viewState.congestionLevel == .high ? .red : .black)
                     //                    .font(.system(size: 14))
-                    
+
                     Spacer()
-                    
+
                     Text(viewStore.updatedDateDescription)
                       .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
                       .applyCofficeFont(font: .body2Medium)

@@ -32,7 +32,7 @@ struct LoginView: View {
           VStack(alignment: .center, spacing: 0) {
             CofficeAsset.Asset.loginAppLogo.swiftUIImage
               .padding(EdgeInsets(top: 0, leading: 60, bottom: 178, trailing: 60))
-            
+
             Button {
               viewStore.send(.kakaoLoginButtonTapped)
             } label: {
@@ -49,7 +49,7 @@ struct LoginView: View {
             .background(CofficeAsset.Colors.kakao.swiftUIColor)
             .cornerRadius(25)
             .padding(.bottom, 16)
-            
+
             SignInWithAppleButton { request in
               request.requestedScopes = []
             } onCompletion: { result in
@@ -68,7 +68,7 @@ struct LoginView: View {
             .cornerRadius(25)
             .frame(height: 50)
             .padding(.bottom, 24)
-            
+
             HStack(spacing: 4) {
               Text("회원가입 없이")
               Button {

@@ -54,7 +54,7 @@ struct EditProfileView: View {
             .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.leading, 20)
-          
+
           ZStack {
             RoundedRectangle(cornerRadius: 8)
               .stroke(CofficeAsset.Colors.grayScale3.swiftUIColor,
@@ -73,7 +73,7 @@ struct EditProfileView: View {
               .padding(20)
               .tint(CofficeAsset.Colors.grayScale9.swiftUIColor)
               .focused($isFocused, equals: true)
-              
+
               if viewStore.nicknameTextField.isNotEmpty {
                 Button {
                   viewStore.send(.clearText)
@@ -95,7 +95,7 @@ struct EditProfileView: View {
           }
           .frame(height: 60)
           .padding(.horizontal, 20)
-          
+
           if case .checked(let response) = viewStore.nicknameValidationType, response != .valid {
             HStack(spacing: 0) {
               Text(response.warningMessage)
@@ -105,9 +105,9 @@ struct EditProfileView: View {
               Spacer()
             }
           }
-          
+
           Spacer()
-          
+
           Button {
             viewStore.send(.confirmButtonTapped)
           } label: {
