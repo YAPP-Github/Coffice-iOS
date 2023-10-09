@@ -13,26 +13,30 @@ struct LocationServiceTermsView: View {
   let store: StoreOf<LocationServiceTerms>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack {
-        CommonWebView(store: store.scope(
-          state: \.webViewState,
-          action: LocationServiceTerms.Action.webAction)
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack {
+          CommonWebView(store: store.scope(
+            state: \.webViewState,
+            action: LocationServiceTerms.Action.webAction)
+          )
+        }
+        .customNavigationBar(
+          centerView: {
+            Text("위치서비스 약관")
+          },
+          leftView: {
+            Button {
+              viewStore.send(.popView)
+            } label: {
+              Image(systemName: "chevron.left")
+            }
+          }
         )
       }
-      .customNavigationBar(
-        centerView: {
-          Text("위치서비스 약관")
-        },
-        leftView: {
-          Button {
-            viewStore.send(.popView)
-          } label: {
-            Image(systemName: "chevron.left")
-          }
-        }
-      )
-    }
+    )
   }
 }
 

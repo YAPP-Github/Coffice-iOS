@@ -18,21 +18,25 @@ struct CafeSearchView: View {
   let store: StoreOf<CafeSearchCore>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack(spacing: 0) {
-        cafeSearchHeaderView
-          .background(alignment: .bottom) {
-            CofficeAsset.Colors.grayScale2.swiftUIColor
-              .frame(height: 2)
-          }
-        cafeSearchBodyView
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack(spacing: 0) {
+          cafeSearchHeaderView
+            .background(alignment: .bottom) {
+              CofficeAsset.Colors.grayScale2.swiftUIColor
+                .frame(height: 2)
+            }
+          cafeSearchBodyView
+        }
+        .ignoresSafeArea(.keyboard)
+        .onAppear {
+          focusField = .keyword
+          viewStore.send(.onAppear)
+        }
       }
-      .ignoresSafeArea(.keyboard)
-      .onAppear {
-        focusField = .keyword
-        viewStore.send(.onAppear)
-      }
-    }
+    )
   }
 }
 
@@ -53,21 +57,24 @@ extension CafeSearchView {
   }
 
   var cafeSearchHeaderView: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      HStack(alignment: .top, spacing: 0) {
-        HStack(spacing: 0) {
-          CofficeAsset.Asset.searchLine24px.swiftUIImage
-            .resizable()
-            .frame(width: 24, height: 24)
-            .scaledToFit()
-            .padding(.trailing, 12)
-          TextField(
-            "지하철, 카페 이름으로 검색",
-            text: viewStore.binding(
-              get: \.searchText,
-              send: { .set(\.$searchText, $0) }
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        HStack(alignment: .top, spacing: 0) {
+          HStack(spacing: 0) {
+            CofficeAsset.Asset.searchLine24px.swiftUIImage
+              .resizable()
+              .frame(width: 24, height: 24)
+              .scaledToFit()
+              .padding(.trailing, 12)
+            TextField(
+              "지하철, 카페 이름으로 검색",
+              text: viewStore.binding(
+                get: \.searchText,
+                send: { .set(\.$searchText, $0) }
+              )
             )
-          )
             .applyCofficeFont(font: .subtitle1Medium)
             .tint(CofficeAsset.Colors.grayScale9.swiftUIColor)
             .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
@@ -75,64 +82,69 @@ extension CafeSearchView {
             .textFieldStyle(.plain)
             .focused($focusField, equals: .keyword)
             .keyboardType(.default)
-          if viewStore.searchText.isNotEmpty {
-            Button {
-              viewStore.send(.clearTextButtonTapped)
-            } label: {
-              CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
-                .resizable()
-                .renderingMode(.template)
-                .frame(width: 18, height: 18)
-                .scaledToFit()
-                .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
-            }
-            .padding(.trailing, 8)
-          } else {
-            Color.clear
-              .frame(width: 24, height: 24)
+            if viewStore.searchText.isNotEmpty {
+              Button {
+                viewStore.send(.clearTextButtonTapped)
+              } label: {
+                CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
+                  .resizable()
+                  .renderingMode(.template)
+                  .frame(width: 18, height: 18)
+                  .scaledToFit()
+                  .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+              }
               .padding(.trailing, 8)
+            } else {
+              Color.clear
+                .frame(width: 24, height: 24)
+                .padding(.trailing, 8)
+            }
+            Button {
+              viewStore.send(.delegate(.dismiss))
+            } label: {
+              CofficeAsset.Asset.close24px.swiftUIImage
+            }
           }
-          Button {
-            viewStore.send(.delegate(.dismiss))
-          } label: {
-            CofficeAsset.Asset.close24px.swiftUIImage
-          }
+          .padding(EdgeInsets(top: 12, leading: 20, bottom: 28, trailing: 20))
         }
-        .padding(EdgeInsets(top: 12, leading: 20, bottom: 28, trailing: 20))
+        .frame(height: 64)
       }
-      .frame(height: 64)
-    }
+    )
   }
 
   var searchResultListView: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      ScrollView {
-        VStack(spacing: 0) {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        ScrollView {
           VStack(spacing: 0) {
-            ForEach(viewStore.waypoints) { waypoint in
-              WaypointCellView(
-                waypoint: waypoint,
-                waypointName: waypoint.name.changeMatchTextColor(matchText: viewStore.searchText)
+            VStack(spacing: 0) {
+              ForEach(viewStore.waypoints) { waypoint in
+                WaypointCellView(
+                  waypoint: waypoint,
+                  waypointName: waypoint.name.changeMatchTextColor(matchText: viewStore.searchText)
+                )
+                .contentShape(Rectangle())
+                .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
+              }
+            }
+            .background(alignment: .bottom) {
+              CofficeAsset.Colors.grayScale2.swiftUIColor
+                .frame(height: 2)
+            }
+            ForEach(viewStore.cafes) { place in
+              PlaceCellView(
+                place: place,
+                placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
               )
-              .contentShape(Rectangle())
-              .onTapGesture { viewStore.send(.waypointCellTapped(waypoint: waypoint)) }
+              .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
             }
           }
-          .background(alignment: .bottom) {
-            CofficeAsset.Colors.grayScale2.swiftUIColor
-              .frame(height: 2)
-          }
-          ForEach(viewStore.cafes) { place in
-            PlaceCellView(
-              place: place,
-              placeName: place.name.changeMatchTextColor(matchText: viewStore.searchText)
-            )
-            .onTapGesture { viewStore.send(.placeCellTapped(place: place)) }
-          }
+          .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
         }
-        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
       }
-    }
+    )
   }
 
   var searchResultEmptyView: some View {
@@ -161,57 +173,65 @@ extension CafeSearchView {
   }
 
   var recentSearchWordsView: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
-        Text("최근검색어")
-          .applyCofficeFont(font: .header3)
-          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-          .multilineTextAlignment(.leading)
-          .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 16))
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .frame(height: 60)
-          .hiddenWithOpacity(isHidden: viewStore.recentSearchWordList.isEmpty)
-        ScrollView(.vertical, showsIndicators: false) {
-          VStack(spacing: 0) {
-            ForEach(viewStore.recentSearchWordList, id: \.searchWordId) { searchWord in
-              listCell(searchWord.text, searchWord.searchWordId)
-                .contentShape(Rectangle())
-                .onTapGesture { viewStore.send(.recentSearchWordCellTapped(recentWord: searchWord.text)) }
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack(alignment: .leading, spacing: 0) {
+          Text("최근검색어")
+            .applyCofficeFont(font: .header3)
+            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+            .multilineTextAlignment(.leading)
+            .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 16))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 60)
+            .hiddenWithOpacity(isHidden: viewStore.recentSearchWordList.isEmpty)
+          ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+              ForEach(viewStore.recentSearchWordList, id: \.searchWordId) { searchWord in
+                listCell(searchWord.text, searchWord.searchWordId)
+                  .contentShape(Rectangle())
+                  .onTapGesture { viewStore.send(.recentSearchWordCellTapped(recentWord: searchWord.text)) }
+              }
             }
           }
         }
+        .onAppear {
+          viewStore.send(.onAppear)
+        }
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
-    }
+    )
   }
 
   func listCell(_ recentWord: String, _ id: Int) -> some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      HStack(spacing: 0) {
-        HStack(spacing: 16) {
-          CofficeAsset.Asset.searchLine24px.swiftUIImage
-            .resizable()
-            .frame(width: 24, height: 24)
-            .scaledToFit()
-          Text(recentWord)
-            .applyCofficeFont(font: .subtitleSemiBold)
-            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        HStack(spacing: 0) {
+          HStack(spacing: 16) {
+            CofficeAsset.Asset.searchLine24px.swiftUIImage
+              .resizable()
+              .frame(width: 24, height: 24)
+              .scaledToFit()
+            Text(recentWord)
+              .applyCofficeFont(font: .subtitleSemiBold)
+              .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+          }
+          .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 16))
+          Spacer()
+          Button {
+            viewStore.send(.deleteRecentSearchWordButtonTapped(recentWordId: id))
+          } label: {
+            CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
+              .renderingMode(.template)
+              .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+          }
+          .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 16))
         }
-        .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 16))
-        Spacer()
-        Button {
-          viewStore.send(.deleteRecentSearchWordButtonTapped(recentWordId: id))
-        } label: {
-          CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
-            .renderingMode(.template)
-            .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
-        }
-        .padding(EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 16))
+        .frame(height: 52)
       }
-      .frame(height: 52)
-    }
+    )
   }
 }
 

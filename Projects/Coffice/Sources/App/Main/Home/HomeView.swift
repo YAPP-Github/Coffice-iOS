@@ -16,22 +16,26 @@ struct HomeView: View {
   }
 
   var mainView: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack {
-        Spacer()
-        Text("HomeView")
-          .padding(.bottom, 10)
-        Button {
-          viewStore.send(.pushLoginView)
-        } label: {
-          Text("로그인")
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack {
+          Spacer()
+          Text("HomeView")
+            .padding(.bottom, 10)
+          Button {
+            viewStore.send(.pushLoginView)
+          } label: {
+            Text("로그인")
+          }
+          Spacer()
         }
-        Spacer()
+        .customNavigationBar(centerView: {
+          Text(viewStore.title)
+        })
       }
-      .customNavigationBar(centerView: {
-        Text(viewStore.title)
-      })
-    }
+    )
   }
 }
 
