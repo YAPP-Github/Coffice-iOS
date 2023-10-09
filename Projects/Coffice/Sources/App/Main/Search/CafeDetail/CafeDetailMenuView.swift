@@ -307,7 +307,10 @@ extension CafeDetailMenuView {
 
           Button {
             if let phoneNumber = viewStore.cafe?.phoneNumber {
-              guard let url = URL(string: "tel://" + phoneNumber.replacingOccurrences(of: "-", with: "")) else { return }
+              guard let url = URL(
+                string: "tel://" + phoneNumber.replacingOccurrences(of: "-", with: "")
+              )
+              else { return }
               UIApplication.shared.open(url)
             }
           } label: {
