@@ -15,8 +15,8 @@ struct CafeMapCore: Reducer {
   struct State: Equatable {
     // MARK: CardViewUI
     var maxScreenWidth: CGFloat = .zero
-    var fixedImageSize: CGFloat { (maxScreenWidth - 56) / 3 }
-    var fixedCardTitleSize: CGFloat { maxScreenWidth - 48 }
+    var fixedImageSize: CGFloat { max(maxScreenWidth - 56, 0) / 3 }
+    var fixedCardTitleSize: CGFloat { max(maxScreenWidth - 48, 0) }
     var isFirstOnAppear: Bool = true
     @BindingState var shouldShowToast = false
     var toastType: ToastType = .toastByBookmark
