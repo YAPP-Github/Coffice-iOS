@@ -34,6 +34,25 @@ struct CafeReviewWriteView: View {
             } label: {
               CofficeAsset.Asset.close40px.swiftUIImage
             }
+            .frame(width: 48, height: 48)
+            .cornerRadius(4, corners: .allCorners)
+
+            VStack(spacing: 0) {
+              Text(viewStore.cafeName)
+                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                .applyCofficeFont(font: .subtitleSemiBold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 20, alignment: .center)
+
+              Spacer()
+
+              Text(viewStore.cafeAddress)
+                .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                .applyCofficeFont(font: .body1Medium)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 20, alignment: .center)
+            }
+            .frame(height: 48)
           }
           .padding(.top, 24)
           .padding(.horizontal, 20)
