@@ -60,11 +60,12 @@ struct CafeMapView: View {
               Spacer()
               bottomFloatingButtonView
                 .padding(.trailing, 24)
-              if viewStore.naverMapState.selectedCafe != nil {
-                CafeCardView(store: store)
-                  .frame(width: geometry.size.width)
-                  .onTapGesture { viewStore.send(.cardViewTapped) }
-              }
+              CafeCardView(store: store)
+                .frame(width: geometry.size.width)
+                .opacity(viewStore.naverMapState.selectedCafe == nil ? 0 : 1)
+                .offset(y: viewStore.naverMapState.selectedCafe == nil ? 300 : 0)
+                .animation(.easeInOut(duration: 0.2), value: viewStore.naverMapState.selectedCafe)
+                .onTapGesture { viewStore.send(.cardViewTapped) }
             }
             .frame(
               width: geometry.size.width,
