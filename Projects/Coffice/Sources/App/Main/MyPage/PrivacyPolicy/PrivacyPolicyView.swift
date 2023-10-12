@@ -13,29 +13,33 @@ struct PrivacyPolicyView: View {
   let store: StoreOf<PrivacyPolicy>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack(spacing: 10) {
-        CommonWebView(store: store.scope(
-          state: \.webViewState,
-          action: PrivacyPolicy.Action.webAction)
-        )
-      }
-      .customNavigationBar(
-        centerView: {
-          Text(viewStore.title)
-        },
-        leftView: {
-          Button {
-            viewStore.send(.popView)
-          } label: {
-            Image(systemName: "chevron.left")
-          }
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack(spacing: 10) {
+          CommonWebView(store: store.scope(
+            state: \.webViewState,
+            action: PrivacyPolicy.Action.webAction)
+          )
         }
-      )
-      .onAppear {
-        viewStore.send(.onAppear)
+        .customNavigationBar(
+          centerView: {
+            Text(viewStore.title)
+          },
+          leftView: {
+            Button {
+              viewStore.send(.popView)
+            } label: {
+              Image(systemName: "chevron.left")
+            }
+          }
+        )
+        .onAppear {
+          viewStore.send(.onAppear)
+        }
       }
-    }
+    )
   }
 }
 

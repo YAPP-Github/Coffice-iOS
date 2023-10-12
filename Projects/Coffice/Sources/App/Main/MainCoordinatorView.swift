@@ -14,23 +14,27 @@ struct MainCoordinatorView: View {
   let store: StoreOf<MainCoordinator>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      ZStack {
-        NavigationView {
-          mainView
-            .overlay(
-              alignment: .bottom,
-              content: {
-                tabBarView
-                  .hiddenWithOpacity(isHidden: viewStore.shouldShowTabBarView.isFalse)
-              }
-            )
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        ZStack {
+          NavigationView {
+            mainView
+              .overlay(
+                alignment: .bottom,
+                content: {
+                  tabBarView
+                    .hiddenWithOpacity(isHidden: viewStore.shouldShowTabBarView.isFalse)
+                }
+              )
+          }
+        }
+        .onAppear {
+          viewStore.send(.onAppear)
         }
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
-    }
+    )
   }
 
   var mainView: some View {
@@ -64,17 +68,21 @@ struct MainCoordinatorView: View {
   }
 
   var tabBarView: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack {
-        Spacer()
-        TabBarView(
-          store: store.scope(
-            state: \.tabBarState,
-            action: MainCoordinator.Action.tabBar
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack {
+          Spacer()
+          TabBarView(
+            store: store.scope(
+              state: \.tabBarState,
+              action: MainCoordinator.Action.tabBar
+            )
           )
-        )
+        }
       }
-    }
+    )
   }
 }
 

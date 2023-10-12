@@ -13,17 +13,21 @@ struct TabBarView: View {
   let store: StoreOf<TabBar>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      mainView
-        .overlay(
-          GeometryReader { proxy in
-            Color.clear.preference(key: TabBarSizePreferenceKey.self, value: proxy.size)
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        mainView
+          .overlay(
+            GeometryReader { proxy in
+              Color.clear.preference(key: TabBarSizePreferenceKey.self, value: proxy.size)
+            }
+          )
+          .onPreferenceChange(TabBarSizePreferenceKey.self) { size in
+            TabBarSizePreferenceKey.defaultValue = size
           }
-        )
-        .onPreferenceChange(TabBarSizePreferenceKey.self) { size in
-          TabBarSizePreferenceKey.defaultValue = size
-        }
-    }
+      }
+    )
   }
 
   var mainView: some View {

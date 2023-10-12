@@ -13,29 +13,33 @@ struct AppServiceTermsView: View {
   let store: StoreOf<AppServiceTermsReducer>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack {
-        CommonWebView(store: store.scope(
-          state: \.webViewState,
-          action: AppServiceTermsReducer.Action.webAction)
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack {
+          CommonWebView(store: store.scope(
+            state: \.webViewState,
+            action: AppServiceTermsReducer.Action.webAction)
+          )
+        }
+        .onAppear {
+          viewStore.send(.onAppear)
+        }
+        .customNavigationBar(
+          centerView: {
+            Text(viewStore.title)
+          },
+          leftView: {
+            Button {
+              viewStore.send(.popView)
+            } label: {
+              Image(systemName: "chevron.left")
+            }
+          }
         )
       }
-      .onAppear {
-        viewStore.send(.onAppear)
-      }
-      .customNavigationBar(
-        centerView: {
-          Text(viewStore.title)
-        },
-        leftView: {
-          Button {
-            viewStore.send(.popView)
-          } label: {
-            Image(systemName: "chevron.left")
-          }
-        }
-      )
-    }
+    )
   }
 }
 
