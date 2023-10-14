@@ -106,6 +106,7 @@ struct CafeCardView: View {
             .cornerRadius(12, corners: [.topLeft, .topRight])
             .shadow(color: .black.opacity(0.16), radius: 5, x: 0, y: 0)
         }
+        .transition(.move(edge: .bottom))
       }
     )
   }
