@@ -72,6 +72,8 @@ struct CafeMapView: View {
               height: geometry.size.height
             )
           }
+          .ignoresSafeArea(.keyboard)
+          .padding(.bottom, 20)
           .onAppear {
             if geometry.size.width == 0 {
               viewStore.send(.updateMaxScreenWidth(UIScreen.main.bounds.width))

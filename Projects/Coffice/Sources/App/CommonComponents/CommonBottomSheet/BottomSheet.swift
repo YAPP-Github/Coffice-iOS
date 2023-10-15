@@ -52,7 +52,7 @@ struct BottomSheetView: View {
       footerView
     }
     .frame(maxWidth: .infinity)
-    .padding(.bottom, UIApplication.keyWindow?.safeAreaInsets.bottom)
+    .padding(.bottom, 20 + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0))
     .padding(.top, 20)
     .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
     .cornerRadius(12, corners: [.topLeft, .topRight])
