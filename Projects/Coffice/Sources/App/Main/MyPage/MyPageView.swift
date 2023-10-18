@@ -92,17 +92,20 @@ struct MyPageView: View {
           } else {
             linkedAccountTypeView
           }
-
-          VStack(spacing: 0) {
-            ForEach(viewStore.menuItems) { menuItem in
-              menuItemView(menuItem: menuItem)
+          
+          ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+              ForEach(viewStore.menuItems) { menuItem in
+                menuItemView(menuItem: menuItem)
+              }
             }
+            .padding(.vertical, 10)
           }
-          .padding(.vertical, 10)
 
           Spacer()
         }
         .padding(.horizontal, 20)
+        .padding(.bottom, TabBarSizePreferenceKey.defaultValue.height)
       }
     )
   }
