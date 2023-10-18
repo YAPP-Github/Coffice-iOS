@@ -90,21 +90,19 @@ struct CafeReviewWriteView: View {
 
           reviewFormScrollView
 
-          VStack(alignment: .center) {
-            Button {
-              viewStore.send(.saveButtonTapped)
-            } label: {
-              Text(viewStore.saveButtonTitle)
-                .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-                .applyCofficeFont(font: .button)
-                .frame(maxWidth: .infinity)
-            }
-            .disabled(viewStore.isSaveButtonEnabled.isFalse)
+          Button {
+            viewStore.send(.saveButtonTapped)
+          } label: {
+            Text(viewStore.saveButtonTitle)
+              .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+              .applyCofficeFont(font: .button)
+              .frame(maxWidth: .infinity)
           }
+          .disabled(viewStore.isSaveButtonEnabled.isFalse)
           .frame(height: 44)
           .background(viewStore.saveButtonBackgroundColorAsset.swiftUIColor)
           .cornerRadius(4, corners: .allCorners)
-          .padding(.horizontal, 20)
+          .padding(20)
         }
         .ignoresSafeArea(.keyboard)
         .onAppear {

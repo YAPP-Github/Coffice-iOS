@@ -28,62 +28,63 @@ struct LoginView: View {
       store,
       observe: { $0 },
       content: { viewStore in
-        VStack(alignment: .leading, spacing: 0) {
-          VStack(alignment: .center, spacing: 0) {
-            CofficeAsset.Asset.loginAppLogo.swiftUIImage
-              .padding(EdgeInsets(top: 0, leading: 60, bottom: 178, trailing: 60))
+        VStack(alignment: .center, spacing: 0) {
+          CofficeAsset.Asset.loginAppLogo.swiftUIImage
+            .padding(.top, 0)
+            .padding(.horizontal, 60)
 
-            Button {
-              viewStore.send(.kakaoLoginButtonTapped)
-            } label: {
-              HStack {
-                CofficeAsset.Asset.kakaoLogo18px.swiftUIImage
-                  .frame(width: 18, height: 18)
-                Text("카카오톡으로 로그인")
-                  .tint(.black)
-                  .applyCofficeFont(font: .subtitleSemiBold)
-              }
-              .frame(maxWidth: .infinity)
-            }
-            .frame(height: 52)
-            .background(CofficeAsset.Colors.kakao.swiftUIColor)
-            .cornerRadius(25)
-            .padding(.bottom, 16)
+          Spacer()
 
-            SignInWithAppleButton { request in
-              request.requestedScopes = []
-            } onCompletion: { result in
-              switch result {
-              case .success(let authResults):
-                guard let appleIDCredential = authResults.credential as? ASAuthorizationAppleIDCredential,
-                      let identityToken = appleIDCredential.identityToken,
-                      let token = String(data: identityToken, encoding: .utf8) else {
-                  return
-                }
-                viewStore.send(.appleLoginButtonTapped(token: token))
-              case .failure(let error):
-                debugPrint(error)
-              }
+          Button {
+            viewStore.send(.kakaoLoginButtonTapped)
+          } label: {
+            HStack {
+              CofficeAsset.Asset.kakaoLogo18px.swiftUIImage
+                .frame(width: 18, height: 18)
+              Text("카카오톡으로 로그인")
+                .tint(.black)
+                .applyCofficeFont(font: .subtitleSemiBold)
             }
-            .cornerRadius(25)
-            .frame(height: 50)
-            .padding(.bottom, 24)
-
-            HStack(spacing: 4) {
-              Text("회원가입 없이")
-              Button {
-                viewStore.send(.lookAroundButtonTapped)
-              } label: {
-                Text("둘러보기")
-                  .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
-              }
-            }
-            .applyCofficeFont(font: .body1Medium)
-            .hiddenWithOpacity(isHidden: viewStore.isOnboarding.isFalse)
+            .frame(maxWidth: .infinity)
           }
-          .padding(EdgeInsets(top: 163, leading: 36, bottom: 129, trailing: 36))
+          .frame(height: 52)
+          .background(CofficeAsset.Colors.kakao.swiftUIColor)
+          .cornerRadius(25)
+          .padding(.bottom, 16)
+
+          SignInWithAppleButton { request in
+            request.requestedScopes = []
+          } onCompletion: { result in
+            switch result {
+            case .success(let authResults):
+              guard let appleIDCredential = authResults.credential as? ASAuthorizationAppleIDCredential,
+                    let identityToken = appleIDCredential.identityToken,
+                    let token = String(data: identityToken, encoding: .utf8) else {
+                return
+              }
+              viewStore.send(.appleLoginButtonTapped(token: token))
+            case .failure(let error):
+              debugPrint(error)
+            }
+          }
+          .cornerRadius(25)
+          .frame(height: 50)
+          .padding(.bottom, 24)
+
+          HStack(spacing: 4) {
+            Text("회원가입 없이")
+            Button {
+              viewStore.send(.lookAroundButtonTapped)
+            } label: {
+              Text("둘러보기")
+                .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+            }
+          }
+          .applyCofficeFont(font: .body1Medium)
+          .hiddenWithOpacity(isHidden: viewStore.isOnboarding.isFalse)
         }
         .navigationBarHidden(true)
+        .padding(EdgeInsets(top: 163, leading: 36, bottom: 129, trailing: 36))
         .overlay(
           alignment: .topLeading,
           content: {
