@@ -23,6 +23,7 @@
 - 민경태
 - 정세훈
 - 천수현
+- 한재승
 
 ### ☁️ Backend Developer
 
@@ -55,7 +56,7 @@
 ### Branch
 
 - 브랜치 전략: git-flow
-- 메인 브랜치: master
+- 메인 브랜치: main
 
 ### Issue
 
