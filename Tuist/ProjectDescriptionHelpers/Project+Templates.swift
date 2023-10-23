@@ -7,7 +7,7 @@ extension Project {
     name: String,
     platform: Platform,
     iOSTargetVersion: String,
-    infoPlist: [String: InfoPlist.Value],
+    infoPlist: [String: Plist.Value],
     dependencies: [TargetDependency] = [],
     settings: Settings? = nil,
     schemes: [Scheme] = []
@@ -85,7 +85,14 @@ private extension Project {
     return shouldIncludeTest ? [sources, tests] : [sources]
   }
 
-  static func makeAppTargets(name: String, platform: Platform, iOSTargetVersion: String, infoPlist: [String: InfoPlist.Value] = [:], dependencies: [TargetDependency] = [], settings: Settings? = nil) -> [Target] {
+  static func makeAppTargets(
+    name: String,
+    platform: Platform,
+    iOSTargetVersion: String,
+    infoPlist: [String: Plist.Value] = [:],
+    dependencies: [TargetDependency] = [],
+    settings: Settings? = nil
+  ) -> [Target] {
     let platform: Platform = platform
 
     let mainTarget = Target(

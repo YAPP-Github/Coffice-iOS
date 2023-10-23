@@ -110,7 +110,7 @@ extension NaverMapView {
         position: NMGLatLng(lat: cafe.latitude, lng: cafe.longitude)
       )
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-        DispatchQueue.main.async {
+        _ = withAnimation(.easeInOut) {
           viewStore.send(.markerTapped(cafe: cafe))
         }
         return true
@@ -153,8 +153,8 @@ class Coordinator: NSObject, NMFMapViewOptionDelegate {
 
 extension Coordinator: NMFMapViewTouchDelegate {
   func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
-    DispatchQueue.main.async { [weak self] in
-      self?.target.viewStore.send(.mapViewTapped)
+    _ = withAnimation {
+      self.target.viewStore.send(.mapViewTapped)
     }
   }
 }

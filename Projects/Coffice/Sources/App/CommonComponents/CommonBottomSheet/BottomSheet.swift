@@ -52,7 +52,7 @@ struct BottomSheetView: View {
       footerView
     }
     .frame(maxWidth: .infinity)
-    .padding(.bottom, UIApplication.keyWindow?.safeAreaInsets.bottom)
+    .padding(.bottom, 20 + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0))
     .padding(.top, 20)
     .background(CofficeAsset.Colors.grayScale1.swiftUIColor)
     .cornerRadius(12, corners: [.topLeft, .topRight])
@@ -91,40 +91,48 @@ extension BottomSheetView {
   }
 
   private var cancelButton: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      Button {
-        viewStore.send(.cancelButtonTapped)
-      } label: {
-        Text(bottomSheetContent.cancelButtonTitle)
-          .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-          .applyCofficeFont(font: .button)
-          .frame(maxWidth: .infinity, alignment: .center)
-          .frame(height: 44)
-          .overlay {
-            RoundedRectangle(cornerRadius: 4)
-              .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
-          }
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        Button {
+          viewStore.send(.cancelButtonTapped)
+        } label: {
+          Text(bottomSheetContent.cancelButtonTitle)
+            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+            .applyCofficeFont(font: .button)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(height: 44)
+            .overlay {
+              RoundedRectangle(cornerRadius: 4)
+                .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
+            }
+        }
       }
-    }
+    )
   }
 
   private var confirmButton: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      Button {
-        viewStore.send(.confirmButtonTapped)
-      } label: {
-        Text(bottomSheetContent.confirmButtonTitle)
-          .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          .applyCofficeFont(font: .button)
-          .frame(maxWidth: .infinity, alignment: .center)
-          .frame(height: 44)
-          .background(
-            CofficeAsset.Colors.grayScale9.swiftUIColor
-              .frame(height: 44)
-              .cornerRadius(4, corners: .allCorners)
-          )
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        Button {
+          viewStore.send(.confirmButtonTapped)
+        } label: {
+          Text(bottomSheetContent.confirmButtonTitle)
+            .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+            .applyCofficeFont(font: .button)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(height: 44)
+            .background(
+              CofficeAsset.Colors.grayScale9.swiftUIColor
+                .frame(height: 44)
+                .cornerRadius(4, corners: .allCorners)
+            )
+        }
       }
-    }
+    )
   }
 }
 

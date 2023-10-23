@@ -17,40 +17,44 @@ struct CafeDetailSubInfoView: View {
   }
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack(spacing: 0) {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
         VStack(spacing: 0) {
-          cafeSubPrimaryInfoView
-          cafeSecondaryInfoView
-        }
-        .padding(.horizontal, 20)
+          VStack(spacing: 0) {
+            cafeSubPrimaryInfoView
+            cafeSecondaryInfoView
+          }
+          .padding(.horizontal, 20)
 
-        CofficeAsset.Colors.grayScale3.swiftUIColor
-          .frame(height: 4)
-          .padding(.top, 20)
-      }
-      .popup(
-        item: viewStore.binding(
-          get: \.bubbleMessageViewState,
-          send: { .set(\.$bubbleMessageViewState, $0) }
-        ),
-        itemView: { viewState in
-          BubbleMessageView(store: store.scope(
-            state: { _ in viewState },
-            action: CafeDetailSubInfoReducer.Action.bubbleMessageAction)
-          )
-        },
-        customize: { popup in
-          popup
-            .type(.default)
-            .position(.center)
-            .animation(.easeIn(duration: 0))
-            .isOpaque(true)
-            .closeOnTapOutside(true)
-            .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+          CofficeAsset.Colors.grayScale3.swiftUIColor
+            .frame(height: 4)
+            .padding(.top, 20)
         }
-      )
-    }
+        .popup(
+          item: viewStore.binding(
+            get: \.bubbleMessageViewState,
+            send: { .set(\.$bubbleMessageViewState, $0) }
+          ),
+          itemView: { viewState in
+            BubbleMessageView(store: store.scope(
+              state: { _ in viewState },
+              action: CafeDetailSubInfoReducer.Action.bubbleMessageAction)
+            )
+          },
+          customize: { popup in
+            popup
+              .type(.default)
+              .position(.center)
+              .animation(.easeIn(duration: 0))
+              .isOpaque(true)
+              .closeOnTapOutside(true)
+              .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+          }
+        )
+      }
+    )
   }
 }
 
@@ -111,50 +115,54 @@ extension CafeDetailSubInfoView {
   }
 
   private var cafeSecondaryInfoView: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
-        HStack {
-          VStack(spacing: 0) {
-            ForEach(viewStore.subSecondaryInfoViewStates) { viewState in
-              Text(viewState.title)
-                .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
-                .applyCofficeFont(font: .button)
-                .frame(height: 20)
-                .frame(maxWidth: 50, alignment: .leading)
-                .padding(.bottom, 16)
-            }
-          }
-
-          VStack(alignment: .leading, spacing: 0) {
-            ForEach(viewStore.subSecondaryInfoViewStates) { viewState in
-              HStack {
-                Text(viewState.description)
-                  .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                  .applyCofficeFont(font: .body1Medium)
-                  .frame(alignment: .leading)
-
-                if viewState.type == .congestion {
-                  // FIXME: 혼잡도 어떤식으로 나타낼지 정의 필요
-//                  Text(viewState.congestionDescription)
-//                    .foregroundColor(viewState.congestionLevel == .high ? .red : .black)
-//                    .font(.system(size: 14))
-
-                  Spacer()
-
-                  Text(viewStore.updatedDateDescription)
-                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                    .applyCofficeFont(font: .body2Medium)
-                    .frame(alignment: .trailing)
-                }
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack(alignment: .leading, spacing: 0) {
+          HStack {
+            VStack(spacing: 0) {
+              ForEach(viewStore.subSecondaryInfoViewStates) { viewState in
+                Text(viewState.title)
+                  .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                  .applyCofficeFont(font: .button)
+                  .frame(height: 20)
+                  .frame(maxWidth: 50, alignment: .leading)
+                  .padding(.bottom, 16)
               }
-              .frame(height: 20)
-              .padding(.bottom, 16)
+            }
+
+            VStack(alignment: .leading, spacing: 0) {
+              ForEach(viewStore.subSecondaryInfoViewStates) { viewState in
+                HStack {
+                  Text(viewState.description)
+                    .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                    .applyCofficeFont(font: .body1Medium)
+                    .frame(alignment: .leading)
+
+                  if viewState.type == .congestion {
+                    // FIXME: 혼잡도 어떤식으로 나타낼지 정의 필요
+                    //                  Text(viewState.congestionDescription)
+                    //                    .foregroundColor(viewState.congestionLevel == .high ? .red : .black)
+                    //                    .font(.system(size: 14))
+
+                    Spacer()
+
+                    Text(viewStore.updatedDateDescription)
+                      .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
+                      .applyCofficeFont(font: .body2Medium)
+                      .frame(alignment: .trailing)
+                  }
+                }
+                .frame(height: 20)
+                .padding(.bottom, 16)
+              }
             }
           }
         }
+        .padding(.top, 20)
       }
-      .padding(.top, 20)
-    }
+    )
   }
 }
 

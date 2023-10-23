@@ -21,77 +21,82 @@ struct CafeDetailView: View {
   }
 
   var mainView: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack(spacing: 0) {
-        ScrollView(.vertical) {
-          VStack(spacing: 0) {
-            CafeDetailHeaderView(
-              store: store.scope(
-                state: \.headerViewState,
-                action: CafeDetail.Action.cafeDetailHeaderAction
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack(spacing: 0) {
+          ScrollView(.vertical) {
+            VStack(spacing: 0) {
+              CafeDetailHeaderView(
+                store: store.scope(
+                  state: \.headerViewState,
+                  action: CafeDetail.Action.cafeDetailHeaderAction
+                )
               )
-            )
-            CafeDetailSubInfoView(
-              store: store.scope(
-                state: \.subInfoViewState,
-                action: CafeDetail.Action.cafeDetailSubInfoAction
+              CafeDetailSubInfoView(
+                store: store.scope(
+                  state: \.subInfoViewState,
+                  action: CafeDetail.Action.cafeDetailSubInfoAction
+                )
               )
-            )
-            CafeDetailMenuView(
-              store: store.scope(
-                state: \.menuViewState,
-                action: CafeDetail.Action.cafeDetailMenuAction
+              CafeDetailMenuView(
+                store: store.scope(
+                  state: \.menuViewState,
+                  action: CafeDetail.Action.cafeDetailMenuAction
+                )
               )
-            )
-          }
-          .offset(y: -(UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0))
-        }
-        .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
-        .refreshable { @MainActor in
-          viewStore.send(.fetchPlace)
-        }
-      }
-      .navigationBarHidden(true)
-      .ignoresSafeArea(.all, edges: .top)
-      .overlay(
-        alignment: .top,
-        content: {
-          HStack {
-            Button {
-              viewStore.send(.popView)
-            } label: {
-              CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
-                .renderingMode(.template)
-                .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
             }
-
-            Spacer()
+            .offset(y: -(UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0))
           }
-          .padding(.top, 4)
+          .padding(.top, UIApplication.keyWindow?.safeAreaInsets.top ?? 0.0)
+          .refreshable { @MainActor in
+            viewStore.send(.fetchPlace)
+          }
         }
-      )
-      .onAppear {
-        viewStore.send(.onAppear)
+        .navigationBarHidden(true)
+        .ignoresSafeArea(.all, edges: .top)
+        .overlay(
+          alignment: .top,
+          content: {
+            HStack {
+              Button {
+                viewStore.send(.popView)
+              } label: {
+                CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
+                  .renderingMode(.template)
+                  .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+              }
+              Spacer()
+            }
+            .padding(.top, 4)
+          }
+        )
+        .onAppear {
+          viewStore.send(.onAppear)
+        }
+        .popup(
+          item: viewStore.binding(
+            get: \.toastViewMessage,
+            send: { .set(\.$toastViewMessage, $0) }
+          ),
+          itemView: { message in
+            ToastView(
+              title: message,
+              image: CofficeAsset.Asset.checkboxCircleFill18px,
+              config: ToastConfiguration.default
+            )
+          },
+          customize: {
+            $0
+              .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: true))
+              .autohideIn(2)
+              .closeOnTap(true)
+              .closeOnTapOutside(true)
+          }
+        )
       }
-      .popup(
-        item: viewStore.binding(
-          get: \.toastViewMessage,
-          send: { .set(\.$toastViewMessage, $0) }
-        ),
-        itemView: { message in
-          ToastView(
-            title: message,
-            image: CofficeAsset.Asset.checkboxCircleFill18px,
-            config: ToastConfiguration.default
-          )
-        },
-        customize: {
-          $0
-            .type(.floater(verticalPadding: 16, horizontalPadding: 0, useSafeAreaInset: true))
-            .autohideIn(2)
-        }
-      )
-    }
+    )
   }
 }
 

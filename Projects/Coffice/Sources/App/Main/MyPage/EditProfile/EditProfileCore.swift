@@ -42,8 +42,6 @@ struct EditProfile: Reducer {
     case confirmButtonTapped
     case checkNicknameResponse(response: CheckNicknameResponse)
     case clearText
-    case showTabBar
-    case hideTabBar
   }
 
   @Dependency(\.checkNicknameAPIClient) private var checkNicknameClient
@@ -56,10 +54,7 @@ struct EditProfile: Reducer {
         return .none
 
       case .dismissButtonTapped:
-        return .concatenate(
-          .send(.showTabBar),
-          .send(.popView)
-        )
+        return .send(.popView)
 
       case .binding(\.$nicknameTextField):
         return .none
@@ -77,10 +72,7 @@ struct EditProfile: Reducer {
       case .checkNicknameResponse(let response):
         state.nicknameValidationType = .checked(response: response)
         if state.nicknameValidationType == .checked(response: .valid) {
-          return .concatenate(
-            .send(.showTabBar),
-            .send(.popView)
-          )
+          return .send(.popView)
         }
         return .none
 

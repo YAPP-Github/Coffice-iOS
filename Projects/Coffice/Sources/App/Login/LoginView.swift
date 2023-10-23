@@ -14,17 +14,26 @@ struct LoginView: View {
   let store: StoreOf<Login>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      mainView
-    }
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { _ in
+        mainView
+      }
+    )
   }
 
   var mainView: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      VStack(alignment: .leading, spacing: 0) {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
         VStack(alignment: .center, spacing: 0) {
           CofficeAsset.Asset.loginAppLogo.swiftUIImage
-            .padding(EdgeInsets(top: 0, leading: 60, bottom: 178, trailing: 60))
+            .padding(.top, 0)
+            .padding(.horizontal, 60)
+
+          Spacer()
 
           Button {
             viewStore.send(.kakaoLoginButtonTapped)
@@ -74,38 +83,40 @@ struct LoginView: View {
           .applyCofficeFont(font: .body1Medium)
           .hiddenWithOpacity(isHidden: viewStore.isOnboarding.isFalse)
         }
+        .navigationBarHidden(true)
         .padding(EdgeInsets(top: 163, leading: 36, bottom: 129, trailing: 36))
-      }
-      .overlay(alignment: .topLeading) {
-        Group {
-          Button {
-            viewStore.send(.dismissButtonTapped)
-          } label: {
-            CofficeAsset.Asset.close40px.swiftUIImage
-              .frame(width: 40, height: 40)
+        .overlay(
+          alignment: .topLeading,
+          content: {
+            Button {
+              viewStore.send(.dismissButtonTapped)
+            } label: {
+              CofficeAsset.Asset.close40px.swiftUIImage
+                .padding(.top, 4)
+                .padding(.leading, 8)
+            }
+            .hiddenWithOpacity(isHidden: viewStore.isOnboarding)
           }
-        }
-        .padding(20)
-        .hiddenWithOpacity(isHidden: viewStore.isOnboarding)
-      }
-      .popup(
-        item: viewStore.binding(
-          get: \.loginServiceTermsBottomSheetState,
-          send: { state in
-            return .set(\.$loginServiceTermsBottomSheetState, state)
-          }
-        ),
-        itemView: { viewState in
-          LoginServiceTermsBottomSheetView(
-            store: store.scope(
-              state: { _ in viewState },
-              action: Login.Action.loginServiceTermsBottomSheetAction
+        )
+        .popup(
+          item: viewStore.binding(
+            get: \.loginServiceTermsBottomSheetState,
+            send: { state in
+              return .set(\.$loginServiceTermsBottomSheetState, state)
+            }
+          ),
+          itemView: { viewState in
+            LoginServiceTermsBottomSheetView(
+              store: store.scope(
+                state: { _ in viewState },
+                action: Login.Action.loginServiceTermsBottomSheetAction
+              )
             )
-          )
-        },
-        customize: BottomSheetContent.customize
-      )
-    }
+          },
+          customize: BottomSheetContent.customize
+        )
+      }
+    )
   }
 }
 
