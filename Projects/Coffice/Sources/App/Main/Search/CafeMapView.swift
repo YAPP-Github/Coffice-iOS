@@ -59,8 +59,7 @@ struct CafeMapView: View {
               }
               Spacer()
               bottomFloatingButtonView
-                .padding(.trailing, 24)
-              
+
               if viewStore.naverMapState.selectedCafe != nil {
                 CafeCardView(store: store)
                   .frame(width: geometry.size.width)
@@ -153,24 +152,69 @@ extension CafeMapView {
     )
   }
 
+  var reportCafeFloatingButton: some View {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { _ in
+        Button {
+          // TODO: 제보하기 화면 이동 필요
+          debugPrint("report cafe")
+        } label: {
+          HStack(spacing: 8) {
+            CofficeAsset.Asset.pencilLine14px.swiftUIImage
+              .padding(.leading, 12)
+            Text("카페 제보")
+              .applyCofficeFont(font: .body1Medium)
+              .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
+              .padding(.trailing, 16)
+          }
+          .frame(width: 110, height: 36)
+          .cornerRadius(18)
+          .background(CofficeAsset.Colors.grayScale1.swiftUIColor.clipShape(Capsule()))
+          .overlay(
+            RoundedRectangle(cornerRadius: 18)
+              .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
+              .padding(1)
+          )
+        }
+      }
+    )
+  }
+
   var bottomFloatingButtonView: some View {
     WithViewStore(
       store,
       observe: { $0 },
       content: { viewStore in
-        HStack(spacing: 0) {
+        VStack {
           Spacer()
-          VStack(spacing: 16) {
-            ForEach(viewStore.naverMapState.bottomFloatingButtons, id: \.self) { floatingButton in
-              Button {
-                viewStore.send(.naverMapAction(.bottomFloatingButtonTapped(floatingButton.type)))
-              } label: {
-                floatingButton.image
-                  .frame(width: 48, height: 48)
+
+          HStack(spacing: 0) {
+            VStack {
+              Spacer()
+              reportCafeFloatingButton
+            }
+
+            Spacer()
+
+            VStack {
+              Spacer()
+              VStack(spacing: 16) {
+                ForEach(viewStore.naverMapState.bottomFloatingButtons, id: \.self) { floatingButton in
+                  Button {
+                    viewStore.send(.naverMapAction(.bottomFloatingButtonTapped(floatingButton.type)))
+                  } label: {
+                    floatingButton.image
+                      .frame(width: 48, height: 48)
+                  }
+                }
               }
             }
           }
         }
+        .padding(.leading, 19)
+        .padding(.trailing, 24)
         .padding(.bottom, 24)
       }
     )
