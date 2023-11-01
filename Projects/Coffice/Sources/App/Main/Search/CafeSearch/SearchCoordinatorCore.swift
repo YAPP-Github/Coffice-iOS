@@ -39,7 +39,15 @@ struct SearchCoordinator: Reducer {
         state.routes.push(.cafeSearchDetail(.init(cafeId: cafeId)))
         return .none
 
+      case .routeAction(_, action: .cafeMap(.pushToCafeReportView)):
+        state.routes.push(.cafeReport(.init()))
+        return .none
+
       case .routeAction(_, action: .cafeSearchDetail(.popView)):
+        state.routes.pop()
+        return .none
+
+      case .routeAction(_, action: .cafeReport(.popView)):
         state.routes.pop()
         return .none
 

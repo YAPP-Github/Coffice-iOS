@@ -41,6 +41,12 @@ struct SearchCoordinatorView: View {
              action: SearchScreen.Action.cafeReviewWrite,
              then: CafeReviewWriteView.init
           )
+        case .cafeReport:
+          CaseLet(
+            /SearchScreen.State.cafeReport,
+             action: SearchScreen.Action.cafeReport,
+             then: CafeReportView.init
+          )
         }
       }
     }

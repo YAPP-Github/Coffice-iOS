@@ -16,6 +16,7 @@ struct SearchScreen: Reducer {
     case cafeSearchDetail(CafeDetail.State)
     case cafeSearchList(CafeSearchListCore.State)
     case cafeReviewWrite(CafeReviewWrite.State)
+    case cafeReport(CafeReport.State)
   }
 
   enum Action: Equatable {
@@ -23,6 +24,7 @@ struct SearchScreen: Reducer {
     case cafeSearchDetail(CafeDetail.Action)
     case cafeSearchList(CafeSearchListCore.Action)
     case cafeReviewWrite(CafeReviewWrite.Action)
+    case cafeReport(CafeReport.Action)
     case popView
   }
 
@@ -53,6 +55,13 @@ struct SearchScreen: Reducer {
       action: /Action.cafeReviewWrite
     ) {
       CafeReviewWrite()
+    }
+
+    Scope(
+      state: /State.cafeReport,
+      action: /Action.cafeReport
+    ) {
+      CafeReport()
     }
   }
 }
