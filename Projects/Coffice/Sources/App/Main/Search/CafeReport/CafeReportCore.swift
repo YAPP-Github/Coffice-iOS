@@ -11,23 +11,21 @@ import ComposableArchitecture
 struct CafeReport: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
+    let title = "신규 카페 제보하기"
   }
 
   enum Action: Equatable {
     case onAppear
-  }
-
-  func reduce(into state: inout State, action: Action) -> Effect<Action> {
-    switch action {
-    case .onAppear:
-      return .none
-    }
+    case popView
   }
 
   var body: some ReducerOf<CafeReport> {
     Reduce { state, action in
       switch action {
       case .onAppear:
+        return .none
+
+      default:
         return .none
       }
     }

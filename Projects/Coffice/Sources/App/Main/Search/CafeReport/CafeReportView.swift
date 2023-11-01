@@ -20,6 +20,18 @@ struct CafeReportView: View {
         VStack(spacing: 0) {
 
         }
+        .customNavigationBar(
+          centerView: {
+            Text(viewStore.title)
+          },
+          leftView: {
+            Button {
+              viewStore.send(.popView)
+            } label: {
+              CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
+            }
+          }
+        )
         .onAppear {
           viewStore.send(.onAppear)
         }

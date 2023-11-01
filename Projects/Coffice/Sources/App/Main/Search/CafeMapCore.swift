@@ -59,6 +59,11 @@ struct CafeMapCore: Reducer {
     case infiniteScrollSearchPlaceResponse(TaskResult<CafeSearchResponse>)
     case searchPlacesWithRequestValueResponse(TaskResult<CafeSearchResponse>)
 
+    // MARK: Cafe Report
+    case cafeReportFloatingButtonTapped
+    // TODO: 카페 제보에 필요한 데이터 전달 필요
+    case pushToCafeReportView
+
     // MARK: Temporary
     case pushToCafeDetailView(cafeId: Int)
     case pushToSearchListForTest
@@ -420,6 +425,10 @@ struct CafeMapCore: Reducer {
             pageableKey: nil)
           ))
         )
+
+      case .cafeReportFloatingButtonTapped:
+        return .send(.pushToCafeReportView)
+
       case .cardViewTapped:
         guard let cafe = state.naverMapState.selectedCafe
         else { return .none }

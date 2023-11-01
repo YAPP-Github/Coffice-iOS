@@ -156,10 +156,9 @@ extension CafeMapView {
     WithViewStore(
       store,
       observe: { $0 },
-      content: { _ in
+      content: { viewStore in
         Button {
-          // TODO: 제보하기 화면 이동 필요
-          debugPrint("report cafe")
+          viewStore.send(.cafeReportFloatingButtonTapped)
         } label: {
           HStack(spacing: 8) {
             CofficeAsset.Asset.pencilLine14px.swiftUIImage
