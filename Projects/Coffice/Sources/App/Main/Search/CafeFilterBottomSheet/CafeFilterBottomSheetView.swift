@@ -200,8 +200,8 @@ extension CafeFilterBottomSheetView {
               )
           }
         }
-        .frame(height: 84)
         .padding(.horizontal, 20)
+        .padding(.top, 8)
         .padding(.bottom, UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0)
       }
     )
