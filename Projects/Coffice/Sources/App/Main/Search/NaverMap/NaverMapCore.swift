@@ -269,7 +269,7 @@ struct NaverMapCore: Reducer {
       case .markersUpdated:
         state.shouldUpdateMarkers = false
         NaverMapViewProgressChecker.shared.isUpdatingMarkers = false
-        return .send(.showOpenTimeIfNeeded)
+        return .none
 
       case .markersCleared:
         state.shouldClearMarkers = false
