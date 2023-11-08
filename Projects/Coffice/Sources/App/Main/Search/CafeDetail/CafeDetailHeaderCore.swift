@@ -129,6 +129,12 @@ extension CafeDetailHeaderReducer.State {
     cafe?.openingInformation?.quickFormattedString ?? "-"
   }
 
+  var openStateDescriptionColor: CofficeColors {
+    cafe?.openingInformation?.isOpened ?? false
+    ? CofficeAsset.Colors.secondary1
+    : CofficeAsset.Colors.grayScale7
+  }
+
   var bookmarkButtonImage: CofficeImages {
     return cafe?.isBookmarked ?? false
     ? CofficeAsset.Asset.bookmarkFill40px
