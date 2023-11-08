@@ -60,7 +60,7 @@ struct CafeDetailHeaderView: View {
 
             HStack(spacing: 8) {
               Text(viewStore.openingStateDescription)
-                .foregroundColor(CofficeAsset.Colors.secondary1.swiftUIColor)
+                .foregroundColor(viewStore.openStateDescriptionColor.swiftUIColor)
                 .applyCofficeFont(font: .button)
                 .frame(alignment: .leading)
               Text(viewStore.todayRunningTimeDescription)
