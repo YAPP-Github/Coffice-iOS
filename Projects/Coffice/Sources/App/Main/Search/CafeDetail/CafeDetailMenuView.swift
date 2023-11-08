@@ -346,17 +346,15 @@ extension CafeDetailMenuView {
               Button {
                 viewStore.send(.toggleToPresentRunningTime)
               } label: {
-                HStack(alignment: .top) {
+                HStack(alignment: .center) {
                   Text(viewStore.cafe?.openingInformation?.quickFormattedString ?? "-")
                     .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                    .applyCofficeFont(font: .body1Medium)
-                    .frame(height: 20)
+                    .applyCofficeFont(font: .body1Medium, lineHeight: 28)
                     .frame(alignment: .leading)
-                    .padding(.top, 4)
+
                   if let openingInfo = viewStore.cafe?.openingInformation,
                      openingInfo.is24Open.isFalse {
                     Image(viewStore.runningTimeDetailInfoArrowImageName)
-                      .padding(.top, 2)
                   }
                 }
               }
@@ -364,11 +362,8 @@ extension CafeDetailMenuView {
               if viewStore.needToPresentRunningTimeDetailInfo {
                 Text(viewStore.cafe?.openingInformation?.detailFormattedString ?? "-")
                   .foregroundColor(CofficeAsset.Colors.grayScale7.swiftUIColor)
-                  .applyCofficeFont(font: .body1Medium)
-                  .lineSpacing(4)
-                  .frame(maxWidth: .infinity, alignment: .leading)
-                  .fixedSize(horizontal: false, vertical: true)
-                  .padding(.top, 2)
+                  .applyCofficeFont(font: .body1Medium, lineHeight: 28)
+                  .frame(alignment: .leading)
               }
             }
           }
@@ -483,7 +478,7 @@ struct CafeDetailMenuView_Previews: PreviewProvider {
   static var previews: some View {
     CafeDetailMenuView(
       store: .init(
-        initialState: .init(),
+        initialState: .init(cafe: .dummy),
         reducer: {
           CafeDetailMenuReducer()
         }

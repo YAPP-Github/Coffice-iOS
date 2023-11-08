@@ -50,17 +50,18 @@ struct OpeningInformation: Hashable {
     }
 
     return dayOpenInformations.reduce(
-      "", { partialResult, dayInformation in
-        return partialResult
-        + "\(dayInformation.weekDaySymbol.weekDayString) "
-        + "\(String(format: "%02d", dayInformation.openAt.hour))"
-        + ":\(String(format: "%02d", dayInformation.openAt.minute))"
-        + " ~ "
-        + "\(String(format: "%02d", dayInformation.closeAt.hour))"
-        + ":\(String(format: "%02d", dayInformation.closeAt.minute))"
-        + "\n"
+      into: [String](), { result, dayInformation in
+        result.append(
+          "\(dayInformation.weekDaySymbol.weekDayString) "
+          + "\(String(format: "%02d", dayInformation.openAt.hour))"
+          + ":\(String(format: "%02d", dayInformation.openAt.minute))"
+          + " ~ "
+          + "\(String(format: "%02d", dayInformation.closeAt.hour))"
+          + ":\(String(format: "%02d", dayInformation.closeAt.minute))"
+        )
       }
     )
+    .joined(separator: "\n")
   }
 
   var todayInformation: DayOpenInformation {
