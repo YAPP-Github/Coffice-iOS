@@ -34,34 +34,33 @@ struct OpeningInformation: Hashable {
   var quickFormattedString: String {
     if is24Open {
       return "24시간"
-    } else if isOpened {
-      return "\(todayInformation.weekDaySymbol.weekDayString) "
-      + "\(String(format: "%02d", todayInformation.openAt.hour))"
-      + ":\(String(format: "%02d", todayInformation.openAt.minute)) "
-      + "~ "
-      + "\(String(format: "%02d", todayInformation.closeAt.hour))"
-      + ":\(String(format: "%02d", todayInformation.closeAt.minute)) "
-    } else {
-      return "영업종료"
     }
+
+    return "\(todayInformation.weekDaySymbol.weekDayString) "
+    + "\(String(format: "%02d", todayInformation.openAt.hour))"
+    + ":\(String(format: "%02d", todayInformation.openAt.minute))"
+    + " ~ "
+    + "\(String(format: "%02d", todayInformation.closeAt.hour))"
+    + ":\(String(format: "%02d", todayInformation.closeAt.minute))"
   }
 
   var detailFormattedString: String {
     if is24Open {
       return "24시간"
-    } else if isOpened {
-      return dayOpenInformations.reduce("", { partialResult, dayInformation in
-        return partialResult + "\(dayInformation.weekDaySymbol.weekDayString) "
-        + "\(String(format: "%02d", dayInformation.openAt.hour))"
-        + ":\(String(format: "%02d", dayInformation.openAt.minute)) "
-        + "~ "
-        + "\(String(format: "%02d", dayInformation.closeAt.hour))"
-        + ":\(String(format: "%02d", dayInformation.closeAt.minute)) "
-        + "\n"
-      })
-    } else {
-      return "영업종료"
     }
+
+    return dayOpenInformations.reduce(
+      "", { partialResult, dayInformation in
+        return partialResult
+        + "\(dayInformation.weekDaySymbol.weekDayString) "
+        + "\(String(format: "%02d", dayInformation.openAt.hour))"
+        + ":\(String(format: "%02d", dayInformation.openAt.minute))"
+        + " ~ "
+        + "\(String(format: "%02d", dayInformation.closeAt.hour))"
+        + ":\(String(format: "%02d", dayInformation.closeAt.minute))"
+        + "\n"
+      }
+    )
   }
 
   var todayInformation: DayOpenInformation {
