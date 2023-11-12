@@ -189,63 +189,6 @@ struct SavedListView: View {
     )
   }
 
-  private func thumbnailImageView(cafe: Cafe, proxy: GeometryProxy) -> some View {
-    WithViewStore(
-      store,
-      observe: { $0 },
-      content: { viewStore in
-        LinearGradient(
-          gradient: Gradient(colors: [.black.opacity(0.06), .black.opacity(0.3)]),
-          startPoint: .top,
-          endPoint: .bottom
-        )
-        .frame(
-          width: (proxy.size.width - 60) / 2,
-          height: (proxy.size.width - 60) / 2
-        )
-        .overlay(alignment: .topTrailing) {
-          bookmarkButton(cafe: cafe)
-        }
-        .background(alignment: .center) {
-          KFImage.url(URL(string: cafe.imageUrls?.first ?? ""))
-            .onFailureImage(CofficeAsset.Asset.savedListFailImagePlaceholder.image)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(
-              width: (proxy.size.width - 60) / 2,
-              height: (proxy.size.width - 60) / 2
-            )
-            .background(CofficeAsset.Colors.grayScale2.swiftUIColor)
-        }
-        .clipped()
-        .cornerRadius(4)
-      }
-    )
-  }
-
-  private func bookmarkButton(cafe: Cafe) -> some View {
-    WithViewStore(
-      store,
-      observe: { $0 },
-      content: { viewStore in
-        Button {
-          viewStore.send(.bookmarkButtonTapped(cafe: cafe))
-        } label: {
-          (
-            cafe.isBookmarked
-            ? CofficeAsset.Asset.bookmarkFill40px.swiftUIImage
-            : CofficeAsset.Asset.bookmarkLine40px.swiftUIImage
-          )
-          .resizable()
-          .renderingMode(.template)
-          .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
-          .frame(width: 40, height: 40)
-          .opacity(0.8)
-        }
-      }
-    )
-  }
-
   private var emptyListReplaceView: some View {
     VStack(alignment: .center) {
       Text("아직 저장된 공간이 없어요")

@@ -124,20 +124,6 @@ struct CafeCardView: View {
       }
     )
   }
-
-  var placeholderImage: some View {
-    WithViewStore(
-      store,
-      observe: { $0 },
-      content: { viewStore in
-        CofficeAsset.Asset.cafePlaceholder.swiftUIImage
-          .resizable()
-          .frame(width: viewStore.fixedImageSize, height: viewStore.fixedImageSize)
-          .scaledToFit()
-          .cornerRadius(4, corners: .allCorners)
-      }
-    )
-  }
 }
 
 struct CafeCardView_Previews: PreviewProvider {
