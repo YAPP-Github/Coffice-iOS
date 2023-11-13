@@ -49,7 +49,8 @@ let project = Project.app(
     .external(name: "TCACoordinators")
   ],
   settings: .settings(
-    base: .init().otherLinkerFlags(["-ObjC"]), configurations: [
+    base: .init().otherLinkerFlags(["-ObjC"]),
+    configurations: [
       .debug(name: .debug, xcconfig: .relativeToRoot("Xcconfig/Secrets.xcconfig")),
       .release(name: .release, xcconfig: .relativeToRoot("Xcconfig/Secrets.xcconfig"))
     ]
