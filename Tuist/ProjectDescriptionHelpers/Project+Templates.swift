@@ -103,7 +103,10 @@ private extension Project {
       deploymentTarget: .iOS(targetVersion: iOSTargetVersion, devices: [.iphone]),
       infoPlist: .extendingDefault(with: infoPlist),
       sources: ["Sources/**"],
-      resources: ["Resources/**"],
+      resources: [
+        "Resources/**",
+        "Resources/GoogleService-Info.plist"
+      ],
       entitlements: "../coffice.entitlements",
       scripts: [
         .SwiftLintString
