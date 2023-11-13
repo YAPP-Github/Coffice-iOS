@@ -18,7 +18,26 @@ struct CafeReportView: View {
       observe: { $0 },
       content: { viewStore in
         VStack(spacing: 0) {
-
+          VStack(alignment: .center) {
+            Button {
+              // TODO: 사진추가 기능 구현 필요
+            } label: {
+              VStack(spacing: 4) {
+                CofficeAsset.Asset.plusCircle24px.swiftUIImage
+                Text("사진 추가 (최대 8개)")
+                  .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+                  .applyCofficeFont(font: .body2Medium)
+              }
+              .frame(width: 138, height: 110)
+              .background(
+                RoundedRectangle(cornerRadius: 8)
+                  .stroke(CofficeAsset.Colors.grayScale4.swiftUIColor, lineWidth: 1)
+                  .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+              )
+            }
+          }
+          .padding(.top, 39)
+          .padding(.bottom, 40)
         }
         .customNavigationBar(
           centerView: {
