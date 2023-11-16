@@ -36,8 +36,11 @@ extension NaverMapView: UIViewRepresentable {
     naverMapView.mapView.maxZoomLevel = 20
     naverMapView.mapView.minZoomLevel = 12
     naverMapView.mapView.addCameraDelegate(delegate: context.coordinator)
+    naverMapView.mapView.extent = NMGLatLngBounds(southWest: NMGLatLng(lat: 31.43, lng: 122.37), northEast: NMGLatLng(lat: 44.35, lng: 132))
     naverMapView.mapView.touchDelegate = context.coordinator
     moveCameraTo(naverMapView: naverMapView, location: viewStore.currentCameraPosition, zoomLevel: 15)
+    context.coordinator.naverMap = naverMapView
+    context.coordinator.clusterManager?.delegate = context.coordinator
     return naverMapView
   }
 
@@ -120,10 +123,10 @@ extension NaverMapView {
       marker.captionTextSize = CofficeFont.body2MediumSemiBold.size
       marker.captionMinZoom = 15.5
       marker.captionRequestedWidth = 0
-
       marker.mapView = naverMapView.mapView
       markers.append(marker)
     }
+
     DispatchQueue.main.async {
       viewStore.send(.appendMarkers(markers: markers))
     }
@@ -145,7 +148,18 @@ extension NaverMapView {
 
 class Coordinator: NSObject, NMFMapViewOptionDelegate {
   var target: NaverMapView
-
+  var clusterManager: ClusteringManager?
+  var oldZoomLevel: Double = 0.0
+  let clusterStartZoomLevel: Double = 14.0
+  var naverMap: NMFNaverMapView? {
+    didSet {
+      if naverMap != nil {
+        self.clusterManager = ClusteringManager(mapView: naverMap!.mapView, frame: naverMap!.frame)
+      }
+    }
+  }
+  var currMarkersTuple = [(NMFMarker, NMFInfoWindow?)]()
+  
   init(target: NaverMapView) {
     self.target = target
   }
@@ -161,11 +175,14 @@ extension Coordinator: NMFMapViewTouchDelegate {
 
 extension Coordinator: NMFMapViewCameraDelegate {
   func mapView(_ mapView: NMFMapView, cameraDidChangeByReason reason: Int, animated: Bool) {
+
     let latitude = mapView.cameraPosition.target.lat
     let longitude = mapView.cameraPosition.target.lng
+
     DispatchQueue.main.async { [weak self] in
+      guard let self else { return }
       if let updateReason = NaverMapCameraUpdateReason(rawValue: reason) {
-        self?.target.viewStore.send(
+        self.target.viewStore.send(
           .cameraPositionUpdated(
             toPosition: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
             zoomLevel: mapView.zoomLevel,
@@ -173,7 +190,57 @@ extension Coordinator: NMFMapViewCameraDelegate {
           )
         )
       }
+      if mapView.zoomLevel < self.clusterStartZoomLevel {
+        if abs((self.oldZoomLevel) - mapView.zoomLevel) >= 0.2 {
+          self.runClustering(markers: self.target.viewStore.markers)
+          self.target.viewStore.markers.forEach {
+            if $0.mapView != nil {
+              $0.mapView = nil
+            }
+          }
+          self.oldZoomLevel = mapView.zoomLevel
+        }
+      } else if mapView.zoomLevel >= self.clusterStartZoomLevel {
+        self.target.viewStore.markers.forEach {
+          $0.mapView = self.naverMap?.mapView
+        }
+        self.currMarkersTuple.forEach {
+          if let markerwindow = $0.1 {
+            markerwindow.close()
+          }
+          $0.0.mapView = nil
+        }
+      }
     }
+  }
+}
+
+extension Coordinator: ClusteringManagerDelegate {
+  func displayMarkers(markersTuple: [(NMFMarker, NMFInfoWindow?)]) {
+    guard let naverMap else { return }
+    for marker in self.currMarkersTuple {
+      if let markerwindow = marker.1 {
+        markerwindow.close()
+      }
+      marker.0.mapView = nil
+    }
+    
+    self.currMarkersTuple = markersTuple
+    
+    for marker in self.currMarkersTuple {
+      if let markerwindow = marker.1  {
+        markerwindow.open(with: naverMap.mapView)
+      } else {
+        marker.0.mapView = naverMap.mapView
+      }
+    }
+  }
+  
+  func runClustering(markers: [NMFMarker]) {
+    guard let naverMap else { return }
+    self.clusterManager?.resetQuadTreeSetting(mapView: naverMap.mapView, frame: naverMap.mapView.frame)
+    self.clusterManager?.addMarkers(markers: markers)
+    self.clusterManager?.runClustering(mapView: naverMap.mapView, frame: naverMap.mapView.frame, zoomScale: naverMap.mapView.zoomLevel)
   }
 }
 
