@@ -80,6 +80,8 @@ struct CafeMapCore: Reducer {
 
     // MARK: Need to improve
     case resetCafesForSearchList(ResetState)
+
+
   }
 
   // MARK: - Dependencies
