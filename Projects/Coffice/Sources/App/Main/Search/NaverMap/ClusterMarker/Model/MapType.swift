@@ -9,6 +9,6 @@
 import Foundation
 
 enum MapType {
-  case Cluster
-  case Leaf
+  case cluster
+  case leaf
 }

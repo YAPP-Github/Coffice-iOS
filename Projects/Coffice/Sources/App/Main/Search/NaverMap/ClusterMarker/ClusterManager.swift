@@ -6,7 +6,6 @@
 //  Copyright © 2023 kr.co.yapp. All rights reserved.
 //
 
-
 import UIKit
 import MapKit
 import NMapsMap
@@ -15,7 +14,6 @@ protocol ClusteringManagerDelegate: AnyObject {
 
   func displayMarkers(markersTuple: [(NMFMarker, NMFInfoWindow?)])
 }
-
 
 // quad tree 알고리즘으로 만든 지도 클러스터링 매니저 (구글 지도에 들어가는 알고리즘)
 class ClusteringManager {
@@ -28,8 +26,13 @@ class ClusteringManager {
 
   init(mapView: NMFMapView, frame: CGRect) {
 
-    self.quadTree = QuadTree(boundingBox: BoundingBox.mapRectToBoundingBox(mapRect: mapView.projection.latlngBounds(fromViewBounds: frame)))
-
+    self.quadTree = QuadTree(
+      boundingBox: BoundingBox.mapRectToBoundingBox(
+        mapRect: mapView.projection.latlngBounds(
+          fromViewBounds: frame
+        )
+      )
+    )
   }
 
   // 클러스터링 세팅 초기화
@@ -88,12 +91,12 @@ class ClusteringManager {
 
     // 만일 차이가 있다면 해당 값만큼 빼주고 최대 치에는 줄어든 만큼 타일 크기를 더해줌
     if differX > 0 {
-      minX = minX - differX
+      minX -= differX
       maxX = maxX - differX + cellSizePoints
     }
 
     if differY > 0 {
-      minY = minY - differY
+      minY -= differY
       maxY = maxY - differY + cellSizePoints
 
     }
@@ -160,7 +163,7 @@ class ClusteringManager {
     mapMarkerData.latitude = totalX
     mapMarkerData.longitude = totalY
     mapMarkerData.title = "\(markers.count) 개"
-    mapMarkerData.type = MapType.Cluster
+    mapMarkerData.type = MapType.cluster
     mapMarkerData.count = markers.count
 
     let centerMarker = NMFMarker()
