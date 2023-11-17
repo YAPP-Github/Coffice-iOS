@@ -34,6 +34,8 @@ struct CafeReviewWriteView: View {
             } label: {
               CofficeAsset.Asset.close40px.swiftUIImage
             }
+            .frame(width: 48, height: 48)
+            .cornerRadius(4, corners: .allCorners)
           }
           .padding(.top, 24)
           .padding(.horizontal, 20)

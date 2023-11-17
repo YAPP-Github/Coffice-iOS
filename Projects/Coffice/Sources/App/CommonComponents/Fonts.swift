@@ -223,25 +223,35 @@ extension CofficeFont {
 }
 
 struct FontModifier: ViewModifier {
-  var font: CofficeFont
-  var fontOriginalLineHeight: CGFloat {
+  let font: CofficeFont
+  let customFontLineHeight: CGFloat?
+
+  var fontLineHeight: CGFloat {
+    if let customFontLineHeight {
+      return customFontLineHeight
+    }
+    return font.lineHeight
+  }
+
+  var originalFontLineHeight: CGFloat {
     return UIFont(name: font.name, size: font.size)?.lineHeight ?? 20
   }
 
-  init(font: CofficeFont) {
+  init(font: CofficeFont, lineHeight: CGFloat? = nil) {
     self.font = font
+    self.customFontLineHeight = lineHeight
   }
 
   func body(content: Content) -> some View {
     content
       .font(.custom(font.name, size: font.size))
-      .lineSpacing(font.lineHeight - fontOriginalLineHeight)
-      .padding(.vertical, (font.lineHeight - fontOriginalLineHeight) / 2)
+      .lineSpacing(fontLineHeight - originalFontLineHeight)
+      .padding(.vertical, (fontLineHeight - originalFontLineHeight) / 2)
   }
 }
 
 extension View {
-  func applyCofficeFont(font: CofficeFont) -> some View {
-    modifier(FontModifier(font: font))
+  func applyCofficeFont(font: CofficeFont, lineHeight: CGFloat? = nil) -> some View {
+    modifier(FontModifier(font: font, lineHeight: lineHeight))
   }
 }
