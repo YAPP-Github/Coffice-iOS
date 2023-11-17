@@ -27,18 +27,18 @@ class CustomInfoWindowDataSource: NSObject, NMFOverlayImageDataSource {
       }
 
       switch mapType {
-      case .Cluster:
+      case .cluster:
         //                Log.debug("cluster 뷰 만들기 시작")
         guard let mapCount = mapMarkerData?.count else {
           print("마커 생성 불가 : MapCount가 명확하지 않음")
           return UIView()
         }
-        let r: CGFloat = 18 + CGFloat(2 * log2(Double(mapCount)))
-        let clusteredMarkerView = ClusteredMarkerView(frame: CGRect(x: 0, y: 0, width: 2 * r, height: 2 * r), count: mapCount)
+        let radius: CGFloat = 18 + CGFloat(2 * log2(Double(mapCount)))
+        let clusteredMarkerView = ClusteredMarkerView(frame: CGRect(x: 0, y: 0, width: 2 * radius, height: 2 * radius), count: mapCount)
         clusteredMarkerView.layoutIfNeeded()
         return clusteredMarkerView
-      case .Leaf:
-        let leafMarkerView = LeafMarkerView(frame: CGRect(x: 0, y: 0, width: 40,  height: 40))
+      case .leaf:
+        let leafMarkerView = LeafMarkerView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
         leafMarkerView.layoutIfNeeded()
         return leafMarkerView
       }
