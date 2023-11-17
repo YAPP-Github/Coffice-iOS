@@ -92,7 +92,7 @@ struct MyPageView: View {
           } else {
             linkedAccountTypeView
           }
-          
+
           ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 0) {
               ForEach(viewStore.menuItems) { menuItem in

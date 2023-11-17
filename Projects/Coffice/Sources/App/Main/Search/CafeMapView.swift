@@ -60,7 +60,7 @@ struct CafeMapView: View {
               Spacer()
               bottomFloatingButtonView
                 .padding(.trailing, 24)
-              
+
               if viewStore.naverMapState.selectedCafe != nil {
                 CafeCardView(store: store)
                   .frame(width: geometry.size.width)

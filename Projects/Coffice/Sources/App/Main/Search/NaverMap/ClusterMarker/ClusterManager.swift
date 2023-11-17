@@ -39,8 +39,9 @@ class ClusteringManager {
   public func resetQuadTreeSetting(mapView: NMFMapView, frame: CGRect) {
 
     quadTree.resetQuadTree()
-    quadTree.boundingBox = BoundingBox.mapRectToBoundingBox(mapRect: mapView.projection.latlngBounds(fromViewBounds: frame))
-
+    quadTree.boundingBox = BoundingBox.mapRectToBoundingBox(
+      mapRect: mapView.projection.latlngBounds(fromViewBounds: frame)
+    )
   }
 
   // 클러스터링에 들어갈 마커 추가
@@ -100,7 +101,6 @@ class ClusteringManager {
       maxY = maxY - differY + cellSizePoints
 
     }
-
 
     // 각 타일 별로 클러스터링 시작
     var yCoordinate = minY
@@ -169,8 +169,8 @@ class ClusteringManager {
     let centerMarker = NMFMarker()
     centerMarker.position = NMGLatLng(lat: totalX/Double(totalMarkers), lng: totalY/Double(totalMarkers))
     centerMarker.userInfo = [
-      "data" : mapMarkerData,
-      "markers" : markers
+      "data": mapMarkerData,
+      "markers": markers
     ]
     //        centerMarker.touchHandler = { [weak self] (overlay:NMFOverlay) -> Bool in
     //
@@ -180,12 +180,11 @@ class ClusteringManager {
     let infoWindow = NMFInfoWindow()
     infoWindow.position = NMGLatLng(lat: totalX/Double(totalMarkers), lng: totalY/Double(totalMarkers))
     infoWindow.userInfo = [
-      "data" : mapMarkerData
+      "data": mapMarkerData
     ]
     infoWindow.dataSource = infoWindowDataSource
 
-
-    infoWindow.touchHandler = { [weak self] (overlay:NMFOverlay) -> Bool in
+    infoWindow.touchHandler = { (overlay:NMFOverlay) -> Bool in
       let cameraUpdate = NMFCameraUpdate(scrollTo: centerMarker.position, zoomTo: mapView.zoomLevel)
       cameraUpdate.animation = .linear
       mapView.moveCamera(cameraUpdate)
@@ -199,8 +198,6 @@ class ClusteringManager {
   private func makeLeafMarker(marker: NMFMarker, mapView: NMFMapView) -> (NMFMarker, NMFInfoWindow?) {
 
     let leafMarker = marker
-
-
     return (leafMarker, nil)
   }
 
@@ -213,18 +210,17 @@ extension ClusteringManager {
     // 네이버 지도에 맞게 대강 맞춘 값
     switch zoomLevel {
     case 0...8:
-      return 2//32
+      return 2
     case 9...11:
-      return 4//16
+      return 4
     case 12...14:
-      return 5//8
+      return 5
     case 15...16:
       return 6
     case 17...20:
-      return 8//4
+      return 8
     default:
       return 10
     }
   }
 }
-

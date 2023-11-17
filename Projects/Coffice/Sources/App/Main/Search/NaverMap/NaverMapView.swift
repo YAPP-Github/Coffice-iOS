@@ -36,7 +36,13 @@ extension NaverMapView: UIViewRepresentable {
     naverMapView.mapView.maxZoomLevel = 20
     naverMapView.mapView.minZoomLevel = 12
     naverMapView.mapView.addCameraDelegate(delegate: context.coordinator)
-    naverMapView.mapView.extent = NMGLatLngBounds(southWest: NMGLatLng(lat: 31.43, lng: 122.37), northEast: NMGLatLng(lat: 44.35, lng: 132))
+    naverMapView.mapView.extent = NMGLatLngBounds(
+      southWest: NMGLatLng(
+        lat: 31.43,
+        lng: 122.37
+      ),
+      northEast: NMGLatLng(lat: 44.35, lng: 132)
+    )
     naverMapView.mapView.touchDelegate = context.coordinator
     moveCameraTo(naverMapView: naverMapView, location: viewStore.currentCameraPosition, zoomLevel: 15)
     context.coordinator.naverMap = naverMapView
@@ -159,7 +165,7 @@ class Coordinator: NSObject, NMFMapViewOptionDelegate {
     }
   }
   var currMarkersTuple = [(NMFMarker, NMFInfoWindow?)]()
-  
+
   init(target: NaverMapView) {
     self.target = target
   }
@@ -224,23 +230,27 @@ extension Coordinator: ClusteringManagerDelegate {
       }
       marker.0.mapView = nil
     }
-    
+
     self.currMarkersTuple = markersTuple
-    
+
     for marker in self.currMarkersTuple {
-      if let markerwindow = marker.1  {
+      if let markerwindow = marker.1 {
         markerwindow.open(with: naverMap.mapView)
       } else {
         marker.0.mapView = naverMap.mapView
       }
     }
   }
-  
+
   func runClustering(markers: [NMFMarker]) {
     guard let naverMap else { return }
     self.clusterManager?.resetQuadTreeSetting(mapView: naverMap.mapView, frame: naverMap.mapView.frame)
     self.clusterManager?.addMarkers(markers: markers)
-    self.clusterManager?.runClustering(mapView: naverMap.mapView, frame: naverMap.mapView.frame, zoomScale: naverMap.mapView.zoomLevel)
+    self.clusterManager?.runClustering(
+      mapView: naverMap.mapView,
+      frame: naverMap.mapView.frame,
+      zoomScale: naverMap.mapView.zoomLevel
+    )
   }
 }
 

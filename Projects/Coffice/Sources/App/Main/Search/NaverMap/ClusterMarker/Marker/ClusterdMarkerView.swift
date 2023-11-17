@@ -64,8 +64,6 @@ class ClusteredMarkerView: UIView {
       containerView.backgroundColor = UIColor(red: 255/255, green: 234/255, blue: 210/255, alpha: 0.8)
       countLbl.textColor = .black
     }
-
-
   }
 
   func constraintConfigure() {

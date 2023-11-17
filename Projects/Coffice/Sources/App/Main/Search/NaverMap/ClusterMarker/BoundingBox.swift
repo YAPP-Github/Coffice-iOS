@@ -20,7 +20,7 @@ struct BoundingBox {
   // 클러스터 될 영역의 박스를 설정한다.
   static func mapRectToBoundingBox(mapRect: NMGLatLngBounds) -> BoundingBox {
 
-    let minLat = mapRect.southWest.lat 
+    let minLat = mapRect.southWest.lat
     let maxLat = mapRect.northEast.lat
 
     let minLon = mapRect.southWest.lng
