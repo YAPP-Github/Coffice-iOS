@@ -85,13 +85,11 @@ class QuadTree {
     }
 
     var totalMarkers = [NMFMarker]()
-    for marker in self.markers {
-
-      if searchInBoundingBox.containsCoordinate(coordinate: marker.position) {
-        totalMarkers.append(marker)
-      }
-
+    for marker in self.markers where searchInBoundingBox
+      .containsCoordinate(coordinate: marker.position) {
+      totalMarkers.append(marker)
     }
+
     if self.isDivided {
 
       northEast?.queryRegion(searchInBoundingBox: searchInBoundingBox, completion: { (markers) in
@@ -126,11 +124,37 @@ extension QuadTree {
     let xMiddle = (boundingBox.xNorthEast+boundingBox.xSouthWest)/2.0
     let yMiddle = (boundingBox.yNorthEast+boundingBox.ySouthWest)/2.0
 
-    self.northWest = QuadTree(boundingBox: BoundingBox(xSouthWest: boundingBox.xSouthWest, ySouthWest: yMiddle, xNorthEast: xMiddle, yNorthEast: boundingBox.yNorthEast))
-    self.northEast = QuadTree(boundingBox: BoundingBox(xSouthWest: xMiddle, ySouthWest: yMiddle, xNorthEast: boundingBox.xNorthEast, yNorthEast: boundingBox.yNorthEast))
-    self.southWest = QuadTree(boundingBox: BoundingBox(xSouthWest: boundingBox.xSouthWest, ySouthWest: boundingBox.ySouthWest, xNorthEast: xMiddle, yNorthEast: yMiddle))
-    self.southEast = QuadTree(boundingBox: BoundingBox(xSouthWest: xMiddle, ySouthWest: boundingBox.ySouthWest, xNorthEast: boundingBox.xNorthEast, yNorthEast: yMiddle))
-
+    self.northWest = QuadTree(
+      boundingBox: BoundingBox(
+        xSouthWest: boundingBox.xSouthWest,
+        ySouthWest: yMiddle,
+        xNorthEast: xMiddle,
+        yNorthEast: boundingBox.yNorthEast
+      )
+    )
+    self.northEast = QuadTree(
+      boundingBox: BoundingBox(
+        xSouthWest: xMiddle,
+        ySouthWest: yMiddle,
+        xNorthEast: boundingBox.xNorthEast,
+        yNorthEast: boundingBox.yNorthEast
+      )
+    )
+    self.southWest = QuadTree(
+      boundingBox: BoundingBox(
+        xSouthWest: boundingBox.xSouthWest,
+        ySouthWest: boundingBox.ySouthWest,
+        xNorthEast: xMiddle,
+        yNorthEast: yMiddle
+      )
+    )
+    self.southEast = QuadTree(
+      boundingBox: BoundingBox(
+        xSouthWest: xMiddle,
+        ySouthWest: boundingBox.ySouthWest,
+        xNorthEast: boundingBox.xNorthEast,
+        yNorthEast: yMiddle
+      )
+    )
   }
-
 }

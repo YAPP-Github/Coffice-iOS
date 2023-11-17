@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 struct MapMarkerData {
 
   var id: String?

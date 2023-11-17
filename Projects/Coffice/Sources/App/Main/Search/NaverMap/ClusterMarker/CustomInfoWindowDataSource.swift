@@ -6,10 +6,8 @@
 //  Copyright © 2023 kr.co.yapp. All rights reserved.
 //
 
-import UIKit
 import NMapsMap
-//import SnapKit
-
+import UIKit
 
 class CustomInfoWindowDataSource: NSObject, NMFOverlayImageDataSource {
 
@@ -34,7 +32,10 @@ class CustomInfoWindowDataSource: NSObject, NMFOverlayImageDataSource {
           return UIView()
         }
         let radius: CGFloat = 18 + CGFloat(2 * log2(Double(mapCount)))
-        let clusteredMarkerView = ClusteredMarkerView(frame: CGRect(x: 0, y: 0, width: 2 * radius, height: 2 * radius), count: mapCount)
+        let clusteredMarkerView = ClusteredMarkerView(
+          frame: CGRect(x: 0, y: 0, width: 2 * radius, height: 2 * radius),
+          count: mapCount
+        )
         clusteredMarkerView.layoutIfNeeded()
         return clusteredMarkerView
       case .leaf:
