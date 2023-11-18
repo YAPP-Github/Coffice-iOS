@@ -40,7 +40,9 @@ struct CafeReportView: View {
       }
     )
   }
+}
 
+extension CafeReportView {
   var photoSelectionView: some View {
     WithViewStore(
       store,
