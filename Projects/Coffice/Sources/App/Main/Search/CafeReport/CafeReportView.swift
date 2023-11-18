@@ -19,7 +19,9 @@ struct CafeReportView: View {
       content: { viewStore in
         VStack(spacing: 0) {
           photoSelectionView
+          cafeSearchButton
         }
+        .padding(.horizontal, 16)
         .customNavigationBar(
           centerView: {
             Text(viewStore.title)
@@ -64,6 +66,36 @@ struct CafeReportView: View {
         }
         .padding(.top, 39)
         .padding(.bottom, 40)
+      }
+    )
+  }
+
+  var cafeSearchButton: some View {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        Button {
+          // TODO: 카페명 검색 화면 이동 필요
+          debugPrint("cafe search button tapped")
+        } label: {
+          HStack(spacing: 12) {
+            CofficeAsset.Asset.searchLine24px.swiftUIImage
+              .renderingMode(.template)
+              .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+              .padding(.leading, 12)
+            Text("카페명 검색")
+              .applyCofficeFont(font: .subtitle1Medium)
+              .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+            Spacer()
+          }
+          .background(
+            CofficeAsset.Colors.grayScale2.swiftUIColor
+              .frame(height: 48)
+              .cornerRadius(8)
+          )
+          .frame(height: 48)
+        }
       }
     )
   }
