@@ -189,7 +189,7 @@ extension CafeMapView {
         VStack {
           Spacer()
 
-          HStack(spacing: 0) {
+          HStack(alignment: .bottom, spacing: 0) {
             VStack {
               Spacer()
               reportCafeFloatingButton
@@ -197,16 +197,13 @@ extension CafeMapView {
 
             Spacer()
 
-            VStack {
-              Spacer()
-              VStack(spacing: 16) {
-                ForEach(viewStore.naverMapState.bottomFloatingButtons, id: \.self) { floatingButton in
-                  Button {
-                    viewStore.send(.naverMapAction(.bottomFloatingButtonTapped(floatingButton.type)))
-                  } label: {
-                    floatingButton.image
-                      .frame(width: 48, height: 48)
-                  }
+            VStack(spacing: 16) {
+              ForEach(viewStore.naverMapState.bottomFloatingButtons, id: \.self) { floatingButton in
+                Button {
+                  viewStore.send(.naverMapAction(.bottomFloatingButtonTapped(floatingButton.type)))
+                } label: {
+                  floatingButton.image
+                    .frame(width: 48, height: 48)
                 }
               }
             }
