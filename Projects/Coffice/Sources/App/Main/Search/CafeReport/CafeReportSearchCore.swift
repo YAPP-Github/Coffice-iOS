@@ -7,10 +7,12 @@
 //
 
 import ComposableArchitecture
+import Foundation
 
 struct CafeReportSearch: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
+    let topPadding: CGFloat = 108
   }
 
   enum Action: Equatable {

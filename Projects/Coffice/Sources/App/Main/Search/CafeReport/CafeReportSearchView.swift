@@ -20,22 +20,24 @@ struct CafeReportSearchView: View {
         VStack(spacing: 0) {
           HStack {
             Text("카페 검색")
+              .applyCofficeFont(font: .header1)
+              .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+              .padding(.top, 4)
+
             Spacer()
+
             Button {
               viewStore.send(.dismiss)
             } label: {
               CofficeAsset.Asset.close40px.swiftUIImage
             }
           }
+          .padding(.top, 24)
           .padding(.horizontal, 20)
 
           Spacer()
         }
-        .frame(
-          height: UIScreen.main.bounds.height
-          - (UIApplication.keyWindow?.safeAreaInsets.top ?? 0)
-          - 108
-        )
+        .frame(height: UIScreen.main.bounds.height - viewStore.topPadding)
         .background(
           CofficeAsset.Colors.grayScale1.swiftUIColor
             .cornerRadius(18, corners: [.topLeft, .topRight])
