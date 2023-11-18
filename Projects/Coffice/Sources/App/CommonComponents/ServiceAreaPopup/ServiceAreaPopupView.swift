@@ -22,11 +22,11 @@ struct ServiceAreaPopupView: View {
       observe: { $0 },
       content: { viewStore in
         VStack(alignment: .center, spacing: 0) {
-          Text("서비스 운영지역")
+          Text(viewStore.title)
             .applyCofficeFont(font: .header1)
             .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
             .padding(.bottom, 12)
-          Text("현재 강남지역만 서비스중이에요.\n카페를 등록하고 싶으면 문의하기를 이용해주세요!")
+          Text(viewStore.description)
             .multilineTextAlignment(.center)
             .applyCofficeFont(font: .body1)
             .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
