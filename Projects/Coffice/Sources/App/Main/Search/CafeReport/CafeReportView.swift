@@ -34,6 +34,18 @@ struct CafeReportView: View {
             }
           }
         )
+        .popup(
+          item: viewStore.$cafeReportSearchState,
+          itemView: { viewState in
+            CafeReportSearchView(
+              store: store.scope(
+                state: { _ in viewState },
+                action: CafeReport.Action.cafeReportSearch
+              )
+            )
+          },
+          customize: BottomSheetContent.customize
+        )
         .onAppear {
           viewStore.send(.onAppear)
         }
@@ -78,8 +90,7 @@ extension CafeReportView {
       observe: { $0 },
       content: { viewStore in
         Button {
-          // TODO: 카페명 검색 화면 이동 필요
-          debugPrint("cafe search button tapped")
+          viewStore.send(.cafeSearchButtonTapped)
         } label: {
           HStack(spacing: 12) {
             CofficeAsset.Asset.searchLine24px.swiftUIImage
