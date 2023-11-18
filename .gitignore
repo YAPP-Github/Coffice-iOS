@@ -68,11 +68,10 @@ Derived/
 
 ### Tuist managed dependencies ###
 Tuist/Dependencies
-Projects/Cafe/Resources/GoogleService-Info.plist
+Projects/coffice/Resources/GoogleService-Info.plist
 
 ### Xcconfig ###
 Xcconfig/Secrets.xcconfig
 Projects/Network/Resources/SecretAccessKey.plist
 Tuist/Signing
 Tuist/master.key
-Projects/Coffice/Resources/GoogleService-Info.plist
