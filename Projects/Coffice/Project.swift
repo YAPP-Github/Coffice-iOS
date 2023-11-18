@@ -10,7 +10,7 @@ let project = Project.app(
   platform: .iOS,
   iOSTargetVersion: iOSTargetVersion,
   infoPlist: [
-    "CFBundleShortVersionString": "1.0.8", // 앱의 출시 버전
+    "CFBundleShortVersionString": "1.1", // 앱의 출시 버전
     "CFBundleVersion": "2.1.4", // 앱의 빌드 버전 (테스트 플라이트 배포시 빌드 버전 up 필요)
     "CFBundleDisplayName": "Coffice", // 사용자에게 보여질 앱의 이름
     "UILaunchStoryboardName": "LaunchScreen",
