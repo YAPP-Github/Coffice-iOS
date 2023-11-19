@@ -22,6 +22,7 @@ struct CafeReportView: View {
             photoSelectionView
             cafeSearchButton
             mandatoryOptionView
+            optionalOptionView
           }
         }
         .padding(.horizontal, 16)
@@ -131,7 +132,7 @@ extension CafeReportView {
             .padding(.bottom, 32)
 
           VStack(alignment: .leading, spacing: 0) {
-            ForEach(viewStore.cafeReportOptionCellStates) { cellState in
+            ForEach(viewStore.mandatoryOptionCellStates) { cellState in
               Text(cellState.title)
                 .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
                 .applyCofficeFont(font: .button)
@@ -176,6 +177,66 @@ extension CafeReportView {
                 }
               }
               .padding(.bottom, 24)
+            }
+          }
+        }
+        .padding(.vertical, 16)
+      }
+    )
+  }
+
+  var optionalOptionView: some View {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack(alignment: .leading, spacing: 0) {
+          HStack(alignment: .center, spacing: 8) {
+            Text("어떤 점이 더 좋았나요?")
+              .applyCofficeFont(font: .header2)
+              .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+              .frame(height: 24)
+
+            Text("(선택)")
+              .applyCofficeFont(font: .body1Medium)
+              .foregroundColor(CofficeAsset.Colors.grayScale5.swiftUIColor)
+              .frame(height: 20)
+
+            Spacer()
+          }
+          .padding(.bottom, 32)
+
+          VStack(alignment: .leading, spacing: 0) {
+            ForEach(viewStore.optionalOptionCellStates) { cellState in
+              HStack(spacing: 8) {
+                Text(cellState.title)
+                  .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
+                  .applyCofficeFont(font: .button)
+                  .padding(.trailing, 20)
+                  .padding(.bottom, 4)
+
+                ForEach(cellState.optionButtonStates) { buttonState in
+                  Button {
+                    // TODO: option button tap event 구현 필요
+                    debugPrint("selected buttonState : \(buttonState)")
+                  } label: {
+                    Text(buttonState.title)
+                      .applyCofficeFont(font: buttonState.titleFont)
+                      .foregroundColor(buttonState.foregroundColor.swiftUIColor)
+                      .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                      .cornerRadius(16)
+                      .background(buttonState.backgroundColor.swiftUIColor.clipShape(Capsule()))
+                      .cornerRadius(18)
+                      .overlay {
+                        RoundedRectangle(cornerRadius: 18)
+                          .stroke(buttonState.borderColor.swiftUIColor, lineWidth: 1)
+                          .padding(1)
+                      }
+                      .frame(height: 34)
+                  }
+                }
+              }
+              .padding(.bottom, 16)
             }
           }
         }
