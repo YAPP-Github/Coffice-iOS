@@ -34,7 +34,7 @@ struct AppServiceTermsView: View {
             Button {
               viewStore.send(.popView)
             } label: {
-              Image(systemName: "chevron.left")
+              CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
             }
           }
         )

@@ -34,7 +34,6 @@ struct EditProfileView: View {
                 viewStore.send(.dismissButtonTapped)
               } label: {
                 CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
-                  .frame(width: 40, height: 40)
               }
             }
           )
