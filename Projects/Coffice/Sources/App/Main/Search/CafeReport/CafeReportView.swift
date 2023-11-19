@@ -20,6 +20,7 @@ struct CafeReportView: View {
         VStack(spacing: 0) {
           photoSelectionView
           cafeSearchButton
+          mandatoryOptionView
         }
         .padding(.horizontal, 16)
         .customNavigationBar(
@@ -109,6 +110,25 @@ extension CafeReportView {
           )
           .frame(height: 48)
         }
+        .padding(.bottom, 36)
+      }
+    )
+  }
+
+  var mandatoryOptionView: some View {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack(spacing: 0) {
+          Text("작업하기 좋은 공간이었나요?")
+            .applyCofficeFont(font: .header2)
+            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 24)
+            .padding(.bottom, 32)
+        }
+        .padding(.top, 16)
       }
     )
   }
