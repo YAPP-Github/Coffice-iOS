@@ -25,8 +25,8 @@ struct CafeReportView: View {
             optionalOptionView
             reportButtonView
           }
+          .padding(.horizontal, 16)
         }
-        .padding(.horizontal, 16)
         .customNavigationBar(
           centerView: {
             Text(viewStore.title)
