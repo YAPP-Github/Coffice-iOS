@@ -17,10 +17,12 @@ struct CafeReportView: View {
       store,
       observe: { $0 },
       content: { viewStore in
-        VStack(spacing: 0) {
-          photoSelectionView
-          cafeSearchButton
-          mandatoryOptionView
+        ScrollView {
+          VStack(spacing: 0) {
+            photoSelectionView
+            cafeSearchButton
+            mandatoryOptionView
+          }
         }
         .padding(.horizontal, 16)
         .customNavigationBar(
@@ -138,7 +140,7 @@ extension CafeReportView {
                 Text(cellState.description)
                   .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
                   .applyCofficeFont(font: .body2)
-                
+
                 Button {
                   // TODO: info button event 추가 필요
                 } label: {
@@ -150,6 +152,30 @@ extension CafeReportView {
                 Spacer()
               }
               .padding(.bottom, 20)
+
+              HStack(spacing: 8) {
+                ForEach(cellState.optionButtonStates) { buttonState in
+                  Button {
+                    // TODO: option button tap event 구현 필요
+                    debugPrint("selected buttonState : \(buttonState)")
+                  } label: {
+                    Text(buttonState.title)
+                      .applyCofficeFont(font: buttonState.titleFont)
+                      .foregroundColor(buttonState.foregroundColor.swiftUIColor)
+                      .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                      .cornerRadius(16)
+                      .background(buttonState.backgroundColor.swiftUIColor.clipShape(Capsule()))
+                      .cornerRadius(18)
+                      .overlay {
+                        RoundedRectangle(cornerRadius: 18)
+                          .stroke(buttonState.borderColor.swiftUIColor, lineWidth: 1)
+                          .padding(1)
+                      }
+                      .frame(height: 34)
+                  }
+                }
+              }
+              .padding(.bottom, 24)
             }
           }
         }

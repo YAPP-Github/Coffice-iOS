@@ -81,5 +81,64 @@ extension CafeReport {
       case .groupSeat: "5인이상 단체석"
       }
     }
+
+    var optionButtonStates: [CafeReport.OptionButtonState] {
+      switch optionType {
+      case .outlet(let selectedLevel):
+        let outletLevel: [ElectricOutletLevel] = [.many, .several, .few]
+        return outletLevel.map { level in
+          return .init(
+            title: level.informationText,
+            isSelected: level == selectedLevel
+          )
+        }
+      case .spaceSize(let selectedLevel):
+        let capacityLevel: [CapacityLevel] = [.high, .medium, .low]
+        return capacityLevel.map { level in
+          return .init(
+            title: level.informationText,
+            isSelected: level == selectedLevel
+          )
+        }
+      case .groupSeat(let selectedSeatType):
+        let seatTypes: [CafeGroupSeatLevel] = [.isTrue, .isFalse]
+        return seatTypes.map { type in
+          return .init(
+            title: type.detailOptionText,
+            isSelected: type == selectedSeatType
+          )
+        }
+      }
+    }
+  }
+}
+
+extension CafeReport {
+  struct OptionButtonState: Equatable, Identifiable {
+    let id = UUID()
+    let title: String
+    let isSelected: Bool
+
+    var titleFont: CofficeFont {
+      .body2Medium
+    }
+
+    var foregroundColor: CofficeColors {
+      isSelected
+      ? CofficeAsset.Colors.grayScale1
+      : CofficeAsset.Colors.grayScale7
+    }
+
+    var backgroundColor: CofficeColors {
+      isSelected
+      ? CofficeAsset.Colors.grayScale9
+      : CofficeAsset.Colors.grayScale1
+    }
+
+    var borderColor: CofficeColors {
+      isSelected
+      ? CofficeAsset.Colors.grayScale9
+      : CofficeAsset.Colors.grayScale4
+    }
   }
 }

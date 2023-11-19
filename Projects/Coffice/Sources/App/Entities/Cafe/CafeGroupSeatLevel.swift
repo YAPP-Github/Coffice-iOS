@@ -39,6 +39,17 @@ enum CafeGroupSeatLevel: Hashable {
     }
   }
 
+  var detailOptionText: String {
+    switch self {
+    case .unknown:
+      return "-"
+    case .isTrue:
+      return "단체석 있음"
+    case .isFalse:
+      return "단체석 없음"
+    }
+  }
+
   static func level(of level: Bool) -> CafeGroupSeatLevel {
     switch level {
     case true:
