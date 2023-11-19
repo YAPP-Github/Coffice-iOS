@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Foundation
 
 struct CafeReport: Reducer {
   struct State: Equatable {
@@ -62,7 +63,8 @@ extension CafeReport {
     case groupSeat(CafeGroupSeatLevel)
   }
 
-  struct MandatoryOptionCellState: Equatable {
+  struct MandatoryOptionCellState: Equatable, Identifiable {
+    let id = UUID()
     let optionType: CafeReport.OptionType
     var title: String {
       switch optionType {
