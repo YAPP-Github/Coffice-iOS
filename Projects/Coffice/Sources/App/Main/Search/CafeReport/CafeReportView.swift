@@ -127,6 +127,31 @@ extension CafeReportView {
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(height: 24)
             .padding(.bottom, 32)
+
+          VStack(alignment: .leading, spacing: 0) {
+            ForEach(viewStore.cafeReportOptionCellStates) { cellState in
+              Text(cellState.title)
+                .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
+                .applyCofficeFont(font: .button)
+                .padding(.bottom, 4)
+              HStack {
+                Text(cellState.description)
+                  .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+                  .applyCofficeFont(font: .body2)
+                
+                Button {
+                  // TODO: info button event 추가 필요
+                } label: {
+                  CofficeAsset.Asset.informationLine18px.swiftUIImage
+                    .renderingMode(.template)
+                    .foregroundColor(CofficeAsset.Colors.grayScale4.swiftUIColor)
+                }
+
+                Spacer()
+              }
+              .padding(.bottom, 20)
+            }
+          }
         }
         .padding(.top, 16)
       }
