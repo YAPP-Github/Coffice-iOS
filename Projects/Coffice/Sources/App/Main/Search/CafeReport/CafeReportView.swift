@@ -23,6 +23,7 @@ struct CafeReportView: View {
             cafeSearchButton
             mandatoryOptionView
             optionalOptionView
+            reportButtonView
           }
         }
         .padding(.horizontal, 16)
@@ -243,6 +244,25 @@ extension CafeReportView {
         .padding(.top, 16)
       }
     )
+  }
+
+  var reportButtonView: some View {
+    Button {
+      // TODO: report button action 구현 필요
+    } label: {
+      Text("카페 등록하기")
+        .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+        .applyCofficeFont(font: .button)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(height: 44)
+        .background(
+          CofficeAsset.Colors.grayScale9.swiftUIColor
+            .frame(height: 44)
+            .cornerRadius(4, corners: .allCorners)
+        )
+    }
+    .padding(.top, 8)
+    .padding(.bottom, 0)
   }
 }
 
