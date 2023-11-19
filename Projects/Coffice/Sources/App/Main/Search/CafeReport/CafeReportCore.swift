@@ -12,6 +12,11 @@ struct CafeReport: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     let title = "신규 카페 제보하기"
+    var cafeReportOptionCellStates: [MandatoryOptionCellState] = [
+      .init(optionType: .outlet(.unknown)),
+      .init(optionType: .spaceSize(.unknown)),
+      .init(optionType: .groupSeat(.unknown))
+    ]
 
     @BindingState var cafeReportSearchState: CafeReportSearch.State?
   }
@@ -42,6 +47,36 @@ struct CafeReport: Reducer {
 
       default:
         return .none
+      }
+    }
+  }
+}
+
+extension CafeReport {
+  enum OptionType: Equatable {
+    /// 콘센트
+    case outlet(ElectricOutletLevel)
+    /// 공간크기
+    case spaceSize(CapacityLevel)
+    /// 단체석
+    case groupSeat(CafeGroupSeatLevel)
+  }
+
+  struct MandatoryOptionCellState: Equatable {
+    let optionType: CafeReport.OptionType
+    var title: String {
+      switch optionType {
+      case .outlet: "콘센트 🔌"
+      case .spaceSize: "공간 크기 ☕️"
+      case .groupSeat: "단체석 🪑"
+      }
+    }
+
+    var description: String {
+      switch optionType {
+      case .outlet: "좌석대비 콘센트 비율"
+      case .spaceSize: "테이블 개수 기준"
+      case .groupSeat: "5인이상 단체석"
       }
     }
   }
