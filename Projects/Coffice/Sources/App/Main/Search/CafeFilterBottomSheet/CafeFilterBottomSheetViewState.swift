@@ -82,7 +82,7 @@ enum CafeFilter {
     case runningTime(RunningTimeOption)
     /// 콘센트
     case outlet(OutletOption)
-    /// 공간크기
+    /// 공간 크기
     case spaceSize(SpaceSizeOption)
     /// 단체석
     case personnel(PersonnelOption)
@@ -131,7 +131,7 @@ enum CafeFilter {
       case .detail: return "세부필터"
       case .runningTime: return "영업시간"
       case .outlet: return "콘센트"
-      case .spaceSize: return "공간크기"
+      case .spaceSize: return "공간 크기"
       case .personnel: return "단체석"
       }
     }
@@ -197,7 +197,7 @@ enum CafeFilter {
     case small
 
     var sectionTitle: String {
-      return "공간크기"
+      return "공간 크기"
     }
 
     var title: String {
@@ -224,7 +224,7 @@ enum CafeFilter {
     }
 
     var title: String {
-      return "단체석"
+      return "단체석 있음"
     }
 
     var index: Int {

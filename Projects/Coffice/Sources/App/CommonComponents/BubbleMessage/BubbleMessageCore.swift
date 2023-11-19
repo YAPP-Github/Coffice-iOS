@@ -16,7 +16,7 @@ struct BubbleMessage: Reducer {
     var title: String {
       switch guideType {
       case .outletState: return "콘센트"
-      case .spaceSize: return "공간크기"
+      case .spaceSize: return "공간 크기"
       case .groupSeat: return "단체석"
       }
     }
