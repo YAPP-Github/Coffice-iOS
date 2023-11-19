@@ -11,6 +11,7 @@ import Foundation
 enum RestroomType: Hashable {
   case indoors
   case genderSeperated
+  case unknown
 
   static func type(of restroomType: String) -> RestroomType? {
     switch restroomType {
@@ -25,7 +26,9 @@ enum RestroomType: Hashable {
     case .indoors:
       return "실내"
     case .genderSeperated:
-      return "남녀개별"
+      return "남녀 개별"
+    case .unknown:
+      return "-"
     }
   }
 
@@ -33,6 +36,7 @@ enum RestroomType: Hashable {
     switch self {
     case .indoors: return "INDOORS"
     case .genderSeperated: return "GENDER_SEPARATED"
+    case .unknown: return "UNKNOWN"
     }
   }
 }

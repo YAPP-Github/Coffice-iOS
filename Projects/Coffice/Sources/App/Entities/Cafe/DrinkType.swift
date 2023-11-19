@@ -11,6 +11,7 @@ import Foundation
 enum DrinkType: Hashable {
   case decaffeinated
   case soyMilk
+  case unknown
 
   static func type(of drinkType: String) -> DrinkType? {
     switch drinkType {
@@ -24,6 +25,7 @@ enum DrinkType: Hashable {
     switch self {
     case .decaffeinated: return "DECAFFEINATED"
     case .soyMilk: return "SOY_MILK"
+    case .unknown: return "UNKNOWN"
     }
   }
 
@@ -31,6 +33,7 @@ enum DrinkType: Hashable {
     switch self {
     case .decaffeinated: return "디카페인"
     case .soyMilk: return "두유"
+    case .unknown: return "-"
     }
   }
 }

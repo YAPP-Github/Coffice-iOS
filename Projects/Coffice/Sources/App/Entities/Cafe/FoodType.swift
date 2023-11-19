@@ -12,6 +12,7 @@ enum FoodType: Hashable {
   case dessert
   case glutenFree
   case mealWorthy
+  case unknown
 
   static func type(of foodType: String) -> FoodType? {
     switch foodType {
@@ -27,6 +28,7 @@ enum FoodType: Hashable {
     case .dessert: return "DESSERT"
     case .glutenFree: return "GLUTEN_FREE"
     case .mealWorthy: return "MEAL_WORTHY"
+    case .unknown: return "UNKNOWN"
     }
   }
 
@@ -34,7 +36,8 @@ enum FoodType: Hashable {
     switch self {
     case .dessert: return "디저트"
     case .glutenFree: return "글루텐 프리"
-    case .mealWorthy: return "식사가능"
+    case .mealWorthy: return "식사 가능"
+    case .unknown: return "-"
     }
   }
 }
