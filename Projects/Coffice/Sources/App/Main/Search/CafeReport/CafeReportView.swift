@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct CafeReportView: View {
+struct CafeReportView: View, KeyboardPresentationReadable {
   let store: StoreOf<CafeReport>
 
   var body: some View {
@@ -17,46 +17,57 @@ struct CafeReportView: View {
       store,
       observe: { $0 },
       content: { viewStore in
-        ScrollView {
-          VStack(spacing: 0) {
-            photoSelectionView
-            cafeSearchButton
-            mandatoryOptionView
-            optionalOptionView
-            reviewTextView
-            reportButtonView
+        ScrollViewReader { proxy in
+          ScrollView(.vertical, showsIndicators: true) {
+            VStack(spacing: 0) {
+              photoSelectionView
+              cafeSearchButton
+              mandatoryOptionView
+              optionalOptionView
+              reviewTextView
+              reportButtonView
+                .padding(.bottom, viewStore.textViewBottomPadding)
+                .id(viewStore.textViewDidBeginEditingScrollId)
+            }
+            .padding(.horizontal, 20)
           }
-          .padding(.horizontal, 16)
-        }
-        .customNavigationBar(
-          centerView: {
-            Text(viewStore.title)
-          },
-          leftView: {
-            Button {
-              viewStore.send(.popView)
-            } label: {
-              CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
+          .customNavigationBar(
+            centerView: {
+              Text(viewStore.title)
+            },
+            leftView: {
+              Button {
+                viewStore.send(.popView)
+              } label: {
+                CofficeAsset.Asset.arrowLeftSLine40px.swiftUIImage
+              }
+            }
+          )
+          .onReceive(keyboardEventPublisher) { isKeyboardShowing in
+            viewStore.send(.updateTextViewBottomPadding(isTextViewEditing: isKeyboardShowing))
+
+            if isKeyboardShowing {
+              proxy.scrollTo(viewStore.textViewDidBeginEditingScrollId, anchor: .bottom)
             }
           }
-        )
-        .popup(
-          item: viewStore.$cafeReportSearchState,
-          itemView: { viewState in
-            CafeReportSearchView(
-              store: store.scope(
-                state: { _ in viewState },
-                action: CafeReport.Action.cafeReportSearch
+          .popup(
+            item: viewStore.$cafeReportSearchState,
+            itemView: { viewState in
+              CafeReportSearchView(
+                store: store.scope(
+                  state: { _ in viewState },
+                  action: CafeReport.Action.cafeReportSearch
+                )
               )
-            )
-          },
-          customize: BottomSheetContent.customize
-        )
-        .onAppear {
-          viewStore.send(.onAppear)
-        }
-        .onTapGesture {
-          UIApplication.keyWindow?.endEditing(true)
+            },
+            customize: BottomSheetContent.customize
+          )
+          .onAppear {
+            viewStore.send(.onAppear)
+          }
+          .onTapGesture {
+            UIApplication.keyWindow?.endEditing(true)
+          }
         }
       }
     )
@@ -282,11 +293,11 @@ extension CafeReportView {
 
           if viewStore.shouldPresentTextViewPlaceholder {
             Text(viewStore.textViewPlaceholder)
-            .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
-            .applyCofficeFont(font: .paragraph)
-            .padding(.top, 36)
-            .padding(.leading, 20)
-            .allowsHitTesting(false)
+              .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+              .applyCofficeFont(font: .paragraph)
+              .padding(.top, 36)
+              .padding(.leading, 20)
+              .allowsHitTesting(false)
           }
         }
         .padding(.bottom, 38)
