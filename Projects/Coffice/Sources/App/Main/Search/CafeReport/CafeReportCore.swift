@@ -24,6 +24,7 @@ struct CafeReport: Reducer {
       .init(optionType: .drink(.unknown))
     ]
 
+    let textViewDidBeginEditingScrollId = UUID()
     let maximumTextLength = 200
     var textViewBottomPadding: CGFloat = 0.0
     var currentTextLengthDescription: String { "\(reviewText?.count ?? 0)" }
@@ -48,6 +49,7 @@ struct CafeReport: Reducer {
     case cafeSearchButtonTapped
     case presentCafeReportSearchView
     case cafeReportSearch(CafeReportSearch.Action)
+    case updateTextViewBottomPadding(isTextViewEditing: Bool)
   }
 
   var body: some ReducerOf<CafeReport> {
@@ -63,6 +65,10 @@ struct CafeReport: Reducer {
 
       case .cafeReportSearch(.dismiss):
         state.cafeReportSearchState = nil
+        return .none
+
+      case .updateTextViewBottomPadding(let isTextViewEditing):
+        state.textViewBottomPadding = isTextViewEditing ? 200 : 0
         return .none
 
       default:
