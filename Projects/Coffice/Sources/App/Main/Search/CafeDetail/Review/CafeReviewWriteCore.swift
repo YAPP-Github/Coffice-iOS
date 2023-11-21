@@ -44,7 +44,7 @@ struct CafeReviewWrite: Reducer {
     var currentTextLengthDescription: String { "\(reviewText?.count ?? 0)" }
     var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
     var shouldPresentTextViewPlaceholder: Bool {
-      reviewText?.isEmpty == true
+      reviewText?.isEmpty != false
     }
     var saveButtonTitle: String {
       return reviewType == .create ? "등록하기" : "수정하기"
