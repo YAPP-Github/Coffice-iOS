@@ -24,7 +24,21 @@ struct CafeReport: Reducer {
       .init(optionType: .drink(.unknown))
     ]
 
+    let maximumTextLength = 200
+    var textViewBottomPadding: CGFloat = 0.0
+    var currentTextLengthDescription: String { "\(reviewText?.count ?? 0)" }
+    var maximumTextLengthDescription: String { "/\(maximumTextLength)" }
+    var shouldPresentTextViewPlaceholder: Bool {
+      reviewText?.isEmpty != false
+    }
+    let textViewPlaceholder = """
+                              혼자서 오기 좋았나요?
+                              테이블, 의자는 편했나요?
+                              카페에서 작업하며 느꼈던 점들을 공유해주세요!
+                              """
+
     @BindingState var cafeReportSearchState: CafeReportSearch.State?
+    @BindingState var reviewText: String?
   }
 
   enum Action: Equatable, BindableAction {

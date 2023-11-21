@@ -23,6 +23,7 @@ struct CafeReportView: View {
             cafeSearchButton
             mandatoryOptionView
             optionalOptionView
+            reviewTextView
             reportButtonView
           }
           .padding(.horizontal, 16)
@@ -54,13 +55,16 @@ struct CafeReportView: View {
         .onAppear {
           viewStore.send(.onAppear)
         }
+        .onTapGesture {
+          UIApplication.keyWindow?.endEditing(true)
+        }
       }
     )
   }
 }
 
 extension CafeReportView {
-  var photoSelectionView: some View {
+  private var photoSelectionView: some View {
     WithViewStore(
       store,
       observe: { $0 },
@@ -89,7 +93,7 @@ extension CafeReportView {
     )
   }
 
-  var cafeSearchButton: some View {
+  private var cafeSearchButton: some View {
     WithViewStore(
       store,
       observe: { $0 },
@@ -119,7 +123,7 @@ extension CafeReportView {
     )
   }
 
-  var mandatoryOptionView: some View {
+  private var mandatoryOptionView: some View {
     WithViewStore(
       store,
       observe: { $0 },
@@ -186,7 +190,7 @@ extension CafeReportView {
     )
   }
 
-  var optionalOptionView: some View {
+  private var optionalOptionView: some View {
     WithViewStore(
       store,
       observe: { $0 },
@@ -246,7 +250,68 @@ extension CafeReportView {
     )
   }
 
-  var reportButtonView: some View {
+  private var reviewTextView: some View {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        ZStack(alignment: .topLeading) {
+          VStack(alignment: .leading, spacing: 0) {
+            CafeReviewTextView(
+              text: viewStore.binding(
+                get: \.reviewText,
+                send: { .set(\.$reviewText, $0) }
+              )
+            )
+            .textFieldStyle(.plain)
+            .frame(height: 206)
+            .overlay(
+              textDescriptionView,
+              alignment: .bottomTrailing
+            )
+            .padding(13)
+            .overlay {
+              RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                  CofficeAsset.Colors.grayScale3.swiftUIColor,
+                  lineWidth: 1
+                )
+            }
+          }
+          .padding(.top, 16)
+
+          if viewStore.shouldPresentTextViewPlaceholder {
+            Text(viewStore.textViewPlaceholder)
+            .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+            .applyCofficeFont(font: .paragraph)
+            .padding(.top, 36)
+            .padding(.leading, 20)
+            .allowsHitTesting(false)
+          }
+        }
+        .padding(.bottom, 38)
+      }
+    )
+  }
+
+  private var textDescriptionView: some View {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        HStack(alignment: .bottom, spacing: 0) {
+          Text(viewStore.currentTextLengthDescription)
+            .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+            .applyCofficeFont(font: .body3Medium)
+          Text(viewStore.maximumTextLengthDescription)
+            .foregroundColor(CofficeAsset.Colors.grayScale5.swiftUIColor)
+            .applyCofficeFont(font: .body3Medium)
+        }
+      }
+    )
+  }
+
+  private var reportButtonView: some View {
     Button {
       // TODO: report button action 구현 필요
     } label: {
