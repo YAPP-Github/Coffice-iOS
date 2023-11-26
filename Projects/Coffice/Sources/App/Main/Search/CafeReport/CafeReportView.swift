@@ -22,8 +22,8 @@ struct CafeReportView: View, KeyboardPresentationReadable {
             VStack(spacing: 0) {
               photoSelectionView
               cafeSearchButton
-              mandatoryOptionView
-              optionalOptionView
+              mandatoryMenuView
+              optionalMenuView
               reviewTextView
               reportButtonView
                 .padding(.bottom, viewStore.textViewBottomPadding)
@@ -134,7 +134,7 @@ extension CafeReportView {
     )
   }
 
-  private var mandatoryOptionView: some View {
+  private var mandatoryMenuView: some View {
     WithViewStore(
       store,
       observe: { $0 },
@@ -148,7 +148,7 @@ extension CafeReportView {
             .padding(.bottom, 32)
 
           VStack(alignment: .leading, spacing: 0) {
-            ForEach(viewStore.mandatoryOptionCellStates) { cellState in
+            ForEach(viewStore.mandatoryMenuCellStates) { cellState in
               Text(cellState.title)
                 .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)
                 .applyCofficeFont(font: .button)
@@ -173,7 +173,9 @@ extension CafeReportView {
               HStack(spacing: 8) {
                 ForEach(cellState.optionButtonStates) { buttonState in
                   Button {
-                    // TODO: option button tap event 구현 필요
+                    viewStore.send(.mandatoryMenuTapped(
+                      menu: cellState.menuType, buttonState: buttonState)
+                    )
                     debugPrint("selected buttonState : \(buttonState)")
                   } label: {
                     Text(buttonState.title)
@@ -201,7 +203,7 @@ extension CafeReportView {
     )
   }
 
-  private var optionalOptionView: some View {
+  private var optionalMenuView: some View {
     WithViewStore(
       store,
       observe: { $0 },
@@ -223,7 +225,7 @@ extension CafeReportView {
           .padding(.bottom, 32)
 
           VStack(alignment: .leading, spacing: 0) {
-            ForEach(viewStore.optionalOptionCellStates) { cellState in
+            ForEach(viewStore.optionalMenuCellStates) { cellState in
               HStack(spacing: 8) {
                 Text(cellState.title)
                   .foregroundColor(CofficeAsset.Colors.grayScale8.swiftUIColor)

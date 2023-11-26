@@ -13,12 +13,12 @@ struct CafeReport: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     let title = "신규 카페 제보하기"
-    var mandatoryOptionCellStates: [MandatoryOptionCellState] = [
-      .init(optionType: .outlet(.unknown)),
-      .init(optionType: .spaceSize(.unknown)),
-      .init(optionType: .groupSeat(.unknown))
+    var mandatoryMenuCellStates: [MandatoryMenuCellState] = [
+      .init(menuType: .outlet(.unknown)),
+      .init(menuType: .spaceSize(.unknown)),
+      .init(menuType: .groupSeat(.unknown))
     ]
-    var optionalOptionCellStates: [OptionalOptionCellState] = [
+    var optionalMenuCellStates: [OptionalMenuCellState] = [
       .init(optionType: .food(.unknown)),
       .init(optionType: .restroom(.unknown)),
       .init(optionType: .drink(.unknown))
@@ -50,6 +50,8 @@ struct CafeReport: Reducer {
     case presentCafeReportSearchView
     case cafeReportSearch(CafeReportSearch.Action)
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
+    case mandatoryMenuTapped(menu: MandatoryMenu, buttonState: OptionButtonState)
+    case optionalMenuTapped(menu: OptionalMenu, buttonState: OptionButtonState)
   }
 
   var body: some ReducerOf<CafeReport> {
@@ -71,6 +73,34 @@ struct CafeReport: Reducer {
         state.textViewBottomPadding = isTextViewEditing ? 200 : 0
         return .none
 
+      case let .mandatoryMenuTapped(menu, optionbuttonState):
+        state.mandatoryMenuCellStates = state
+          .mandatoryMenuCellStates
+          .map { cellState -> MandatoryMenuCellState in
+            guard cellState.menuType == menu
+            else { return cellState }
+
+            // TODO: Menu Option 로직 개선 고민 필요
+            switch menu {
+            case .groupSeat:
+              let selectedOption = CafeGroupSeatLevel.allCases.first(where: { level in
+                level.reportOptionText == optionbuttonState.title
+              }) ?? .unknown
+              return .init(menuType: .groupSeat(selectedOption))
+            case .outlet:
+              let selectedOption = ElectricOutletLevel.allCases.first(where: { level in
+                level.reportOptionText == optionbuttonState.title
+              }) ?? .unknown
+              return .init(menuType: .outlet(selectedOption))
+            case .spaceSize:
+              let selectedOption = CapacityLevel.allCases.first(where: { level in
+                level.reportOptionText == optionbuttonState.title
+              }) ?? .unknown
+              return MandatoryMenuCellState(menuType: .spaceSize(selectedOption))
+            }
+          }
+        return .none
+
       default:
         return .none
       }
@@ -79,7 +109,7 @@ struct CafeReport: Reducer {
 }
 
 extension CafeReport {
-  enum MandatoryOption: Equatable {
+  enum MandatoryMenu: Equatable {
     /// 콘센트
     case outlet(ElectricOutletLevel)
     /// 공간크기
@@ -88,7 +118,7 @@ extension CafeReport {
     case groupSeat(CafeGroupSeatLevel)
   }
 
-  enum OptionalOption: Equatable {
+  enum OptionalMenu: Equatable {
     /// 푸드
     case food(FoodType)
     /// 화장실
@@ -97,11 +127,11 @@ extension CafeReport {
     case drink(DrinkType)
   }
 
-  struct MandatoryOptionCellState: Equatable, Identifiable {
+  struct MandatoryMenuCellState: Equatable, Identifiable {
     let id = UUID()
-    let optionType: CafeReport.MandatoryOption
+    let menuType: CafeReport.MandatoryMenu
     var title: String {
-      switch optionType {
+      switch menuType {
       case .outlet: "콘센트 🔌"
       case .spaceSize: "공간 크기 ☕️"
       case .groupSeat: "단체석 🪑"
@@ -109,7 +139,7 @@ extension CafeReport {
     }
 
     var description: String {
-      switch optionType {
+      switch menuType {
       case .outlet: "좌석대비 콘센트 비율"
       case .spaceSize: "테이블 개수 기준"
       case .groupSeat: "5인이상 단체석"
@@ -117,7 +147,7 @@ extension CafeReport {
     }
 
     var optionButtonStates: [CafeReport.OptionButtonState] {
-      switch optionType {
+      switch menuType {
       case .outlet(let selectedLevel):
         let outletLevels: [ElectricOutletLevel] = [.many, .several, .few]
         return outletLevels.map { level in
@@ -138,7 +168,7 @@ extension CafeReport {
         let seatTypes: [CafeGroupSeatLevel] = [.isTrue, .isFalse]
         return seatTypes.map { type in
           return .init(
-            title: type.detailOptionText,
+            title: type.reportOptionText,
             isSelected: type == selectedSeatType
           )
         }
@@ -146,9 +176,9 @@ extension CafeReport {
     }
   }
 
-  struct OptionalOptionCellState: Equatable, Identifiable {
+  struct OptionalMenuCellState: Equatable, Identifiable {
     let id = UUID()
-    let optionType: CafeReport.OptionalOption
+    let optionType: CafeReport.OptionalMenu
     var title: String {
       switch optionType {
       case .food: "푸드"
