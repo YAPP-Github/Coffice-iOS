@@ -19,9 +19,9 @@ struct CafeReport: Reducer {
       .init(menuType: .groupSeat(.unknown))
     ]
     var optionalMenuCellStates: [OptionalMenuCellState] = [
-      .init(optionType: .food(.unknown)),
-      .init(optionType: .restroom(.unknown)),
-      .init(optionType: .drink(.unknown))
+      .init(menuType: .food(.unknown)),
+      .init(menuType: .restroom(.unknown)),
+      .init(menuType: .drink(.unknown))
     ]
 
     let textViewDidBeginEditingScrollId = UUID()
@@ -178,9 +178,9 @@ extension CafeReport {
 
   struct OptionalMenuCellState: Equatable, Identifiable {
     let id = UUID()
-    let optionType: CafeReport.OptionalMenu
+    let menuType: CafeReport.OptionalMenu
     var title: String {
-      switch optionType {
+      switch menuType {
       case .food: "푸드"
       case .restroom: "화장실"
       case .drink: "음료"
@@ -188,7 +188,7 @@ extension CafeReport {
     }
 
     var optionButtonStates: [CafeReport.OptionButtonState] {
-      switch optionType {
+      switch menuType {
       case .food(let selectedOption):
         let foodTypes: [FoodType] = [.dessert, .mealWorthy]
         return foodTypes.map { type in
