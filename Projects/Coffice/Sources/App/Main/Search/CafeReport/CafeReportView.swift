@@ -235,7 +235,9 @@ extension CafeReportView {
 
                 ForEach(cellState.optionButtonStates) { buttonState in
                   Button {
-                    // TODO: option button tap event 구현 필요
+                    viewStore.send(.optionalMenuTapped(
+                      menu: cellState.menuType, buttonState: buttonState)
+                    )
                     debugPrint("selected buttonState : \(buttonState)")
                   } label: {
                     Text(buttonState.title)

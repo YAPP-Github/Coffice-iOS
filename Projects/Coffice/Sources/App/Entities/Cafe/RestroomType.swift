@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum RestroomType: Hashable {
+enum RestroomType: Hashable, CaseIterable {
   case indoors
   case genderSeperated
   case unknown
@@ -30,6 +30,10 @@ enum RestroomType: Hashable {
     case .unknown:
       return "-"
     }
+  }
+
+  var reportOptionText: String {
+    text
   }
 
   var dtoName: String {

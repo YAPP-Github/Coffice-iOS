@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum DrinkType: Hashable {
+enum DrinkType: Hashable, CaseIterable {
   case decaffeinated
   case soyMilk
   case unknown
@@ -35,5 +35,9 @@ enum DrinkType: Hashable {
     case .soyMilk: return "두유"
     case .unknown: return "-"
     }
+  }
+
+  var reportOptionText: String {
+    text
   }
 }

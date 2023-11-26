@@ -96,7 +96,35 @@ struct CafeReport: Reducer {
               let selectedOption = CapacityLevel.allCases.first(where: { level in
                 level.reportOptionText == optionbuttonState.title
               }) ?? .unknown
-              return MandatoryMenuCellState(menuType: .spaceSize(selectedOption))
+              return .init(menuType: .spaceSize(selectedOption))
+            }
+          }
+        return .none
+
+      case let .optionalMenuTapped(menu, optionbuttonState):
+        state.optionalMenuCellStates = state
+          .optionalMenuCellStates
+          .map { cellState -> OptionalMenuCellState in
+            guard cellState.menuType == menu
+            else { return cellState }
+
+            // TODO: Menu Option 로직 개선 고민 필요
+            switch menu {
+            case .drink:
+              let selectedOption = DrinkType.allCases.first(where: { type in
+                type.reportOptionText == optionbuttonState.title
+              }) ?? .unknown
+              return .init(menuType: .drink(selectedOption))
+            case .food:
+              let selectedOption = FoodType.allCases.first(where: { type in
+                type.reportOptionText == optionbuttonState.title
+              }) ?? .unknown
+              return .init(menuType: .food(selectedOption))
+            case .restroom:
+              let selectedOption = RestroomType.allCases.first(where: { type in
+                type.reportOptionText == optionbuttonState.title
+              }) ?? .unknown
+              return .init(menuType: .restroom(selectedOption))
             }
           }
         return .none
