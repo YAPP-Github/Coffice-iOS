@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum FoodType: Hashable {
+enum FoodType: Hashable, CaseIterable {
   case dessert
   case glutenFree
   case mealWorthy
@@ -39,5 +39,9 @@ enum FoodType: Hashable {
     case .mealWorthy: return "식사 가능"
     case .unknown: return "-"
     }
+  }
+
+  var reportOptionText: String {
+    text
   }
 }
