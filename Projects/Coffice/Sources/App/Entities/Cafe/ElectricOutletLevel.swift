@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ElectricOutletLevel: Hashable {
+enum ElectricOutletLevel: Hashable, CaseIterable {
   case unknown
   case few
   case several
@@ -62,5 +62,9 @@ enum ElectricOutletLevel: Hashable {
     case .few: return "부족"
     default: return "-"
     }
+  }
+
+  var reportOptionText: String {
+    informationText
   }
 }

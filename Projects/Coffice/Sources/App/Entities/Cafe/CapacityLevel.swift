@@ -8,28 +8,28 @@
 
 import Foundation
 
-enum CapacityLevel: Hashable {
-  case unknown
+enum CapacityLevel: Hashable, CaseIterable {
   case low
   case medium
   case high
+  case unknown
 
   static func level(of capacity: String) -> CapacityLevel {
     switch capacity {
-    case "UNKNOWN": return .unknown
     case "LOW": return .low
     case "MEDIUM": return .medium
     case "HIGH": return .high
+    case "UNKNOWN": return .unknown
     default: return .unknown
     }
   }
 
   var dtoName: String {
     switch self {
-    case .unknown: return "UNKNOWN"
     case .low: return "LOW"
     case .medium: return "MEDIUM"
     case .high: return "HIGH"
+    case .unknown: return "UNKNOWN"
     }
   }
 
@@ -49,6 +49,10 @@ enum CapacityLevel: Hashable {
     case .low: return "소형"
     default: return "-"
     }
+  }
+
+  var reportOptionText: String {
+    informationText
   }
 
   var iconName: String {

@@ -8,19 +8,19 @@
 
 import Foundation
 
-enum CafeGroupSeatLevel: Hashable {
-  case unknown
+enum CafeGroupSeatLevel: Hashable, CaseIterable {
   case isTrue
   case isFalse
+  case unknown
 
   var iconName: String {
     switch self {
-    case .unknown:
-      return CofficeAsset.Asset.groupseatTrue44px.name // TODO: Unknown 추가 필요
     case .isTrue:
       return CofficeAsset.Asset.groupseatTrue44px.name
     case .isFalse:
       return CofficeAsset.Asset.groupseatFalse44px.name
+    case .unknown:
+      return CofficeAsset.Asset.groupseatTrue44px.name // TODO: Unknown 추가 필요
     }
   }
 
@@ -30,23 +30,23 @@ enum CafeGroupSeatLevel: Hashable {
 
   var informationText: String {
     switch self {
-    case .unknown:
-      return "-"
     case .isTrue:
       return "있음"
     case .isFalse:
       return "없음"
+    case .unknown:
+      return "-"
     }
   }
 
-  var detailOptionText: String {
+  var reportOptionText: String {
     switch self {
-    case .unknown:
-      return "-"
     case .isTrue:
       return "단체석 있음"
     case .isFalse:
       return "단체석 없음"
+    case .unknown:
+      return "-"
     }
   }
 
