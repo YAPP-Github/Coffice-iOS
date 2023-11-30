@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 import MyPlugin
 
 // MARK: - Project
-let iOSTargetVersion = "15.0"
+let iOSTargetVersion = "16.0"
 
 let project = Project.app(
   name: "coffice",
