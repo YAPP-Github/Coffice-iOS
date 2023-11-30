@@ -89,6 +89,7 @@ extension CafeReportView {
                   .set(\.$photosPickerItems, items)
               }
             ),
+            maxSelectionCount: 8,
             photoLibrary: .shared(),
             label: {
               VStack(spacing: 4) {
