@@ -8,6 +8,8 @@
 
 import ComposableArchitecture
 import Foundation
+import PhotosUI
+import SwiftUI
 
 struct CafeReport: Reducer {
   struct State: Equatable {
@@ -40,6 +42,7 @@ struct CafeReport: Reducer {
 
     @BindingState var cafeReportSearchState: CafeReportSearch.State?
     @BindingState var reviewText: String?
+    @BindingState var photosPickerItems: [PhotosPickerItem] = []
   }
 
   enum Action: Equatable, BindableAction {
