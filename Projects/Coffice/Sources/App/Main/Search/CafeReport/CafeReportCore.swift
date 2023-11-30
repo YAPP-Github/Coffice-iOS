@@ -39,6 +39,7 @@ struct CafeReport: Reducer {
                               테이블, 의자는 편했나요?
                               카페에서 작업하며 느꼈던 점들을 공유해주세요!
                               """
+    var selectedPhotoDatum: [Data] = []
 
     @BindingState var cafeReportSearchState: CafeReportSearch.State?
     @BindingState var reviewText: String?
@@ -51,6 +52,7 @@ struct CafeReport: Reducer {
     case popView
     case cafeSearchButtonTapped
     case presentCafeReportSearchView
+    case updateSelectedPhotoDatum([Data])
     case cafeReportSearch(CafeReportSearch.Action)
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
     case mandatoryMenuTapped(menu: MandatoryMenu, buttonState: OptionButtonState)
@@ -61,6 +63,36 @@ struct CafeReport: Reducer {
     BindingReducer()
     Reduce { state, action in
       switch action {
+      case .binding(\.$photosPickerItems):
+        let items = state.photosPickerItems
+
+        guard items.isNotEmpty
+        else {
+          return .send(.updateSelectedPhotoDatum([]))
+        }
+
+        return .run { send in
+          let selectedPhotoDatum = await withTaskGroup(of: Data?.self) { group in
+            for item in items {
+              group.addTask {
+                try? await item.loadTransferable(type: Data.self)
+              }
+            }
+            var selectedPhotoDatum: [Data] = []
+            for await data in group {
+              guard let data else { continue }
+              selectedPhotoDatum.append(data)
+            }
+
+            return selectedPhotoDatum
+          }
+          await send(.updateSelectedPhotoDatum(selectedPhotoDatum))
+        }
+
+      case .updateSelectedPhotoDatum(let datum):
+        state.selectedPhotoDatum = datum
+        return .none
+
       case .onAppear:
         return .none
 
