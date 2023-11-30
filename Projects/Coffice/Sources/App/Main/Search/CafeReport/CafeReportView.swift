@@ -93,9 +93,22 @@ extension CafeReportView {
             label: {
               VStack(spacing: 4) {
                 CofficeAsset.Asset.plusCircle24px.swiftUIImage
-                Text("사진 추가 (최대 8개)")
-                  .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
-                  .applyCofficeFont(font: .body2Medium)
+                HStack(alignment: .center, spacing: 2) {
+                  Text("사진 추가")
+                    .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+                    .applyCofficeFont(font: .body2Medium)
+                  Text("*")
+                    .foregroundColor(.red)
+                    .applyCofficeFont(font: .body2Medium)
+                }
+                HStack(alignment: .center, spacing: 0) {
+                  Text("\(viewStore.photosPickerItems.count)")
+                    .foregroundColor(CofficeAsset.Colors.grayScale9.swiftUIColor)
+                    .applyCofficeFont(font: .body2Medium)
+                  Text(" / 8")
+                    .foregroundColor(CofficeAsset.Colors.grayScale6.swiftUIColor)
+                    .applyCofficeFont(font: .body2Medium)
+                }
               }
               .frame(width: 138, height: 110)
               .background(
