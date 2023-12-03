@@ -86,8 +86,8 @@ extension CafeReportView {
           HStack {
             ForEach(viewStore.photoMenuItemViewState) { viewState in
               switch viewState.type {
-              case .photoItem(let data):
-                photoItemView(data: data)
+              case let .photoItem(data, isMain):
+                photoItemView(data: data, isMain: isMain)
               case .photoAddButton:
                 photoAddButton
               }
@@ -100,7 +100,7 @@ extension CafeReportView {
     )
   }
 
-  private func photoItemView(data: Data) -> some View {
+  private func photoItemView(data: Data, isMain: Bool) -> some View {
     WithViewStore(
       store,
       observe: { $0 },
@@ -111,6 +111,29 @@ extension CafeReportView {
               .resizable()
               .frame(width: 138, height: 110)
               .cornerRadius(8)
+              .overlay(
+                alignment: .bottomLeading,
+                content: {
+                  HStack(spacing: 4) {
+                    CofficeAsset.Asset.checkLine18px.swiftUIImage
+                      .padding(.vertical, 4)
+                      .padding(.leading, 8)
+                    Text("대표")
+                      .foregroundColor(CofficeAsset.Colors.grayScale1.swiftUIColor)
+                      .applyCofficeFont(font: .body2Medium)
+                      .padding(.vertical, 4)
+                      .padding(.trailing, 12)
+                  }
+                  .frame(width: 63, height: 26)
+                  .cornerRadius(18)
+                  .background(
+                    CofficeAsset.Colors.grayScale9.swiftUIColor
+                      .clipShape(Capsule())
+                  )
+                  .padding([.leading, .bottom], 8)
+                  .hiddenWithOpacity(isHidden: isMain.isFalse)
+                }
+              )
           }
         }
       }

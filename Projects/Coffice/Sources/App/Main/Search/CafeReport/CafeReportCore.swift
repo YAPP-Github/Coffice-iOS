@@ -93,9 +93,11 @@ struct CafeReport: Reducer {
       case .updateSelectedPhotoDatum(let datum):
         state.selectedPhotoDatum = datum
 
-        state.photoMenuItemViewState = datum.map { data in
-            .init(type: .photoItem(data))
-        }
+        state.photoMenuItemViewState = datum
+          .enumerated()
+          .map { index, data in
+              .init(type: .photoItem(data: data, isMain: index == 0))
+          }
         + [.init(type: .photoAddButton)]
         return .none
 
@@ -298,7 +300,7 @@ extension CafeReport {
   }
 
   enum PhotoMenuItemType {
-    case photoItem(Data)
+    case photoItem(data: Data, isMain: Bool)
     case photoAddButton
   }
 }
