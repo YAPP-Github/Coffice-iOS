@@ -15,6 +15,7 @@ struct CafeReport: Reducer {
   struct State: Equatable {
     static let initialState: State = .init()
     let title = "신규 카페 제보하기"
+    var photoMenuItemViewState: [PhotoMenuItemViewState] = [.init(type: .photoAddButton)]
     var mandatoryMenuCellStates: [MandatoryMenuCellState] = [
       .init(menuType: .outlet(.unknown)),
       .init(menuType: .spaceSize(.unknown)),
@@ -91,6 +92,11 @@ struct CafeReport: Reducer {
 
       case .updateSelectedPhotoDatum(let datum):
         state.selectedPhotoDatum = datum
+
+        state.photoMenuItemViewState = datum.map { data in
+            .init(type: .photoItem(data))
+        }
+        + [.init(type: .photoAddButton)]
         return .none
 
       case .onAppear:
@@ -278,6 +284,22 @@ extension CafeReport {
         }
       }
     }
+  }
+}
+
+extension CafeReport {
+  struct PhotoMenuItemViewState: Equatable, Identifiable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+      lhs.id == rhs.id
+    }
+
+    let id = UUID()
+    let type: PhotoMenuItemType
+  }
+
+  enum PhotoMenuItemType {
+    case photoItem(Data)
+    case photoAddButton
   }
 }
 

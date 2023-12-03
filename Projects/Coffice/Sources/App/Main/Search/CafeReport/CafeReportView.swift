@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Kingfisher
 import PhotosUI
 import SwiftUI
 
@@ -21,7 +22,7 @@ struct CafeReportView: View, KeyboardPresentationReadable {
         ScrollViewReader { proxy in
           ScrollView(.vertical, showsIndicators: true) {
             VStack(spacing: 0) {
-              photoSelectionView
+              photoMenuView
               cafeSearchButton
               mandatoryMenuView
               optionalMenuView
@@ -76,7 +77,47 @@ struct CafeReportView: View, KeyboardPresentationReadable {
 }
 
 extension CafeReportView {
-  private var photoSelectionView: some View {
+  private var photoMenuView: some View {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        ScrollView(.horizontal) {
+          HStack {
+            ForEach(viewStore.photoMenuItemViewState) { viewState in
+              switch viewState.type {
+              case .photoItem(let data):
+                photoItemView(data: data)
+              case .photoAddButton:
+                photoAddButton
+              }
+            }
+          }
+        }
+        .padding(.top, 39)
+        .padding(.bottom, 40)
+      }
+    )
+  }
+
+  private func photoItemView(data: Data) -> some View {
+    WithViewStore(
+      store,
+      observe: { $0 },
+      content: { viewStore in
+        VStack(alignment: .center) {
+          if let uiImage = UIImage(data: data) {
+            Image(uiImage: uiImage)
+              .resizable()
+              .frame(width: 138, height: 110)
+              .cornerRadius(8)
+          }
+        }
+      }
+    )
+  }
+
+  private var photoAddButton: some View {
     WithViewStore(
       store,
       observe: { $0 },
@@ -120,8 +161,6 @@ extension CafeReportView {
             }
           )
         }
-        .padding(.top, 39)
-        .padding(.bottom, 40)
       }
     )
   }
