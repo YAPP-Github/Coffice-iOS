@@ -154,7 +154,7 @@ extension CafeReportView {
               }
             ),
             maxSelectionCount: 8,
-            photoLibrary: .shared(),
+            matching: .any(of: [.images]),
             label: {
               VStack(spacing: 4) {
                 CofficeAsset.Asset.plusCircle24px.swiftUIImage
