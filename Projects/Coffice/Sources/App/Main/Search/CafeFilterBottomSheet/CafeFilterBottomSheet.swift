@@ -43,7 +43,7 @@ struct CafeFilterBottomSheet: Reducer {
     var mainViewState: CafeFilterBottomSheetViewState = .init(optionButtonCellViewStates: [])
     var containerViewHeight: CGFloat = .zero
     let headerViewHeight: CGFloat = 80
-    let footerViewHeight: CGFloat = 84 + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0.0)
+    let footerViewHeight: CGFloat = 84 + (UIApplication.keyWindow?.safeAreaInsets.bottom ?? 0) + 20.0
 
     init(filterType: CafeFilter.MenuType, cafeFilterInformation: CafeFilterInformation) {
       self.filterType = filterType
