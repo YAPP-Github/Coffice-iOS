@@ -134,6 +134,15 @@ extension CafeReportView {
                   .hiddenWithOpacity(isHidden: isMain.isFalse)
                 }
               )
+              .overlay(alignment: .topTrailing) {
+                Button {
+                  viewStore.send(.photoItemDeleteButtonTapped(data: data))
+                } label: {
+                  CofficeAsset.Asset.closeCircleFill18px.swiftUIImage
+                    .opacity(0.6)
+                    .padding([.top, .trailing], 8)
+                }
+              }
           }
         }
       }

@@ -58,6 +58,7 @@ struct CafeReport: Reducer {
     case updateTextViewBottomPadding(isTextViewEditing: Bool)
     case mandatoryMenuTapped(menu: MandatoryMenu, buttonState: OptionButtonState)
     case optionalMenuTapped(menu: OptionalMenu, buttonState: OptionButtonState)
+    case photoItemDeleteButtonTapped(data: Data)
   }
 
   var body: some ReducerOf<CafeReport> {
@@ -73,20 +74,24 @@ struct CafeReport: Reducer {
         }
 
         return .run { send in
-          let selectedPhotoDatum = await withTaskGroup(of: Data?.self) { group in
-            for item in items {
+          let selectedPhotoDatum = await withTaskGroup(of: (Int, Data?).self) { group in
+            for (index, item) in items.enumerated() {
               group.addTask {
-                try? await item.loadTransferable(type: Data.self)
+                let data = try? await item.loadTransferable(type: Data.self)
+                return (index, data)
               }
             }
-            var selectedPhotoDatum: [Data] = []
-            for await data in group {
-              guard let data else { continue }
-              selectedPhotoDatum.append(data)
+            var selectedPhotoDatum: [(Int, Data)] = []
+            for await tuple in group {
+              guard let data = tuple.1 else { continue }
+              selectedPhotoDatum.append((tuple.0, data))
             }
 
             return selectedPhotoDatum
+              .sorted { $0.0 < $1.0 }
+              .map { $0.1 }
           }
+
           await send(.updateSelectedPhotoDatum(selectedPhotoDatum))
         }
 
@@ -171,6 +176,20 @@ struct CafeReport: Reducer {
             }
           }
         return .none
+
+      case .photoItemDeleteButtonTapped(let selectedData):
+        guard let deletedItemIndex = state.photoMenuItemViewState
+          .firstIndex(
+            where: {
+              guard case let .photoItem(data, _) = $0.type
+              else { return false }
+              return data == selectedData
+            }
+          )
+        else { return .none }
+
+        state.photosPickerItems.remove(at: deletedItemIndex)
+        return .send(.set(\.$photosPickerItems, state.photosPickerItems))
 
       default:
         return .none
