@@ -80,22 +80,22 @@ struct CafeReport: Reducer {
         }
 
         return .run { send in
-          let selectedPhotoDatum = await withTaskGroup(of: (Int, Data?).self) { group in
+          let selectedPhotoDatum = await withTaskGroup(of: (index: Int, data: Data?).self) { group in
             for (index, item) in items.enumerated() {
               group.addTask {
                 let data = try? await item.loadTransferable(type: Data.self)
                 return (index, data)
               }
             }
-            var selectedPhotoDatum: [(Int, Data)] = []
+            var selectedPhotoDatum: [(index: Int, data: Data)] = []
             for await tuple in group {
-              guard let data = tuple.1 else { continue }
-              selectedPhotoDatum.append((tuple.0, data))
+              guard let data = tuple.data else { continue }
+              selectedPhotoDatum.append((tuple.index, data))
             }
 
             return selectedPhotoDatum
-              .sorted { $0.0 < $1.0 }
-              .map { $0.1 }
+              .sorted { $0.index < $1.index }
+              .map(\.data)
           }
 
           await send(.updateSelectedPhotoDatum(selectedPhotoDatum))
