@@ -45,6 +45,7 @@ struct CafeReport: Reducer {
     @BindingState var cafeReportSearchState: CafeReportSearch.State?
     @BindingState var reviewText: String?
     @BindingState var photosPickerItems: [PhotosPickerItem] = []
+    @BindingState var bubbleMessageViewState: BubbleMessage.State?
   }
 
   enum Action: Equatable, BindableAction {
@@ -59,6 +60,11 @@ struct CafeReport: Reducer {
     case mandatoryMenuTapped(menu: MandatoryMenu, buttonState: OptionButtonState)
     case optionalMenuTapped(menu: OptionalMenu, buttonState: OptionButtonState)
     case photoItemDeleteButtonTapped(data: Data)
+
+    // MARK: Info Guide
+    case infoGuideButtonTapped(CafeReport.MandatoryMenu)
+    case presentBubbleMessageView(BubbleMessage.State)
+    case bubbleMessageAction(BubbleMessage.Action)
   }
 
   var body: some ReducerOf<CafeReport> {
@@ -191,6 +197,18 @@ struct CafeReport: Reducer {
         state.photosPickerItems.remove(at: deletedItemIndex)
         return .send(.set(\.$photosPickerItems, state.photosPickerItems))
 
+      // MARK: Info Guide
+      case .infoGuideButtonTapped(let menuType):
+        return .send(
+          .presentBubbleMessageView(
+            .init(guideType: menuType.guideType)
+          )
+        )
+
+      case .presentBubbleMessageView(let viewState):
+        state.bubbleMessageViewState = viewState
+        return .none
+
       default:
         return .none
       }
@@ -206,6 +224,17 @@ extension CafeReport {
     case spaceSize(CapacityLevel)
     /// 단체석
     case groupSeat(CafeGroupSeatLevel)
+
+    var guideType: CafeFilter.GuideType {
+      switch self {
+      case .outlet:
+        return .outletState
+      case .spaceSize:
+        return .spaceSize
+      case .groupSeat:
+        return .groupSeat
+      }
+    }
   }
 
   enum OptionalMenu: Equatable {

@@ -252,7 +252,7 @@ extension CafeReportView {
                   .applyCofficeFont(font: .body2)
 
                 Button {
-                  // TODO: info button event 추가 필요
+                  viewStore.send(.infoGuideButtonTapped(cellState.menuType))
                 } label: {
                   CofficeAsset.Asset.informationLine18px.swiftUIImage
                     .renderingMode(.template)
@@ -292,6 +292,27 @@ extension CafeReportView {
           }
         }
         .padding(.vertical, 16)
+        .popup(
+          item: viewStore.binding(
+            get: \.bubbleMessageViewState,
+            send: { .set(\.$bubbleMessageViewState, $0) }
+          ),
+          itemView: { viewState in
+            BubbleMessageView(store: store.scope(
+              state: { _ in viewState },
+              action: CafeReport.Action.bubbleMessageAction)
+            )
+          },
+          customize: { popup in
+            popup
+              .type(.default)
+              .position(.center)
+              .animation(.easeIn(duration: 0))
+              .isOpaque(true)
+              .closeOnTapOutside(true)
+              .backgroundColor(CofficeAsset.Colors.grayScale10.swiftUIColor.opacity(0.4))
+          }
+        )
       }
     )
   }
